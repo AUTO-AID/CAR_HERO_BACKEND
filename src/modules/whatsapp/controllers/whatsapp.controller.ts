@@ -1,0 +1,191 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Render,
+  HttpCode,
+  HttpStatus,
+  BadRequestException,
+  Headers,
+  Logger,
+} from '@nestjs/common';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ConfigService } from '@nestjs/config';
+import { WhatsAppWebService } from '../services/whatsapp-web.service';
+import { Public } from '../../../common/decorators';
+
+@ApiTags('WhatsApp')
+@Controller('whatsapp')
+export class WhatsAppController {
+  private readonly logger = new Logger(WhatsAppController.name);
+
+  constructor(
+    private readonly whatsappService: WhatsAppWebService,
+    private readonly configService: ConfigService,
+  ) {}
+
+  /**
+   * عرض صفحة تسجيل الدخول بالـ QR Code
+   */
+  @Public()
+  @Get('login')
+  @Render('qr')
+  async loginPage() {
+    const isReady = this.whatsappService.isClientReady();
+    const qrCode = this.whatsappService.getQRCode();
+
+    this.logger.log(`Login Page Request - Ready: ${isReady}, Has QR: ${!!qrCode}`);
+
+    if (isReady) {
+      return {
+        message: '✅ WhatsApp is already logged in',
+        error: null,
+        qrRaw: null,
+      };
+    }
+
+    if (!qrCode) {
+      return {
+        error: 'Please try again shortly (Initializing QR)...',
+        message: null,
+        qrRaw: null,
+      };
+    }
+
+    try {
+      // نرسل الـ QR الخام للصفحة ليقوم المتصفح برسمه
+      // هذا أفضل لأنه يتجنب مشاكل طول الـ Data URL
+      return {
+        qrRaw: qrCode,
+        error: null,
+        message: null,
+      };
+    } catch (e) {
+      this.logger.error('Failed to prepare QR code', e);
+      return {
+        error: 'Failed to prepare QR code',
+        message: null,
+        qrRaw: null,
+      };
+    }
+  }
+
+  /**
+   * الحصول على QR Code كـ JSON
+   */
+  @Public()
+  @Get('qr')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get QR Code for WhatsApp login' })
+  async getQRCode() {
+    const qrCode = this.whatsappService.getQRCode();
+    const isReady = this.whatsappService.isClientReady();
+
+    if (isReady) {
+      return {
+        status: 'ready',
+        message: 'WhatsApp is already logged in',
+        qrCode: null,
+      };
+    }
+
+    if (!qrCode) {
+      return {
+        status: 'loading',
+        message: 'Please wait, generating QR code...',
+        qrCode: null,
+      };
+    }
+
+    const qrDataURL = await this.whatsappService.getQRCodeDataURL();
+
+    return {
+      status: 'qr_ready',
+      message: 'Please scan the QR code',
+      qrCode: qrDataURL,
+    };
+  }
+
+  /**
+   * التحقق من حالة الاتصال
+   */
+  @Public()
+  @Get('status')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Check WhatsApp connection status' })
+  getStatus() {
+    const isReady = this.whatsappService.isClientReady();
+    const hasQR = !!this.whatsappService.getQRCode();
+
+    return {
+      isReady,
+      hasQR,
+      status: isReady ? 'connected' : hasQR ? 'waiting_qr' : 'initializing',
+      message: isReady
+        ? 'WhatsApp is connected'
+        : hasQR
+        ? 'Please scan QR code'
+        : 'Initializing...',
+    };
+  }
+
+  /**
+   * إرسال رسالة (للاختبار - محمي بكلمة مرور)
+   */
+  @Public()
+  @Post('send-message')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Send WhatsApp message (Protected)' })
+  async sendMessage(
+    @Headers('x-password') password: string,
+    @Body() body: { phone: string; message: string },
+  ) {
+    const apiPassword = this.configService.get<string>('WHATSAPP_API_PASSWORD');
+
+    if (password !== apiPassword) {
+      throw new BadRequestException('Invalid password');
+    }
+
+    if (!body.message) {
+      throw new BadRequestException('Message is required');
+    }
+
+    if (!body.phone) {
+      throw new BadRequestException('Phone number is required');
+    }
+
+    if (!this.whatsappService.isClientReady()) {
+      throw new BadRequestException('WhatsApp client is not ready');
+    }
+
+    await this.whatsappService.sendMessage(body.phone, body.message);
+
+    return {
+      ok: true,
+      message: '✅ Message sent successfully',
+    };
+  }
+
+  /**
+   * إعادة تشغيل الـ Client
+   */
+  @Public()
+  @Post('restart')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Restart WhatsApp client' })
+  async restart(@Headers('x-password') password: string) {
+    const apiPassword = this.configService.get<string>('WHATSAPP_API_PASSWORD');
+
+    if (password !== apiPassword) {
+      throw new BadRequestException('Invalid password');
+    }
+
+    await this.whatsappService.restart();
+
+    return {
+      ok: true,
+      message: 'WhatsApp client restarted',
+    };
+  }
+}

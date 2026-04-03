@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Login</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 50px; background: #f0f2f5; }
+        .container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: inline-block; }
+        #qrcode { margin: 20px auto; display: flex; justify-content: center; }
+        .debug { margin-top: 20px; color: #666; font-size: 12px; border: 1px solid #ddd; padding: 10px; text-align: left; overflow-wrap: break-word; max-width: 400px; display: none; }
+        button { padding: 10px 20px; cursor: pointer; background: #25D366; color: white; border: none; border-radius: 5px; font-size: 16px; margin-top: 20px; }
+        .status { margin-bottom: 20px; font-weight: bold; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>WhatsApp Login</h2>
+
+        <!-- Status Messages -->
+        <% if (locals.error) { %>
+            <div class="status error"><%= error %></div>
+        <% } %>
+        
+        <% if (locals.message) { %>
+            <div class="status success"><%= message %></div>
+        <% } %>
+
+        <!-- QR Section -->
+        <% if (locals.qrRaw) { %>
+            <div id="qrcode"></div>
+            <p>Scan with WhatsApp (Linked Devices)</p>
+            
+            <!-- Hidden input to reliably pass data to JS -->
+            <input type="hidden" id="raw-qr-data" value="<%= qrRaw %>">
+            
+            <script>
+                try {
+                    var rawData = document.getElementById("raw-qr-data").value;
+                    console.log("QR Data received:", rawData);
+                    
+                    if (rawData && rawData.length > 10) {
+                        new QRCode(document.getElementById("qrcode"), {
+                            text: rawData,
+                            width: 256,
+                            height: 256,
+                            correctLevel: QRCode.CorrectLevel.M
+                        });
+                    } else {
+                        document.getElementById("qrcode").innerHTML = "Waiting for valid QR code...";
+                    }
+                } catch (e) {
+                    console.error("QR Render Error:", e);
+                    document.getElementById("qrcode").innerText = "Error rendering QR: " + e.message;
+                }
+            </script>
+        <% } else if (!locals.error && !locals.message) { %>
+            <p>Waiting for QR code... Please refresh in 5 seconds.</p>
+        <% } %>
+
+        <button onclick="location.reload()">Refresh Page</button>
+
+        <!-- Debug Toggle -->
+        <div style="margin-top: 20px;">
+            <a href="#" onclick="document.getElementById('debug-box').style.display='block'; return false;" style="font-size: 12px; color: #999;">Show Debug Info</a>
+        </div>
+        <div id="debug-box" class="debug">
+            <strong>Raw Value:</strong><br>
+            <%= locals.qrRaw || 'null' %>
+        </div>
+    </div>
+</body>
+</html>
