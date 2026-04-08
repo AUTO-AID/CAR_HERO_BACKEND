@@ -1,0 +1,76 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { UpdateOrderStatusUseCase } from './update-order-status.use-case';
+import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
+import { OrderStatus } from '../../../../common/enums/status.enum';
+import { NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+
+describe('UpdateOrderStatusUseCase', () => {
+  let useCase: UpdateOrderStatusUseCase;
+  let repository: jest.Mocked<IOrderRepository>;
+  let eventEmitter: EventEmitter2;
+
+  const mockOrderRepository = {
+    findById: jest.fn(),
+    update: jest.fn(),
+  };
+
+  const mockEventEmitter = {
+    emit: jest.fn(),
+  };
+
+  const mockCacheManager = {
+    get: jest.fn(),
+    set: jest.fn(),
+    del: jest.fn(),
+  };
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        UpdateOrderStatusUseCase,
+        { provide: IOrderRepository, useValue: mockOrderRepository },
+        { provide: EventEmitter2, useValue: mockEventEmitter },
+        { provide: CACHE_MANAGER, useValue: mockCacheManager },
+      ],
+    }).compile();
+
+    useCase = module.get<UpdateOrderStatusUseCase>(UpdateOrderStatusUseCase);
+    repository = module.get(IOrderRepository);
+    eventEmitter = module.get(EventEmitter2);
+  });
+
+  it('should throw NotFoundException if order does not exist', async () => {
+    mockOrderRepository.findById.mockResolvedValue(null);
+    await expect(useCase.execute('id', OrderStatus.COMPLETED, { _id: 'admin', role: 'admin' }))
+      .rejects.toThrow(NotFoundException);
+  });
+
+  it('should throw ForbiddenException if user is not authorized', async () => {
+    const mockOrder = { id: 'id', provider: 'other-provider', status: OrderStatus.ACCEPTED };
+    mockOrderRepository.findById.mockResolvedValue(mockOrder);
+    
+    await expect(useCase.execute('id', OrderStatus.COMPLETED, { _id: 'wrong-user', role: 'user' }))
+      .rejects.toThrow(ForbiddenException);
+  });
+
+  it('should update status, emit event and clear cache when authorized', async () => {
+    const mockOrder = { 
+      id: 'id', 
+      provider: 'provider-id', 
+      status: OrderStatus.ACCEPTED,
+      orderNumber: 'CH-001',
+      user: 'user-id'
+    };
+    mockOrderRepository.findById.mockResolvedValue(mockOrder);
+    mockOrderRepository.update.mockResolvedValue({ ...mockOrder, status: OrderStatus.COMPLETED });
+
+    const result = await useCase.execute('id', OrderStatus.COMPLETED, { _id: 'provider-id', role: 'provider' });
+
+    expect(result.status).toBe(OrderStatus.COMPLETED);
+    expect(mockOrderRepository.update).toHaveBeenCalled();
+    expect(mockCacheManager.del).toHaveBeenCalledWith('order_id');
+    expect(mockEventEmitter.emit).toHaveBeenCalled();
+  });
+});

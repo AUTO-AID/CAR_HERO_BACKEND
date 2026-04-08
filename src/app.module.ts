@@ -7,6 +7,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
+import { Setting, SettingSchema } from './database/schemas/setting.schema';
 
 // Configuration
 import envConfig from './config/env.config';
@@ -17,6 +18,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
+import { MaintenanceGuard } from './core/guards/maintenance.guard';
 
 // Feature Modules
 import { AuthModule } from './modules/auth/auth.module';
@@ -37,6 +39,9 @@ import { GatewayModule } from './modules/gateway/gateway.module';
 import { ProfileModule } from './modules/profile/profile.module';
 import { WhatsAppModule } from './modules/whatsapp/whatsapp.module';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ScheduleModule } from '@nestjs/schedule';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
@@ -47,6 +52,18 @@ import { ThrottlerModule } from '@nestjs/throttler';
       envFilePath: ['.env', '.env.local'],
     }),
 
+    // Cache
+    CacheModule.register({
+      isGlobal: true,
+      ttl: 60000, // 1 minute default
+    }),
+
+    // Cron Jobs
+    ScheduleModule.forRoot(),
+
+    // Events
+    EventEmitterModule.forRoot(),
+
     // Rate Limiting
     ThrottlerModule.forRoot([{ 
       ttl: 60000, 
@@ -55,6 +72,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 
     // Database
     MongooseModule.forRootAsync(mongoConfig),
+    MongooseModule.forFeature([{ name: Setting.name, schema: SettingSchema }]),
 
     // WhatsApp
     WhatsAppModule,
@@ -113,6 +131,12 @@ import { ThrottlerModule } from '@nestjs/throttler';
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+
+    // Global Maintenance Guard
+    {
+      provide: APP_GUARD,
+      useClass: MaintenanceGuard,
     },
   ],
 })

@@ -2,6 +2,9 @@ import { Controller, Post, Body, HttpCode, HttpStatus, Get, UseGuards, Param, Pa
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { AdminService } from '../services/admin.service';
 import { AdminLoginDto } from '../dto/admin-login.dto';
+import { LoginUseCase } from '../application/use-cases/login.use-case';
+import { CreateMembershipPlanDto } from '../dto/create-membership-plan.dto';
+import { UpdateMembershipPlanDto } from '../dto/update-membership-plan.dto';
 import { Public, Roles, CurrentUser, Permissions } from '../../../core/decorators';
 import { Role } from '../../../common/enums/roles.enum';
 import { RolesGuard, PermissionsGuard } from '../../../core/guards';
@@ -11,7 +14,10 @@ import { RegistrationStatus, BookingStatus } from '../../../common/enums/status.
 @Controller('admin')
 @UseGuards(RolesGuard, PermissionsGuard)
 export class AdminController {
-  constructor(private readonly adminService: AdminService) {}
+  constructor(
+    private readonly adminService: AdminService,
+    private readonly loginUseCase: LoginUseCase,
+  ) {}
 
   @Public()
   @Post('login')
@@ -20,7 +26,7 @@ export class AdminController {
   @ApiResponse({ status: 200, description: 'Login successful' })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
   async login(@Body() loginDto: AdminLoginDto) {
-    return this.adminService.login(loginDto);
+    return this.loginUseCase.execute(loginDto);
   }
 
   @Public()
@@ -291,6 +297,85 @@ export class AdminController {
   @ApiOperation({ summary: 'Get top requested services' })
   async getTopServices() {
     return this.adminService.getTopServices();
+  }
+
+  // ===========================================
+  // MEMBERSHIPS MANAGEMENT
+  // ===========================================
+
+  @Get('memberships')
+  @Roles(Role.ADMIN)
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Get all membership plans' })
+  async getAllMembershipPlans() {
+    return this.adminService.getAllMembershipPlans();
+  }
+
+  @Post('memberships')
+  @Roles(Role.ADMIN)
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Create new membership plan' })
+  async createMembershipPlan(@Body() dto: CreateMembershipPlanDto) {
+    return this.adminService.createMembershipPlan(dto);
+  }
+
+  @Patch('memberships/:id')
+  @Roles(Role.ADMIN)
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Update membership plan' })
+  async updateMembershipPlan(
+    @Param('id') id: string,
+    @Body() dto: UpdateMembershipPlanDto,
+  ) {
+    return this.adminService.updateMembershipPlan(id, dto);
+  }
+
+  @Delete('memberships/:id')
+  @Roles(Role.ADMIN)
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Delete membership plan' })
+  async deleteMembershipPlan(@Param('id') id: string) {
+    return this.adminService.deleteMembershipPlan(id);
+  }
+
+  @Get('memberships/subscribers')
+  @Roles(Role.ADMIN)
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Get all subscribed users' })
+  async getMembershipSubscribers(
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+  ) {
+    return this.adminService.getMembershipSubscribers(Number(page) || 1, Number(limit) || 10);
+  }
+
+  // ===========================================
+  // SETTINGS MANAGEMENT
+  // ===========================================
+
+  @Get('settings')
+  @Roles(Role.ADMIN)
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Get application settings' })
+  async getSettings() {
+    return this.adminService.getAppSettings();
+  }
+
+  @Patch('settings/maintenance')
+  @Roles(Role.ADMIN)
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Toggle maintenance mode' })
+  async updateMaintenanceMode(
+    @Body() dto: { maintenanceMode: boolean; message?: string; messageAr?: string },
+  ) {
+    return this.adminService.updateMaintenanceMode(dto);
   }
 
   // ===========================================

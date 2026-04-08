@@ -9,8 +9,12 @@ import { Provider, ProviderDocument } from '../../../database/schemas/provider.s
 import { Service, ServiceDocument } from '../../../database/schemas/service.schema';
 import { Booking, BookingDocument } from '../../../database/schemas/booking.schema';
 import { Order, OrderDocument } from '../../../database/schemas/order.schema';
+import { SubscriptionPlan, SubscriptionPlanDocument, Subscription, SubscriptionDocument } from '../../../database/schemas/subscription.schema';
+import { Setting, SettingDocument } from '../../../database/schemas/setting.schema';
 import { RegistrationStatus, BookingStatus, OrderStatus } from '../../../common/enums/status.enum';
 import { AdminLoginDto } from '../dto/admin-login.dto';
+import { CreateMembershipPlanDto } from '../dto/create-membership-plan.dto';
+import { UpdateMembershipPlanDto } from '../dto/update-membership-plan.dto';
 import { PasswordUtil, TokenUtil } from '../../../shared/utils';
 import { IJwtPayload } from '../../../shared/interfaces';
 
@@ -23,6 +27,9 @@ export class AdminService {
     @InjectModel(Service.name) private serviceModel: Model<ServiceDocument>,
     @InjectModel(Booking.name) private bookingModel: Model<BookingDocument>,
     @InjectModel(Order.name) private orderModel: Model<OrderDocument>,
+    @InjectModel(SubscriptionPlan.name) private planModel: Model<SubscriptionPlanDocument>,
+    @InjectModel(Subscription.name) private subscriptionModel: Model<SubscriptionDocument>,
+    @InjectModel(Setting.name) private settingModel: Model<SettingDocument>,
     private jwtService: JwtService,
     private configService: ConfigService,
   ) {}
@@ -643,5 +650,119 @@ export class AdminService {
       throw new NotFoundException('Admin not found');
     }
     return { message: 'Admin deleted successfully' };
+  }
+
+  // ===========================================
+  // MEMBERSHIPS MANAGEMENT
+  // ===========================================
+
+  /**
+   * جلب جميع باقات الاشتراك
+   */
+  async getAllMembershipPlans() {
+    return this.planModel.find().sort({ sortOrder: 1, createdAt: -1 }).exec();
+  }
+
+  /**
+   * إنشاء باقة اشتراك جديدة
+   */
+  async createMembershipPlan(dto: CreateMembershipPlanDto) {
+    const plan = new this.planModel(dto);
+    return plan.save();
+  }
+
+  /**
+   * تعديل باقة اشتراك
+   */
+  async updateMembershipPlan(id: string, dto: UpdateMembershipPlanDto) {
+    const plan = await this.planModel.findByIdAndUpdate(
+      id,
+      { $set: dto },
+      { new: true },
+    ).exec();
+
+    if (!plan) {
+      throw new NotFoundException('Membership plan not found');
+    }
+
+    return {
+      message: 'Membership plan updated successfully',
+      plan,
+    };
+  }
+
+  /**
+   * حذف باقة اشتراك
+   */
+  async deleteMembershipPlan(id: string) {
+    const plan = await this.planModel.findByIdAndDelete(id).exec();
+    if (!plan) {
+      throw new NotFoundException('Membership plan not found');
+    }
+    return { message: 'Membership plan deleted successfully' };
+  }
+
+  /**
+   * عرض جميع المشتركين الحاليين
+   */
+  async getMembershipSubscribers(page = 1, limit = 10) {
+    const skip = (page - 1) * limit;
+    const [subscribers, total] = await Promise.all([
+      this.subscriptionModel.find()
+        .populate('user', 'fullName phoneNumber email')
+        .populate('plan', 'name price')
+        .skip(skip)
+        .limit(limit)
+        .sort({ createdAt: -1 })
+        .exec(),
+      this.subscriptionModel.countDocuments(),
+    ]);
+
+    return {
+      subscribers,
+      pagination: {
+        total,
+        page,
+        limit,
+        pages: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  // ===========================================
+  // SETTINGS & CONFIGURATION
+  // ===========================================
+
+  /**
+   * جلب الإعدادات الحالية
+   */
+  async getAppSettings() {
+    let settings = await this.settingModel.findOne({ key: 'app_config' });
+    if (!settings) {
+      settings = await this.settingModel.create({ key: 'app_config' });
+    }
+    return settings;
+  }
+
+  /**
+   * تحديث وضع الصيانة
+   */
+  async updateMaintenanceMode(dto: { maintenanceMode: boolean; message?: string; messageAr?: string }) {
+    const settings = await this.settingModel.findOneAndUpdate(
+      { key: 'app_config' },
+      { 
+        $set: { 
+          maintenanceMode: dto.maintenanceMode,
+          maintenanceMessage: dto.message,
+          maintenanceMessageAr: dto.messageAr,
+        } 
+      },
+      { new: true, upsert: true }
+    );
+
+    return {
+      message: `Maintenance mode ${dto.maintenanceMode ? 'activated' : 'deactivated'}`,
+      settings,
+    };
   }
 }

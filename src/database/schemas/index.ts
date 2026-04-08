@@ -14,3 +14,4 @@ export * from './review.schema';
 export * from './notification.schema';
 export * from './admin.schema';
 export * from './promo-code.schema';
+export * from './setting.schema';

@@ -5,6 +5,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { OrderStatus, PaymentStatus } from '../../common/enums/status.enum';
+import { encrypt, decrypt } from '../../common/utils/encryption.util';
 
 export type OrderDocument = Order & Document;
 
@@ -39,6 +40,7 @@ class TimelineEntry {
   timestamps: true,
   toJSON: {
     virtuals: true,
+    getters: true,
     transform: function (doc: any, ret: any) {
       delete ret.__v;
       return ret;
@@ -68,7 +70,10 @@ export class Order {
   @Prop({ type: GeoLocation, required: true })
   userLocation: GeoLocation;
 
-  @Prop()
+  @Prop({
+    set: (v: string) => encrypt(v),
+    get: (v: string) => decrypt(v)
+  })
   userAddress?: string;
 
   // Provider's current location (for tracking)
@@ -113,7 +118,10 @@ export class Order {
   @Prop({ default: 'cash' })
   paymentMethod: string;
 
-  @Prop()
+  @Prop({
+    set: (v: string) => encrypt(v),
+    get: (v: string) => decrypt(v)
+  })
   paymentId?: string;
 
   // Scheduling
@@ -139,20 +147,32 @@ export class Order {
   @Prop()
   cancelledAt?: Date;
 
-  @Prop()
+  @Prop({
+    set: (v: string) => encrypt(v),
+    get: (v: string) => decrypt(v)
+  })
   cancellationReason?: string;
 
   @Prop({ default: 'user' })
   cancelledBy?: string; // user, provider, admin, system
 
   // Notes
-  @Prop()
+  @Prop({
+    set: (v: string) => encrypt(v),
+    get: (v: string) => decrypt(v)
+  })
   userNotes?: string;
 
-  @Prop()
+  @Prop({
+    set: (v: string) => encrypt(v),
+    get: (v: string) => decrypt(v)
+  })
   providerNotes?: string;
 
-  @Prop()
+  @Prop({
+    set: (v: string) => encrypt(v),
+    get: (v: string) => decrypt(v)
+  })
   adminNotes?: string;
 
   // Rating (after completion)
