@@ -1,2 +1,3 @@
-2026/04/03-22:25:50.075 5700 Creating DB E:\CarHero\CAR_HERO_BACKEND\session\session-carhero-primary\Default\Session Storage since it was missing.
-2026/04/03-22:25:50.096 5700 Reusing MANIFEST E:\CarHero\CAR_HERO_BACKEND\session\session-carhero-primary\Default\Session Storage/MANIFEST-000001
+2026/04/04-01:31:42.923 7360 Reusing MANIFEST E:\CarHero\CAR_HERO_BACKEND\session\session-carhero-primary\Default\Session Storage/MANIFEST-000001
+2026/04/04-01:31:42.924 7360 Recovering log #3
+2026/04/04-01:31:42.926 7360 Reusing old log E:\CarHero\CAR_HERO_BACKEND\session\session-carhero-primary\Default\Session Storage/000003.log 

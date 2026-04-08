@@ -6,7 +6,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { Role } from '../../common/enums/roles.enum';
-import { ProviderStatus, ServiceCategory } from '../../common/enums/status.enum';
+import { ProviderStatus, ServiceCategory, RegistrationStatus } from '../../common/enums/status.enum';
 
 export type ProviderDocument = Provider & Document;
 
@@ -99,14 +99,17 @@ export class Provider {
   @Prop({ type: String, enum: ProviderStatus, default: ProviderStatus.OFFLINE })
   status: ProviderStatus;
 
-  @Prop({ default: false })
-  isVerified: boolean;
+  @Prop({ type: String, enum: RegistrationStatus, default: RegistrationStatus.PENDING })
+  registrationStatus: RegistrationStatus;
 
-  @Prop({ default: true })
-  isActive: boolean;
+  @Prop()
+  rejectionReason?: string;
 
   @Prop({ default: false })
   isApproved: boolean;
+
+  @Prop({ default: true })
+  isActive: boolean;
 
   // GeoJSON location for 2dsphere queries
   @Prop({ type: GeoLocation, required: true })

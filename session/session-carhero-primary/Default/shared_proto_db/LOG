@@ -1,2 +1,3 @@
-2026/04/03-22:25:50.050 8708 Creating DB E:\CarHero\CAR_HERO_BACKEND\session\session-carhero-primary\Default\shared_proto_db since it was missing.
-2026/04/03-22:25:50.063 8708 Reusing MANIFEST E:\CarHero\CAR_HERO_BACKEND\session\session-carhero-primary\Default\shared_proto_db/MANIFEST-000001
+2026/04/04-01:31:41.840 5e2c Reusing MANIFEST E:\CarHero\CAR_HERO_BACKEND\session\session-carhero-primary\Default\shared_proto_db/MANIFEST-000001
+2026/04/04-01:31:41.841 5e2c Recovering log #3
+2026/04/04-01:31:41.846 5e2c Reusing old log E:\CarHero\CAR_HERO_BACKEND\session\session-carhero-primary\Default\shared_proto_db/000003.log 

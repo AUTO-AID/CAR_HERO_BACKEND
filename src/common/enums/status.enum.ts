@@ -38,12 +38,21 @@ export enum PaymentStatus {
 }
 
 /**
- * Provider Status Enum
+ * Provider Status Enum (Runtime)
  */
 export enum ProviderStatus {
   ONLINE = 'online',
   OFFLINE = 'offline',
   BUSY = 'busy',
+}
+
+/**
+ * Provider Registration Status Enum (Admin Workflow)
+ */
+export enum RegistrationStatus {
+  PENDING = 'pending',
+  APPROVED = 'approved',
+  REJECTED = 'rejected',
 }
 
 /**
@@ -54,6 +63,16 @@ export enum SubscriptionStatus {
   INACTIVE = 'inactive',
   EXPIRED = 'expired',
   CANCELLED = 'cancelled',
+}
+
+/**
+ * Payout Status Enum
+ */
+export enum PayoutStatus {
+  PENDING = 'pending',
+  APPROVED = 'approved',
+  REJECTED = 'rejected',
+  COMPLETED = 'completed',
 }
 
 /**

@@ -11,6 +11,6 @@ import { Booking, BookingSchema } from '../../database/schemas/booking.schema';
   ],
   controllers: [],
   providers: [],
-  exports: [],
+  exports: [MongooseModule],
 })
 export class BookingsModule {}

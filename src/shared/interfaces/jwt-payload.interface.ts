@@ -1,7 +1,10 @@
 export interface IJwtPayload {
   userId: string;
-  phoneNumber: string;
-  accountType: string;
-  isPremium: boolean;
+  role: string;
+  permissions?: string[];
+  phoneNumber?: string;
+  email?: string;
+  accountType?: string;
+  isPremium?: boolean;
 }
 

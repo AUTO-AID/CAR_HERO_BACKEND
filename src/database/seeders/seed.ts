@@ -39,23 +39,43 @@ async function seed() {
 async function seedAdmin(app: any) {
   const adminModel: Model<Admin> = app.get(getModelToken(Admin.name));
 
-  const existingAdmin = await adminModel.findOne({ email: 'admin@carhero.com' }).exec();
-
-  if (!existingAdmin) {
-    const hashedPassword = await bcrypt.hash('Admin@123', 10);
-
-    await adminModel.create({
+  const admins = [
+    {
       email: 'admin@carhero.com',
-      password: hashedPassword,
+      password: 'Admin@123',
       name: 'Super Admin',
-      role: Role.ADMIN,
-      isActive: true,
-      permissions: ['all'],
-    });
+    },
+    {
+      email: 'mohammedmarawi3@gmail.com',
+      password: 'Mohamed@123',
+      name: 'mohammed marawi',
+    },
+    {
+      email: 'natherayyan@gmail.com',
+      password: 'Nather@789',
+      name: 'nather ayyan',
+    },
+  ];
 
-    console.log('✅ Admin user created: admin@carhero.com / Admin@123');
-  } else {
-    console.log('ℹ️ Admin user already exists');
+  for (const adminData of admins) {
+    const existingAdmin = await adminModel.findOne({ email: adminData.email }).exec();
+
+    if (!existingAdmin) {
+      const hashedPassword = await bcrypt.hash(adminData.password, 10);
+
+      await adminModel.create({
+        email: adminData.email,
+        password: hashedPassword,
+        name: adminData.name,
+        role: Role.ADMIN,
+        isActive: true,
+        permissions: ['all'],
+      });
+
+      console.log(`✅ Admin user created: ${adminData.email} / ${adminData.password}`);
+    } else {
+      console.log(`ℹ️ Admin user already exists: ${adminData.email}`);
+    }
   }
 }
 

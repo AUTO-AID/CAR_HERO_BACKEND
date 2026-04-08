@@ -11,6 +11,6 @@ import { Order, OrderSchema } from '../../database/schemas/order.schema';
   ],
   controllers: [],
   providers: [],
-  exports: [],
+  exports: [MongooseModule],
 })
 export class OrdersModule {}

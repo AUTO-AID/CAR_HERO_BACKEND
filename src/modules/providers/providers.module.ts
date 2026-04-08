@@ -14,6 +14,6 @@ import { Provider, ProviderSchema } from '../../database/schemas/provider.schema
   ],
   controllers: [ProvidersController],
   providers: [ProvidersService],
-  exports: [ProvidersService],
+  exports: [ProvidersService, MongooseModule],
 })
 export class ProvidersModule {}

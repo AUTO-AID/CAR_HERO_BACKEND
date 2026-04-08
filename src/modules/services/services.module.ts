@@ -11,6 +11,6 @@ import { Service, ServiceSchema } from '../../database/schemas/service.schema';
   ],
   controllers: [],
   providers: [],
-  exports: [],
+  exports: [MongooseModule],
 })
 export class ServicesModule {}

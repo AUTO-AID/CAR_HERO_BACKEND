@@ -423,6 +423,7 @@ export class AuthService {
       userId: user._id.toString(),
       phoneNumber: user.phoneNumber,
       accountType: user.accountType,
+      role: user.accountType, // In this model, accountType is the role
       isPremium: user.isPremium,
     };
 
