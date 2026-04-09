@@ -1,9 +1,10 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { GatewayModule } from '../gateway/gateway.module';
 import { BookingDocument, BookingSchema } from './infrastructure/persistence/booking.schema';
 import { MongooseBookingRepository } from './infrastructure/persistence/mongoose-booking.repository';
 import { WalletModule } from '../wallet/wallet.module';
+import { ReviewsModule } from '../reviews/reviews.module';
 
 // Controllers
 import { UserBookingsController } from './presentation/controllers/user-bookings.controller';
@@ -28,6 +29,7 @@ import { BookingsCronService } from './application/services/bookings-cron.servic
     MongooseModule.forFeature([{ name: BookingDocument.name, schema: BookingSchema }]),
     GatewayModule,
     WalletModule,
+    forwardRef(() => ReviewsModule),
   ],
   controllers: [
     UserBookingsController,

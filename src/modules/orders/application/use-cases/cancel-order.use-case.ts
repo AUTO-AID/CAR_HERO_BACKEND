@@ -7,6 +7,9 @@ import { OrderEntity } from '../../domain/entities/order.entity';
 import { OrderStatus } from '../../../../common/enums/status.enum';
 import { OrderEvents, OrderStatusChangedEvent } from '../../domain/events/order.events';
 import { CancelOrderDto } from '../dto/cancel-order.dto';
+import { IWalletRepository } from '../../../../modules/wallet/domain/repositories/wallet.repository.interface';
+import { Transaction } from '../../../../modules/wallet/domain/entities/transaction.entity';
+import { PaymentStatus, TransactionType } from '../../../../common/enums/status.enum';
 
 @Injectable()
 export class CancelOrderUseCase {
@@ -16,6 +19,8 @@ export class CancelOrderUseCase {
     private readonly eventEmitter: EventEmitter2,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
+    @Inject('IWalletRepository')
+    private readonly walletRepository: IWalletRepository,
   ) {}
 
   async execute(id: string, dto: CancelOrderDto, currentUser?: any): Promise<OrderEntity> {
@@ -45,6 +50,38 @@ export class CancelOrderUseCase {
 
     const oldStatus = order.status;
     const cancelledOrder = await this.orderRepository.cancelOrder(id, dto.reason, dto.cancelledBy);
+
+    // 💰 Refund Logic: If order was paid, return money to user wallet
+    if (order.paymentStatus === PaymentStatus.COMPLETED && order.total > 0 && order.userId) {
+      await this.walletRepository.executeTransaction(order.userId, 'user', async (wallet, session) => {
+        const balanceBefore = wallet.balance;
+        wallet.deposit(order.total);
+        const balanceAfter = wallet.balance;
+
+        const transaction = new Transaction(
+          Transaction.generateTransactionNumber(),
+          wallet.id!,
+          wallet.ownerId,
+          wallet.ownerType,
+          TransactionType.REFUND,
+          order.total,
+          balanceBefore,
+          balanceAfter,
+          `Refund for cancelled order #${order.orderNumber}`,
+          undefined,
+          'order',
+          order.id,
+          undefined,
+          undefined,
+          'completed'
+        );
+
+        return { wallet, transaction };
+      });
+
+      // Update payment status to REFUNDED
+      await this.orderRepository.update(id, { paymentStatus: PaymentStatus.REFUNDED });
+    }
 
     // Invalidate Cache
     await this.cacheManager.del(`order_${id}`);

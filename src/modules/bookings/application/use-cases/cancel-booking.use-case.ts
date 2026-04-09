@@ -1,13 +1,19 @@
 import { Injectable, Inject, NotFoundException, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { IBookingRepository } from '../../domain/repositories/booking.repository.interface';
 import { BookingStatus } from '../../domain/enums/booking-status.enum';
+import { PaymentStatus } from '../../domain/enums/payment-status.enum';
 import { Booking } from '../../domain/entities/booking.entity';
+import { IWalletRepository } from '../../../../modules/wallet/domain/repositories/wallet.repository.interface';
+import { Transaction } from '../../../../modules/wallet/domain/entities/transaction.entity';
+import { TransactionType } from '../../../../common/enums/status.enum';
 
 @Injectable()
 export class CancelBookingUseCase {
   constructor(
     @Inject('IBookingRepository')
     private readonly bookingRepository: IBookingRepository,
+    @Inject('IWalletRepository')
+    private readonly walletRepository: IWalletRepository,
   ) {}
 
   async execute(bookingId: string, cancelledBy: string, reason: string, isUser: boolean): Promise<Booking> {
@@ -38,11 +44,45 @@ export class CancelBookingUseCase {
     booking.cancelledBy = cancelledBy;
     booking.cancellationReason = reason;
 
-    return await this.bookingRepository.update(bookingId, {
+    const updated = await this.bookingRepository.update(bookingId, {
       status: booking.status,
       cancelledAt: booking.cancelledAt,
       cancelledBy: booking.cancelledBy,
       cancellationReason: booking.cancellationReason,
     }) as Booking;
+
+    // 💰 Refund Logic: If booking was paid, return money to user wallet
+    if (booking.paymentStatus === PaymentStatus.PAID && booking.total > 0 && booking.user) {
+        await this.walletRepository.executeTransaction(booking.user, 'user', async (wallet, session) => {
+          const balanceBefore = wallet.balance;
+          wallet.deposit(booking.total);
+          const balanceAfter = wallet.balance;
+  
+          const transaction = new Transaction(
+            Transaction.generateTransactionNumber(),
+            wallet.id!,
+            wallet.ownerId,
+            wallet.ownerType,
+            TransactionType.REFUND,
+            booking.total,
+            balanceBefore,
+            balanceAfter,
+            `Refund for cancelled booking #${booking.bookingNumber}`,
+            undefined,
+            'booking',
+            booking.id,
+            undefined,
+            undefined,
+            'completed'
+          );
+  
+          return { wallet, transaction };
+        });
+  
+        // Update payment status to REFUNDED
+        await this.bookingRepository.update(bookingId, { paymentStatus: PaymentStatus.REFUNDED });
+      }
+
+    return updated;
   }
 }

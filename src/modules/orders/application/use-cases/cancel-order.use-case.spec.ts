@@ -19,6 +19,9 @@ describe('CancelOrderUseCase', () => {
     mockCacheManager = {
       del: jest.fn(),
     };
+    const mockWalletRepo = {
+      executeTransaction: jest.fn(),
+    };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -26,6 +29,7 @@ describe('CancelOrderUseCase', () => {
         { provide: IOrderRepository, useValue: mockRepo },
         { provide: EventEmitter2, useValue: { emit: jest.fn() } },
         { provide: CACHE_MANAGER, useValue: mockCacheManager },
+        { provide: 'IWalletRepository', useValue: mockWalletRepo },
       ],
     }).compile();
 
@@ -35,7 +39,7 @@ describe('CancelOrderUseCase', () => {
   it('should throw BadRequestException if order is already IN_PROGRESS', async () => {
     const mockOrder = { 
       id: 'id', 
-      user: 'user-id', 
+      userId: 'user-id', 
       status: OrderStatus.IN_PROGRESS 
     };
     mockRepo.findById.mockResolvedValue(mockOrder);
@@ -47,7 +51,7 @@ describe('CancelOrderUseCase', () => {
   it('should successfully cancel a PENDING order and clear cache', async () => {
     const mockOrder = { 
       id: 'id', 
-      user: 'user-id', 
+      userId: 'user-id', 
       status: OrderStatus.PENDING,
       orderNumber: 'CH-X'
     };

@@ -5,6 +5,9 @@ import { IOrderRepository } from '../../domain/repositories/order.repository.int
 import { OrderEntity } from '../../domain/entities/order.entity';
 import { PaymentStatus } from '../../../../common/enums/status.enum';
 import { VerifyPaymentDto } from '../dto/verify-payment.dto';
+import { IWalletRepository } from '../../../../modules/wallet/domain/repositories/wallet.repository.interface';
+import { Transaction } from '../../../../modules/wallet/domain/entities/transaction.entity';
+import { TransactionType } from '../../../../common/enums/status.enum';
 
 @Injectable()
 export class VerifyPaymentUseCase {
@@ -13,6 +16,8 @@ export class VerifyPaymentUseCase {
     private readonly orderRepository: IOrderRepository,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
+    @Inject('IWalletRepository')
+    private readonly walletRepository: IWalletRepository,
   ) {}
 
   async execute(id: string, dto: VerifyPaymentDto): Promise<OrderEntity> {
@@ -30,6 +35,36 @@ export class VerifyPaymentUseCase {
 
     const updatedOrder = await this.orderRepository.updatePaymentDetails(id, dto.paymentId, dto.paymentMethod);
     
+    // 💰 Transaction Record: Document the customer payment in the system
+    if (updatedOrder.total > 0 && updatedOrder.userId) {
+      await this.walletRepository.executeTransaction('platform_earnings', 'system', async (platformWallet, session) => {
+        const balanceBefore = platformWallet.balance;
+        // The platform "receives" the money first
+        platformWallet.deposit(updatedOrder.total);
+        const balanceAfter = platformWallet.balance;
+
+        const transaction = new Transaction(
+          Transaction.generateTransactionNumber(),
+          platformWallet.id!,
+          platformWallet.ownerId,
+          platformWallet.ownerType,
+          TransactionType.CREDIT,
+          updatedOrder.total,
+          balanceBefore,
+          balanceAfter,
+          `Payment for order #${updatedOrder.orderNumber}`,
+          undefined,
+          'order',
+          updatedOrder.id,
+          dto.paymentMethod,
+          dto.paymentId,
+          'completed'
+        );
+
+        return { wallet: platformWallet, transaction };
+      });
+    }
+
     // Invalidate Cache
     await this.cacheManager.del(`order_${id}`);
     

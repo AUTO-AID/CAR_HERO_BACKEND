@@ -8,6 +8,8 @@ describe('TransferEarningsUseCase', () => {
   
   const mockWalletRepository = {
     executeTransaction: jest.fn(),
+    executeMultiWalletTransaction: jest.fn().mockResolvedValue(true),
+    findAllTransactions: jest.fn().mockResolvedValue({ total: 0, data: [] }),
   };
 
   beforeEach(async () => {
@@ -31,47 +33,27 @@ describe('TransferEarningsUseCase', () => {
     const referenceId = 'b1';
     const referenceType = 'booking';
 
-    mockWalletRepository.executeTransaction.mockImplementation(async (id, type, callback) => {
-      const mockWallet = new Wallet(providerId, 'provider', 0);
-      mockWallet.id = 'w1';
-      return await callback(mockWallet, {});
-    });
-
     await useCase.execute(providerId, grossAmount, referenceId, referenceType);
 
-    expect(mockWalletRepository.executeTransaction).toHaveBeenCalled();
-    const callback = mockWalletRepository.executeTransaction.mock.calls[0][2];
-    const mockWallet = new Wallet(providerId, 'provider', 0);
-    mockWallet.id = 'w1';
-    
-    const result = await callback(mockWallet, {});
-    
-    expect(result.wallet.balance).toBe(90);
-    expect(result.transaction.amount).toBe(90);
-    expect(result.transaction.metadata.commission).toBe(10);
+    expect(mockWalletRepository.executeMultiWalletTransaction).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        expect.objectContaining({ ownerId: providerId, amount: 90 }),
+        expect.objectContaining({ ownerId: 'platform_earnings', amount: 10 }),
+      ])
+    );
   });
 
   it('should handle different gross amounts (250 SAR)', async () => {
     const providerId = 'p1';
     const grossAmount = 250;
 
-    mockWalletRepository.executeTransaction.mockImplementation(async (id, type, callback) => {
-      const mockWallet = new Wallet(providerId, 'provider', 10); // starting balance 10
-      mockWallet.id = 'w1';
-      return await callback(mockWallet, {});
-    });
-
     await useCase.execute(providerId, grossAmount, 'b2', 'order');
 
-    const callback = mockWalletRepository.executeTransaction.mock.calls[0][2];
-    const mockWallet = new Wallet(providerId, 'provider', 10);
-    mockWallet.id = 'w1';
-    
-    const result = await callback(mockWallet, {});
-    
-    // 250 - 25 = 225. New balance: 10 + 225 = 235.
-    expect(result.wallet.balance).toBe(235);
-    expect(result.transaction.amount).toBe(225);
-    expect(result.transaction.metadata.commission).toBe(25);
+    expect(mockWalletRepository.executeMultiWalletTransaction).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        expect.objectContaining({ ownerId: providerId, amount: 225 }),
+        expect.objectContaining({ ownerId: 'platform_earnings', amount: 25 }),
+      ])
+    );
   });
 });

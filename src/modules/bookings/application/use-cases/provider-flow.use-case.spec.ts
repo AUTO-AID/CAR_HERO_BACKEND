@@ -3,14 +3,26 @@ import { ProviderFlowUseCase } from './provider-flow.use-case';
 import { BookingStatus } from '../../domain/enums/booking-status.enum';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { Booking } from '../../domain/entities/booking.entity';
+import { AppGateway } from '../../../gateway/app.gateway';
+import { TransferEarningsUseCase } from '../../../wallet/application/use-cases/transfer-earnings.use-case';
 
 describe('ProviderFlowUseCase', () => {
   let useCase: ProviderFlowUseCase;
-
   const mockBookingRepository = {
     findById: jest.fn(),
     update: jest.fn(),
     updateStatus: jest.fn(),
+  };
+
+  const mockAppGateway = {
+    server: {
+      to: jest.fn().mockReturnThis(),
+      emit: jest.fn(),
+    },
+  };
+
+  const mockTransferEarnings = {
+    execute: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -18,6 +30,8 @@ describe('ProviderFlowUseCase', () => {
       providers: [
         ProviderFlowUseCase,
         { provide: 'IBookingRepository', useValue: mockBookingRepository },
+        { provide: AppGateway, useValue: mockAppGateway },
+        { provide: TransferEarningsUseCase, useValue: mockTransferEarnings },
       ],
     }).compile();
 

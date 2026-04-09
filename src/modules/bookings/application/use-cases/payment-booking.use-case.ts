@@ -1,13 +1,17 @@
-import { Injectable, Inject, NotFoundException, BadRequestException } from '@nestjs/common';
 import { IBookingRepository } from '../../domain/repositories/booking.repository.interface';
 import { PaymentStatus } from '../../domain/enums/payment-status.enum';
 import { Booking } from '../../domain/entities/booking.entity';
+import { IWalletRepository } from '../../../../modules/wallet/domain/repositories/wallet.repository.interface';
+import { Transaction } from '../../../../modules/wallet/domain/entities/transaction.entity';
+import { TransactionType } from '../../../../common/enums/status.enum';
 
 @Injectable()
 export class PaymentBookingUseCase {
   constructor(
     @Inject('IBookingRepository')
     private readonly bookingRepository: IBookingRepository,
+    @Inject('IWalletRepository')
+    private readonly walletRepository: IWalletRepository,
   ) {}
 
   async getPrice(bookingId: string): Promise<{ total: number; subtotal: number; breakdown: any }> {
@@ -22,12 +26,41 @@ export class PaymentBookingUseCase {
   }
 
   async pay(userId: string, bookingId: string, method: string): Promise<Booking> {
-    // Process real payment or wallet deduction here
-    
-    return await this.bookingRepository.update(bookingId, {
+    const updated = await this.bookingRepository.update(bookingId, {
       paymentStatus: PaymentStatus.PAID,
       paymentMethod: method,
     }) as Booking;
+
+    // 💰 Transaction Record: Document the customer payment in the system
+    if (updated.total > 0 && updated.user) {
+        await this.walletRepository.executeTransaction('platform_earnings', 'system', async (platformWallet, session) => {
+          const balanceBefore = platformWallet.balance;
+          platformWallet.deposit(updated.total);
+          const balanceAfter = platformWallet.balance;
+  
+          const transaction = new Transaction(
+            Transaction.generateTransactionNumber(),
+            platformWallet.id!,
+            platformWallet.ownerId,
+            platformWallet.ownerType,
+            TransactionType.CREDIT,
+            updated.total,
+            balanceBefore,
+            balanceAfter,
+            `Payment for booking #${updated.bookingNumber}`,
+            undefined,
+            'booking',
+            updated.id,
+            method,
+            undefined, // paymentId if available
+            'completed'
+          );
+  
+          return { wallet: platformWallet, transaction };
+        });
+      }
+
+    return updated;
   }
 
   async usePoints(userId: string, bookingId: string, points: number): Promise<Booking> {

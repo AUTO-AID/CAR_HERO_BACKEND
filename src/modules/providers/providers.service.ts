@@ -206,4 +206,14 @@ export class ProvidersService {
       totalReviews: newTotalReviews,
     });
   }
+
+  /**
+   * Recalculate provider rating from scratch (more robust)
+   */
+  async recalculateRating(id: string, averageRating: number, totalReviews: number): Promise<void> {
+    await this.providerModel.findByIdAndUpdate(id, {
+      averageRating,
+      totalReviews,
+    });
+  }
 }

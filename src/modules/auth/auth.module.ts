@@ -12,19 +12,25 @@ import { OtpService } from './services/otp.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
 import { User, UserSchema } from '../users/schemas/user.schema';
+import { Provider, ProviderSchema } from '../../database/schemas/provider.schema';
+import { Admin, AdminSchema } from '../../database/schemas/admin.schema';
 import { Logout, LogoutSchema } from './schemas/logout.schema';
 import {
   PendingRegistration,
   PendingRegistrationSchema,
 } from './schemas/pending-registration.schema';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
+      { name: Provider.name, schema: ProviderSchema },
+      { name: Admin.name, schema: AdminSchema },
       { name: Logout.name, schema: LogoutSchema },
       { name: PendingRegistration.name, schema: PendingRegistrationSchema },
     ]),
+    NotificationsModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],

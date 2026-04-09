@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, UseGuards, Query } from '@nestjs/common';
 import { GetBalanceUseCase } from '../../application/use-cases/get-balance.use-case';
 import { WithdrawUseCase } from '../../application/use-cases/withdraw.use-case';
 import { TransactionHistoryUseCase } from '../../application/use-cases/transaction-history.use-case';
+import { RequestPayoutUseCase } from '../../application/use-cases/request-payout.use-case';
 import { JwtAuthGuard } from '../../../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../../common/guards/roles.guard';
 import { Roles } from '../../../../common/decorators/roles.decorator';
@@ -17,6 +18,7 @@ export class ProviderWalletController {
     private readonly getBalance: GetBalanceUseCase,
     private readonly withdrawUseCase: WithdrawUseCase,
     private readonly historyUseCase: TransactionHistoryUseCase,
+    private readonly requestPayout: RequestPayoutUseCase,
   ) {}
 
   @Get('me')
@@ -29,6 +31,12 @@ export class ProviderWalletController {
   async withdraw(@CurrentUser('id') providerId: string, @Body() dto: WithdrawDto) {
     await this.withdrawUseCase.execute(providerId, dto);
     return { success: true, message: 'Withdrawal request submitted successfully' };
+  }
+
+  @Post('payout')
+  async requestPayoutMethod(@CurrentUser('id') providerId: string, @Body() dto: WithdrawDto) {
+    await this.requestPayout.execute(providerId, dto);
+    return { success: true, message: 'Payout request submitted successfully' };
   }
 
   @Get('transactions')

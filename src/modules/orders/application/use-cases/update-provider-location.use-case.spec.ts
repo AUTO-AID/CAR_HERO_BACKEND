@@ -27,7 +27,7 @@ describe('UpdateProviderLocationUseCase', () => {
   it('should throw ForbiddenException if user is not the assigned provider', async () => {
     mockRepo.findById.mockResolvedValue({ 
       id: 'id', 
-      provider: 'real-provider',
+      providerId: 'real-provider',
       status: OrderStatus.ACCEPTED 
     });
 
@@ -38,7 +38,7 @@ describe('UpdateProviderLocationUseCase', () => {
   it('should throw BadRequestException if order is not active', async () => {
     mockRepo.findById.mockResolvedValue({ 
       id: 'id', 
-      provider: 'prov',
+      providerId: 'prov',
       status: OrderStatus.COMPLETED 
     });
 
@@ -49,7 +49,7 @@ describe('UpdateProviderLocationUseCase', () => {
   it('should successfully update location for assigned active provider', async () => {
     mockRepo.findById.mockResolvedValue({ 
       id: 'id', 
-      provider: 'prov',
+      providerId: 'prov',
       status: OrderStatus.IN_PROGRESS 
     });
 

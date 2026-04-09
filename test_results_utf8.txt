@@ -1,0 +1,2173 @@
+﻿
+> car-hero-backend@0.0.1 test
+> jest
+
+node.exe : FAIL src/modules/orders/application/use-cases/cancel-order.use-case.spec.ts
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (FAIL src/module...se-case.spec.ts:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  ΓùÅ CancelOrderUseCase ΓÇ║ should throw BadRequestException if order is already IN_PROGRESS
+
+    expect(received).rejects.toThrow(expected)
+
+    Expected constructor: BadRequestException
+    Received constructor: ForbiddenException
+
+    Received message: "You do not have permission to cancel this order"
+
+        [0m [90m 31 |[39m
+         [90m 32 |[39m     [36mif[39m ([33m![39misOwner [33m&&[39m [33m![39misProvider [33m&&[39m 
+[33m![39misAdmin) {
+        [31m[1m>[22m[39m[90m 33 |[39m       [36mthrow[39m [36mnew[39m [33mForbiddenException[39m([32m'You 
+do not have permission to cancel this order'[39m)[33m;[39m
+         [90m    |[39m             [31m[1m^[22m[39m
+         [90m 34 |[39m     }
+         [90m 35 |[39m
+         [90m 36 |[39m     [90m// Business Logic: Check if cancellation is allowed[39m[0m
+
+      at CancelOrderUseCase.execute (modules/orders/application/use-cases/cancel-order.use-case.ts:33:13)
+      at Object.<anonymous> (modules/orders/application/use-cases/cancel-order.use-case.spec.ts:43:5)
+      at Object.toThrow (../node_modules/expect/build/index.js:2155:20)
+      at Object.<anonymous> (modules/orders/application/use-cases/cancel-order.use-case.spec.ts:44:16)
+
+  ΓùÅ CancelOrderUseCase ΓÇ║ should successfully cancel a PENDING order and clear cache
+
+    ForbiddenException: You do not have permission to cancel this order
+
+    [0m [90m 31 |[39m
+     [90m 32 |[39m     [36mif[39m ([33m![39misOwner [33m&&[39m [33m![39misProvider [33m&&[39m 
+[33m![39misAdmin) {
+    [31m[1m>[22m[39m[90m 33 |[39m       [36mthrow[39m [36mnew[39m [33mForbiddenException[39m([32m'You do 
+not have permission to cancel this order'[39m)[33m;[39m
+     [90m    |[39m             [31m[1m^[22m[39m
+     [90m 34 |[39m     }
+     [90m 35 |[39m
+     [90m 36 |[39m     [90m// Business Logic: Check if cancellation is allowed[39m[0m
+
+      at CancelOrderUseCase.execute (modules/orders/application/use-cases/cancel-order.use-case.ts:33:13)
+      at Object.<anonymous> (modules/orders/application/use-cases/cancel-order.use-case.spec.ts:57:20)
+
+FAIL src/modules/orders/application/use-cases/update-provider-location.use-case.spec.ts
+  ΓùÅ UpdateProviderLocationUseCase ΓÇ║ should throw BadRequestException if order is not active
+
+    expect(received).rejects.toThrow(expected)
+
+    Expected constructor: BadRequestException
+    Received constructor: ForbiddenException
+
+    Received message: "You are not authorized to update location for this order"
+
+        [0m [90m 23 |[39m
+         [90m 24 |[39m     [36mif[39m ([33m![39misAssignedProvider [33m&&[39m [33m![39misAdmin) {
+        [31m[1m>[22m[39m[90m 25 |[39m       [36mthrow[39m [36mnew[39m [33mForbiddenException[39m([32m'You 
+are not authorized to update location for this order'[39m)[33m;[39m
+         [90m    |[39m             [31m[1m^[22m[39m
+         [90m 26 |[39m     }
+         [90m 27 |[39m
+         [90m 28 |[39m     [90m// Business Rule: Location tracking only for active orders[39m[0m
+
+      at UpdateProviderLocationUseCase.execute 
+(modules/orders/application/use-cases/update-provider-location.use-case.ts:25:13)
+      at Object.<anonymous> (modules/orders/application/use-cases/update-provider-location.use-case.spec.ts:45:5)
+      at Object.toThrow (../node_modules/expect/build/index.js:2155:20)
+      at Object.<anonymous> (modules/orders/application/use-cases/update-provider-location.use-case.spec.ts:46:16)
+
+  ΓùÅ UpdateProviderLocationUseCase ΓÇ║ should successfully update location for assigned active provider
+
+    ForbiddenException: You are not authorized to update location for this order
+
+    [0m [90m 23 |[39m
+     [90m 24 |[39m     [36mif[39m ([33m![39misAssignedProvider [33m&&[39m [33m![39misAdmin) {
+    [31m[1m>[22m[39m[90m 25 |[39m       [36mthrow[39m [36mnew[39m [33mForbiddenException[39m([32m'You are 
+not authorized to update location for this order'[39m)[33m;[39m
+     [90m    |[39m             [31m[1m^[22m[39m
+     [90m 26 |[39m     }
+     [90m 27 |[39m
+     [90m 28 |[39m     [90m// Business Rule: Location tracking only for active orders[39m[0m
+
+      at UpdateProviderLocationUseCase.execute 
+(modules/orders/application/use-cases/update-provider-location.use-case.ts:25:13)
+      at Object.<anonymous> (modules/orders/application/use-cases/update-provider-location.use-case.spec.ts:56:5)
+
+FAIL src/modules/bookings/application/use-cases/provider-flow.use-case.spec.ts
+  ΓùÅ ProviderFlowUseCase ΓÇ║ accept ΓÇ║ should allow provider to accept a PENDING booking
+
+    Nest can't resolve dependencies of the ProviderFlowUseCase (IBookingRepository, ?, TransferEarningsUseCase). 
+Please make sure that the argument AppGateway at index [1] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If AppGateway is a provider, is it part of the current RootTestModule?
+    - If AppGateway is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing AppGateway */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 15 |[39m
+     [90m 16 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 17 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m 
+[36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 18 |[39m       providers[33m:[39m [
+     [90m 19 |[39m         [33mProviderFlowUseCase[39m[33m,[39m
+     [90m 20 |[39m         { provide[33m:[39m [32m'IBookingRepository'[39m[33m,[39m useValue[33m:[39m 
+mockBookingRepository }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 1)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders 
+(../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (modules/bookings/application/use-cases/provider-flow.use-case.spec.ts:17:35)
+
+  ΓùÅ ProviderFlowUseCase ΓÇ║ accept ΓÇ║ should throw BadRequestException if booking is not PENDING
+
+    Nest can't resolve dependencies of the ProviderFlowUseCase (IBookingRepository, ?, TransferEarningsUseCase). 
+Please make sure that the argument AppGateway at index [1] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If AppGateway is a provider, is it part of the current RootTestModule?
+    - If AppGateway is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing AppGateway */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 15 |[39m
+     [90m 16 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 17 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m 
+[36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 18 |[39m       providers[33m:[39m [
+     [90m 19 |[39m         [33mProviderFlowUseCase[39m[33m,[39m
+     [90m 20 |[39m         { provide[33m:[39m [32m'IBookingRepository'[39m[33m,[39m useValue[33m:[39m 
+mockBookingRepository }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 1)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders 
+(../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (modules/bookings/application/use-cases/provider-flow.use-case.spec.ts:17:35)
+
+  ΓùÅ ProviderFlowUseCase ΓÇ║ start ΓÇ║ should allow assigned provider to start
+
+    Nest can't resolve dependencies of the ProviderFlowUseCase (IBookingRepository, ?, TransferEarningsUseCase). 
+Please make sure that the argument AppGateway at index [1] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If AppGateway is a provider, is it part of the current RootTestModule?
+    - If AppGateway is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing AppGateway */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 15 |[39m
+     [90m 16 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 17 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m 
+[36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 18 |[39m       providers[33m:[39m [
+     [90m 19 |[39m         [33mProviderFlowUseCase[39m[33m,[39m
+     [90m 20 |[39m         { provide[33m:[39m [32m'IBookingRepository'[39m[33m,[39m useValue[33m:[39m 
+mockBookingRepository }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 1)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders 
+(../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (modules/bookings/application/use-cases/provider-flow.use-case.spec.ts:17:35)
+
+  ΓùÅ ProviderFlowUseCase ΓÇ║ start ΓÇ║ should reject unassigned provider starting
+
+    Nest can't resolve dependencies of the ProviderFlowUseCase (IBookingRepository, ?, TransferEarningsUseCase). 
+Please make sure that the argument AppGateway at index [1] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If AppGateway is a provider, is it part of the current RootTestModule?
+    - If AppGateway is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing AppGateway */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 15 |[39m
+     [90m 16 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 17 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m 
+[36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 18 |[39m       providers[33m:[39m [
+     [90m 19 |[39m         [33mProviderFlowUseCase[39m[33m,[39m
+     [90m 20 |[39m         { provide[33m:[39m [32m'IBookingRepository'[39m[33m,[39m useValue[33m:[39m 
+mockBookingRepository }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 1)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders 
+(../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (modules/bookings/application/use-cases/provider-flow.use-case.spec.ts:17:35)
+
+  ΓùÅ ProviderFlowUseCase ΓÇ║ complete ΓÇ║ should not complete unless IN_PROGRESS
+
+    Nest can't resolve dependencies of the ProviderFlowUseCase (IBookingRepository, ?, TransferEarningsUseCase). 
+Please make sure that the argument AppGateway at index [1] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If AppGateway is a provider, is it part of the current RootTestModule?
+    - If AppGateway is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing AppGateway */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 15 |[39m
+     [90m 16 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 17 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m 
+[36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 18 |[39m       providers[33m:[39m [
+     [90m 19 |[39m         [33mProviderFlowUseCase[39m[33m,[39m
+     [90m 20 |[39m         { provide[33m:[39m [32m'IBookingRepository'[39m[33m,[39m useValue[33m:[39m 
+mockBookingRepository }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 1)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders 
+(../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (modules/bookings/application/use-cases/provider-flow.use-case.spec.ts:17:35)
+
+FAIL src/modules/orders/application/use-cases/update-order-status.use-case.spec.ts
+  ΓùÅ UpdateOrderStatusUseCase ΓÇ║ should throw NotFoundException if order does not exist
+
+    Nest can't resolve dependencies of the UpdateOrderStatusUseCase (Symbol(IOrderRepository), EventEmitter, 
+CACHE_MANAGER, ?). Please make sure that the argument TransferEarningsUseCase at index [3] is available in the 
+RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If TransferEarningsUseCase is a provider, is it part of the current RootTestModule?
+    - If TransferEarningsUseCase is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing TransferEarningsUseCase */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 28 |[39m
+     [90m 29 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 30 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m 
+[36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 31 |[39m       providers[33m:[39m [
+     [90m 32 |[39m         [33mUpdateOrderStatusUseCase[39m[33m,[39m
+     [90m 33 |[39m         { provide[33m:[39m [33mIOrderRepository[39m[33m,[39m useValue[33m:[39m 
+mockOrderRepository }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 3)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders 
+(../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (modules/orders/application/use-cases/update-order-status.use-case.spec.ts:30:35)
+
+  ΓùÅ UpdateOrderStatusUseCase ΓÇ║ should throw ForbiddenException if user is not authorized
+
+    Nest can't resolve dependencies of the UpdateOrderStatusUseCase (Symbol(IOrderRepository), EventEmitter, 
+CACHE_MANAGER, ?). Please make sure that the argument TransferEarningsUseCase at index [3] is available in the 
+RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If TransferEarningsUseCase is a provider, is it part of the current RootTestModule?
+    - If TransferEarningsUseCase is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing TransferEarningsUseCase */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 28 |[39m
+     [90m 29 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 30 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m 
+[36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 31 |[39m       providers[33m:[39m [
+     [90m 32 |[39m         [33mUpdateOrderStatusUseCase[39m[33m,[39m
+     [90m 33 |[39m         { provide[33m:[39m [33mIOrderRepository[39m[33m,[39m useValue[33m:[39m 
+mockOrderRepository }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 3)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders 
+(../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (modules/orders/application/use-cases/update-order-status.use-case.spec.ts:30:35)
+
+  ΓùÅ UpdateOrderStatusUseCase ΓÇ║ should update status, emit event and clear cache when authorized
+
+    Nest can't resolve dependencies of the UpdateOrderStatusUseCase (Symbol(IOrderRepository), EventEmitter, 
+CACHE_MANAGER, ?). Please make sure that the argument TransferEarningsUseCase at index [3] is available in the 
+RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If TransferEarningsUseCase is a provider, is it part of the current RootTestModule?
+    - If TransferEarningsUseCase is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing TransferEarningsUseCase */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 28 |[39m
+     [90m 29 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 30 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m 
+[36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 31 |[39m       providers[33m:[39m [
+     [90m 32 |[39m         [33mUpdateOrderStatusUseCase[39m[33m,[39m
+     [90m 33 |[39m         { provide[33m:[39m [33mIOrderRepository[39m[33m,[39m useValue[33m:[39m 
+mockOrderRepository }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 3)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders 
+(../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (modules/orders/application/use-cases/update-order-status.use-case.spec.ts:30:35)
+
+FAIL src/modules/vehicles/application/use-cases/create-vehicle.use-case.spec.ts
+  ΓùÅ CreateVehicleUseCase ΓÇ║ execute ΓÇ║ should create a vehicle successfully
+
+    TypeError: Cannot destructure property 'vehicles' of '(intermediate value)' as it is undefined.
+
+    [0m [90m 64 |[39m [90m   */[39m
+     [90m 65 |[39m   [36mprivate[39m [36masync[39m unsetOtherDefaults(userId[33m:[39m string)[33m:[39m 
+[33mPromise[39m[33m<[39m[36mvoid[39m[33m>[39m {
+    [31m[1m>[22m[39m[90m 66 |[39m     [36mconst[39m { vehicles } [33m=[39m [36mawait[39m 
+[36mthis[39m[33m.[39mvehicleRepository[33m.[39mfindByUserId(userId)[33m;[39m
+     [90m    |[39m             [31m[1m^[22m[39m
+     [90m 67 |[39m     [36mfor[39m ([36mconst[39m v [36mof[39m vehicles) {
+     [90m 68 |[39m       [36mif[39m (v[33m.[39misDefault) {
+     [90m 69 |[39m         [36mawait[39m 
+[36mthis[39m[33m.[39mvehicleRepository[33m.[39mupdate(v[33m.[39mid[33m,[39m { isDefault[33m:[39m 
+[36mfalse[39m })[33m;[39m[0m
+
+      at CreateVehicleUseCase.unsetOtherDefaults 
+(modules/vehicles/application/use-cases/create-vehicle.use-case.ts:66:13)
+      at CreateVehicleUseCase.execute (modules/vehicles/application/use-cases/create-vehicle.use-case.ts:44:7)
+      at Object.<anonymous> (modules/vehicles/application/use-cases/create-vehicle.use-case.spec.ts:71:22)
+
+FAIL src/modules/orders/application/use-cases/verify-payment.use-case.spec.ts
+  ΓùÅ VerifyPaymentUseCase ΓÇ║ should throw BadRequestException if order is already PAID
+
+    expect(received).rejects.toThrow()
+
+    Received promise resolved instead of rejected
+    Resolved to value: undefined
+
+    [0m [90m 33 |[39m   it([32m'should throw BadRequestException if order is already PAID'[39m[33m,[39m 
+[36masync[39m () [33m=>[39m {
+     [90m 34 |[39m     mockRepo[33m.[39mfindById[33m.[39mmockResolvedValue({ id[33m:[39m 
+[32m'id'[39m[33m,[39m paymentStatus[33m:[39m [33mPaymentStatus[39m[33m.[39m[33mPAID[39m })[33m;[39m
+    [31m[1m>[22m[39m[90m 35 |[39m     [36mawait[39m expect(useCase[33m.[39mexecute([32m'id'[39m[33m,[39m 
+{ paymentId[33m:[39m [32m'p1'[39m }[33m,[39m { role[33m:[39m [32m'admin'[39m }))
+     [90m    |[39m           [31m[1m^[22m[39m
+     [90m 36 |[39m       [33m.[39mrejects[33m.[39mtoThrow([33mBadRequestException[39m)[33m;[39m
+     [90m 37 |[39m   })[33m;[39m
+     [90m 38 |[39m[0m
+
+      at expect (../node_modules/expect/build/index.js:2116:15)
+      at Object.<anonymous> (modules/orders/application/use-cases/verify-payment.use-case.spec.ts:35:11)
+
+FAIL src/modules/orders/application/use-cases/get-order-by-id.use-case.spec.ts
+  ΓùÅ GetOrderByIdUseCase ΓÇ║ should return from cache if exists
+
+    ForbiddenException: You do not have permission to view this order
+
+    [0m [90m 39 |[39m
+     [90m 40 |[39m     [36mif[39m ([33m![39misOwner [33m&&[39m [33m![39misProvider [33m&&[39m 
+[33m![39misAdmin) {
+    [31m[1m>[22m[39m[90m 41 |[39m       [36mthrow[39m [36mnew[39m [33mForbiddenException[39m([32m'You do 
+not have permission to view this order'[39m)[33m;[39m
+     [90m    |[39m             [31m[1m^[22m[39m
+     [90m 42 |[39m     }
+     [90m 43 |[39m
+     [90m 44 |[39m     [36mreturn[39m order[33m;[39m[0m
+
+      at GetOrderByIdUseCase.execute (modules/orders/application/use-cases/get-order-by-id.use-case.ts:41:13)
+      at Object.<anonymous> (modules/orders/application/use-cases/get-order-by-id.use-case.spec.ts:43:20)
+
+  ΓùÅ GetOrderByIdUseCase ΓÇ║ should allow owner to view the order after fetching from DB
+
+    ForbiddenException: You do not have permission to view this order
+
+    [0m [90m 39 |[39m
+     [90m 40 |[39m     [36mif[39m ([33m![39misOwner [33m&&[39m [33m![39misProvider [33m&&[39m 
+[33m![39misAdmin) {
+    [31m[1m>[22m[39m[90m 41 |[39m       [36mthrow[39m [36mnew[39m [33mForbiddenException[39m([32m'You do 
+not have permission to view this order'[39m)[33m;[39m
+     [90m    |[39m             [31m[1m^[22m[39m
+     [90m 42 |[39m     }
+     [90m 43 |[39m
+     [90m 44 |[39m     [36mreturn[39m order[33m;[39m[0m
+
+      at GetOrderByIdUseCase.execute (modules/orders/application/use-cases/get-order-by-id.use-case.ts:41:13)
+      at Object.<anonymous> (modules/orders/application/use-cases/get-order-by-id.use-case.spec.ts:53:20)
+
+FAIL src/modules/wallet/application/use-cases/integration-flow.spec.ts
+  ΓùÅ Master Integration: Order/Booking to Wallet Flow ΓÇ║ SHOULD credit provider wallet when an ORDER is completed
+
+    TypeError: this.walletRepository.executeMultiWalletTransaction is not a function
+
+    [0m [90m 18 |[39m     [36mconst[39m netAmount [33m=[39m grossAmount [33m-[39m commission[33m;[39m
+     [90m 19 |[39m
+    [31m[1m>[22m[39m[90m 20 |[39m     [36mawait[39m 
+[36mthis[39m[33m.[39mwalletRepository[33m.[39mexecuteMultiWalletTransaction([
+     [90m    |[39m                                 [31m[1m^[22m[39m
+     [90m 21 |[39m       [90m// 1. Credit Provider (Net amount)[39m
+     [90m 22 |[39m       {
+     [90m 23 |[39m         ownerId[33m:[39m providerId[33m,[39m[0m
+
+      at TransferEarningsUseCase.execute (modules/wallet/application/use-cases/transfer-earnings.use-case.ts:20:33)
+      at UpdateOrderStatusUseCase.execute (modules/orders/application/use-cases/update-order-status.use-case.ts:53:35)
+      at Object.<anonymous> (modules/wallet/application/use-cases/integration-flow.spec.ts:102:5)
+
+  ΓùÅ Master Integration: Order/Booking to Wallet Flow ΓÇ║ SHOULD credit provider wallet when a BOOKING is completed
+
+    TypeError: this.walletRepository.executeMultiWalletTransaction is not a function
+
+    [0m [90m 18 |[39m     [36mconst[39m netAmount [33m=[39m grossAmount [33m-[39m commission[33m;[39m
+     [90m 19 |[39m
+    [31m[1m>[22m[39m[90m 20 |[39m     [36mawait[39m 
+[36mthis[39m[33m.[39mwalletRepository[33m.[39mexecuteMultiWalletTransaction([
+     [90m    |[39m                                 [31m[1m^[22m[39m
+     [90m 21 |[39m       [90m// 1. Credit Provider (Net amount)[39m
+     [90m 22 |[39m       {
+     [90m 23 |[39m         ownerId[33m:[39m providerId[33m,[39m[0m
+
+      at TransferEarningsUseCase.execute (modules/wallet/application/use-cases/transfer-earnings.use-case.ts:20:33)
+      at ProviderFlowUseCase.complete (modules/bookings/application/use-cases/provider-flow.use-case.ts:51:35)
+      at Object.<anonymous> (modules/wallet/application/use-cases/integration-flow.spec.ts:140:5)
+
+FAIL src/modules/wallet/application/use-cases/transfer-earnings.use-case.spec.ts
+  ΓùÅ TransferEarningsUseCase ΓÇ║ should correctly calculate 10% commission and net amount
+
+    TypeError: this.walletRepository.executeMultiWalletTransaction is not a function
+
+    [0m [90m 18 |[39m     [36mconst[39m netAmount [33m=[39m grossAmount [33m-[39m commission[33m;[39m
+     [90m 19 |[39m
+    [31m[1m>[22m[39m[90m 20 |[39m     [36mawait[39m 
+[36mthis[39m[33m.[39mwalletRepository[33m.[39mexecuteMultiWalletTransaction([
+     [90m    |[39m                                 [31m[1m^[22m[39m
+     [90m 21 |[39m       [90m// 1. Credit Provider (Net amount)[39m
+     [90m 22 |[39m       {
+     [90m 23 |[39m         ownerId[33m:[39m providerId[33m,[39m[0m
+
+      at TransferEarningsUseCase.execute (modules/wallet/application/use-cases/transfer-earnings.use-case.ts:20:33)
+      at Object.<anonymous> (modules/wallet/application/use-cases/transfer-earnings.use-case.spec.ts:40:19)
+
+  ΓùÅ TransferEarningsUseCase ΓÇ║ should handle different gross amounts (250 SAR)
+
+    TypeError: this.walletRepository.executeMultiWalletTransaction is not a function
+
+    [0m [90m 18 |[39m     [36mconst[39m netAmount [33m=[39m grossAmount [33m-[39m commission[33m;[39m
+     [90m 19 |[39m
+    [31m[1m>[22m[39m[90m 20 |[39m     [36mawait[39m 
+[36mthis[39m[33m.[39mwalletRepository[33m.[39mexecuteMultiWalletTransaction([
+     [90m    |[39m                                 [31m[1m^[22m[39m
+     [90m 21 |[39m       [90m// 1. Credit Provider (Net amount)[39m
+     [90m 22 |[39m       {
+     [90m 23 |[39m         ownerId[33m:[39m providerId[33m,[39m[0m
+
+      at TransferEarningsUseCase.execute (modules/wallet/application/use-cases/transfer-earnings.use-case.ts:20:33)
+      at Object.<anonymous> (modules/wallet/application/use-cases/transfer-earnings.use-case.spec.ts:64:19)
+
+PASS src/modules/vehicles/application/use-cases/get-vehicle-reminders.use-case.spec.ts
+PASS src/modules/vehicles/application/use-cases/create-maintenance-record.use-case.spec.ts
+PASS src/modules/vehicles/application/use-cases/delete-vehicle.use-case.spec.ts
+PASS src/modules/vehicles/application/use-cases/update-vehicle.use-case.spec.ts
+FAIL src/modules/orders/application/use-cases/review-order.use-case.spec.ts (5.84 s)
+  ΓùÅ ReviewOrderUseCase ΓÇ║ should throw ForbiddenException if user is not the owner
+
+    Nest can't resolve dependencies of the ReviewOrderUseCase (Symbol(IOrderRepository), ?). Please make sure that the 
+argument CreateReviewUseCase at index [1] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If CreateReviewUseCase is a provider, is it part of the current RootTestModule?
+    - If CreateReviewUseCase is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing CreateReviewUseCase */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 15 |[39m     }[33m;[39m
+     [90m 16 |[39m
+    [31m[1m>[22m[39m[90m 17 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m 
+[36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 18 |[39m       providers[33m:[39m [
+     [90m 19 |[39m         [33mReviewOrderUseCase[39m[33m,[39m
+     [90m 20 |[39m         { provide[33m:[39m [33mIOrderRepository[39m[33m,[39m useValue[33m:[39m mockRepo 
+}[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 1)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders 
+(../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (modules/orders/application/use-cases/review-order.use-case.spec.ts:17:35)
+
+  ΓùÅ ReviewOrderUseCase ΓÇ║ should throw BadRequestException if order is not completed
+
+    Nest can't resolve dependencies of the ReviewOrderUseCase (Symbol(IOrderRepository), ?). Please make sure that the 
+argument CreateReviewUseCase at index [1] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If CreateReviewUseCase is a provider, is it part of the current RootTestModule?
+    - If CreateReviewUseCase is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing CreateReviewUseCase */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 15 |[39m     }[33m;[39m
+     [90m 16 |[39m
+    [31m[1m>[22m[39m[90m 17 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m 
+[36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 18 |[39m       providers[33m:[39m [
+     [90m 19 |[39m         [33mReviewOrderUseCase[39m[33m,[39m
+     [90m 20 |[39m         { provide[33m:[39m [33mIOrderRepository[39m[33m,[39m useValue[33m:[39m mockRepo 
+}[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 1)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders 
+(../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (modules/orders/application/use-cases/review-order.use-case.spec.ts:17:35)
+
+  ΓùÅ ReviewOrderUseCase ΓÇ║ should successfully add a review for a completed order
+
+    Nest can't resolve dependencies of the ReviewOrderUseCase (Symbol(IOrderRepository), ?). Please make sure that the 
+argument CreateReviewUseCase at index [1] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If CreateReviewUseCase is a provider, is it part of the current RootTestModule?
+    - If CreateReviewUseCase is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing CreateReviewUseCase */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 15 |[39m     }[33m;[39m
+     [90m 16 |[39m
+    [31m[1m>[22m[39m[90m 17 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m 
+[36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 18 |[39m       providers[33m:[39m [
+     [90m 19 |[39m         [33mReviewOrderUseCase[39m[33m,[39m
+     [90m 20 |[39m         { provide[33m:[39m [33mIOrderRepository[39m[33m,[39m useValue[33m:[39m mockRepo 
+}[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 1)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders 
+(../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (modules/orders/application/use-cases/review-order.use-case.spec.ts:17:35)
+
+PASS src/modules/vehicles/application/use-cases/create-vehicle-reminder.use-case.spec.ts
+PASS src/modules/vehicles/application/use-cases/update-maintenance-record.use-case.spec.ts
+PASS src/modules/vehicles/application/use-cases/search-vehicles.use-case.spec.ts
+PASS src/modules/vehicles/application/use-cases/get-vehicle-maintenance.use-case.spec.ts
+PASS src/modules/vehicles/application/use-cases/set-default-vehicle.use-case.spec.ts
+FAIL src/modules/orders/application/use-cases/create-order.use-case.spec.ts (6.619 s)
+  ΓùÅ CreateOrderUseCase ΓÇ║ should successfully create an order
+
+    Nest can't resolve dependencies of the CreateOrderUseCase (Symbol(IOrderRepository), ServiceModel, ?). Please make 
+sure that the argument NotificationsService at index [2] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If NotificationsService is a provider, is it part of the current RootTestModule?
+    - If NotificationsService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing NotificationsService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 20 |[39m     }[33m;[39m
+     [90m 21 |[39m
+    [31m[1m>[22m[39m[90m 22 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m 
+[36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 23 |[39m       providers[33m:[39m [
+     [90m 24 |[39m         [33mCreateOrderUseCase[39m[33m,[39m
+     [90m 25 |[39m         {[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 2)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders 
+(../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (modules/orders/application/use-cases/create-order.use-case.spec.ts:22:35)
+
+PASS src/modules/vehicles/application/use-cases/get-vehicle-by-id.use-case.spec.ts
+PASS src/modules/vehicles/application/use-cases/delete-maintenance-record.use-case.spec.ts
+PASS src/modules/admin/application/use-cases/login.use-case.spec.ts
+PASS src/modules/reviews/application/use-cases/delete-review.use-case.spec.ts
+FAIL src/modules/chat/chat.security.spec.ts (7.403 s)
+  ΓùÅ Chat Module: Security & Integration Audit ΓÇ║ SECURITY: Chat Creation & Participant Validation ΓÇ║ SHOULD allow 
+creating chat only for valid Order participants
+
+    Nest can't resolve dependencies of the ChatService (ChatModel, MessageModel, Symbol(IOrderRepository), 
+IBookingRepository, ?). Please make sure that the argument NotificationsService at index [4] is available in the 
+RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If NotificationsService is a provider, is it part of the current RootTestModule?
+    - If NotificationsService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing NotificationsService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 39 |[39m
+     [90m 40 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 41 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m 
+[36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 42 |[39m       providers[33m:[39m [
+     [90m 43 |[39m         [33mChatService[39m[33m,[39m
+     [90m 44 |[39m         { provide[33m:[39m getModelToken([33mChat[39m[33m.[39mname)[33m,[39m 
+useValue[33m:[39m mockChatModel }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 4)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders 
+(../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (modules/chat/chat.security.spec.ts:41:35)
+
+  ΓùÅ Chat Module: Security & Integration Audit ΓÇ║ SECURITY: Chat Creation & Participant Validation ΓÇ║ SHOULD throw 
+ForbiddenException if participant is NOT on the Order
+
+    Nest can't resolve dependencies of the ChatService (ChatModel, MessageModel, Symbol(IOrderRepository), 
+IBookingRepository, ?). Please make sure that the argument NotificationsService at index [4] is available in the 
+RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If NotificationsService is a provider, is it part of the current RootTestModule?
+    - If NotificationsService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing NotificationsService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 39 |[39m
+     [90m 40 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 41 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m 
+[36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 42 |[39m       providers[33m:[39m [
+     [90m 43 |[39m         [33mChatService[39m[33m,[39m
+     [90m 44 |[39m         { provide[33m:[39m getModelToken([33mChat[39m[33m.[39mname)[33m,[39m 
+useValue[33m:[39m mockChatModel }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 4)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders 
+(../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (modules/chat/chat.security.spec.ts:41:35)
+
+  ΓùÅ Chat Module: Security & Integration Audit ΓÇ║ SECURITY: Message Privacy ΓÇ║ SHOULD prevent non-participants from 
+sending messages
+
+    Nest can't resolve dependencies of the ChatService (ChatModel, MessageModel, Symbol(IOrderRepository), 
+IBookingRepository, ?). Please make sure that the argument NotificationsService at index [4] is available in the 
+RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If NotificationsService is a provider, is it part of the current RootTestModule?
+    - If NotificationsService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing NotificationsService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 39 |[39m
+     [90m 40 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 41 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m 
+[36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 42 |[39m       providers[33m:[39m [
+     [90m 43 |[39m         [33mChatService[39m[33m,[39m
+     [90m 44 |[39m         { provide[33m:[39m getModelToken([33mChat[39m[33m.[39mname)[33m,[39m 
+useValue[33m:[39m mockChatModel }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 4)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders 
+(../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (modules/chat/chat.security.spec.ts:41:35)
+
+  ΓùÅ Chat Module: Security & Integration Audit ΓÇ║ SECURITY: Message Privacy ΓÇ║ SHOULD allow participants to send 
+messages and update unread count
+
+    Nest can't resolve dependencies of the ChatService (ChatModel, MessageModel, Symbol(IOrderRepository), 
+IBookingRepository, ?). Please make sure that the argument NotificationsService at index [4] is available in the 
+RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If NotificationsService is a provider, is it part of the current RootTestModule?
+    - If NotificationsService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing NotificationsService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 39 |[39m
+     [90m 40 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 41 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m 
+[36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 42 |[39m       providers[33m:[39m [
+     [90m 43 |[39m         [33mChatService[39m[33m,[39m
+     [90m 44 |[39m         { provide[33m:[39m getModelToken([33mChat[39m[33m.[39mname)[33m,[39m 
+useValue[33m:[39m mockChatModel }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 4)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders 
+(../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (modules/chat/chat.security.spec.ts:41:35)
+
+  ΓùÅ Chat Module: Security & Integration Audit ΓÇ║ SECURITY: Gateway Room Protection ΓÇ║ verifyMembership SHOULD 
+return false for unauthorized users
+
+    Nest can't resolve dependencies of the ChatService (ChatModel, MessageModel, Symbol(IOrderRepository), 
+IBookingRepository, ?). Please make sure that the argument NotificationsService at index [4] is available in the 
+RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If NotificationsService is a provider, is it part of the current RootTestModule?
+    - If NotificationsService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing NotificationsService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 39 |[39m
+     [90m 40 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 41 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m 
+[36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 42 |[39m       providers[33m:[39m [
+     [90m 43 |[39m         [33mChatService[39m[33m,[39m
+     [90m 44 |[39m         { provide[33m:[39m getModelToken([33mChat[39m[33m.[39mname)[33m,[39m 
+useValue[33m:[39m mockChatModel }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 4)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders 
+(../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (modules/chat/chat.security.spec.ts:41:35)
+
+PASS src/modules/vehicles/application/use-cases/delete-vehicle-reminder.use-case.spec.ts
+PASS src/modules/vehicles/application/use-cases/get-user-vehicles.use-case.spec.ts
+PASS src/modules/vehicles/application/use-cases/get-vehicles.use-case.spec.ts
+PASS src/modules/users/application/use-cases/update-profile.use-case.spec.ts
+PASS src/app.controller.spec.ts
+PASS src/modules/users/application/use-cases/get-profile.use-case.spec.ts
+PASS src/modules/orders/application/use-cases/get-orders.use-case.spec.ts
+PASS src/modules/orders/application/use-cases/assign-provider.use-case.spec.ts
+PASS src/modules/bookings/application/use-cases/cancel-booking.use-case.spec.ts
+PASS src/modules/bookings/application/use-cases/create-booking.use-case.spec.ts
+PASS src/modules/orders/application/use-cases/search-orders.use-case.spec.ts
+PASS src/modules/reviews/application/use-cases/create-review.use-case.spec.ts
+PASS src/modules/vehicles/vehicles.module.spec.ts
+PASS src/modules/notifications/notifications.service.spec.ts
+
+Summary of all failing tests
+FAIL modules/orders/application/use-cases/cancel-order.use-case.spec.ts
+  ΓùÅ CancelOrderUseCase ΓÇ║ should throw BadRequestException if order is already IN_PROGRESS
+
+    expect(received).rejects.toThrow(expected)
+
+    Expected constructor: BadRequestException
+    Received constructor: ForbiddenException
+
+    Received message: "You do not have permission to cancel this order"
+
+        [0m [90m 31 |[39m
+         [90m 32 |[39m     [36mif[39m ([33m![39misOwner [33m&&[39m [33m![39misProvider [33m&&[39m 
+[33m![39misAdmin) {
+        [31m[1m>[22m[39m[90m 33 |[39m       [36mthrow[39m [36mnew[39m [33mForbiddenException[39m([32m'You 
+do not have permission to cancel this order'[39m)[33m;[39m
+         [90m    |[39m             [31m[1m^[22m[39m
+         [90m 34 |[39m     }
+         [90m 35 |[39m
+         [90m 36 |[39m     [90m// Business Logic: Check if cancellation is allowed[39m[0m
+
+      at CancelOrderUseCase.execute (modules/orders/application/use-cases/cancel-order.use-case.ts:33:13)
+      at Object.<anonymous> (modules/orders/application/use-cases/cancel-order.use-case.spec.ts:43:5)
+      at Object.toThrow (../node_modules/expect/build/index.js:2155:20)
+      at Object.<anonymous> (modules/orders/application/use-cases/cancel-order.use-case.spec.ts:44:16)
+
+  ΓùÅ CancelOrderUseCase ΓÇ║ should successfully cancel a PENDING order and clear cache
+
+    ForbiddenException: You do not have permission to cancel this order
+
+    [0m [90m 31 |[39m
+     [90m 32 |[39m     [36mif[39m ([33m![39misOwner [33m&&[39m [33m![39misProvider [33m&&[39m 
+[33m![39misAdmin) {
+    [31m[1m>[22m[39m[90m 33 |[39m       [36mthrow[39m [36mnew[39m [33mForbiddenException[39m([32m'You do 
+not have permission to cancel this order'[39m)[33m;[39m
+     [90m    |[39m             [31m[1m^[22m[39m
+     [90m 34 |[39m     }
+     [90m 35 |[39m
+     [90m 36 |[39m     [90m// Business Logic: Check if cancellation is allowed[39m[0m
+
+      at CancelOrderUseCase.execute (modules/orders/application/use-cases/cancel-order.use-case.ts:33:13)
+      at Object.<anonymous> (modules/orders/application/use-cases/cancel-order.use-case.spec.ts:57:20)
+
+FAIL modules/orders/application/use-cases/update-provider-location.use-case.spec.ts
+  ΓùÅ UpdateProviderLocationUseCase ΓÇ║ should throw BadRequestException if order is not active
+
+    expect(received).rejects.toThrow(expected)
+
+    Expected constructor: BadRequestException
+    Received constructor: ForbiddenException
+
+    Received message: "You are not authorized to update location for this order"
+
+        [0m [90m 23 |[39m
+         [90m 24 |[39m     [36mif[39m ([33m![39misAssignedProvider [33m&&[39m [33m![39misAdmin) {
+        [31m[1m>[22m[39m[90m 25 |[39m       [36mthrow[39m [36mnew[39m [33mForbiddenException[39m([32m'You 
+are not authorized to update location for this order'[39m)[33m;[39m
+         [90m    |[39m             [31m[1m^[22m[39m
+         [90m 26 |[39m     }
+         [90m 27 |[39m
+         [90m 28 |[39m     [90m// Business Rule: Location tracking only for active orders[39m[0m
+
+      at UpdateProviderLocationUseCase.execute 
+(modules/orders/application/use-cases/update-provider-location.use-case.ts:25:13)
+      at Object.<anonymous> (modules/orders/application/use-cases/update-provider-location.use-case.spec.ts:45:5)
+      at Object.toThrow (../node_modules/expect/build/index.js:2155:20)
+      at Object.<anonymous> (modules/orders/application/use-cases/update-provider-location.use-case.spec.ts:46:16)
+
+  ΓùÅ UpdateProviderLocationUseCase ΓÇ║ should successfully update location for assigned active provider
+
+    ForbiddenException: You are not authorized to update location for this order
+
+    [0m [90m 23 |[39m
+     [90m 24 |[39m     [36mif[39m ([33m![39misAssignedProvider [33m&&[39m [33m![39misAdmin) {
+    [31m[1m>[22m[39m[90m 25 |[39m       [36mthrow[39m [36mnew[39m [33mForbiddenException[39m([32m'You are 
+not authorized to update location for this order'[39m)[33m;[39m
+     [90m    |[39m             [31m[1m^[22m[39m
+     [90m 26 |[39m     }
+     [90m 27 |[39m
+     [90m 28 |[39m     [90m// Business Rule: Location tracking only for active orders[39m[0m
+
+      at UpdateProviderLocationUseCase.execute 
+(modules/orders/application/use-cases/update-provider-location.use-case.ts:25:13)
+      at Object.<anonymous> (modules/orders/application/use-cases/update-provider-location.use-case.spec.ts:56:5)
+
+FAIL modules/bookings/application/use-cases/provider-flow.use-case.spec.ts
+  ΓùÅ ProviderFlowUseCase ΓÇ║ accept ΓÇ║ should allow provider to accept a PENDING booking
+
+    Nest can't resolve dependencies of the ProviderFlowUseCase (IBookingRepository, ?, TransferEarningsUseCase). 
+Please make sure that the argument AppGateway at index [1] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If AppGateway is a provider, is it part of the current RootTestModule?
+    - If AppGateway is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing AppGateway */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 15 |[39m
+     [90m 16 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 17 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m 
+[36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 18 |[39m       providers[33m:[39m [
+     [90m 19 |[39m         [33mProviderFlowUseCase[39m[33m,[39m
+     [90m 20 |[39m         { provide[33m:[39m [32m'IBookingRepository'[39m[33m,[39m useValue[33m:[39m 
+mockBookingRepository }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 1)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders 
+(../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (modules/bookings/application/use-cases/provider-flow.use-case.spec.ts:17:35)
+
+  ΓùÅ ProviderFlowUseCase ΓÇ║ accept ΓÇ║ should throw BadRequestException if booking is not PENDING
+
+    Nest can't resolve dependencies of the ProviderFlowUseCase (IBookingRepository, ?, TransferEarningsUseCase). 
+Please make sure that the argument AppGateway at index [1] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If AppGateway is a provider, is it part of the current RootTestModule?
+    - If AppGateway is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing AppGateway */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 15 |[39m
+     [90m 16 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 17 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m 
+[36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 18 |[39m       providers[33m:[39m [
+     [90m 19 |[39m         [33mProviderFlowUseCase[39m[33m,[39m
+     [90m 20 |[39m         { provide[33m:[39m [32m'IBookingRepository'[39m[33m,[39m useValue[33m:[39m 
+mockBookingRepository }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 1)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders 
+(../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (modules/bookings/application/use-cases/provider-flow.use-case.spec.ts:17:35)
+
+  ΓùÅ ProviderFlowUseCase ΓÇ║ start ΓÇ║ should allow assigned provider to start
+
+    Nest can't resolve dependencies of the ProviderFlowUseCase (IBookingRepository, ?, TransferEarningsUseCase). 
+Please make sure that the argument AppGateway at index [1] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If AppGateway is a provider, is it part of the current RootTestModule?
+    - If AppGateway is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing AppGateway */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 15 |[39m
+     [90m 16 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 17 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m 
+[36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 18 |[39m       providers[33m:[39m [
+     [90m 19 |[39m         [33mProviderFlowUseCase[39m[33m,[39m
+     [90m 20 |[39m         { provide[33m:[39m [32m'IBookingRepository'[39m[33m,[39m useValue[33m:[39m 
+mockBookingRepository }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 1)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders 
+(../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (modules/bookings/application/use-cases/provider-flow.use-case.spec.ts:17:35)
+
+  ΓùÅ ProviderFlowUseCase ΓÇ║ start ΓÇ║ should reject unassigned provider starting
+
+    Nest can't resolve dependencies of the ProviderFlowUseCase (IBookingRepository, ?, TransferEarningsUseCase). 
+Please make sure that the argument AppGateway at index [1] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If AppGateway is a provider, is it part of the current RootTestModule?
+    - If AppGateway is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing AppGateway */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 15 |[39m
+     [90m 16 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 17 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m 
+[36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 18 |[39m       providers[33m:[39m [
+     [90m 19 |[39m         [33mProviderFlowUseCase[39m[33m,[39m
+     [90m 20 |[39m         { provide[33m:[39m [32m'IBookingRepository'[39m[33m,[39m useValue[33m:[39m 
+mockBookingRepository }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 1)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders 
+(../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (modules/bookings/application/use-cases/provider-flow.use-case.spec.ts:17:35)
+
+  ΓùÅ ProviderFlowUseCase ΓÇ║ complete ΓÇ║ should not complete unless IN_PROGRESS
+
+    Nest can't resolve dependencies of the ProviderFlowUseCase (IBookingRepository, ?, TransferEarningsUseCase). 
+Please make sure that the argument AppGateway at index [1] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If AppGateway is a provider, is it part of the current RootTestModule?
+    - If AppGateway is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing AppGateway */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 15 |[39m
+     [90m 16 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 17 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m 
+[36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 18 |[39m       providers[33m:[39m [
+     [90m 19 |[39m         [33mProviderFlowUseCase[39m[33m,[39m
+     [90m 20 |[39m         { provide[33m:[39m [32m'IBookingRepository'[39m[33m,[39m useValue[33m:[39m 
+mockBookingRepository }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 1)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders 
+(../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (modules/bookings/application/use-cases/provider-flow.use-case.spec.ts:17:35)
+
+FAIL modules/orders/application/use-cases/update-order-status.use-case.spec.ts
+  ΓùÅ UpdateOrderStatusUseCase ΓÇ║ should throw NotFoundException if order does not exist
+
+    Nest can't resolve dependencies of the UpdateOrderStatusUseCase (Symbol(IOrderRepository), EventEmitter, 
+CACHE_MANAGER, ?). Please make sure that the argument TransferEarningsUseCase at index [3] is available in the 
+RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If TransferEarningsUseCase is a provider, is it part of the current RootTestModule?
+    - If TransferEarningsUseCase is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing TransferEarningsUseCase */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 28 |[39m
+     [90m 29 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 30 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m 
+[36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 31 |[39m       providers[33m:[39m [
+     [90m 32 |[39m         [33mUpdateOrderStatusUseCase[39m[33m,[39m
+     [90m 33 |[39m         { provide[33m:[39m [33mIOrderRepository[39m[33m,[39m useValue[33m:[39m 
+mockOrderRepository }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 3)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders 
+(../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (modules/orders/application/use-cases/update-order-status.use-case.spec.ts:30:35)
+
+  ΓùÅ UpdateOrderStatusUseCase ΓÇ║ should throw ForbiddenException if user is not authorized
+
+    Nest can't resolve dependencies of the UpdateOrderStatusUseCase (Symbol(IOrderRepository), EventEmitter, 
+CACHE_MANAGER, ?). Please make sure that the argument TransferEarningsUseCase at index [3] is available in the 
+RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If TransferEarningsUseCase is a provider, is it part of the current RootTestModule?
+    - If TransferEarningsUseCase is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing TransferEarningsUseCase */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 28 |[39m
+     [90m 29 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 30 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m 
+[36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 31 |[39m       providers[33m:[39m [
+     [90m 32 |[39m         [33mUpdateOrderStatusUseCase[39m[33m,[39m
+     [90m 33 |[39m         { provide[33m:[39m [33mIOrderRepository[39m[33m,[39m useValue[33m:[39m 
+mockOrderRepository }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 3)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders 
+(../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (modules/orders/application/use-cases/update-order-status.use-case.spec.ts:30:35)
+
+  ΓùÅ UpdateOrderStatusUseCase ΓÇ║ should update status, emit event and clear cache when authorized
+
+    Nest can't resolve dependencies of the UpdateOrderStatusUseCase (Symbol(IOrderRepository), EventEmitter, 
+CACHE_MANAGER, ?). Please make sure that the argument TransferEarningsUseCase at index [3] is available in the 
+RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If TransferEarningsUseCase is a provider, is it part of the current RootTestModule?
+    - If TransferEarningsUseCase is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing TransferEarningsUseCase */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 28 |[39m
+     [90m 29 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 30 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m 
+[36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 31 |[39m       providers[33m:[39m [
+     [90m 32 |[39m         [33mUpdateOrderStatusUseCase[39m[33m,[39m
+     [90m 33 |[39m         { provide[33m:[39m [33mIOrderRepository[39m[33m,[39m useValue[33m:[39m 
+mockOrderRepository }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 3)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders 
+(../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (modules/orders/application/use-cases/update-order-status.use-case.spec.ts:30:35)
+
+FAIL modules/vehicles/application/use-cases/create-vehicle.use-case.spec.ts
+  ΓùÅ CreateVehicleUseCase ΓÇ║ execute ΓÇ║ should create a vehicle successfully
+
+    TypeError: Cannot destructure property 'vehicles' of '(intermediate value)' as it is undefined.
+
+    [0m [90m 64 |[39m [90m   */[39m
+     [90m 65 |[39m   [36mprivate[39m [36masync[39m unsetOtherDefaults(userId[33m:[39m string)[33m:[39m 
+[33mPromise[39m[33m<[39m[36mvoid[39m[33m>[39m {
+    [31m[1m>[22m[39m[90m 66 |[39m     [36mconst[39m { vehicles } [33m=[39m [36mawait[39m 
+[36mthis[39m[33m.[39mvehicleRepository[33m.[39mfindByUserId(userId)[33m;[39m
+     [90m    |[39m             [31m[1m^[22m[39m
+     [90m 67 |[39m     [36mfor[39m ([36mconst[39m v [36mof[39m vehicles) {
+     [90m 68 |[39m       [36mif[39m (v[33m.[39misDefault) {
+     [90m 69 |[39m         [36mawait[39m 
+[36mthis[39m[33m.[39mvehicleRepository[33m.[39mupdate(v[33m.[39mid[33m,[39m { isDefault[33m:[39m 
+[36mfalse[39m })[33m;[39m[0m
+
+      at CreateVehicleUseCase.unsetOtherDefaults 
+(modules/vehicles/application/use-cases/create-vehicle.use-case.ts:66:13)
+      at CreateVehicleUseCase.execute (modules/vehicles/application/use-cases/create-vehicle.use-case.ts:44:7)
+      at Object.<anonymous> (modules/vehicles/application/use-cases/create-vehicle.use-case.spec.ts:71:22)
+
+FAIL modules/orders/application/use-cases/verify-payment.use-case.spec.ts
+  ΓùÅ VerifyPaymentUseCase ΓÇ║ should throw BadRequestException if order is already PAID
+
+    expect(received).rejects.toThrow()
+
+    Received promise resolved instead of rejected
+    Resolved to value: undefined
+
+    [0m [90m 33 |[39m   it([32m'should throw BadRequestException if order is already PAID'[39m[33m,[39m 
+[36masync[39m () [33m=>[39m {
+     [90m 34 |[39m     mockRepo[33m.[39mfindById[33m.[39mmockResolvedValue({ id[33m:[39m 
+[32m'id'[39m[33m,[39m paymentStatus[33m:[39m [33mPaymentStatus[39m[33m.[39m[33mPAID[39m })[33m;[39m
+    [31m[1m>[22m[39m[90m 35 |[39m     [36mawait[39m expect(useCase[33m.[39mexecute([32m'id'[39m[33m,[39m 
+{ paymentId[33m:[39m [32m'p1'[39m }[33m,[39m { role[33m:[39m [32m'admin'[39m }))
+     [90m    |[39m           [31m[1m^[22m[39m
+     [90m 36 |[39m       [33m.[39mrejects[33m.[39mtoThrow([33mBadRequestException[39m)[33m;[39m
+     [90m 37 |[39m   })[33m;[39m
+     [90m 38 |[39m[0m
+
+      at expect (../node_modules/expect/build/index.js:2116:15)
+      at Object.<anonymous> (modules/orders/application/use-cases/verify-payment.use-case.spec.ts:35:11)
+
+FAIL modules/orders/application/use-cases/get-order-by-id.use-case.spec.ts
+  ΓùÅ GetOrderByIdUseCase ΓÇ║ should return from cache if exists
+
+    ForbiddenException: You do not have permission to view this order
+
+    [0m [90m 39 |[39m
+     [90m 40 |[39m     [36mif[39m ([33m![39misOwner [33m&&[39m [33m![39misProvider [33m&&[39m 
+[33m![39misAdmin) {
+    [31m[1m>[22m[39m[90m 41 |[39m       [36mthrow[39m [36mnew[39m [33mForbiddenException[39m([32m'You do 
+not have permission to view this order'[39m)[33m;[39m
+     [90m    |[39m             [31m[1m^[22m[39m
+     [90m 42 |[39m     }
+     [90m 43 |[39m
+     [90m 44 |[39m     [36mreturn[39m order[33m;[39m[0m
+
+      at GetOrderByIdUseCase.execute (modules/orders/application/use-cases/get-order-by-id.use-case.ts:41:13)
+      at Object.<anonymous> (modules/orders/application/use-cases/get-order-by-id.use-case.spec.ts:43:20)
+
+  ΓùÅ GetOrderByIdUseCase ΓÇ║ should allow owner to view the order after fetching from DB
+
+    ForbiddenException: You do not have permission to view this order
+
+    [0m [90m 39 |[39m
+     [90m 40 |[39m     [36mif[39m ([33m![39misOwner [33m&&[39m [33m![39misProvider [33m&&[39m 
+[33m![39misAdmin) {
+    [31m[1m>[22m[39m[90m 41 |[39m       [36mthrow[39m [36mnew[39m [33mForbiddenException[39m([32m'You do 
+not have permission to view this order'[39m)[33m;[39m
+     [90m    |[39m             [31m[1m^[22m[39m
+     [90m 42 |[39m     }
+     [90m 43 |[39m
+     [90m 44 |[39m     [36mreturn[39m order[33m;[39m[0m
+
+      at GetOrderByIdUseCase.execute (modules/orders/application/use-cases/get-order-by-id.use-case.ts:41:13)
+      at Object.<anonymous> (modules/orders/application/use-cases/get-order-by-id.use-case.spec.ts:53:20)
+
+FAIL modules/wallet/application/use-cases/integration-flow.spec.ts
+  ΓùÅ Master Integration: Order/Booking to Wallet Flow ΓÇ║ SHOULD credit provider wallet when an ORDER is completed
+
+    TypeError: this.walletRepository.executeMultiWalletTransaction is not a function
+
+    [0m [90m 18 |[39m     [36mconst[39m netAmount [33m=[39m grossAmount [33m-[39m commission[33m;[39m
+     [90m 19 |[39m
+    [31m[1m>[22m[39m[90m 20 |[39m     [36mawait[39m 
+[36mthis[39m[33m.[39mwalletRepository[33m.[39mexecuteMultiWalletTransaction([
+     [90m    |[39m                                 [31m[1m^[22m[39m
+     [90m 21 |[39m       [90m// 1. Credit Provider (Net amount)[39m
+     [90m 22 |[39m       {
+     [90m 23 |[39m         ownerId[33m:[39m providerId[33m,[39m[0m
+
+      at TransferEarningsUseCase.execute (modules/wallet/application/use-cases/transfer-earnings.use-case.ts:20:33)
+      at UpdateOrderStatusUseCase.execute (modules/orders/application/use-cases/update-order-status.use-case.ts:53:35)
+      at Object.<anonymous> (modules/wallet/application/use-cases/integration-flow.spec.ts:102:5)
+
+  ΓùÅ Master Integration: Order/Booking to Wallet Flow ΓÇ║ SHOULD credit provider wallet when a BOOKING is completed
+
+    TypeError: this.walletRepository.executeMultiWalletTransaction is not a function
+
+    [0m [90m 18 |[39m     [36mconst[39m netAmount [33m=[39m grossAmount [33m-[39m commission[33m;[39m
+     [90m 19 |[39m
+    [31m[1m>[22m[39m[90m 20 |[39m     [36mawait[39m 
+[36mthis[39m[33m.[39mwalletRepository[33m.[39mexecuteMultiWalletTransaction([
+     [90m    |[39m                                 [31m[1m^[22m[39m
+     [90m 21 |[39m       [90m// 1. Credit Provider (Net amount)[39m
+     [90m 22 |[39m       {
+     [90m 23 |[39m         ownerId[33m:[39m providerId[33m,[39m[0m
+
+      at TransferEarningsUseCase.execute (modules/wallet/application/use-cases/transfer-earnings.use-case.ts:20:33)
+      at ProviderFlowUseCase.complete (modules/bookings/application/use-cases/provider-flow.use-case.ts:51:35)
+      at Object.<anonymous> (modules/wallet/application/use-cases/integration-flow.spec.ts:140:5)
+
+FAIL modules/wallet/application/use-cases/transfer-earnings.use-case.spec.ts
+  ΓùÅ TransferEarningsUseCase ΓÇ║ should correctly calculate 10% commission and net amount
+
+    TypeError: this.walletRepository.executeMultiWalletTransaction is not a function
+
+    [0m [90m 18 |[39m     [36mconst[39m netAmount [33m=[39m grossAmount [33m-[39m commission[33m;[39m
+     [90m 19 |[39m
+    [31m[1m>[22m[39m[90m 20 |[39m     [36mawait[39m 
+[36mthis[39m[33m.[39mwalletRepository[33m.[39mexecuteMultiWalletTransaction([
+     [90m    |[39m                                 [31m[1m^[22m[39m
+     [90m 21 |[39m       [90m// 1. Credit Provider (Net amount)[39m
+     [90m 22 |[39m       {
+     [90m 23 |[39m         ownerId[33m:[39m providerId[33m,[39m[0m
+
+      at TransferEarningsUseCase.execute (modules/wallet/application/use-cases/transfer-earnings.use-case.ts:20:33)
+      at Object.<anonymous> (modules/wallet/application/use-cases/transfer-earnings.use-case.spec.ts:40:19)
+
+  ΓùÅ TransferEarningsUseCase ΓÇ║ should handle different gross amounts (250 SAR)
+
+    TypeError: this.walletRepository.executeMultiWalletTransaction is not a function
+
+    [0m [90m 18 |[39m     [36mconst[39m netAmount [33m=[39m grossAmount [33m-[39m commission[33m;[39m
+     [90m 19 |[39m
+    [31m[1m>[22m[39m[90m 20 |[39m     [36mawait[39m 
+[36mthis[39m[33m.[39mwalletRepository[33m.[39mexecuteMultiWalletTransaction([
+     [90m    |[39m                                 [31m[1m^[22m[39m
+     [90m 21 |[39m       [90m// 1. Credit Provider (Net amount)[39m
+     [90m 22 |[39m       {
+     [90m 23 |[39m         ownerId[33m:[39m providerId[33m,[39m[0m
+
+      at TransferEarningsUseCase.execute (modules/wallet/application/use-cases/transfer-earnings.use-case.ts:20:33)
+      at Object.<anonymous> (modules/wallet/application/use-cases/transfer-earnings.use-case.spec.ts:64:19)
+
+FAIL modules/orders/application/use-cases/review-order.use-case.spec.ts (5.84 s)
+  ΓùÅ ReviewOrderUseCase ΓÇ║ should throw ForbiddenException if user is not the owner
+
+    Nest can't resolve dependencies of the ReviewOrderUseCase (Symbol(IOrderRepository), ?). Please make sure that the 
+argument CreateReviewUseCase at index [1] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If CreateReviewUseCase is a provider, is it part of the current RootTestModule?
+    - If CreateReviewUseCase is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing CreateReviewUseCase */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 15 |[39m     }[33m;[39m
+     [90m 16 |[39m
+    [31m[1m>[22m[39m[90m 17 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m 
+[36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 18 |[39m       providers[33m:[39m [
+     [90m 19 |[39m         [33mReviewOrderUseCase[39m[33m,[39m
+     [90m 20 |[39m         { provide[33m:[39m [33mIOrderRepository[39m[33m,[39m useValue[33m:[39m mockRepo 
+}[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 1)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders 
+(../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (modules/orders/application/use-cases/review-order.use-case.spec.ts:17:35)
+
+  ΓùÅ ReviewOrderUseCase ΓÇ║ should throw BadRequestException if order is not completed
+
+    Nest can't resolve dependencies of the ReviewOrderUseCase (Symbol(IOrderRepository), ?). Please make sure that the 
+argument CreateReviewUseCase at index [1] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If CreateReviewUseCase is a provider, is it part of the current RootTestModule?
+    - If CreateReviewUseCase is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing CreateReviewUseCase */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 15 |[39m     }[33m;[39m
+     [90m 16 |[39m
+    [31m[1m>[22m[39m[90m 17 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m 
+[36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 18 |[39m       providers[33m:[39m [
+     [90m 19 |[39m         [33mReviewOrderUseCase[39m[33m,[39m
+     [90m 20 |[39m         { provide[33m:[39m [33mIOrderRepository[39m[33m,[39m useValue[33m:[39m mockRepo 
+}[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 1)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders 
+(../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (modules/orders/application/use-cases/review-order.use-case.spec.ts:17:35)
+
+  ΓùÅ ReviewOrderUseCase ΓÇ║ should successfully add a review for a completed order
+
+    Nest can't resolve dependencies of the ReviewOrderUseCase (Symbol(IOrderRepository), ?). Please make sure that the 
+argument CreateReviewUseCase at index [1] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If CreateReviewUseCase is a provider, is it part of the current RootTestModule?
+    - If CreateReviewUseCase is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing CreateReviewUseCase */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 15 |[39m     }[33m;[39m
+     [90m 16 |[39m
+    [31m[1m>[22m[39m[90m 17 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m 
+[36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 18 |[39m       providers[33m:[39m [
+     [90m 19 |[39m         [33mReviewOrderUseCase[39m[33m,[39m
+     [90m 20 |[39m         { provide[33m:[39m [33mIOrderRepository[39m[33m,[39m useValue[33m:[39m mockRepo 
+}[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 1)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders 
+(../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (modules/orders/application/use-cases/review-order.use-case.spec.ts:17:35)
+
+FAIL modules/orders/application/use-cases/create-order.use-case.spec.ts (6.619 s)
+  ΓùÅ CreateOrderUseCase ΓÇ║ should successfully create an order
+
+    Nest can't resolve dependencies of the CreateOrderUseCase (Symbol(IOrderRepository), ServiceModel, ?). Please make 
+sure that the argument NotificationsService at index [2] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If NotificationsService is a provider, is it part of the current RootTestModule?
+    - If NotificationsService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing NotificationsService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 20 |[39m     }[33m;[39m
+     [90m 21 |[39m
+    [31m[1m>[22m[39m[90m 22 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m 
+[36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 23 |[39m       providers[33m:[39m [
+     [90m 24 |[39m         [33mCreateOrderUseCase[39m[33m,[39m
+     [90m 25 |[39m         {[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 2)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders 
+(../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (modules/orders/application/use-cases/create-order.use-case.spec.ts:22:35)
+
+FAIL modules/chat/chat.security.spec.ts (7.403 s)
+  ΓùÅ Chat Module: Security & Integration Audit ΓÇ║ SECURITY: Chat Creation & Participant Validation ΓÇ║ SHOULD allow 
+creating chat only for valid Order participants
+
+    Nest can't resolve dependencies of the ChatService (ChatModel, MessageModel, Symbol(IOrderRepository), 
+IBookingRepository, ?). Please make sure that the argument NotificationsService at index [4] is available in the 
+RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If NotificationsService is a provider, is it part of the current RootTestModule?
+    - If NotificationsService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing NotificationsService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 39 |[39m
+     [90m 40 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 41 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m 
+[36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 42 |[39m       providers[33m:[39m [
+     [90m 43 |[39m         [33mChatService[39m[33m,[39m
+     [90m 44 |[39m         { provide[33m:[39m getModelToken([33mChat[39m[33m.[39mname)[33m,[39m 
+useValue[33m:[39m mockChatModel }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 4)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders 
+(../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (modules/chat/chat.security.spec.ts:41:35)
+
+  ΓùÅ Chat Module: Security & Integration Audit ΓÇ║ SECURITY: Chat Creation & Participant Validation ΓÇ║ SHOULD throw 
+ForbiddenException if participant is NOT on the Order
+
+    Nest can't resolve dependencies of the ChatService (ChatModel, MessageModel, Symbol(IOrderRepository), 
+IBookingRepository, ?). Please make sure that the argument NotificationsService at index [4] is available in the 
+RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If NotificationsService is a provider, is it part of the current RootTestModule?
+    - If NotificationsService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing NotificationsService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 39 |[39m
+     [90m 40 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 41 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m 
+[36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 42 |[39m       providers[33m:[39m [
+     [90m 43 |[39m         [33mChatService[39m[33m,[39m
+     [90m 44 |[39m         { provide[33m:[39m getModelToken([33mChat[39m[33m.[39mname)[33m,[39m 
+useValue[33m:[39m mockChatModel }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 4)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders 
+(../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (modules/chat/chat.security.spec.ts:41:35)
+
+  ΓùÅ Chat Module: Security & Integration Audit ΓÇ║ SECURITY: Message Privacy ΓÇ║ SHOULD prevent non-participants from 
+sending messages
+
+    Nest can't resolve dependencies of the ChatService (ChatModel, MessageModel, Symbol(IOrderRepository), 
+IBookingRepository, ?). Please make sure that the argument NotificationsService at index [4] is available in the 
+RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If NotificationsService is a provider, is it part of the current RootTestModule?
+    - If NotificationsService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing NotificationsService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 39 |[39m
+     [90m 40 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 41 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m 
+[36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 42 |[39m       providers[33m:[39m [
+     [90m 43 |[39m         [33mChatService[39m[33m,[39m
+     [90m 44 |[39m         { provide[33m:[39m getModelToken([33mChat[39m[33m.[39mname)[33m,[39m 
+useValue[33m:[39m mockChatModel }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 4)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders 
+(../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (modules/chat/chat.security.spec.ts:41:35)
+
+  ΓùÅ Chat Module: Security & Integration Audit ΓÇ║ SECURITY: Message Privacy ΓÇ║ SHOULD allow participants to send 
+messages and update unread count
+
+    Nest can't resolve dependencies of the ChatService (ChatModel, MessageModel, Symbol(IOrderRepository), 
+IBookingRepository, ?). Please make sure that the argument NotificationsService at index [4] is available in the 
+RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If NotificationsService is a provider, is it part of the current RootTestModule?
+    - If NotificationsService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing NotificationsService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 39 |[39m
+     [90m 40 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 41 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m 
+[36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 42 |[39m       providers[33m:[39m [
+     [90m 43 |[39m         [33mChatService[39m[33m,[39m
+     [90m 44 |[39m         { provide[33m:[39m getModelToken([33mChat[39m[33m.[39mname)[33m,[39m 
+useValue[33m:[39m mockChatModel }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 4)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders 
+(../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (modules/chat/chat.security.spec.ts:41:35)
+
+  ΓùÅ Chat Module: Security & Integration Audit ΓÇ║ SECURITY: Gateway Room Protection ΓÇ║ verifyMembership SHOULD 
+return false for unauthorized users
+
+    Nest can't resolve dependencies of the ChatService (ChatModel, MessageModel, Symbol(IOrderRepository), 
+IBookingRepository, ?). Please make sure that the argument NotificationsService at index [4] is available in the 
+RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If NotificationsService is a provider, is it part of the current RootTestModule?
+    - If NotificationsService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing NotificationsService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 39 |[39m
+     [90m 40 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 41 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m 
+[36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 42 |[39m       providers[33m:[39m [
+     [90m 43 |[39m         [33mChatService[39m[33m,[39m
+     [90m 44 |[39m         { provide[33m:[39m getModelToken([33mChat[39m[33m.[39mname)[33m,[39m 
+useValue[33m:[39m mockChatModel }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 4)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders 
+(../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies 
+(../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (modules/chat/chat.security.spec.ts:41:35)
+
+
+Test Suites: 12 failed, 27 passed, 39 total
+Tests:       29 failed, 106 passed, 135 total
+Snapshots:   0 total
+Time:        11.875 s
+Ran all test suites.

@@ -57,6 +57,9 @@ describe('CreateVehicleUseCase', () => {
     useCase = module.get<CreateVehicleUseCase>(CreateVehicleUseCase);
     vehicleRepository = module.get(IVehicleRepository);
     cacheManager = module.get(CACHE_MANAGER);
+
+    // Default mock implementation
+    vehicleRepository.findByUserId.mockResolvedValue({ vehicles: [], total: 0 });
   });
 
   it('should be defined', () => {

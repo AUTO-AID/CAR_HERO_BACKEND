@@ -18,6 +18,8 @@ import { CreateMembershipPlanDto } from '../dto/create-membership-plan.dto';
 import { UpdateMembershipPlanDto } from '../dto/update-membership-plan.dto';
 import { PasswordUtil, TokenUtil } from '../../../shared/utils';
 import { IJwtPayload } from '../../../shared/interfaces';
+import { NotificationsService } from '../../notifications/notifications.service';
+import { NotificationType } from '../../../common/enums/status.enum';
 
 @Injectable()
 export class AdminService {
@@ -33,6 +35,7 @@ export class AdminService {
     @InjectModel(Setting.name) private settingModel: Model<SettingDocument>,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private notificationsService: NotificationsService,
   ) {}
 
   // ===========================================
@@ -293,6 +296,23 @@ export class AdminService {
       throw new NotFoundException('Provider not found');
     }
 
+    // 🚀 Activate the underlying User account so they can log in
+    const user = await this.userModel.findOneAndUpdate(
+      { phoneNumber: provider.phone },
+      { $set: { isActive: true } },
+      { new: true }
+    );
+
+    if (user) {
+      await this.notificationsService.createNotification({
+        recipientId: user._id.toString(),
+        recipientType: 'provider',
+        title: 'Registration Approved! 🎉',
+        body: 'Welcome to CarHero! Your account is now active and you can start accepting orders.',
+        type: NotificationType.INFO,
+      });
+    }
+
     return {
       message: 'Provider approved and activated successfully',
       provider,
@@ -318,6 +338,23 @@ export class AdminService {
 
     if (!provider) {
       throw new NotFoundException('Provider not found');
+    }
+
+    // 🛑 Ensure the underlying User account remains deactivated
+    const user = await this.userModel.findOne({ phoneNumber: provider.phone });
+    if (user) {
+      await this.userModel.updateOne(
+        { _id: user._id },
+        { $set: { isActive: false } }
+      );
+
+      await this.notificationsService.createNotification({
+        recipientId: user._id.toString(),
+        recipientType: 'provider',
+        title: 'Registration Update 🛑',
+        body: `Unfortunately, your registration was not approved. Reason: ${reason}`,
+        type: NotificationType.ALERT,
+      });
     }
 
     return {

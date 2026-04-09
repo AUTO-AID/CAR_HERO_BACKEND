@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Order, OrderSchema } from '../../database/schemas/order.schema';
 import { Service, ServiceSchema } from '../../database/schemas/service.schema';
@@ -24,6 +24,7 @@ import { OrdersCronService } from './infrastructure/services/orders-cron.service
 import { OrdersController } from './presentation/controllers/orders.controller';
 import { WalletModule } from '../wallet/wallet.module';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { ReviewsModule } from '../reviews/reviews.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { NotificationsModule } from '../notifications/notifications.module';
     ]),
     WalletModule,
     NotificationsModule,
+    forwardRef(() => ReviewsModule),
   ],
   controllers: [OrdersController],
   providers: [

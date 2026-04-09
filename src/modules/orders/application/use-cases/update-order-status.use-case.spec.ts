@@ -3,6 +3,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { UpdateOrderStatusUseCase } from './update-order-status.use-case';
 import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
+import { TransferEarningsUseCase } from '../../../wallet/application/use-cases/transfer-earnings.use-case';
 import { OrderStatus } from '../../../../common/enums/status.enum';
 import { NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 
@@ -26,6 +27,10 @@ describe('UpdateOrderStatusUseCase', () => {
     del: jest.fn(),
   };
 
+  const mockTransferEarnings = {
+    execute: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -33,6 +38,7 @@ describe('UpdateOrderStatusUseCase', () => {
         { provide: IOrderRepository, useValue: mockOrderRepository },
         { provide: EventEmitter2, useValue: mockEventEmitter },
         { provide: CACHE_MANAGER, useValue: mockCacheManager },
+        { provide: TransferEarningsUseCase, useValue: mockTransferEarnings },
       ],
     }).compile();
 
@@ -48,7 +54,7 @@ describe('UpdateOrderStatusUseCase', () => {
   });
 
   it('should throw ForbiddenException if user is not authorized', async () => {
-    const mockOrder = { id: 'id', provider: 'other-provider', status: OrderStatus.ACCEPTED };
+    const mockOrder = { id: 'id', providerId: 'other-provider', status: OrderStatus.ACCEPTED };
     mockOrderRepository.findById.mockResolvedValue(mockOrder);
     
     await expect(useCase.execute('id', OrderStatus.COMPLETED, { _id: 'wrong-user', role: 'user' }))
@@ -58,10 +64,10 @@ describe('UpdateOrderStatusUseCase', () => {
   it('should update status, emit event and clear cache when authorized', async () => {
     const mockOrder = { 
       id: 'id', 
-      provider: 'provider-id', 
+      providerId: 'provider-id', 
       status: OrderStatus.ACCEPTED,
       orderNumber: 'CH-001',
-      user: 'user-id'
+      userId: 'user-id'
     };
     mockOrderRepository.findById.mockResolvedValue(mockOrder);
     mockOrderRepository.update.mockResolvedValue({ ...mockOrder, status: OrderStatus.COMPLETED });

@@ -7,6 +7,7 @@ import { IOrderRepository } from '../orders/domain/repositories/order.repository
 import { IBookingRepository } from '../bookings/domain/repositories/booking.repository.interface';
 import { OrderEntity } from '../orders/domain/entities/order.entity';
 import { OrderStatus } from '../../common/enums/status.enum';
+import { NotificationsService } from '../notifications/notifications.service';
 import { Types } from 'mongoose';
 
 describe('Chat Module: Security & Integration Audit', () => {
@@ -37,6 +38,11 @@ describe('Chat Module: Security & Integration Audit', () => {
     findById: jest.fn(),
   };
 
+  const mockNotificationsService = {
+    sendChatNotification: jest.fn(),
+    createNotification: jest.fn().mockResolvedValue({}),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -45,6 +51,7 @@ describe('Chat Module: Security & Integration Audit', () => {
         { provide: getModelToken(Message.name), useValue: mockMessageModel },
         { provide: Symbol.for('IOrderRepository'), useValue: mockOrderRepo },
         { provide: 'IBookingRepository', useValue: mockBookingRepo },
+        { provide: NotificationsService, useValue: mockNotificationsService },
       ],
     }).compile();
 

@@ -37,7 +37,7 @@ describe('GetOrderByIdUseCase', () => {
   });
 
   it('should return from cache if exists', async () => {
-    const mockOrder = { id: 'id', user: 'owner-id' };
+    const mockOrder = { id: 'id', userId: 'owner-id' };
     mockCacheManager.get.mockResolvedValue(mockOrder);
 
     const result = await useCase.execute('id', { _id: 'owner-id', role: 'user' });
@@ -46,7 +46,7 @@ describe('GetOrderByIdUseCase', () => {
   });
 
   it('should allow owner to view the order after fetching from DB', async () => {
-    const mockOrder = { id: 'id', user: 'owner-id' };
+    const mockOrder = { id: 'id', userId: 'owner-id' };
     mockCacheManager.get.mockResolvedValue(null);
     mockRepo.findById.mockResolvedValue(mockOrder);
 
@@ -56,7 +56,7 @@ describe('GetOrderByIdUseCase', () => {
   });
 
   it('should allow admin to view any order', async () => {
-    const mockOrder = { id: 'id', user: 'owner-id' };
+    const mockOrder = { id: 'id', userId: 'owner-id' };
     mockCacheManager.get.mockResolvedValue(mockOrder);
 
     const result = await useCase.execute('id', { _id: 'admin-id', role: 'admin' });

@@ -77,8 +77,13 @@ export class UserBookingsController {
   }
 
   @Post(':id/review')
-  async review(@CurrentUser('id') userId: string, @Param('id') id: string, @Body('rating') rating: number, @Body('comment') comment: string) {
-    const booking = await this.reviewBooking.execute(userId, id, rating, comment);
+  async review(
+    @CurrentUser() user: any, 
+    @Param('id') id: string, 
+    @Body('rating') rating: number, 
+    @Body('comment') comment: string
+  ) {
+    const booking = await this.reviewBooking.execute(user._id, id, rating, comment, user);
     return { success: true, data: booking };
   }
 

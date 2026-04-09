@@ -18,12 +18,16 @@ describe('VerifyPaymentUseCase', () => {
     mockCacheManager = {
       del: jest.fn(),
     };
+    const mockWalletRepo = {
+      executeTransaction: jest.fn(),
+    };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         VerifyPaymentUseCase,
         { provide: IOrderRepository, useValue: mockRepo },
         { provide: CACHE_MANAGER, useValue: mockCacheManager },
+        { provide: 'IWalletRepository', useValue: mockWalletRepo },
       ],
     }).compile();
 
@@ -31,18 +35,18 @@ describe('VerifyPaymentUseCase', () => {
   });
 
   it('should throw BadRequestException if order is already PAID', async () => {
-    mockRepo.findById.mockResolvedValue({ id: 'id', paymentStatus: PaymentStatus.PAID });
-    await expect(useCase.execute('id', { paymentId: 'p1' }, { role: 'admin' }))
+    mockRepo.findById.mockResolvedValue({ id: 'id', paymentStatus: PaymentStatus.COMPLETED });
+    await expect(useCase.execute('id', { paymentId: 'p1' }))
       .rejects.toThrow(BadRequestException);
   });
 
   it('should successfully update payment status and clear cache', async () => {
     mockRepo.findById.mockResolvedValue({ id: 'id', paymentStatus: PaymentStatus.PENDING });
-    mockRepo.updatePaymentDetails.mockResolvedValue({ id: 'id', paymentStatus: PaymentStatus.PAID });
+    mockRepo.updatePaymentDetails.mockResolvedValue({ id: 'id', paymentStatus: PaymentStatus.COMPLETED });
 
-    const result = await useCase.execute('id', { paymentId: 'txn_123' }, { role: 'admin' });
+    const result = await useCase.execute('id', { paymentId: 'txn_123' });
 
-    expect(result.paymentStatus).toBe(PaymentStatus.PAID);
+    expect(result.paymentStatus).toBe(PaymentStatus.COMPLETED);
     expect(mockRepo.updatePaymentDetails).toHaveBeenCalledWith('id', 'txn_123', undefined);
     expect(mockCacheManager.del).toHaveBeenCalledWith('order_id');
   });

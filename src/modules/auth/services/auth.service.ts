@@ -10,6 +10,7 @@ import { Model } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { User, UserDocument } from '../../users/schemas/user.schema';
+import { Provider, ProviderDocument } from '../../../database/schemas/provider.schema';
 import {
   PendingRegistration,
   PendingRegistrationDocument,
@@ -39,17 +40,23 @@ import {
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from '../../../core/constants';
 import { OtpService } from './otp.service';
 import { Logout, LogoutDocument } from '../schemas/logout.schema';
+import { NotificationsService } from '../../notifications/notifications.service';
+import { NotificationType } from '../../../common/enums/status.enum';
+import { Admin, AdminDocument } from '../../../database/schemas/admin.schema';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @InjectModel(Provider.name) private providerModel: Model<ProviderDocument>,
     @InjectModel(Logout.name) private logoutModel: Model<LogoutDocument>,
     @InjectModel(PendingRegistration.name)
     private pendingRegistrationModel: Model<PendingRegistrationDocument>,
+    @InjectModel(Admin.name) private adminModel: Model<AdminDocument>,
     private jwtService: JwtService,
     private configService: ConfigService,
     private otpService: OtpService,
+    private notificationsService: NotificationsService,
   ) {}
 
   // ===========================================
@@ -122,9 +129,35 @@ export class AuthService {
       accountType: pendingRegistration.accountType,
       isTermsAccepted: pendingRegistration.isTermsAccepted,
       isVerified: true,
-      isActive: true,
+      isActive: pendingRegistration.accountType === 'provider' ? false : true, // Providers start inactive
       lastLoginAt: new Date(),
     });
+
+    // 🆕 Automated Provider Registration
+    if (pendingRegistration.accountType === 'provider') {
+      await this.providerModel.create({
+        phone: pendingRegistration.phoneNumber,
+        businessName: pendingRegistration.fullName,
+        ownerName: pendingRegistration.fullName,
+        location: { type: 'Point', coordinates: [0, 0] },
+        registrationStatus: 'pending',
+        isApproved: false,
+        isActive: false,
+      });
+      
+      // 🔔 Notify Admin about new registration
+      const admin = await this.adminModel.findOne({ isActive: true });
+      if (admin) {
+        await this.notificationsService.createNotification({
+          recipientId: admin._id.toString(),
+          recipientType: 'admin',
+          title: 'New Provider Registration 🆕',
+          body: `A new provider "${pendingRegistration.fullName}" is waiting for approval.`,
+          type: NotificationType.ALERT,
+          data: { phoneNumber: pendingRegistration.phoneNumber }
+        });
+      }
+    }
 
     await this.pendingRegistrationModel.deleteOne({ phoneNumber });
 

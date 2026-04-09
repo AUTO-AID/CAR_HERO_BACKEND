@@ -4,6 +4,7 @@ import { CreateOrderUseCase } from './create-order.use-case';
 import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
 import { OrderStatus, PaymentStatus } from '../../../../common/enums/status.enum';
 import { Service } from '../../../../database/schemas/service.schema';
+import { NotificationsService } from '../../../notifications/notifications.service';
 
 describe('CreateOrderUseCase', () => {
   let useCase: CreateOrderUseCase;
@@ -18,6 +19,9 @@ describe('CreateOrderUseCase', () => {
     mockServiceModel = {
       findById: jest.fn(),
     };
+    const mockNotificationsService = {
+      sendOrderNotification: jest.fn(),
+    };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -29,6 +33,10 @@ describe('CreateOrderUseCase', () => {
         {
           provide: getModelToken(Service.name),
           useValue: mockServiceModel,
+        },
+        {
+          provide: NotificationsService,
+          useValue: mockNotificationsService,
         },
       ],
     }).compile();

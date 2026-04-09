@@ -18,6 +18,7 @@ import { SubscriptionsModule } from '../subscriptions/subscriptions.module';
 import { IAdminRepository } from './domain/repositories/admin.repository.interface';
 import { MongooseAdminRepository } from './infrastructure/persistence/mongoose-admin.repository';
 import { LoginUseCase } from './application/use-cases/login.use-case';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { LoginUseCase } from './application/use-cases/login.use-case';
     BookingsModule,
     OrdersModule,
     SubscriptionsModule,
+    NotificationsModule,
   ],
   controllers: [AdminController],
   providers: [

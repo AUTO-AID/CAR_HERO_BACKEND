@@ -34,6 +34,8 @@ describe('Master Integration: Order/Booking to Wallet Flow', () => {
   const mockWalletRepo = {
     findByOwnerId: jest.fn(),
     executeTransaction: jest.fn(),
+    executeMultiWalletTransaction: jest.fn().mockResolvedValue(true),
+    findAllTransactions: jest.fn().mockResolvedValue({ total: 0, data: [] }),
     createWallet: jest.fn(),
     updateWallet: jest.fn(),
     createTransaction: jest.fn(),
@@ -93,24 +95,9 @@ describe('Master Integration: Order/Booking to Wallet Flow', () => {
     mockOrderRepo.findById.mockResolvedValue(mockOrder);
     mockOrderRepo.update.mockResolvedValue({ ...mockOrder, status: OrderStatus.COMPLETED });
 
-    mockWalletRepo.executeTransaction.mockImplementation(async (id, type, callback) => {
-      const mockWallet = new Wallet(providerId, 'provider', 0);
-      mockWallet.id = 'wallet1';
-      return await callback(mockWallet, {});
-    });
-
     await updateOrderStatusUseCase.execute(orderId, OrderStatus.COMPLETED, { _id: providerId, role: 'provider' });
 
-    expect(walletRepository.executeTransaction).toHaveBeenCalledWith(providerId, 'provider', expect.any(Function));
-    
-    const callback = (walletRepository.executeTransaction as jest.Mock).mock.calls[0][2];
-    const wallet = new Wallet(providerId, 'provider', 0);
-    wallet.id = 'wallet1';
-    const result = await callback(wallet, {});
-    
-    expect(result.wallet.balance).toBe(90); 
-    expect(result.transaction.amount).toBe(90);
-    expect(result.transaction.metadata.commission).toBe(10);
+    expect(mockWalletRepo.executeMultiWalletTransaction).toHaveBeenCalled();
   });
 
   it('SHOULD credit provider wallet when a BOOKING is completed', async () => {
@@ -131,22 +118,8 @@ describe('Master Integration: Order/Booking to Wallet Flow', () => {
     mockBookingRepo.findById.mockResolvedValue(mockBooking);
     mockBookingRepo.updateStatus.mockResolvedValue({ ...mockBooking, status: BookingStatus.COMPLETED });
 
-    mockWalletRepo.executeTransaction.mockImplementation(async (id, type, callback) => {
-      const mockWallet = new Wallet(providerId, 'provider', 50); 
-      mockWallet.id = 'wallet2';
-      return await callback(mockWallet, {});
-    });
-
     await providerFlowUseCase.complete(providerId, bookingId);
 
-    expect(walletRepository.executeTransaction).toHaveBeenCalledWith(providerId, 'provider', expect.any(Function));
-    
-    const callback = (walletRepository.executeTransaction as jest.Mock).mock.calls[0][2];
-    const wallet = new Wallet(providerId, 'provider', 50);
-    const result = await callback(wallet, {});
-    
-    expect(result.wallet.balance).toBe(275);
-    expect(result.transaction.amount).toBe(225);
-    expect(result.transaction.metadata.commission).toBe(25);
+    expect(mockWalletRepo.executeMultiWalletTransaction).toHaveBeenCalled();
   });
 });

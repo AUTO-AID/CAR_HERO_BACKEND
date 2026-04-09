@@ -17,6 +17,19 @@ export class TransferEarningsUseCase {
     const commission = grossAmount * this.COMMISSION_RATE;
     const netAmount = grossAmount - commission;
 
+    // 🛡️ Safeguard: Check if we already processed this reference
+    const existing = await this.walletRepository.findAllTransactions({ 
+      referenceId, 
+      referenceType,
+      ownerType: 'provider',
+      type: 'deposit'
+    }, 0, 1);
+
+    if (existing.total > 0) {
+      console.warn(`[Wallet] Earnings already transferred for ${referenceType} ${referenceId}. Skipping.`);
+      return;
+    }
+
     await this.walletRepository.executeMultiWalletTransaction([
       // 1. Credit Provider (Net amount)
       {

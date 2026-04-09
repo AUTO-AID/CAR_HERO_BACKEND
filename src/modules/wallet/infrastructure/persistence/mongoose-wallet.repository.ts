@@ -132,6 +132,25 @@ export class MongooseWalletRepository implements IWalletRepository {
     };
   }
 
+  async findAllTransactions(filter: any, skip: number, limit: number): Promise<{ data: TransactionEntity[]; total: number; }> {
+    const [docs, total] = await Promise.all([
+      this.transactionModel.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).exec(),
+      this.transactionModel.countDocuments(filter),
+    ]);
+    return {
+      data: docs.map(doc => this.mapTransactionToEntity(doc)),
+      total,
+    };
+  }
+
+  async updateTransactionStatus(id: string, status: string, metadata?: any): Promise<void> {
+    const update: any = { status };
+    if (metadata) {
+      update.metadata = metadata;
+    }
+    await this.transactionModel.findByIdAndUpdate(id, update).exec();
+  }
+
   async executeTransaction(ownerId: string, ownerType: string, operation: (wallet: WalletEntity, session: ClientSession) => Promise<{ wallet: WalletEntity; transaction: TransactionEntity; }>): Promise<void> {
     const session = await this.connection.startSession();
     session.startTransaction();

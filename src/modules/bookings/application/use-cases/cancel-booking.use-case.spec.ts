@@ -9,7 +9,11 @@ describe('CancelBookingUseCase', () => {
   
   const mockBookingRepository = {
     findById: jest.fn(),
+    updateStatus: jest.fn(),
     update: jest.fn(),
+  };
+  const mockWalletRepo = {
+    executeTransaction: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -17,6 +21,7 @@ describe('CancelBookingUseCase', () => {
       providers: [
         CancelBookingUseCase,
         { provide: 'IBookingRepository', useValue: mockBookingRepository },
+        { provide: 'IWalletRepository', useValue: mockWalletRepo },
       ],
     }).compile();
 

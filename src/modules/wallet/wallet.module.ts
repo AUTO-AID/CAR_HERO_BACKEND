@@ -14,6 +14,10 @@ import { DepositUseCase } from './application/use-cases/deposit.use-case';
 import { WithdrawUseCase } from './application/use-cases/withdraw.use-case';
 import { TransferEarningsUseCase } from './application/use-cases/transfer-earnings.use-case';
 import { TransactionHistoryUseCase } from './application/use-cases/transaction-history.use-case';
+import { RequestPayoutUseCase } from './application/use-cases/request-payout.use-case';
+import { ProcessPayoutUseCase } from './application/use-cases/process-payout.use-case';
+import { GetAdminTransactionLogsUseCase } from './application/use-cases/get-admin-transaction-logs.use-case';
+import { GetFinancialSummaryUseCase } from './application/use-cases/get-financial-summary.use-case';
 
 @Module({
   imports: [
@@ -36,7 +40,11 @@ import { TransactionHistoryUseCase } from './application/use-cases/transaction-h
     DepositUseCase,
     WithdrawUseCase,
     TransferEarningsUseCase,
-    TransactionHistoryUseCase
+    TransactionHistoryUseCase,
+    RequestPayoutUseCase,
+    ProcessPayoutUseCase,
+    GetAdminTransactionLogsUseCase,
+    GetFinancialSummaryUseCase,
   ],
   exports: [
     'IWalletRepository',
