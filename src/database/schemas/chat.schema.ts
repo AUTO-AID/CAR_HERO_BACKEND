@@ -5,6 +5,14 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
+export enum MessageType {
+  TEXT = 'text',
+  IMAGE = 'image',
+  FILE = 'file',
+  LOCATION = 'location',
+  SYSTEM = 'system',
+}
+
 export type ChatDocument = Chat & Document;
 export type MessageDocument = Message & Document;
 
@@ -22,34 +30,24 @@ export type MessageDocument = Message & Document;
   },
 })
 export class Chat {
-  @Prop({ type: Types.ObjectId, ref: 'User' })
-  user?: Types.ObjectId;
-
-  @Prop({ type: Types.ObjectId, ref: 'Provider' })
-  provider?: Types.ObjectId;
+  @Prop({ type: [Types.ObjectId], required: true })
+  participants: Types.ObjectId[]; // Array of user IDs (User, Provider, Admin)
 
   @Prop({ type: Types.ObjectId, ref: 'Order' })
-  order?: Types.ObjectId;
+  orderId?: Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: 'Booking' })
-  booking?: Types.ObjectId;
-
-  // Last message for preview
   @Prop()
   lastMessage?: string;
 
   @Prop()
   lastMessageAt?: Date;
 
-  @Prop({ default: 'user' })
-  lastMessageBy?: string; // user, provider
+  @Prop({ type: Types.ObjectId })
+  lastMessageBy?: Types.ObjectId;
 
-  // Unread counts
-  @Prop({ default: 0 })
-  userUnreadCount: number;
-
-  @Prop({ default: 0 })
-  providerUnreadCount: number;
+  // Unread counts per participant: { userId: count }
+  @Prop({ type: Map, of: Number, default: {} })
+  unreadCounts: Map<string, number>;
 
   @Prop({ default: true })
   isActive: boolean;
@@ -62,8 +60,8 @@ export class Chat {
 export const ChatSchema = SchemaFactory.createForClass(Chat);
 
 // Indexes
-ChatSchema.index({ user: 1, provider: 1 });
-ChatSchema.index({ order: 1 });
+ChatSchema.index({ participants: 1 });
+ChatSchema.index({ orderId: 1 });
 ChatSchema.index({ lastMessageAt: -1 });
 
 /**
@@ -81,32 +79,27 @@ ChatSchema.index({ lastMessageAt: -1 });
 })
 export class Message {
   @Prop({ type: Types.ObjectId, ref: 'Chat', required: true })
-  chat: Types.ObjectId;
-
-  @Prop({ required: true })
-  senderType: string; // user, provider, system
+  chatId: Types.ObjectId;
 
   @Prop({ type: Types.ObjectId, required: true })
   senderId: Types.ObjectId;
 
+  @Prop({ type: Types.ObjectId, required: true })
+  receiverId: Types.ObjectId;
+
   @Prop({ required: true })
-  content: string;
+  message: string;
 
-  @Prop({ default: 'text' })
-  type: string; // text, image, location, system
-
-  // For image/file messages
-  @Prop()
-  mediaUrl?: string;
+  @Prop({ type: String, enum: MessageType, default: MessageType.TEXT })
+  type: MessageType;
 
   @Prop()
-  mediaType?: string;
+  fileUrl?: string;
 
-  // For location messages
   @Prop({ type: Object })
   location?: {
-    latitude: number;
-    longitude: number;
+    lat: number;
+    lng: number;
     address?: string;
   };
 
@@ -116,12 +109,6 @@ export class Message {
   @Prop()
   readAt?: Date;
 
-  @Prop({ default: false })
-  isDeleted: boolean;
-
-  @Prop()
-  deletedAt?: Date;
-
   // Metadata
   @Prop({ type: Object, default: {} })
   metadata: Record<string, any>;
@@ -130,5 +117,6 @@ export class Message {
 export const MessageSchema = SchemaFactory.createForClass(Message);
 
 // Indexes
-MessageSchema.index({ chat: 1, createdAt: -1 });
+MessageSchema.index({ chatId: 1, createdAt: -1 });
 MessageSchema.index({ senderId: 1 });
+MessageSchema.index({ receiverId: 1 });

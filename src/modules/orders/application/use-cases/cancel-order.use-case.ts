@@ -1,7 +1,7 @@
 import { Inject, Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
+import type { Cache } from 'cache-manager';
 import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
 import { OrderEntity } from '../../domain/entities/order.entity';
 import { OrderStatus } from '../../../../common/enums/status.enum';
@@ -18,15 +18,15 @@ export class CancelOrderUseCase {
     private readonly cacheManager: Cache,
   ) {}
 
-  async execute(id: string, dto: CancelOrderDto, currentUser: any): Promise<OrderEntity> {
+  async execute(id: string, dto: CancelOrderDto, currentUser?: any): Promise<OrderEntity> {
     const order = await this.orderRepository.findById(id);
     if (!order) {
       throw new NotFoundException('Order not found');
     }
 
     // Ownership Verification
-    const isOwner = order.user?.toString() === currentUser._id?.toString();
-    const isProvider = order.provider?.toString() === currentUser._id?.toString();
+    const isOwner = order.userId?.toString() === currentUser._id?.toString();
+    const isProvider = order.providerId?.toString() === currentUser._id?.toString();
     const isAdmin = currentUser.role === 'admin';
 
     if (!isOwner && !isProvider && !isAdmin) {
@@ -57,8 +57,8 @@ export class CancelOrderUseCase {
         oldStatus,
         OrderStatus.CANCELLED,
         order.orderNumber,
-        order.user as any,
-        order.provider as any,
+        order.userId as any,
+        order.providerId as any,
       ),
     );
 

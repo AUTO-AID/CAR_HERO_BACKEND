@@ -36,7 +36,7 @@ export class AssignProviderUseCase {
         oldStatus,
         OrderStatus.ACCEPTED,
         order.orderNumber,
-        order.user as any,
+        order.userId as any,
         providerId,
       ),
     );

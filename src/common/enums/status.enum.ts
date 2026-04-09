@@ -89,11 +89,12 @@ export enum TransactionType {
  * Notification Type Enum
  */
 export enum NotificationType {
-  ORDER_UPDATE = 'order_update',
-  BOOKING_REMINDER = 'booking_reminder',
-  PROMOTION = 'promotion',
-  CHAT_MESSAGE = 'chat_message',
-  SYSTEM = 'system',
+  ORDER_CREATED = 'order_created',
+  ORDER_UPDATED = 'order_updated',
+  ORDER_CANCELLED = 'order_cancelled',
+  NEW_MESSAGE = 'new_message',
+  REMINDER = 'reminder',
+  SYSTEM_ALERT = 'system_alert',
 }
 
 /**

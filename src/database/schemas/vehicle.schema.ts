@@ -43,10 +43,13 @@ export class Vehicle {
   vin?: string; // Vehicle Identification Number
 
   @Prop()
+  fuelType?: string; // بنزين، ديزل، كهرباء، هايبرد
+
+  @Prop()
   engineType?: string; // Petrol, Diesel, Electric, Hybrid
 
   @Prop()
-  transmission?: string; // Manual, Automatic
+  transmission?: string; // عادي، أوتوماتيك
 
   @Prop({ type: [String], default: [] })
   images: string[];

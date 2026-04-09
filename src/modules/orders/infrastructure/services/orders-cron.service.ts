@@ -29,9 +29,8 @@ export class OrdersCronService {
     for (const order of expiredOrders) {
       try {
         await this.cancelOrderUseCase.execute(order.id, {
-          reason: 'Auto-cancelled due to inactivity (2+ hours pending)',
-          cancelledBy: 'system'
-        });
+          reason: 'Auto-cancelled due to inactivity (2+ hours pending)'
+        } as any);
         this.logger.log(`Order ${order.orderNumber} auto-cancelled successfully.`);
       } catch (error) {
         this.logger.error(`Failed to auto-cancel order ${order.orderNumber}: ${error.message}`);

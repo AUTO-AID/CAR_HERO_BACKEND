@@ -1,11 +1,12 @@
 import { Inject, Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
+import type { Cache } from 'cache-manager';
 import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
 import { OrderEntity } from '../../domain/entities/order.entity';
 import { OrderStatus } from '../../../../common/enums/status.enum';
 import { OrderEvents, OrderStatusChangedEvent } from '../../domain/events/order.events';
+import { TransferEarningsUseCase } from '../../../../modules/wallet/application/use-cases/transfer-earnings.use-case';
 
 @Injectable()
 export class UpdateOrderStatusUseCase {
@@ -15,6 +16,7 @@ export class UpdateOrderStatusUseCase {
     private readonly eventEmitter: EventEmitter2,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
+    private readonly transferEarnings: TransferEarningsUseCase,
   ) {}
 
   async execute(id: string, status: OrderStatus, currentUser: any): Promise<OrderEntity> {
@@ -24,7 +26,7 @@ export class UpdateOrderStatusUseCase {
     }
 
     // Ownership Verification
-    const isProvider = order.provider?.toString() === currentUser._id?.toString();
+    const isProvider = order.providerId?.toString() === currentUser._id?.toString();
     const isAdmin = currentUser.role === 'admin';
 
     if (!isProvider && !isAdmin) {
@@ -46,6 +48,16 @@ export class UpdateOrderStatusUseCase {
 
     const updatedOrder = await this.orderRepository.update(id, updateData);
 
+    // 💰 Special Logic: Transfer earnings to provider on completion
+    if (status === OrderStatus.COMPLETED && updatedOrder.providerId && updatedOrder.total > 0) {
+      await this.transferEarnings.execute(
+        updatedOrder.providerId,
+        updatedOrder.total,
+        updatedOrder.id,
+        'order'
+      );
+    }
+
     // Invalidate Cache
     await this.cacheManager.del(`order_${id}`);
 
@@ -57,8 +69,8 @@ export class UpdateOrderStatusUseCase {
         oldStatus,
         status,
         order.orderNumber,
-        order.user as any,
-        order.provider as any,
+        order.userId as any,
+        order.providerId as any,
       ),
     );
 

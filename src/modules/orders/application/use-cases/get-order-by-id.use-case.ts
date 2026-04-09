@@ -1,6 +1,6 @@
 import { Inject, Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
+import type { Cache } from 'cache-manager';
 import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
 import { OrderEntity } from '../../domain/entities/order.entity';
 
@@ -18,7 +18,7 @@ export class GetOrderByIdUseCase {
     
     // 1. Try to get from cache
     const cachedOrder = await this.cacheManager.get<OrderEntity>(cacheKey);
-    let order: OrderEntity;
+    let order: OrderEntity | null;
 
     if (cachedOrder) {
       order = cachedOrder;
@@ -33,8 +33,8 @@ export class GetOrderByIdUseCase {
     }
 
     // Ownership Verification (always check even if cached)
-    const isOwner = order.user?.toString() === currentUser._id?.toString();
-    const isProvider = order.provider?.toString() === currentUser._id?.toString();
+    const isOwner = order.userId?.toString() === currentUser._id?.toString();
+    const isProvider = order.providerId?.toString() === currentUser._id?.toString();
     const isAdmin = currentUser.role === 'admin';
 
     if (!isOwner && !isProvider && !isAdmin) {

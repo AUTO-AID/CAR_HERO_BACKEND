@@ -1,16 +1,28 @@
-# Car Hero Backend
+# Car Hero Backend 🚗💨
 
-A production-ready NestJS backend for Car Hero - a car services & roadside assistance platform.
+A production-ready NestJS backend for Car Hero - a car services & roadside assistance platform. Built with a focus on scalability, security, and clean code.
 
-## 🚗 Features
+## 🏗 Architecture & Principles (Architect Vision)
+
+This project is governed by the strictly enforced development principles found in our [start.txt](file:///e:/CarHero/CAR_HERO_BACKEND/start.txt):
+
+- **Clean Architecture Implementation**: Strict separation between `Domain`, `Application`, `Infrastructure`, and `Presentation` layers.
+- **SOLID Design**: Ensuring classes are single-responsibility, open for extension, and loosely coupled.
+- **Automated Verification**: Unit testing for all business logic (Use Cases) to prevent regressions.
+- **Security-First Approach**: At-rest encryption for sensitive data and granular Ownership Verification (RBAC).
+- **High Performance**: Redis-backed caching for real-time tracking and frequent queries.
+- **Event-Driven & Reactive**: Automated background processes and event-triggered notifications.
+- **Containerization & CI/CD**: Ready for modern cloud environments with Docker and GitHub Actions.
+
+## 🌟 Key Features
 
 - **OTP-based Authentication** - Phone number login with JWT tokens
 - **Role-based Access Control** - User, Provider, Admin roles
 - **Geospatial Queries** - Find nearby providers with MongoDB 2dsphere
-- **Real-time WebSocket** - Order tracking, chat, provider status
-- **Firebase FCM** - Push notifications
-- **Premium Subscriptions** - Wallet & loyalty points
-- **Swagger API Docs** - Auto-generated documentation
+- **Real-time Tracking** - Live provider location updates with Redis caching
+- **Payment & Verification** - Secure payment confirmation and transaction logging
+- **Background Cleanup** - Automated cron jobs for order lifecycle management
+- **Real-time WebSocket** - Support for tracking, chat, and status updates
 
 ## 📦 Tech Stack
 

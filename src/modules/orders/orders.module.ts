@@ -22,6 +22,8 @@ import { CancelOrderUseCase } from './application/use-cases/cancel-order.use-cas
 import { OrderNotificationsListener } from './infrastructure/listeners/order-notifications.listener';
 import { OrdersCronService } from './infrastructure/services/orders-cron.service';
 import { OrdersController } from './presentation/controllers/orders.controller';
+import { WalletModule } from '../wallet/wallet.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   imports: [
@@ -29,6 +31,8 @@ import { OrdersController } from './presentation/controllers/orders.controller';
       { name: Order.name, schema: OrderSchema },
       { name: Service.name, schema: ServiceSchema },
     ]),
+    WalletModule,
+    NotificationsModule,
   ],
   controllers: [OrdersController],
   providers: [

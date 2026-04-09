@@ -1,139 +1,63 @@
-/**
- * Notifications Service
- * Handles push notifications via Firebase FCM
- */
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Injectable, Logger, Inject, forwardRef } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import * as admin from 'firebase-admin';
+import { Model, Types } from 'mongoose';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { Notification, NotificationDocument } from '../../database/schemas/notification.schema';
 import { NotificationType } from '../../common/enums/status.enum';
+import { NotificationsGateway } from './notifications.gateway';
+import type { IBookingRepository } from '../bookings/domain/repositories/booking.repository.interface';
+import { Booking } from '../bookings/domain/entities/booking.entity';
 
-export interface SendNotificationDto {
+export interface CreateNotificationDto {
   recipientId: string;
-  recipientType: 'user' | 'provider';
+  recipientType: string;
   title: string;
   body: string;
-  type?: NotificationType;
+  type: NotificationType;
   data?: Record<string, any>;
-  imageUrl?: string;
-  referenceType?: string;
-  referenceId?: string;
 }
 
 @Injectable()
-export class NotificationsService implements OnModuleInit {
+export class NotificationsService {
   private readonly logger = new Logger(NotificationsService.name);
-  private firebaseInitialized = false;
 
   constructor(
     @InjectModel(Notification.name)
     private notificationModel: Model<NotificationDocument>,
-    private configService: ConfigService,
+    private readonly gateway: NotificationsGateway,
+    @Inject('IBookingRepository')
+    private readonly bookingRepository: IBookingRepository,
   ) {}
 
-  async onModuleInit() {
-    await this.initializeFirebase();
-  }
-
   /**
-   * Initialize Firebase Admin SDK
+   * Create and send an in-app notification
    */
-  private async initializeFirebase(): Promise<void> {
-    try {
-      const projectId = this.configService.get<string>('firebase.projectId');
-      const privateKey = this.configService.get<string>('firebase.privateKey');
-      const clientEmail = this.configService.get<string>('firebase.clientEmail');
-
-      if (projectId && privateKey && clientEmail) {
-        admin.initializeApp({
-          credential: admin.credential.cert({
-            projectId,
-            privateKey,
-            clientEmail,
-          }),
-        });
-        this.firebaseInitialized = true;
-        this.logger.log('Firebase Admin SDK initialized');
-      } else {
-        this.logger.warn('Firebase credentials not configured');
-      }
-    } catch (error) {
-      this.logger.error('Failed to initialize Firebase', error);
-    }
-  }
-
-  /**
-   * Send push notification
-   */
-  async send(dto: SendNotificationDto, fcmToken?: string): Promise<NotificationDocument> {
-    // Create notification record
+  async createNotification(dto: CreateNotificationDto): Promise<NotificationDocument> {
     const notification = await this.notificationModel.create({
-      recipientId: dto.recipientId,
+      recipientId: new Types.ObjectId(dto.recipientId),
       recipientType: dto.recipientType,
       title: dto.title,
       body: dto.body,
-      type: dto.type || NotificationType.SYSTEM,
-      data: dto.data,
-      imageUrl: dto.imageUrl,
-      referenceType: dto.referenceType,
-      referenceId: dto.referenceId,
+      type: dto.type,
+      data: dto.data || {},
     });
 
-    // Send FCM push notification if token provided and Firebase initialized
-    if (fcmToken && this.firebaseInitialized) {
-      try {
-        await admin.messaging().send({
-          token: fcmToken,
-          notification: {
-            title: dto.title,
-            body: dto.body,
-            imageUrl: dto.imageUrl,
-          },
-          data: dto.data
-            ? Object.fromEntries(
-                Object.entries(dto.data).map(([k, v]) => [k, String(v)]),
-              )
-            : undefined,
-          android: {
-            priority: 'high',
-            notification: {
-              channelId: 'default',
-              priority: 'high',
-            },
-          },
-          apns: {
-            payload: {
-              aps: {
-                sound: 'default',
-                badge: 1,
-              },
-            },
-          },
-        });
+    // Real-time delivery via WebSocket
+    this.gateway.sendToUser(dto.recipientId, notification);
 
-        notification.isPushSent = true;
-        notification.pushSentAt = new Date();
-        await notification.save();
+    // Update unread count for user
+    const unreadCount = await this.getUnreadCount(dto.recipientId);
+    this.gateway.emitUnreadCount(dto.recipientId, unreadCount);
 
-        this.logger.log(`Push notification sent to ${dto.recipientId}`);
-      } catch (error: any) {
-        notification.pushError = error.message;
-        await notification.save();
-        this.logger.error(`Failed to send push notification: ${error.message}`);
-      }
-    }
-
+    this.logger.log(`Notification created and sent to user ${dto.recipientId}`);
     return notification;
   }
 
   /**
-   * Get user's notifications
+   * Get user's notifications (paginated)
    */
   async getNotifications(
     recipientId: string,
-    recipientType: string,
     page: number = 1,
     limit: number = 20,
   ) {
@@ -141,43 +65,94 @@ export class NotificationsService implements OnModuleInit {
 
     const [notifications, total] = await Promise.all([
       this.notificationModel
-        .find({ recipientId, recipientType })
+        .find({ recipientId: new Types.ObjectId(recipientId) })
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
+        .lean()
         .exec(),
-      this.notificationModel.countDocuments({ recipientId, recipientType }).exec(),
+      this.notificationModel.countDocuments({ recipientId: new Types.ObjectId(recipientId) }).exec(),
     ]);
-
-    const unreadCount = await this.notificationModel
-      .countDocuments({ recipientId, recipientType, isRead: false })
-      .exec();
 
     return {
       notifications,
       total,
       page,
       limit,
-      unreadCount,
     };
   }
 
-  /**
-   * Mark notification as read
-   */
-  async markAsRead(id: string): Promise<NotificationDocument | null> {
+  async getUnreadCount(recipientId: string): Promise<number> {
     return this.notificationModel
-      .findByIdAndUpdate(id, { isRead: true, readAt: new Date() }, { new: true })
+      .countDocuments({ recipientId: new Types.ObjectId(recipientId), isRead: false })
       .exec();
   }
 
-  /**
-   * Mark all notifications as read
-   */
-  async markAllAsRead(recipientId: string, recipientType: string): Promise<void> {
+  async markAsRead(id: string, userId: string): Promise<NotificationDocument | null> {
+    const notification = await this.notificationModel.findOneAndUpdate(
+      { _id: new Types.ObjectId(id), recipientId: new Types.ObjectId(userId) },
+      { isRead: true, readAt: new Date() },
+      { new: true }
+    ).exec();
+
+    if (notification) {
+      const unreadCount = await this.getUnreadCount(userId);
+      this.gateway.emitUnreadCount(userId, unreadCount);
+    }
+
+    return notification;
+  }
+
+  async markAllAsRead(recipientId: string): Promise<void> {
     await this.notificationModel.updateMany(
-      { recipientId, recipientType, isRead: false },
+      { recipientId: new Types.ObjectId(recipientId), isRead: false },
       { isRead: true, readAt: new Date() },
     );
+    this.gateway.emitUnreadCount(recipientId, 0);
+  }
+
+  /**
+   * Cron Job: Send reminders for upcoming bookings
+   * Runs every 15 minutes
+   */
+  @Cron('0 */15 * * * *')
+  async handleBookingReminders() {
+    this.logger.log('Checking for upcoming booking reminders...');
+    
+    // Find bookings starting in ~1 hour (between 45 and 60 minutes from now)
+    const now = new Date();
+    const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000);
+    const fortyFiveMinsFromNow = new Date(now.getTime() + 45 * 60 * 1000);
+
+    // This is a simplified query; in a real app, you'd use a more precise range
+    const upcomingBookings = await this.bookingRepository.findAll({
+      status: 'confirmed',
+      scheduledDate: { $gte: fortyFiveMinsFromNow, $lte: oneHourFromNow }
+    });
+
+    for (const booking of upcomingBookings.data as any[]) {
+      const b = booking as Booking;
+      // Send to user
+      await this.createNotification({
+        recipientId: b.user,
+        recipientType: 'user',
+        title: 'Booking Reminder 🚗',
+        body: `Your booking ${b.bookingNumber} for ${b.serviceName} is starting in about an hour.`,
+        type: NotificationType.REMINDER,
+        data: { bookingId: b.id, bookingNumber: b.bookingNumber, type: 'booking' }
+      });
+
+      // Send to provider (if assigned)
+      if (b.provider) {
+        await this.createNotification({
+          recipientId: b.provider,
+          recipientType: 'provider',
+          title: 'Upcoming Service Reminder 🛠️',
+          body: `You have a service appointment ${b.bookingNumber} in one hour.`,
+          type: NotificationType.REMINDER,
+          data: { bookingId: b.id, bookingNumber: b.bookingNumber, type: 'booking' }
+        });
+      }
+    }
   }
 }

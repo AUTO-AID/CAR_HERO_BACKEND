@@ -10,6 +10,7 @@ import { AppModule } from './app.module';
 import { setupSwagger } from './config/swagger.config';
 import { join } from 'path';
 import helmet from 'helmet';
+import { existsSync, mkdirSync } from 'fs';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
@@ -22,6 +23,15 @@ async function bootstrap() {
   // Setup EJS for Views (WhatsApp QR)
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
   app.setViewEngine('ejs');
+
+  // Serve Static Assets (Chat Uploads)
+  const uploadsPath = join(__dirname, '..', 'uploads', 'chat');
+  if (!existsSync(uploadsPath)) {
+    mkdirSync(uploadsPath, { recursive: true });
+  }
+  app.useStaticAssets(uploadsPath, {
+    prefix: '/uploads/chat',
+  });
 
   // Security - Helmet
   app.use(

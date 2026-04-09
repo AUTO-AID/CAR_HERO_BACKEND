@@ -4,12 +4,12 @@
 import {
   Controller,
   Get,
-  Put,
+  Patch,
   Param,
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { NotificationsService } from './notifications.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -25,28 +25,38 @@ export class NotificationsController {
   @Get()
   @ApiOperation({ summary: 'Get user notifications' })
   async getNotifications(
-    @CurrentUser() user: any,
+    @CurrentUser('id') userId: string,
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 20,
   ) {
     return this.notificationsService.getNotifications(
-      user.id,
-      user.role,
+      userId,
       page,
       limit,
     );
   }
 
-  @Put(':id/read')
-  @ApiOperation({ summary: 'Mark notification as read' })
-  async markAsRead(@Param('id', ParseObjectIdPipe) id: string) {
-    return this.notificationsService.markAsRead(id);
+  @Get('unread-count')
+  @ApiOperation({ summary: 'Get unread notifications count' })
+  async getUnreadCount(@CurrentUser('id') userId: string) {
+    const count = await this.notificationsService.getUnreadCount(userId);
+    return { success: true, count };
   }
 
-  @Put('read-all')
+  @Patch(':id/read')
+  @ApiOperation({ summary: 'Mark notification as read' })
+  async markAsRead(
+    @CurrentUser('id') userId: string,
+    @Param('id', ParseObjectIdPipe) id: string
+  ) {
+    const data = await this.notificationsService.markAsRead(id, userId);
+    return { success: true, data };
+  }
+
+  @Patch('read-all')
   @ApiOperation({ summary: 'Mark all notifications as read' })
-  async markAllAsRead(@CurrentUser() user: any) {
-    await this.notificationsService.markAllAsRead(user.id, user.role);
-    return { message: 'All notifications marked as read' };
+  async markAllAsRead(@CurrentUser('id') userId: string) {
+    await this.notificationsService.markAllAsRead(userId);
+    return { success: true, message: 'All notifications marked as read' };
   }
 }

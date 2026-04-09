@@ -12,6 +12,7 @@ import { Order, OrderDocument } from '../../../database/schemas/order.schema';
 import { SubscriptionPlan, SubscriptionPlanDocument, Subscription, SubscriptionDocument } from '../../../database/schemas/subscription.schema';
 import { Setting, SettingDocument } from '../../../database/schemas/setting.schema';
 import { RegistrationStatus, BookingStatus, OrderStatus } from '../../../common/enums/status.enum';
+import { Role } from '../../../common/enums/roles.enum';
 import { AdminLoginDto } from '../dto/admin-login.dto';
 import { CreateMembershipPlanDto } from '../dto/create-membership-plan.dto';
 import { UpdateMembershipPlanDto } from '../dto/update-membership-plan.dto';

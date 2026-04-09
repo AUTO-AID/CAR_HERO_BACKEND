@@ -1,0 +1,28 @@
+import { IsNumber, IsPositive, IsString, IsOptional, IsEnum } from 'class-validator';
+
+export class DepositDto {
+  @IsNumber()
+  @IsPositive()
+  amount: number;
+
+  @IsString()
+  @IsOptional()
+  paymentMethod?: string;
+
+  @IsString()
+  @IsOptional()
+  paymentId?: string;
+}
+
+export class WithdrawDto {
+  @IsNumber()
+  @IsPositive()
+  amount: number;
+
+  @IsString()
+  bankAccount: string;
+
+  @IsString()
+  @IsOptional()
+  bankName?: string;
+}

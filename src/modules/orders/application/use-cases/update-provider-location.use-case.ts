@@ -18,7 +18,7 @@ export class UpdateProviderLocationUseCase {
     }
 
     // Ownership Verification
-    const isAssignedProvider = order.provider?.toString() === currentUser._id?.toString();
+    const isAssignedProvider = order.providerId?.toString() === currentUser._id?.toString();
     const isAdmin = currentUser.role === 'admin';
 
     if (!isAssignedProvider && !isAdmin) {

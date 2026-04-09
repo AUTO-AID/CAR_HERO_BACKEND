@@ -134,7 +134,7 @@ export class OrdersController {
     @Body() dto: { scheduleTime?: string; notes?: string; location?: any },
     @Req() req: any
   ) {
-    return this.updateOrderUseCase.execute(id, dto, req.user);
+    return this.updateOrderUseCase.execute(id, dto);
   }
 
   @Patch('orders/:id/location')
@@ -158,7 +158,7 @@ export class OrdersController {
     @Body() verifyPaymentDto: VerifyPaymentDto,
     @Req() req: any
   ) {
-    return this.verifyPaymentUseCase.execute(id, verifyPaymentDto, req.user);
+    return this.verifyPaymentUseCase.execute(id, verifyPaymentDto);
   }
 
   @Post('orders/:id/cancel')

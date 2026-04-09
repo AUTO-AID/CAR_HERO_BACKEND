@@ -6,6 +6,8 @@ import { OrderStatus } from '../../../../common/enums/status.enum';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Service, ServiceDocument } from '../../../../database/schemas/service.schema';
+import { NotificationsService } from '../../../notifications/notifications.service';
+import { NotificationType } from '../../../../common/enums/status.enum';
 
 @Injectable()
 export class CreateOrderUseCase {
@@ -14,6 +16,7 @@ export class CreateOrderUseCase {
     private readonly orderRepository: IOrderRepository,
     @InjectModel(Service.name)
     private readonly serviceModel: Model<ServiceDocument>,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async execute(dto: CreateOrderDto): Promise<OrderEntity> {
@@ -32,7 +35,7 @@ export class CreateOrderUseCase {
       vehicleId: dto.vehicleId,
       status: OrderStatus.PENDING,
       serviceName: service.name,
-      servicePrice: service.basePrice, // Using base price from service
+      servicePrice: service.basePrice,
       total: service.basePrice,
       userLocation: {
         type: 'Point',
@@ -44,6 +47,20 @@ export class CreateOrderUseCase {
     };
 
     // 3. Save Order
-    return this.orderRepository.create(orderData);
+    const order = await this.orderRepository.create(orderData);
+
+    // 4. Send Notification to Provider (if assigned) or System
+    if (order.providerId) {
+      await this.notificationsService.createNotification({
+        recipientId: order.providerId,
+        recipientType: 'provider',
+        title: 'New Order Received 📦',
+        body: `You have a new order: ${order.orderNumber} for ${order.serviceName}`,
+        type: NotificationType.ORDER_CREATED,
+        data: { orderId: order.id, orderNumber: order.orderNumber }
+      });
+    }
+
+    return order;
   }
 }

@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
 import { OrderEntity } from '../../domain/entities/order.entity';
 import { Order, OrderDocument } from '../../../../database/schemas/order.schema';
+import { OrderStatus, PaymentStatus } from '../../../../common/enums/status.enum';
 
 @Injectable()
 export class MongooseOrderRepository implements IOrderRepository {
@@ -194,7 +195,7 @@ export class MongooseOrderRepository implements IOrderRepository {
         $set: { 
           paymentId,
           paymentMethod: paymentMethod || 'online',
-          paymentStatus: PaymentStatus.PAID
+          paymentStatus: PaymentStatus.COMPLETED
         } 
       },
       { new: true }

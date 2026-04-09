@@ -1,6 +1,6 @@
 import { Inject, Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
+import type { Cache } from 'cache-manager';
 import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
 import { OrderEntity } from '../../domain/entities/order.entity';
 import { PaymentStatus } from '../../../../common/enums/status.enum';
@@ -22,7 +22,7 @@ export class VerifyPaymentUseCase {
     }
 
     // Business Rule: Check if payment is already confirmed
-    if (order.paymentStatus === PaymentStatus.PAID) {
+    if (order.paymentStatus === PaymentStatus.COMPLETED) {
       throw new BadRequestException('Order is already paid');
     }
 

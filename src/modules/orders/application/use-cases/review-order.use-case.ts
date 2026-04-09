@@ -18,7 +18,7 @@ export class ReviewOrderUseCase {
     }
 
     // Ownership Verification: Only the user who placed the order (or Admin) can review
-    const isOwner = order.user?.toString() === currentUser._id?.toString();
+    const isOwner = order.userId?.toString() === currentUser._id?.toString();
     const isAdmin = currentUser.role === 'admin';
 
     if (!isOwner && !isAdmin) {
