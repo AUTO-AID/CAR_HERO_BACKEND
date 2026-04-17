@@ -8,11 +8,11 @@ import { PaymentBookingUseCase } from '../../application/use-cases/payment-booki
 import { CreateBookingDto } from '../../application/dto/create-booking.dto';
 
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
-import { JwtAuthGuard } from '../../../../common/guards/jwt-auth.guard';
-import { RolesGuard } from '../../../../common/guards/roles.guard';
-import { Roles } from '../../../../common/decorators/roles.decorator';
-import { CurrentUser } from '../../../../common/decorators/current-user.decorator';
-import { Role } from '../../../../common/enums/roles.enum';
+import { JwtAuthGuard } from '../../../../core/guards/jwt-auth.guard';
+import { RolesGuard } from '../../../../core/guards/roles.guard';
+import { Roles } from '../../../../core/decorators/roles.decorator';
+import { CurrentUser } from '../../../../core/decorators/current-user.decorator';
+import { Role } from '../../../../core/enums/roles.enum';
 
 @Controller('v1/bookings')
 @UseGuards(JwtAuthGuard, RolesGuard)

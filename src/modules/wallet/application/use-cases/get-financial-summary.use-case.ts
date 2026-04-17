@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import type { IWalletRepository } from '../../domain/repositories/wallet.repository.interface';
-import { TransactionType } from '../../../../common/enums/status.enum';
+import { TransactionType } from '../../../../core/enums/status.enum';
 
 @Injectable()
 export class GetFinancialSummaryUseCase {

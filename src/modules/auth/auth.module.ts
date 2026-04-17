@@ -6,19 +6,19 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import type { StringValue } from 'ms';
 
-import { AuthController } from './controllers/auth.controller';
-import { AuthService } from './services/auth.service';
-import { OtpService } from './services/otp.service';
-import { JwtStrategy } from './strategies/jwt.strategy';
+import { AuthController } from './presentation/controllers/auth.controller';
+import { AuthService } from './application/services/auth.service';
+import { OtpService } from './application/services/otp.service';
+import { JwtStrategy } from './infrastructure/strategies/jwt.strategy';
 
-import { User, UserSchema } from '../users/schemas/user.schema';
-import { Provider, ProviderSchema } from '../../database/schemas/provider.schema';
-import { Admin, AdminSchema } from '../../database/schemas/admin.schema';
-import { Logout, LogoutSchema } from './schemas/logout.schema';
+import { User, UserSchema } from '../users/infrastructure/persistence/mongoose/schemas/user.schema';
+import { Provider, ProviderSchema } from '../providers/infrastructure/persistence/mongoose/schemas/provider.schema';
+import { Admin, AdminSchema } from '../admin/infrastructure/persistence/mongoose/schemas/admin.schema';
+import { Logout, LogoutSchema } from './infrastructure/persistence/mongoose/schemas/logout.schema';
 import {
   PendingRegistration,
   PendingRegistrationSchema,
-} from './schemas/pending-registration.schema';
+} from './infrastructure/persistence/mongoose/schemas/pending-registration.schema';
 import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({

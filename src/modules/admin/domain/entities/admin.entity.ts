@@ -2,7 +2,7 @@
  * Admin Entity
  * Represents the core administrative user in the domain layer.
  */
-import { Role } from '../../../../common/enums/roles.enum';
+import { Role } from '../../../../core/enums/roles.enum';
 
 export class AdminEntity {
   constructor(

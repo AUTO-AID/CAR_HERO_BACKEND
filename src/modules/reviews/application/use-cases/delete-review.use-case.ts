@@ -1,13 +1,13 @@
 import { Inject, Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { IReviewRepository } from '../../domain/repositories/review.repository.interface';
-import { ProvidersService } from '../../../providers/providers.service';
+import { RecalculateProviderRatingUseCase } from '../../../providers/application/use-cases/recalculate-provider-rating.use-case';
 
 @Injectable()
 export class DeleteReviewUseCase {
   constructor(
     @Inject(IReviewRepository)
     private readonly reviewRepository: IReviewRepository,
-    private readonly providersService: ProvidersService,
+    private readonly recalculateProviderRatingUseCase: RecalculateProviderRatingUseCase,
   ) {}
 
   async execute(reviewId: string, currentUser: any): Promise<boolean> {
@@ -27,7 +27,7 @@ export class DeleteReviewUseCase {
     if (deleted) {
       // Recalculate provider rating stats after deletion
       const stats = await this.reviewRepository.getAverageRating(providerId);
-      await this.providersService.recalculateRating(providerId, stats.averageRating, stats.totalReviews);
+      await this.recalculateProviderRatingUseCase.execute(providerId, stats.averageRating, stats.totalReviews);
     }
 
     return deleted;

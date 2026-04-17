@@ -2,11 +2,11 @@ import { Controller, Get, Post, Body, UseGuards, Query } from '@nestjs/common';
 import { GetBalanceUseCase } from '../../application/use-cases/get-balance.use-case';
 import { DepositUseCase } from '../../application/use-cases/deposit.use-case';
 import { TransactionHistoryUseCase } from '../../application/use-cases/transaction-history.use-case';
-import { JwtAuthGuard } from '../../../../common/guards/jwt-auth.guard';
-import { RolesGuard } from '../../../../common/guards/roles.guard';
-import { Roles } from '../../../../common/decorators/roles.decorator';
-import { Role } from '../../../../common/enums/roles.enum';
-import { CurrentUser } from '../../../../common/decorators/current-user.decorator';
+import { JwtAuthGuard } from '../../../../core/guards/jwt-auth.guard';
+import { RolesGuard } from '../../../../core/guards/roles.guard';
+import { Roles } from '../../../../core/decorators/roles.decorator';
+import { Role } from '../../../../core/enums/roles.enum';
+import { CurrentUser } from '../../../../core/decorators/current-user.decorator';
 import { DepositDto } from '../../application/dto/wallet.dto';
 
 @Controller('v1/wallet')

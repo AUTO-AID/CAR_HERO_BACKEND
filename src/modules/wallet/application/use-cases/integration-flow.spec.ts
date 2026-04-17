@@ -4,7 +4,7 @@ import { ProviderFlowUseCase } from '../../../bookings/application/use-cases/pro
 import { IOrderRepository } from '../../../orders/domain/repositories/order.repository.interface';
 import { IBookingRepository } from '../../../bookings/domain/repositories/booking.repository.interface';
 import { IWalletRepository } from '../../domain/repositories/wallet.repository.interface';
-import { OrderStatus, TransactionType } from '../../../../common/enums/status.enum';
+import { OrderStatus, TransactionType } from '../../../../core/enums/status.enum';
 import { BookingStatus } from '../../../bookings/domain/enums/booking-status.enum';
 import { OrderEntity } from '../../../orders/domain/entities/order.entity';
 import { Booking } from '../../../bookings/domain/entities/booking.entity';

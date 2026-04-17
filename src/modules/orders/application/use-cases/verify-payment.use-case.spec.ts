@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { VerifyPaymentUseCase } from './verify-payment.use-case';
 import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
-import { PaymentStatus } from '../../../../common/enums/status.enum';
+import { PaymentStatus } from '../../../../core/enums/status.enum';
 import { BadRequestException } from '@nestjs/common';
 
 describe('VerifyPaymentUseCase', () => {

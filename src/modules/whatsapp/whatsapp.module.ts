@@ -1,6 +1,6 @@
 import { Module, Global } from '@nestjs/common';
-import { WhatsAppWebService } from './services/whatsapp-web.service';
-import { WhatsAppController } from './controllers/whatsapp.controller';
+import { WhatsAppWebService } from './application/services/whatsapp-web.service';
+import { WhatsAppController } from './presentation/controllers/whatsapp.controller';
 
 @Global() // جعله Global لاستخدامه في Auth Module
 @Module({

@@ -3,8 +3,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
 import { OrderEntity } from '../../domain/entities/order.entity';
-import { Order, OrderDocument } from '../../../../database/schemas/order.schema';
-import { OrderStatus, PaymentStatus } from '../../../../common/enums/status.enum';
+import { Order, OrderDocument } from './mongoose/schemas/order.schema';
+import { OrderStatus, PaymentStatus } from '../../../../core/enums/status.enum';
 
 @Injectable()
 export class MongooseOrderRepository implements IOrderRepository {

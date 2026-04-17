@@ -4,8 +4,8 @@ import { ConfigService } from '@nestjs/config';
 import { LoginUseCase } from './login.use-case';
 import { IAdminRepository } from '../../domain/repositories/admin.repository.interface';
 import { AdminEntity } from '../../domain/entities/admin.entity';
-import { Role } from '../../../../common/enums/roles.enum';
-import { PasswordUtil, TokenUtil } from '../../../../shared/utils';
+import { Role } from '../../../../core/enums/roles.enum';
+import { PasswordUtil, TokenUtil } from '../../../../core/utils';
 
 describe('LoginUseCase', () => {
   let loginUseCase: LoginUseCase;

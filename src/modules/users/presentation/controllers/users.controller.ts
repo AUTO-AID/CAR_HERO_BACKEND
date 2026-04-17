@@ -9,13 +9,13 @@ import {
   HttpCode,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../../../../common/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../../../../core/guards/jwt-auth.guard';
 import { GetProfileUseCase } from '../../application/use-cases/get-profile.use-case';
 import { UpdateProfileUseCase } from '../../application/use-cases/update-profile.use-case';
 import { DeleteAccountUseCase } from '../../application/use-cases/delete-account.use-case';
 import { GetUserStatsUseCase } from '../../application/use-cases/get-user-stats.use-case';
 import { UpdateUserDto } from '../../application/dto/update-user.dto';
-import { CurrentUser } from '../../../../common/decorators/current-user.decorator';
+import { CurrentUser } from '../../../../core/decorators/current-user.decorator';
 
 @ApiTags('Users')
 @Controller('users')

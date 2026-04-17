@@ -3,11 +3,11 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
 import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
 import { OrderEntity } from '../../domain/entities/order.entity';
-import { PaymentStatus } from '../../../../common/enums/status.enum';
+import { PaymentStatus } from '../../../../core/enums/status.enum';
 import { VerifyPaymentDto } from '../dto/verify-payment.dto';
 import { IWalletRepository } from '../../../../modules/wallet/domain/repositories/wallet.repository.interface';
 import { Transaction } from '../../../../modules/wallet/domain/entities/transaction.entity';
-import { TransactionType } from '../../../../common/enums/status.enum';
+import { TransactionType } from '../../../../core/enums/status.enum';
 
 @Injectable()
 export class VerifyPaymentUseCase {

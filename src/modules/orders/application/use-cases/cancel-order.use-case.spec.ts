@@ -3,7 +3,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { CancelOrderUseCase } from './cancel-order.use-case';
 import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
-import { OrderStatus } from '../../../../common/enums/status.enum';
+import { OrderStatus } from '../../../../core/enums/status.enum';
 import { BadRequestException } from '@nestjs/common';
 
 describe('CancelOrderUseCase', () => {

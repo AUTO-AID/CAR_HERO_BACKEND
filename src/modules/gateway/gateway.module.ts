@@ -6,7 +6,7 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AppGateway } from './app.gateway';
-import { WsJwtGuard } from '../../common/guards/ws-jwt.guard';
+import { WsJwtGuard } from '../../core/guards/ws-jwt.guard';
 
 @Module({
   imports: [

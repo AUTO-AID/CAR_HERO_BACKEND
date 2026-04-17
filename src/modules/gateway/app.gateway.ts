@@ -14,7 +14,7 @@ import {
 } from '@nestjs/websockets';
 import { Logger, UseGuards } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
-import { WsJwtGuard } from '../../common/guards/ws-jwt.guard';
+import { WsJwtGuard } from '../../core/guards/ws-jwt.guard';
 
 /**
  * Events emitted by the server

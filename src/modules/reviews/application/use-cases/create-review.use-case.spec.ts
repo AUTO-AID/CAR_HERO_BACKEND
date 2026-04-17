@@ -5,7 +5,7 @@ import { IReviewRepository } from '../../domain/repositories/review.repository.i
 import { IOrderRepository } from '../../../orders/domain/repositories/order.repository.interface';
 import { IBookingRepository } from '../../../bookings/domain/repositories/booking.repository.interface';
 import { ProvidersService } from '../../../providers/providers.service';
-import { OrderStatus, BookingStatus } from '../../../../common/enums/status.enum';
+import { OrderStatus, BookingStatus } from '../../../../core/enums/status.enum';
 
 describe('CreateReviewUseCase', () => {
   let useCase: CreateReviewUseCase;

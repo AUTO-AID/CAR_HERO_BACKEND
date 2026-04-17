@@ -1,7 +1,7 @@
 import { Injectable, Inject, BadRequestException } from '@nestjs/common';
 import type { IWalletRepository } from '../../domain/repositories/wallet.repository.interface';
 import { Transaction } from '../../domain/entities/transaction.entity';
-import { TransactionType, PayoutStatus } from '../../../../common/enums/status.enum';
+import { TransactionType, PayoutStatus } from '../../../../core/enums/status.enum';
 import { WithdrawDto } from '../dto/wallet.dto';
 
 @Injectable()

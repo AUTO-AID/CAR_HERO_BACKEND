@@ -5,7 +5,7 @@ import { GetProviderReviewsUseCase } from '../../application/use-cases/get-provi
 import { RespondToReviewUseCase } from '../../application/use-cases/respond-to-review.use-case';
 import { DeleteReviewUseCase } from '../../application/use-cases/delete-review.use-case';
 import { CreateReviewDto, ProviderResponseDto, ReviewQueryDto } from '../dtos/review.dto';
-import { JwtAuthGuard } from '../../../../common/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../../../../core/guards/jwt-auth.guard';
 
 @ApiTags('Reviews')
 @Controller('reviews')

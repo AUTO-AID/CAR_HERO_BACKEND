@@ -1,7 +1,7 @@
 import { Inject, Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
 import { OrderEntity } from '../../domain/entities/order.entity';
-import { OrderStatus } from '../../../../common/enums/status.enum';
+import { OrderStatus } from '../../../../core/enums/status.enum';
 import { UpdateLocationDto } from '../dto/update-location.dto';
 
 @Injectable()

@@ -3,11 +3,11 @@ import { GetBalanceUseCase } from '../../application/use-cases/get-balance.use-c
 import { WithdrawUseCase } from '../../application/use-cases/withdraw.use-case';
 import { TransactionHistoryUseCase } from '../../application/use-cases/transaction-history.use-case';
 import { RequestPayoutUseCase } from '../../application/use-cases/request-payout.use-case';
-import { JwtAuthGuard } from '../../../../common/guards/jwt-auth.guard';
-import { RolesGuard } from '../../../../common/guards/roles.guard';
-import { Roles } from '../../../../common/decorators/roles.decorator';
-import { Role } from '../../../../common/enums/roles.enum';
-import { CurrentUser } from '../../../../common/decorators/current-user.decorator';
+import { JwtAuthGuard } from '../../../../core/guards/jwt-auth.guard';
+import { RolesGuard } from '../../../../core/guards/roles.guard';
+import { Roles } from '../../../../core/decorators/roles.decorator';
+import { Role } from '../../../../core/enums/roles.enum';
+import { CurrentUser } from '../../../../core/decorators/current-user.decorator';
 import { WithdrawDto } from '../../application/dto/wallet.dto';
 
 @Controller('v1/provider/wallet')

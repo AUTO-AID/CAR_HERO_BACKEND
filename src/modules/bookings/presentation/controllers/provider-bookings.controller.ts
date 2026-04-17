@@ -3,11 +3,11 @@ import { ProviderFlowUseCase } from '../../application/use-cases/provider-flow.u
 import { GetNearbyBookingsUseCase } from '../../application/use-cases/get-nearby-bookings.use-case';
 import { GetBookingsUseCase } from '../../application/use-cases/get-bookings.use-case';
 
-import { JwtAuthGuard } from '../../../../common/guards/jwt-auth.guard';
-import { RolesGuard } from '../../../../common/guards/roles.guard';
-import { Roles } from '../../../../common/decorators/roles.decorator';
-import { CurrentUser } from '../../../../common/decorators/current-user.decorator';
-import { Role } from '../../../../common/enums/roles.enum';
+import { JwtAuthGuard } from '../../../../core/guards/jwt-auth.guard';
+import { RolesGuard } from '../../../../core/guards/roles.guard';
+import { Roles } from '../../../../core/decorators/roles.decorator';
+import { CurrentUser } from '../../../../core/decorators/current-user.decorator';
+import { Role } from '../../../../core/enums/roles.enum';
 
 @Controller('v1/provider/bookings')
 @UseGuards(JwtAuthGuard, RolesGuard)

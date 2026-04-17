@@ -4,7 +4,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { UpdateOrderStatusUseCase } from './update-order-status.use-case';
 import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
 import { TransferEarningsUseCase } from '../../../wallet/application/use-cases/transfer-earnings.use-case';
-import { OrderStatus } from '../../../../common/enums/status.enum';
+import { OrderStatus } from '../../../../core/enums/status.enum';
 import { NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 
 describe('UpdateOrderStatusUseCase', () => {

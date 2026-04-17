@@ -7,8 +7,8 @@ import {
 import { Reflector } from '@nestjs/core';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Setting, SettingDocument } from '../../database/schemas/setting.schema';
-import { Role } from '../../common/enums/roles.enum';
+import { Setting, SettingDocument } from '../../modules/admin/infrastructure/persistence/mongoose/schemas/setting.schema';
+import { Role } from '../../core/enums/roles.enum';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
 @Injectable()

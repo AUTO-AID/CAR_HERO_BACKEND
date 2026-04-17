@@ -20,8 +20,8 @@ import { ReviewOrderDto } from '../../application/dto/review-order.dto';
 import { UpdateLocationDto } from '../../application/dto/update-location.dto';
 import { VerifyPaymentDto } from '../../application/dto/verify-payment.dto';
 import { CancelOrderDto } from '../../application/dto/cancel-order.dto';
-import { JwtAuthGuard } from '../../../../common/guards/jwt-auth.guard';
-import { OrderStatus } from '../../../../common/enums/status.enum';
+import { JwtAuthGuard } from '../../../../core/guards/jwt-auth.guard';
+import { OrderStatus } from '../../../../core/enums/status.enum';
 
 @ApiTags('Orders')
 @Controller()

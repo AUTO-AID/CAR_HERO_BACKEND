@@ -6,7 +6,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { IAdminRepository } from '../../domain/repositories/admin.repository.interface';
 import { AdminEntity } from '../../domain/entities/admin.entity';
-import { Admin, AdminDocument } from '../../../../database/schemas/admin.schema';
+import { Admin, AdminDocument } from '../../../../modules/admin/infrastructure/persistence/mongoose/schemas/admin.schema';
 
 @Injectable()
 export class MongooseAdminRepository implements IAdminRepository {

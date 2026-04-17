@@ -1,10 +1,29 @@
+/**
+ * Merged User Schema
+ * Combined features from platform and remote auth repository
+ */
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
-import { UserAccountType } from '../../../../domain/entities/user.entity';
+import { Document, Types } from 'mongoose';
+import { Role } from '../../../../../../core/enums/roles.enum';
 
 export type UserDocument = User & Document;
 
-@Schema({ timestamps: true, collection: 'users' })
+@Schema({
+  timestamps: true,
+  collection: 'users',
+  toJSON: {
+    virtuals: true,
+    transform: function (doc: any, ret: any) {
+      delete ret.password;
+      delete ret.otpCode;
+      delete ret.otpExpiresAt;
+      delete ret.otpAttempts;
+      delete ret.refreshToken;
+      delete ret.__v;
+      return ret;
+    },
+  },
+})
 export class User {
   @Prop({ required: true, trim: true })
   fullName: string;
@@ -24,10 +43,13 @@ export class User {
 
   @Prop({
     type: String,
-    enum: Object.values(UserAccountType),
-    default: UserAccountType.CUSTOMER,
+    enum: ['customer', 'provider', 'admin'],
+    default: 'customer',
   })
   accountType: string;
+
+  @Prop({ type: String, enum: Role, default: Role.USER })
+  role: Role;
 
   @Prop({ default: 0, min: 0 })
   pointsBalance: number;
@@ -87,10 +109,32 @@ export class User {
 
   @Prop({ type: String, default: null, select: false })
   refreshToken: string | null;
+
+  @Prop()
+  fcmToken?: string;
+
+  // Reference to user's vehicles
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'Vehicle' }] })
+  vehicles: Types.ObjectId[];
+
+  // Reference to active subscription
+  @Prop({ type: Types.ObjectId, ref: 'Subscription' })
+  activeSubscription?: Types.ObjectId;
+
+  // Wallet balance
+  @Prop({ default: 0 })
+  walletBalance: number;
+
+  // Loyalty points
+  @Prop({ default: 0 })
+  loyaltyPoints: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
 
+// Indexes
+UserSchema.index({ phoneNumber: 1 }, { unique: true });
 UserSchema.index({ accountType: 1 });
 UserSchema.index({ isPremium: 1, premiumExpiresAt: 1 });
 UserSchema.index({ isActive: 1, isVerified: 1 });
+UserSchema.index({ createdAt: -1 });

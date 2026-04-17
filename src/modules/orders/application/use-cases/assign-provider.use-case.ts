@@ -2,7 +2,7 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
 import { OrderEntity } from '../../domain/entities/order.entity';
-import { OrderStatus } from '../../../../common/enums/status.enum';
+import { OrderStatus } from '../../../../core/enums/status.enum';
 import { OrderEvents, OrderStatusChangedEvent } from '../../domain/events/order.events';
 
 @Injectable()

@@ -2,8 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { CreateOrderUseCase } from './create-order.use-case';
 import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
-import { OrderStatus, PaymentStatus } from '../../../../common/enums/status.enum';
-import { Service } from '../../../../database/schemas/service.schema';
+import { OrderStatus, PaymentStatus } from '../../../../core/enums/status.enum';
+import { Service } from '../../../../modules/services/infrastructure/persistence/mongoose/schemas/service.schema';
 import { NotificationsService } from '../../../notifications/notifications.service';
 
 describe('CreateOrderUseCase', () => {

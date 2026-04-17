@@ -4,10 +4,10 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { JwtModule } from '@nestjs/jwt';
-import { ChatController } from './chat.controller';
-import { ChatService } from './chat.service';
-import { ChatGateway } from './chat.gateway';
-import { Chat, ChatSchema, Message, MessageSchema } from '../../database/schemas/chat.schema';
+import { ChatController } from './presentation/controllers/chat.controller';
+import { ChatService } from './application/services/chat.service';
+import { ChatGateway } from './presentation/gateways/chat.gateway';
+import { Chat, ChatSchema } from '../../modules/chat/infrastructure/persistence/mongoose/schemas/chat.schema';
 import { OrdersModule } from '../orders/orders.module';
 import { BookingsModule } from '../bookings/bookings.module';
 import { NotificationsModule } from '../notifications/notifications.module';

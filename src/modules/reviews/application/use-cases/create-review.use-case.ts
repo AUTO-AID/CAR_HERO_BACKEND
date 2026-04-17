@@ -3,8 +3,8 @@ import { IReviewRepository } from '../../domain/repositories/review.repository.i
 import { ReviewEntity } from '../../domain/entities/review.entity';
 import { IOrderRepository } from '../../../orders/domain/repositories/order.repository.interface';
 import { IBookingRepository } from '../../../bookings/domain/repositories/booking.repository.interface';
-import { ProvidersService } from '../../../providers/providers.service';
-import { OrderStatus, BookingStatus } from '../../../../common/enums/status.enum';
+import { UpdateProviderRatingUseCase } from '../../../providers/application/use-cases/update-provider-rating.use-case';
+import { OrderStatus, BookingStatus } from '../../../../core/enums/status.enum';
 
 export interface CreateReviewDto {
   orderId?: string;
@@ -27,7 +27,7 @@ export class CreateReviewUseCase {
     private readonly orderRepository: IOrderRepository,
     @Inject(IBookingRepository)
     private readonly bookingRepository: IBookingRepository,
-    private readonly providersService: ProvidersService,
+    private readonly updateProviderRatingUseCase: UpdateProviderRatingUseCase,
   ) {}
 
   async execute(dto: CreateReviewDto, currentUser: any): Promise<ReviewEntity> {
@@ -110,7 +110,7 @@ export class CreateReviewUseCase {
     }
 
     // 5. Update Provider Rating Stats
-    await this.providersService.updateRating(providerId, dto.rating);
+    await this.updateProviderRatingUseCase.execute(providerId, dto.rating);
 
     return savedReview;
   }

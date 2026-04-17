@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { Review, ReviewDocument } from '../../../../database/schemas/review.schema';
+import { Review, ReviewDocument } from './mongoose/schemas/review.schema';
 import { ReviewEntity } from '../../domain/entities/review.entity';
 import { IReviewRepository } from '../../domain/repositories/review.repository.interface';
 import { ReviewMapper } from '../mappers/review.mapper';

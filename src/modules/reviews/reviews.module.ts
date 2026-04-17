@@ -3,7 +3,7 @@
  */
 import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Review, ReviewSchema } from '../../database/schemas/review.schema';
+import { Review, ReviewSchema } from './infrastructure/persistence/mongoose/schemas/review.schema';
 import { IReviewRepository } from './domain/repositories/review.repository.interface';
 import { MongooseReviewRepository } from './infrastructure/persistence/mongoose-review.repository';
 import { CreateReviewUseCase } from './application/use-cases/create-review.use-case';

@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ReviewOrderUseCase } from './review-order.use-case';
 import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
 import { CreateReviewUseCase } from '../../../reviews/application/use-cases/create-review.use-case';
-import { OrderStatus } from '../../../../common/enums/status.enum';
+import { OrderStatus } from '../../../../core/enums/status.enum';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 
 describe('ReviewOrderUseCase', () => {

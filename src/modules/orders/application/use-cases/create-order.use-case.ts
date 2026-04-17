@@ -2,12 +2,12 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
 import { CreateOrderDto } from '../dto/create-order.dto';
 import { OrderEntity } from '../../domain/entities/order.entity';
-import { OrderStatus } from '../../../../common/enums/status.enum';
+import { OrderStatus } from '../../../../core/enums/status.enum';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Service, ServiceDocument } from '../../../../database/schemas/service.schema';
+import { Service, ServiceDocument } from '../../../../modules/services/infrastructure/persistence/mongoose/schemas/service.schema';
 import { NotificationsService } from '../../../notifications/notifications.service';
-import { NotificationType } from '../../../../common/enums/status.enum';
+import { NotificationType } from '../../../../core/enums/status.enum';
 
 @Injectable()
 export class CreateOrderUseCase {

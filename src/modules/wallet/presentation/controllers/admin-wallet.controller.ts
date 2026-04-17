@@ -4,10 +4,10 @@ import { TransactionHistoryUseCase } from '../../application/use-cases/transacti
 import { GetAdminTransactionLogsUseCase } from '../../application/use-cases/get-admin-transaction-logs.use-case';
 import { GetFinancialSummaryUseCase } from '../../application/use-cases/get-financial-summary.use-case';
 import { ProcessPayoutUseCase } from '../../application/use-cases/process-payout.use-case';
-import { JwtAuthGuard } from '../../../../common/guards/jwt-auth.guard';
-import { RolesGuard } from '../../../../common/guards/roles.guard';
-import { Roles } from '../../../../common/decorators/roles.decorator';
-import { Role } from '../../../../common/enums/roles.enum';
+import { JwtAuthGuard } from '../../../../core/guards/jwt-auth.guard';
+import { RolesGuard } from '../../../../core/guards/roles.guard';
+import { Roles } from '../../../../core/decorators/roles.decorator';
+import { Role } from '../../../../core/enums/roles.enum';
 
 @Controller('v1/admin/wallet')
 @UseGuards(JwtAuthGuard, RolesGuard)

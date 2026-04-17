@@ -26,8 +26,8 @@ export class MongooseUserRepository implements IUserRepository {
       doc.isActive,
       doc.isVerified,
       doc.lastLoginAt,
-      doc.createdAt,
-      doc.updatedAt,
+      (doc as any).createdAt,
+      (doc as any).updatedAt,
     );
   }
 

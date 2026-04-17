@@ -4,8 +4,8 @@ import { Model, Connection, Types, ClientSession } from 'mongoose';
 import { IWalletRepository } from '../../domain/repositories/wallet.repository.interface';
 import { Wallet as WalletEntity } from '../../domain/entities/wallet.entity';
 import { Transaction as TransactionEntity } from '../../domain/entities/transaction.entity';
-import { Wallet, WalletDocument, Transaction, TransactionDocument } from '../../../../database/schemas/wallet.schema';
-import { TransactionType } from '../../../../common/enums/status.enum';
+import { Wallet, WalletDocument, Transaction, TransactionDocument } from './mongoose/schemas/wallet.schema';
+import { TransactionType } from '../../../../core/enums/status.enum';
 
 @Injectable()
 export class MongooseWalletRepository implements IWalletRepository {

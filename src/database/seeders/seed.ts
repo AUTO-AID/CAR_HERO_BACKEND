@@ -10,8 +10,8 @@ import { AppModule } from '../../app.module';
 import { Admin } from '../schemas/admin.schema';
 import { SubscriptionPlan } from '../schemas/subscription.schema';
 import { Service } from '../schemas/service.schema';
-import { ServiceCategory } from '../../common/enums/status.enum';
-import { Role } from '../../common/enums/roles.enum';
+import { ServiceCategory } from '../../core/enums/status.enum';
+import { Role } from '../../core/enums/roles.enum';
 
 async function seed() {
   console.log('🌱 Starting database seeding...');

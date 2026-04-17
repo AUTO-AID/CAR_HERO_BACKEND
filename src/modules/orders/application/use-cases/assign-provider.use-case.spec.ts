@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { AssignProviderUseCase } from './assign-provider.use-case';
 import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
-import { OrderStatus } from '../../../../common/enums/status.enum';
+import { OrderStatus } from '../../../../core/enums/status.enum';
 import { NotFoundException } from '@nestjs/common';
 
 describe('AssignProviderUseCase', () => {

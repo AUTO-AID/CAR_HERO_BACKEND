@@ -1,4 +1,4 @@
-import { OrderStatus, PaymentStatus } from '../../../../common/enums/status.enum';
+import { OrderStatus, PaymentStatus } from '../../../../core/enums/status.enum';
 
 export class OrderEntity {
   constructor(

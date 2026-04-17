@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UpdateProviderLocationUseCase } from './update-provider-location.use-case';
 import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
-import { OrderStatus } from '../../../../common/enums/status.enum';
+import { OrderStatus } from '../../../../core/enums/status.enum';
 import { ForbiddenException, BadRequestException } from '@nestjs/common';
 
 describe('UpdateProviderLocationUseCase', () => {

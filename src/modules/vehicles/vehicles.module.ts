@@ -4,7 +4,7 @@
  */
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Vehicle, VehicleSchema } from '../../database/schemas/vehicle.schema';
+import { Vehicle, VehicleSchema } from './infrastructure/persistence/mongoose/schemas/vehicle.schema';
 import {
   MaintenanceRecord,
   MaintenanceRecordSchema,

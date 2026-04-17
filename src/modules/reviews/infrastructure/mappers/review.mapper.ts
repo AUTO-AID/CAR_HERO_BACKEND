@@ -1,4 +1,4 @@
-import { ReviewDocument } from '../../../../database/schemas/review.schema';
+import { ReviewDocument } from '../../../../modules/reviews/infrastructure/persistence/mongoose/schemas/review.schema';
 import { ReviewEntity } from '../../domain/entities/review.entity';
 
 export class ReviewMapper {

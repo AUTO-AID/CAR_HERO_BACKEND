@@ -1,9 +1,10 @@
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { IBookingRepository } from '../../domain/repositories/booking.repository.interface';
 import { PaymentStatus } from '../../domain/enums/payment-status.enum';
 import { Booking } from '../../domain/entities/booking.entity';
 import { IWalletRepository } from '../../../../modules/wallet/domain/repositories/wallet.repository.interface';
 import { Transaction } from '../../../../modules/wallet/domain/entities/transaction.entity';
-import { TransactionType } from '../../../../common/enums/status.enum';
+import { TransactionType } from '../../../../core/enums/status.enum';
 
 @Injectable()
 export class PaymentBookingUseCase {

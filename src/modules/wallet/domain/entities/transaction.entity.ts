@@ -1,4 +1,4 @@
-import { TransactionType } from '../../../../common/enums/status.enum';
+import { TransactionType } from '../../../../core/enums/status.enum';
 
 export class Transaction {
   constructor(

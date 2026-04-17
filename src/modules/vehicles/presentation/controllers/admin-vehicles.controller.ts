@@ -13,9 +13,9 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../../../../common/guards/jwt-auth.guard';
-import { RolesGuard } from '../../../../common/guards/roles.guard';
-import { Role } from '../../../../common/enums/roles.enum';
+import { JwtAuthGuard } from '../../../../core/guards/jwt-auth.guard';
+import { RolesGuard } from '../../../../core/guards/roles.guard';
+import { Role } from '../../../../core/enums/roles.enum';
 import { GetUserVehiclesUseCase } from '../../application/use-cases/get-user-vehicles.use-case';
 import { GetAllVehiclesAdminUseCase } from '../../application/use-cases/get-all-vehicles-admin.use-case';
 import { GetVehicleDetailsAdminUseCase } from '../../application/use-cases/get-vehicle-details-admin.use-case';

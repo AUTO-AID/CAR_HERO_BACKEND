@@ -1,7 +1,7 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Order, OrderSchema } from '../../database/schemas/order.schema';
-import { Service, ServiceSchema } from '../../database/schemas/service.schema';
+import { Order, OrderSchema } from './infrastructure/persistence/mongoose/schemas/order.schema';
+import { Service, ServiceSchema } from '../services/infrastructure/persistence/mongoose/schemas/service.schema';
 import { IOrderRepository } from './domain/repositories/order.repository.interface';
 import { MongooseOrderRepository } from './infrastructure/persistence/mongoose-order.repository';
 import { CreateOrderUseCase } from './application/use-cases/create-order.use-case';

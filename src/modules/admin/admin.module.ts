@@ -5,10 +5,10 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { JwtModule } from '@nestjs/jwt';
-import { Admin, AdminSchema } from '../../database/schemas/admin.schema';
-import { Setting, SettingSchema } from '../../database/schemas/setting.schema';
-import { AdminController } from './controllers/admin.controller';
-import { AdminService } from './services/admin.service';
+import { Admin, AdminSchema } from './infrastructure/persistence/mongoose/schemas/admin.schema';
+import { Setting, SettingSchema } from './infrastructure/persistence/mongoose/schemas/setting.schema';
+import { AdminController } from './presentation/controllers/admin.controller';
+import { AdminService } from './application/services/admin.service';
 import { UsersModule } from '../users/users.module';
 import { ProvidersModule } from '../providers/providers.module';
 import { ServicesModule } from '../services/services.module';

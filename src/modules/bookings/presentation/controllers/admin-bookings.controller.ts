@@ -4,10 +4,10 @@ import { UpdateBookingStatusUseCase } from '../../application/use-cases/update-b
 import { GetBookingStatsUseCase } from '../../application/use-cases/get-booking-stats.use-case';
 import { BookingStatus } from '../../domain/enums/booking-status.enum';
 
-import { JwtAuthGuard } from '../../../../common/guards/jwt-auth.guard';
-import { RolesGuard } from '../../../../common/guards/roles.guard';
-import { Roles } from '../../../../common/decorators/roles.decorator';
-import { Role } from '../../../../common/enums/roles.enum';
+import { JwtAuthGuard } from '../../../../core/guards/jwt-auth.guard';
+import { RolesGuard } from '../../../../core/guards/roles.guard';
+import { Roles } from '../../../../core/decorators/roles.decorator';
+import { Role } from '../../../../core/enums/roles.enum';
 
 @Controller('v1/admin/bookings')
 @UseGuards(JwtAuthGuard, RolesGuard)
