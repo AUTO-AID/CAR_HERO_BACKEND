@@ -24,6 +24,15 @@ export class Setting {
   @Prop({ type: Object, required: true })
   value: any;
 
+  @Prop({ default: false })
+  maintenanceMode: boolean;
+
+  @Prop()
+  maintenanceMessage?: string;
+
+  @Prop()
+  maintenanceMessageAr?: string;
+
   @Prop()
   description?: string;
 
@@ -36,5 +45,4 @@ export class Setting {
 
 export const SettingSchema = SchemaFactory.createForClass(Setting);
 
-SettingSchema.index({ key: 1 }, { unique: true });
 SettingSchema.index({ group: 1 });

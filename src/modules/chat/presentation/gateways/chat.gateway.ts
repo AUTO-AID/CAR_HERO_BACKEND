@@ -10,9 +10,9 @@ import {
 } from '@nestjs/websockets';
 import { UseGuards, Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
-import { WsJwtGuard } from '../../core/guards/ws-jwt.guard';
-import { ChatService } from './chat.service';
-import { SendMessageDto } from './dto/chat.dto';
+import { WsJwtGuard } from '../../../../core/guards/ws-jwt.guard';
+import { ChatService } from '../../application/services/chat.service';
+import { SendMessageDto } from '../../application/dtos/chat.dto';
 
 @WebSocketGateway({
   cors: { origin: '*' },

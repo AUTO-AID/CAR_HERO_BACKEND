@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { IProviderRepository } from '../../domain/repositories/provider.repository.interface';
 
 @Injectable()
@@ -9,6 +9,9 @@ export class UpdateProviderLocationUseCase {
   ) {}
 
   async execute(id: string, longitude: number, latitude: number) {
+    if (longitude < -180 || longitude > 180 || latitude < -90 || latitude > 90) {
+      throw new BadRequestException('Invalid coordinates');
+    }
     return this.providerRepository.updateLocation(id, longitude, latitude);
   }
 }

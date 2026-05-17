@@ -10,9 +10,11 @@ export class WhatsAppWebService implements OnModuleInit, OnModuleDestroy {
   private client: Client;
   private qrCode: string | null = null;
   private isReady: boolean = false;
+  private isInitializing: boolean = false;
+  private lastError: string | null = null;
 
   async onModuleInit() {
-    this.initializeClient();
+    await this.initializeClient();
   }
 
   async onModuleDestroy() {
@@ -25,7 +27,14 @@ export class WhatsAppWebService implements OnModuleInit, OnModuleDestroy {
   /**
    * تهيئة WhatsApp Client
    */
-  private initializeClient() {
+  private async initializeClient() {
+    if (this.isInitializing) {
+      this.logger.warn('WhatsApp client initialization is already running');
+      return;
+    }
+
+    this.isInitializing = true;
+    this.lastError = null;
     this.logger.log(' Initializing WhatsApp client...');
 
     this.client = new Client({
@@ -82,6 +91,7 @@ export class WhatsAppWebService implements OnModuleInit, OnModuleDestroy {
       this.logger.error(`Authentication failed: ${msg}`);
       this.qrCode = null;
       this.isReady = false;
+      this.lastError = String(msg);
     });
 
     // Disconnected Event
@@ -89,10 +99,23 @@ export class WhatsAppWebService implements OnModuleInit, OnModuleDestroy {
       this.logger.warn(`WhatsApp disconnected: ${reason}`);
       this.isReady = false;
       this.qrCode = null;
+      this.lastError = String(reason);
     });
 
     // Initialize
-    this.client.initialize();
+    try {
+      await this.client.initialize();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.lastError = message;
+      this.isReady = false;
+      this.qrCode = null;
+      this.logger.error(
+        `WhatsApp client failed to initialize. Backend will continue running without WhatsApp. Reason: ${message}`,
+      );
+    } finally {
+      this.isInitializing = false;
+    }
   }
 
 
@@ -103,6 +126,10 @@ export class WhatsAppWebService implements OnModuleInit, OnModuleDestroy {
  
   isClientReady(): boolean {
     return this.isReady;
+  }
+
+  getLastError(): string | null {
+    return this.lastError;
   }
 
  
@@ -171,6 +198,6 @@ async sendMessage(phoneNumber: string, message: string): Promise<void> {
     this.qrCode = null;
     this.isReady = false;
     
-    this.initializeClient();
+    await this.initializeClient();
   }
 }

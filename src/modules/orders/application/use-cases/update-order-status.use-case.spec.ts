@@ -6,6 +6,7 @@ import { IOrderRepository } from '../../domain/repositories/order.repository.int
 import { TransferEarningsUseCase } from '../../../wallet/application/use-cases/transfer-earnings.use-case';
 import { OrderStatus } from '../../../../core/enums/status.enum';
 import { NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import { StatusHistoryService } from '../../../status-history/application/services/status-history.service';
 
 describe('UpdateOrderStatusUseCase', () => {
   let useCase: UpdateOrderStatusUseCase;
@@ -31,6 +32,10 @@ describe('UpdateOrderStatusUseCase', () => {
     execute: jest.fn(),
   };
 
+  const mockStatusHistoryService = {
+    record: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -39,6 +44,7 @@ describe('UpdateOrderStatusUseCase', () => {
         { provide: EventEmitter2, useValue: mockEventEmitter },
         { provide: CACHE_MANAGER, useValue: mockCacheManager },
         { provide: TransferEarningsUseCase, useValue: mockTransferEarnings },
+        { provide: StatusHistoryService, useValue: mockStatusHistoryService },
       ],
     }).compile();
 
@@ -65,7 +71,7 @@ describe('UpdateOrderStatusUseCase', () => {
     const mockOrder = { 
       id: 'id', 
       providerId: 'provider-id', 
-      status: OrderStatus.ACCEPTED,
+      status: OrderStatus.IN_PROGRESS,
       orderNumber: 'CH-001',
       userId: 'user-id'
     };

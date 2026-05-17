@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { OrderEvents, OrderStatusChangedEvent } from '../../domain/events/order.events';
-import { NotificationsService } from '../../../notifications/notifications.service';
+import { NotificationsService } from '../../../notifications/application/services/notifications.service';
 import { NotificationType } from '../../../../core/enums/status.enum';
 
 @Injectable()

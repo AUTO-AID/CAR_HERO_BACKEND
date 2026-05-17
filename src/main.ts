@@ -65,7 +65,8 @@ async function bootstrap() {
   await app.listen(port);
 
   logger.log(`🚗 Car Hero Backend is running on: http://localhost:${port}`);
-  logger.log(`📚 API Documentation: http://localhost:${port}/api`);
+  logger.log(`📚 API Documentation: http://localhost:${port}/api-docs`);
+  logger.log(`📄 API OpenAPI JSON: http://localhost:${port}/api-docs-json`);
   logger.log(`🌍 Environment: ${nodeEnv}`);
   logger.log(`🔧 API Prefix: ${apiPrefix}`);
 }

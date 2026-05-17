@@ -42,11 +42,19 @@ export class Admin {
   @Prop()
   lastLoginAt?: Date;
 
+  @Prop()
+  avatar?: string;
+
+  @Prop()
+  lastLoginIp?: string;
+
   @Prop({ select: false })
   refreshToken?: string;
+
+  @Prop({ type: Object, default: {} })
+  metadata?: Record<string, any>;
 }
 
 export const AdminSchema = SchemaFactory.createForClass(Admin);
 
-AdminSchema.index({ email: 1 }, { unique: true });
 AdminSchema.index({ isActive: 1 });

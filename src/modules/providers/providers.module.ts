@@ -18,6 +18,9 @@ import { FindNearbyProvidersUseCase } from './application/use-cases/find-nearby-
 import { ApproveProviderUseCase } from './application/use-cases/approve-provider.use-case';
 import { UpdateProviderRatingUseCase } from './application/use-cases/update-provider-rating.use-case';
 import { RecalculateProviderRatingUseCase } from './application/use-cases/recalculate-provider-rating.use-case';
+import { ManageProvidersUseCase } from './application/use-cases/manage-providers.use-case';
+import { GetProviderStatsUseCase } from './application/use-cases/get-provider-stats.use-case';
+import { GetTopRatedProvidersUseCase } from './application/use-cases/get-top-rated-providers.use-case';
 
 const UseCases = [
   GetProvidersUseCase,
@@ -29,6 +32,9 @@ const UseCases = [
   ApproveProviderUseCase,
   UpdateProviderRatingUseCase,
   RecalculateProviderRatingUseCase,
+  ManageProvidersUseCase,
+  GetProviderStatsUseCase,
+  GetTopRatedProvidersUseCase,
 ];
 
 @Module({

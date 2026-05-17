@@ -1,7 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
 import type { IWalletRepository } from '../../domain/repositories/wallet.repository.interface';
-import { Transaction } from '../../domain/entities/transaction.entity';
-import { TransactionType } from '../../../../core/enums/status.enum';
 
 @Injectable()
 export class TransferEarningsUseCase {
@@ -13,7 +11,7 @@ export class TransferEarningsUseCase {
     private readonly walletRepository: IWalletRepository,
   ) {}
 
-  async execute(providerId: string, grossAmount: number, referenceId: string, referenceType: 'booking' | 'order'): Promise<void> {
+  async execute(providerId: string, grossAmount: number, referenceId: string, referenceType: 'order'): Promise<void> {
     const commission = grossAmount * this.COMMISSION_RATE;
     const netAmount = grossAmount - commission;
 

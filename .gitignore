@@ -1,1 +1,8 @@
 node_modules
+dist
+coverage
+.env
+*.log
+*.err.log
+session
+uploads

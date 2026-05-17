@@ -51,9 +51,6 @@ export class User {
   @Prop({ type: String, enum: Role, default: Role.USER })
   role: Role;
 
-  @Prop({ default: 0, min: 0 })
-  pointsBalance: number;
-
   @Prop({ default: 1, min: 1 })
   loyaltyLevel: number;
 
@@ -118,22 +115,15 @@ export class User {
   vehicles: Types.ObjectId[];
 
   // Reference to active subscription
-  @Prop({ type: Types.ObjectId, ref: 'Subscription' })
+  @Prop({ type: Types.ObjectId, ref: 'UserSubscription' })
   activeSubscription?: Types.ObjectId;
 
-  // Wallet balance
-  @Prop({ default: 0 })
-  walletBalance: number;
-
-  // Loyalty points
-  @Prop({ default: 0 })
-  loyaltyPoints: number;
+  // Financial balances and loyalty points are stored in Wallet.
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
 
 // Indexes
-UserSchema.index({ phoneNumber: 1 }, { unique: true });
 UserSchema.index({ accountType: 1 });
 UserSchema.index({ isPremium: 1, premiumExpiresAt: 1 });
 UserSchema.index({ isActive: 1, isVerified: 1 });

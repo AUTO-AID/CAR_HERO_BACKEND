@@ -13,18 +13,19 @@ export class MongooseOrderRepository implements IOrderRepository {
   ) {}
 
   private mapToEntity(doc: OrderDocument): OrderEntity {
+    const anyDoc = doc as any;
     return new OrderEntity(
-      doc._id.toString(),
+      anyDoc._id.toString(),
       doc.orderNumber,
       doc.user.toString(),
       doc.service.toString(),
       doc.status,
-      doc.total,
-      { type: doc.userLocation.type, coordinates: doc.userLocation.coordinates },
+      anyDoc.total ?? doc.payableAmount ?? doc.totalAmount,
+      { type: doc.location.type, coordinates: doc.location.coordinates },
       doc.provider?.toString(),
       doc.vehicle?.toString(),
-      doc.serviceName,
-      doc.servicePrice,
+      anyDoc.serviceName ?? doc.metadata?.serviceName,
+      anyDoc.servicePrice ?? doc.totalAmount,
       doc.scheduledAt,
       doc.isScheduled,
       doc.paymentStatus,

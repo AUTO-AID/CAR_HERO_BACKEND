@@ -97,7 +97,7 @@ export class Transaction {
 
   // Reference to related entity
   @Prop()
-  referenceType?: string; // order, booking, topup, withdrawal
+  referenceType?: string; // order, topup, withdrawal
 
   @Prop({ type: Types.ObjectId })
   referenceId?: Types.ObjectId;
@@ -127,7 +127,6 @@ export class Transaction {
 export const TransactionSchema = SchemaFactory.createForClass(Transaction);
 
 // Indexes
-TransactionSchema.index({ transactionNumber: 1 }, { unique: true });
 TransactionSchema.index({ wallet: 1, createdAt: -1 });
 TransactionSchema.index({ ownerId: 1, ownerType: 1, createdAt: -1 });
 TransactionSchema.index({ type: 1 });

@@ -16,7 +16,7 @@ export class UpdateProfileUseCase {
       throw new NotFoundException('المستخدم غير موجود');
     }
 
-    const updatedUser = await this.userRepository.update(userId, dto);
+    const updatedUser = await this.userRepository.update(userId, dto as Partial<UserEntity>);
     if (!updatedUser) {
       throw new NotFoundException('فشل تحديث بيانات المستخدم');
     }

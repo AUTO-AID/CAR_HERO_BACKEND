@@ -71,3 +71,17 @@ export const isValidPhoneNumber = (phoneNumber: string): boolean => {
   const e164Pattern = /^\+[1-9]\d{6,14}$/;
   return e164Pattern.test(phoneNumber);
 };
+
+export class OtpUtil {
+  static generate(length: number = 6): string {
+    return generateOtp(length);
+  }
+
+  static getExpirationTime(minutes: number = 5): Date {
+    return getOtpExpiry(minutes);
+  }
+
+  static isExpired(expiryTime: Date): boolean {
+    return isOtpExpired(expiryTime);
+  }
+}

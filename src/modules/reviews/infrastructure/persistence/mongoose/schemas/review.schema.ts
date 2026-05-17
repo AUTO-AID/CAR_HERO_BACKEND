@@ -27,9 +27,6 @@ export class Review {
   @Prop({ type: Types.ObjectId, ref: 'Order' })
   order?: Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: 'Booking' })
-  booking?: Types.ObjectId;
-
   @Prop({ required: true, min: 1, max: 5 })
   rating: number;
 
@@ -69,6 +66,27 @@ export class Review {
     comment: string;
     repliedAt: Date;
   };
+
+  @Prop()
+  providerResponse?: string;
+
+  @Prop()
+  providerRespondedAt?: Date;
+
+  @Prop({ default: true })
+  isVisible: boolean;
+
+  @Prop({ default: false })
+  isFlagged: boolean;
+
+  @Prop()
+  flagReason?: string;
+
+  @Prop({ default: 0 })
+  helpfulCount: number;
+
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }], default: [] })
+  helpfulVoters: Types.ObjectId[];
 }
 
 export const ReviewSchema = SchemaFactory.createForClass(Review);
@@ -77,5 +95,4 @@ export const ReviewSchema = SchemaFactory.createForClass(Review);
 ReviewSchema.index({ provider: 1, createdAt: -1 });
 ReviewSchema.index({ user: 1 });
 ReviewSchema.index({ order: 1 }, { unique: true, sparse: true });
-ReviewSchema.index({ booking: 1 }, { unique: true, sparse: true });
 ReviewSchema.index({ rating: -1 });

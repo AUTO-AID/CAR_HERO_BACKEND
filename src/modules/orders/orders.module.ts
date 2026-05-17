@@ -25,6 +25,7 @@ import { OrdersController } from './presentation/controllers/orders.controller';
 import { WalletModule } from '../wallet/wallet.module';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { ReviewsModule } from '../reviews/reviews.module';
+import { StatusHistoryModule } from '../status-history/status-history.module';
 
 @Module({
   imports: [
@@ -33,7 +34,8 @@ import { ReviewsModule } from '../reviews/reviews.module';
       { name: Service.name, schema: ServiceSchema },
     ]),
     WalletModule,
-    NotificationsModule,
+    StatusHistoryModule,
+    forwardRef(() => NotificationsModule),
     forwardRef(() => ReviewsModule),
   ],
   controllers: [OrdersController],

@@ -1,7 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TransferEarningsUseCase } from './transfer-earnings.use-case';
-import { Wallet } from '../../domain/entities/wallet.entity';
-import { Transaction } from '../../domain/entities/transaction.entity';
 
 describe('TransferEarningsUseCase', () => {
   let useCase: TransferEarningsUseCase;
@@ -30,8 +28,8 @@ describe('TransferEarningsUseCase', () => {
   it('should correctly calculate 10% commission and net amount', async () => {
     const providerId = 'p123';
     const grossAmount = 100;
-    const referenceId = 'b1';
-    const referenceType = 'booking';
+    const referenceId = 'o1';
+    const referenceType = 'order';
 
     await useCase.execute(providerId, grossAmount, referenceId, referenceType);
 

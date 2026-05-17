@@ -1,6 +1,14 @@
 import { IsString, IsNotEmpty, IsEnum, IsOptional, IsNumber, ValidateNested, IsMongoId } from 'class-validator';
 import { Type } from 'class-transformer';
 
+export enum MessageType {
+  TEXT = 'text',
+  IMAGE = 'image',
+  LOCATION = 'location',
+  VOICE = 'voice',
+  FILE = 'file',
+}
+
 export class LocationDto {
   @IsNumber()
   lat: number;

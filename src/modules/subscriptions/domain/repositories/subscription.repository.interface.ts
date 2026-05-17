@@ -9,13 +9,33 @@ export interface ISubscriptionRepository {
   deletePlan(id: string): Promise<boolean>;
 
   // User Subscriptions
+  findUserSubscriptionById(id: string): Promise<UserSubscriptionEntity | null>;
   findUserActiveSubscription(userId: string): Promise<UserSubscriptionEntity | null>;
-  createUserSubscription(data: Partial<UserSubscriptionEntity>): Promise<UserSubscriptionEntity>;
+  createUserSubscription(data: Partial<UserSubscriptionEntity> & { user?: any; plan?: any }): Promise<UserSubscriptionEntity>;
   updateUserSubscription(id: string, data: Partial<UserSubscriptionEntity>): Promise<UserSubscriptionEntity>;
   findUserSubscriptionHistory(userId: string): Promise<UserSubscriptionEntity[]>;
+  findSubscriptions(criteria: {
+    page?: number;
+    limit?: number;
+    status?: string;
+    userId?: string;
+    planId?: string;
+  }): Promise<{
+    subscriptions: UserSubscriptionEntity[];
+    pagination: { total: number; page: number; limit: number; pages: number };
+  }>;
+  expireEndedSubscriptions(now?: Date): Promise<number>;
+  syncUserPremiumState(userId: string, subscriptionId?: string | null, premiumExpiresAt?: Date | null): Promise<void>;
   
   // Stats
   countActiveSubscriptions(): Promise<number>;
+  getSubscriptionStats(): Promise<{
+    active: number;
+    expired: number;
+    cancelled: number;
+    pending: number;
+    revenue: number;
+  }>;
 }
 
 export const ISubscriptionRepository = Symbol('ISubscriptionRepository');

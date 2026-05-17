@@ -22,6 +22,7 @@ describe('SubscribeUserUseCase', () => {
             findPlanById: jest.fn(),
             findUserActiveSubscription: jest.fn(),
             createUserSubscription: jest.fn(),
+            syncUserPremiumState: jest.fn(),
           },
         },
       ],
@@ -48,9 +49,14 @@ describe('SubscribeUserUseCase', () => {
   it('should create subscription if data is valid', async () => {
     (repository.findPlanById as jest.Mock).mockResolvedValue(mockPlan);
     (repository.findUserActiveSubscription as jest.Mock).mockResolvedValue(null);
-    (repository.createUserSubscription as jest.Mock).mockResolvedValue({ status: 'active' });
+    (repository.createUserSubscription as jest.Mock).mockResolvedValue({
+      id: 'sub-id',
+      status: 'active',
+      endDate: new Date(Date.now() + 86400000),
+    });
 
     const result = await useCase.execute({ userId: 'u1', planId: 'p1' });
     expect(result.status).toBe('active');
+    expect(repository.syncUserPremiumState).toHaveBeenCalledWith('u1', 'sub-id', expect.any(Date));
   });
 });

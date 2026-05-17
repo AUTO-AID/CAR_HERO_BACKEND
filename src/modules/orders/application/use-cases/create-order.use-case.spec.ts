@@ -4,7 +4,7 @@ import { CreateOrderUseCase } from './create-order.use-case';
 import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
 import { OrderStatus, PaymentStatus } from '../../../../core/enums/status.enum';
 import { Service } from '../../../../modules/services/infrastructure/persistence/mongoose/schemas/service.schema';
-import { NotificationsService } from '../../../notifications/notifications.service';
+import { NotificationsService } from '../../../notifications/application/services/notifications.service';
 
 describe('CreateOrderUseCase', () => {
   let useCase: CreateOrderUseCase;

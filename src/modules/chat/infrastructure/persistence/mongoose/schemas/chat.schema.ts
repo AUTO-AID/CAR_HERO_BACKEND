@@ -7,13 +7,21 @@ import { Document, Types } from 'mongoose';
 
 export type ChatDocument = Chat & Document;
 
-@Schema({ _id: false })
-class Message {
+export type MessageDocument = Message & Document;
+
+@Schema({ timestamps: true, collection: 'messages' })
+export class Message {
+  @Prop({ type: Types.ObjectId, ref: 'Chat', required: true })
+  chatId: Types.ObjectId;
+
   @Prop({ type: Types.ObjectId, required: true })
   senderId: Types.ObjectId;
 
+  @Prop({ type: Types.ObjectId, required: true })
+  receiverId: Types.ObjectId;
+
   @Prop({ required: true })
-  content: string;
+  message: string;
 
   @Prop({ type: String, enum: ['text', 'image', 'location', 'voice'], default: 'text' })
   type: string;
@@ -25,7 +33,13 @@ class Message {
   isRead: boolean;
 
   @Prop()
-  attachmentUrl?: string;
+  fileUrl?: string;
+
+  @Prop({ type: Object })
+  location?: Record<string, any>;
+
+  @Prop()
+  readAt?: Date;
 }
 
 @Schema({
@@ -53,9 +67,19 @@ export class Chat {
 
   @Prop()
   lastMessageAt?: Date;
+
+  @Prop()
+  lastMessage?: string;
+
+  @Prop({ type: Types.ObjectId })
+  lastMessageBy?: Types.ObjectId;
+
+  @Prop({ type: Map, of: Number, default: {} })
+  unreadCounts: Map<string, number>;
 }
 
 export const ChatSchema = SchemaFactory.createForClass(Chat);
+export const MessageSchema = SchemaFactory.createForClass(Message);
 
 ChatSchema.index({ orderId: 1 });
 ChatSchema.index({ participants: 1 });

@@ -63,11 +63,6 @@ export class MongooseReviewRepository implements IReviewRepository {
     return doc ? ReviewMapper.toEntity(doc) : null;
   }
 
-  async findByBooking(bookingId: string): Promise<ReviewEntity | null> {
-    const doc = await this.reviewModel.findOne({ booking: bookingId }).exec();
-    return doc ? ReviewMapper.toEntity(doc) : null;
-  }
-
   async update(id: string, data: Partial<ReviewEntity>): Promise<ReviewEntity> {
     const doc = await this.reviewModel.findByIdAndUpdate(
       id,

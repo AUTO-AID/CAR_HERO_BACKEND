@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { User } from '../../users/infrastructure/persistence/mongoose/schemas/user.schema';
+import { User } from '../../../../../users/infrastructure/persistence/mongoose/schemas/user.schema';
 
 export type LogoutDocument = Logout & Document;
 

@@ -1,7 +1,7 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { SubscriptionPlan, SubscriptionPlanDocument } from '../infrastructure/persistence/mongoose/schemas/subscription-plan.schema';
+import { SubscriptionPlan, SubscriptionPlanDocument } from '../schemas/subscription-plan.schema';
 
 @Injectable()
 export class SubscriptionSeederService implements OnModuleInit {

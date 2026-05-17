@@ -15,19 +15,6 @@ export enum OrderStatus {
 }
 
 /**
- * Booking Status Enum
- * Defines the lifecycle states of a booking
- */
-export enum BookingStatus {
-  PENDING = 'pending',
-  CONFIRMED = 'confirmed',
-  IN_PROGRESS = 'in_progress',
-  COMPLETED = 'completed',
-  CANCELLED = 'cancelled',
-  NO_SHOW = 'no_show',
-}
-
-/**
  * Payment Status Enum
  */
 export enum PaymentStatus {
@@ -35,6 +22,16 @@ export enum PaymentStatus {
   COMPLETED = 'completed',
   FAILED = 'failed',
   REFUNDED = 'refunded',
+}
+
+/**
+ * Payment Method Enum
+ */
+export enum PaymentMethod {
+  CASH = 'cash',
+  WALLET = 'wallet',
+  CARD = 'card',
+  POINTS = 'points',
 }
 
 /**

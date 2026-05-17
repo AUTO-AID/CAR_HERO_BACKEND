@@ -4,7 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
-import { User, UserDocument } from '../../users/infrastructure/persistence/mongoose/schemas/user.schema';
+import { User, UserDocument } from '../../../users/infrastructure/persistence/mongoose/schemas/user.schema';
 import { IJwtPayload } from '../../../../core/interfaces';
 import { ERROR_MESSAGES } from '../../../../core/constants';
 

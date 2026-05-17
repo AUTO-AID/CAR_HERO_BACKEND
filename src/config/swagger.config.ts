@@ -41,7 +41,6 @@ export const setupSwagger = (app: INestApplication): void => {
     .addTag('Vehicles', 'Vehicle management endpoints')
     .addTag('Services', 'Service catalog endpoints')
     .addTag('Orders', 'Order management endpoints')
-    .addTag('Bookings', 'Booking management endpoints')
     .addTag('Chat', 'Chat & messaging endpoints')
     .addTag('Wallet', 'Wallet & transactions endpoints')
     .addTag('Subscriptions', 'Premium subscription endpoints')
@@ -51,7 +50,7 @@ export const setupSwagger = (app: INestApplication): void => {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document, {
+  SwaggerModule.setup('api-docs', app, document, {
     swaggerOptions: {
       persistAuthorization: true,
       tagsSorter: 'alpha',

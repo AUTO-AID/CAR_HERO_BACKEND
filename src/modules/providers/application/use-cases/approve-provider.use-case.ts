@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { IProviderRepository } from '../../domain/repositories/provider.repository.interface';
+import { RegistrationStatus } from '../../../../core/enums/status.enum';
 
 @Injectable()
 export class ApproveProviderUseCase {
@@ -9,6 +10,6 @@ export class ApproveProviderUseCase {
   ) {}
 
   async execute(id: string) {
-    return this.providerRepository.approve(id);
+    return this.providerRepository.updateRegistrationStatus(id, RegistrationStatus.APPROVED);
   }
 }

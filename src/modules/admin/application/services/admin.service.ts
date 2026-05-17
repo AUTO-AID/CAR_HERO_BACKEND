@@ -7,19 +7,18 @@ import { Admin, AdminDocument } from '../../../../modules/admin/infrastructure/p
 import { User, UserDocument } from '../../../users/infrastructure/persistence/mongoose/schemas/user.schema';
 import { Provider, ProviderDocument } from '../../../../modules/providers/infrastructure/persistence/mongoose/schemas/provider.schema';
 import { Service, ServiceDocument } from '../../../../modules/services/infrastructure/persistence/mongoose/schemas/service.schema';
-import { Booking, BookingDocument } from '../../../../modules/bookings/infrastructure/persistence/mongoose/schemas/booking.schema';
 import { Order, OrderDocument } from '../../../../modules/orders/infrastructure/persistence/mongoose/schemas/order.schema';
-import { SubscriptionPlan, SubscriptionPlanDocument } from '../../subscriptions/infrastructure/persistence/mongoose/schemas/subscription-plan.schema';
-import { UserSubscription as Subscription, UserSubscriptionDocument as SubscriptionDocument } from '../../subscriptions/infrastructure/persistence/mongoose/schemas/user-subscription.schema';
+import { SubscriptionPlan, SubscriptionPlanDocument } from '../../../subscriptions/infrastructure/persistence/mongoose/schemas/subscription-plan.schema';
+import { UserSubscription, UserSubscriptionDocument } from '../../../subscriptions/infrastructure/persistence/mongoose/schemas/user-subscription.schema';
 import { Setting, SettingDocument } from '../../../../modules/admin/infrastructure/persistence/mongoose/schemas/setting.schema';
-import { RegistrationStatus, BookingStatus, OrderStatus } from '../../../../core/enums/status.enum';
+import { RegistrationStatus, OrderStatus } from '../../../../core/enums/status.enum';
 import { Role } from '../../../../core/enums/roles.enum';
 import { AdminLoginDto } from '../dtos/admin-login.dto';
 import { CreateMembershipPlanDto } from '../dtos/create-membership-plan.dto';
 import { UpdateMembershipPlanDto } from '../dtos/update-membership-plan.dto';
 import { PasswordUtil, TokenUtil } from '../../../../core/utils';
 import { IJwtPayload } from '../../../../core/interfaces';
-import { NotificationsService } from '../../../notifications/notifications.service';
+import { NotificationsService } from '../../../notifications/application/services/notifications.service';
 import { NotificationType } from '../../../../core/enums/status.enum';
 
 @Injectable()
@@ -29,10 +28,9 @@ export class AdminService {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(Provider.name) private providerModel: Model<ProviderDocument>,
     @InjectModel(Service.name) private serviceModel: Model<ServiceDocument>,
-    @InjectModel(Booking.name) private bookingModel: Model<BookingDocument>,
     @InjectModel(Order.name) private orderModel: Model<OrderDocument>,
     @InjectModel(SubscriptionPlan.name) private planModel: Model<SubscriptionPlanDocument>,
-    @InjectModel(Subscription.name) private subscriptionModel: Model<SubscriptionDocument>,
+    @InjectModel(UserSubscription.name) private subscriptionModel: Model<UserSubscriptionDocument>,
     @InjectModel(Setting.name) private settingModel: Model<SettingDocument>,
     private jwtService: JwtService,
     private configService: ConfigService,
@@ -438,91 +436,6 @@ export class AdminService {
   }
 
   // ===========================================
-  // BOOKINGS MANAGEMENT
-  // ===========================================
-
-  /**
-   * استرجاع قائمة كل الطلبات
-   */
-  async getAllBookings(page = 1, limit = 10) {
-    const skip = (page - 1) * limit;
-    const [bookings, total] = await Promise.all([
-      this.bookingModel.find()
-        .populate('user', 'fullName phoneNumber')
-        .populate('provider', 'businessName phone')
-        .skip(skip)
-        .limit(limit)
-        .sort({ createdAt: -1 })
-        .exec(),
-      this.bookingModel.countDocuments(),
-    ]);
-
-    return {
-      bookings,
-      pagination: {
-        total,
-        page,
-        limit,
-        pages: Math.ceil(total / limit),
-      },
-    };
-  }
-
-  /**
-   * عرض طلب محدد بالتفصيل
-   */
-  async getBookingById(id: string) {
-    const booking = await this.bookingModel.findById(id)
-      .populate('user', 'fullName phoneNumber')
-      .populate('provider', 'businessName phone')
-      .populate('vehicle')
-      .exec();
-
-    if (!booking) {
-      throw new NotFoundException('Booking not found');
-    }
-    return booking;
-  }
-
-  /**
-   * تحديث حالة الطلب
-   */
-  async updateBookingStatus(id: string, status: BookingStatus) {
-    const updateData: any = { status };
-    
-    // Update timestamps based on status
-    if (status === BookingStatus.CONFIRMED) updateData.confirmedAt = new Date();
-    if (status === BookingStatus.COMPLETED) updateData.completedAt = new Date();
-    if (status === BookingStatus.CANCELLED) updateData.cancelledAt = new Date();
-
-    const booking = await this.bookingModel.findByIdAndUpdate(
-      id,
-      { $set: updateData },
-      { new: true },
-    ).exec();
-
-    if (!booking) {
-      throw new NotFoundException('Booking not found');
-    }
-
-    return {
-      message: 'Booking status updated successfully',
-      booking,
-    };
-  }
-
-  /**
-   * حذف طلب نهائياً
-   */
-  async deleteBooking(id: string) {
-    const booking = await this.bookingModel.findByIdAndDelete(id).exec();
-    if (!booking) {
-      throw new NotFoundException('Booking not found');
-    }
-    return { message: 'Booking deleted successfully' };
-  }
-
-  // ===========================================
   // STATISTICS & ANALYTICS
   // ===========================================
 
@@ -530,30 +443,22 @@ export class AdminService {
    * الإحصائيات العامة للمنصة
    */
   async getGeneralStats() {
-    const [userCount, providerCount, bookingCount, orderCount, revenueResult, providerRevenueResult] = await Promise.all([
+    const [userCount, providerCount, orderCount, revenueResult] = await Promise.all([
       this.userModel.countDocuments(),
       this.providerModel.countDocuments(),
-      this.bookingModel.countDocuments(),
       this.orderModel.countDocuments(),
-      // Revenue from bookings
-      this.bookingModel.aggregate([
-        { $match: { status: BookingStatus.COMPLETED } },
-        { $group: { _id: null, total: { $sum: '$total' } } }
-      ]),
-      // Revenue from orders
       this.orderModel.aggregate([
         { $match: { status: OrderStatus.COMPLETED } },
-        { $group: { _id: null, total: { $sum: '$total' } } }
+        { $group: { _id: null, total: { $sum: '$totalAmount' } } }
       ])
     ]);
 
-    const totalRevenue = (revenueResult[0]?.total || 0) + (providerRevenueResult[0]?.total || 0);
+    const totalRevenue = revenueResult[0]?.total || 0;
 
     return {
       users: userCount,
       providers: providerCount,
-      totalRequests: bookingCount + orderCount,
-      bookings: bookingCount,
+      totalRequests: orderCount,
       orders: orderCount,
       totalRevenue,
     };
@@ -562,8 +467,8 @@ export class AdminService {
   /**
    * إحصائيات الطلبات حسب الحالة
    */
-  async getBookingStats() {
-    const stats = await this.bookingModel.aggregate([
+  async getOrderStats() {
+    const stats = await this.orderModel.aggregate([
       {
         $group: {
           _id: '$status',
@@ -582,15 +487,15 @@ export class AdminService {
    * الإيرادات الشهرية (آخر 12 شهر)
    */
   async getMonthlyRevenue() {
-    const revenue = await this.bookingModel.aggregate([
-      { $match: { status: BookingStatus.COMPLETED } },
+    const revenue = await this.orderModel.aggregate([
+      { $match: { status: OrderStatus.COMPLETED } },
       {
         $group: {
           _id: {
             month: { $month: '$createdAt' },
             year: { $year: '$createdAt' }
           },
-          revenue: { $sum: '$total' }
+          revenue: { $sum: '$totalAmount' }
         }
       },
       { $sort: { '_id.year': -1, '_id.month': -1 } },
@@ -604,12 +509,12 @@ export class AdminService {
    * أكثر الخدمات طلباً
    */
   async getTopServices() {
-    return this.bookingModel.aggregate([
+    return this.orderModel.aggregate([
       {
         $group: {
-          _id: '$serviceName',
+          _id: '$service',
           count: { $sum: 1 },
-          totalRevenue: { $sum: '$total' }
+          totalRevenue: { $sum: '$totalAmount' }
         }
       },
       { $sort: { count: -1 } },

@@ -1,11 +1,10 @@
 import { Injectable, NotFoundException, ForbiddenException, Inject } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { Chat, ChatDocument } from '../../../../modules/chat/infrastructure/persistence/mongoose/schemas/chat.schema';
-import { CreateChatDto, SendMessageDto } from './dto/chat.dto';
-import type { IOrderRepository } from '../orders/domain/repositories/order.repository.interface';
-import type { IBookingRepository } from '../bookings/domain/repositories/booking.repository.interface';
-import { NotificationsService } from '../notifications/notifications.service';
+import { Chat, ChatDocument, Message, MessageDocument } from '../../infrastructure/persistence/mongoose/schemas/chat.schema';
+import { MessageType, SendMessageDto } from '../dtos/chat.dto';
+import { IOrderRepository } from '../../../orders/domain/repositories/order.repository.interface';
+import { NotificationsService } from '../../../notifications/application/services/notifications.service';
 import { NotificationType } from '../../../../core/enums/status.enum';
 
 @Injectable()
@@ -13,13 +12,12 @@ export class ChatService {
   constructor(
     @InjectModel(Chat.name) private readonly chatModel: Model<ChatDocument>,
     @InjectModel(Message.name) private readonly messageModel: Model<MessageDocument>,
-    @Inject(Symbol.for('IOrderRepository')) private readonly orderRepository: IOrderRepository,
-    @Inject('IBookingRepository') private readonly bookingRepository: IBookingRepository,
+    @Inject(IOrderRepository) private readonly orderRepository: IOrderRepository,
     private readonly notificationsService: NotificationsService,
   ) {}
 
   async getOrCreateChat(userId: string, targetId: string, orderId?: string): Promise<ChatDocument> {
-    // SECURITY: Validate participant link to Order/Booking
+    // SECURITY: Validate participant link to Order
     if (orderId) {
       const order = await this.orderRepository.findById(orderId);
       if (!order) throw new NotFoundException('Order not found');
@@ -28,10 +26,6 @@ export class ChatService {
       if (!participantsOnOrder.includes(userId) || !participantsOnOrder.includes(targetId)) {
         throw new ForbiddenException('Participants are not linked to this order');
       }
-    } else {
-      // Logic for non-order chat (if any) or validation against Booking
-      // For now, let's check if it's a booking if orderId is missing but maybe it was passed as generic id?
-      // Actually, let's keep it specific for Order for now as per user request flow.
     }
 
     // Look for existing 1-on-1 chat

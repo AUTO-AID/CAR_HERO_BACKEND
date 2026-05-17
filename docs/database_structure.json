@@ -1,0 +1,179 @@
+{
+  "users": {
+    "fullName": "string",
+    "phoneNumber": "string (unique, +963...)",
+    "password": "string (select: false)",
+    "profileImage": "string | null",
+    "accountType": "enum (customer, provider, admin)",
+    "role": "Role (enum, default: USER)",
+    "loyaltyLevel": "number",
+    "isPremium": "boolean",
+    "premiumExpiresAt": "Date | null",
+    "preferences": {
+      "language": "string (ar/en)",
+      "notifications": {
+        "push": "boolean",
+        "sms": "boolean",
+        "email": "boolean"
+      }
+    },
+    "isActive": "boolean",
+    "isTermsAccepted": "boolean",
+    "isVerified": "boolean",
+    "lastLoginAt": "Date | null",
+    "otpCode": "string | null",
+    "otpExpiresAt": "Date | null",
+    "otpAttempts": "number",
+    "refreshToken": "string | null",
+    "fcmToken": "string",
+    "vehicles": "Types.ObjectId[] (ref: Vehicle)",
+    "activeSubscription": "Types.ObjectId (ref: UserSubscription)"
+  },
+  "admins": {
+    "email": "string (unique)",
+    "password": "string",
+    "name": "string",
+    "avatar": "string",
+    "role": "Role (enum, default: ADMIN)",
+    "isActive": "boolean",
+    "permissions": "string[]",
+    "lastLoginAt": "Date",
+    "lastLoginIp": "string",
+    "refreshToken": "string",
+    "metadata": "Record<string, any>"
+  },
+  "providers": {
+    "user": "Types.ObjectId (ref: User)",
+    "businessName": "string",
+    "businessType": "enum (individual, company)",
+    "description": "string",
+    "logo": "string",
+    "coverImage": "string",
+    "category": "string",
+    "services": "Types.ObjectId[] (ref: Service)",
+    "location": {
+      "type": "string (Point)",
+      "coordinates": "number[]",
+      "address": "string",
+      "city": "string",
+      "district": "string"
+    },
+    "contact": {
+      "phone": "string",
+      "email": "string",
+      "website": "string",
+      "socialMedia": "Map<string, string>"
+    },
+    "workingHours": "Array<{day: string, slots: Array<{start: string, end: string}>}>",
+    "isVerfied": "boolean",
+    "verificationStatus": "enum (pending, approved, rejected)",
+    "rating": "number",
+    "reviewCount": "number",
+    "isFeatured": "boolean",
+    "isActive": "boolean"
+  },
+  "orders": {
+    "orderNumber": "string (unique)",
+    "user": "Types.ObjectId (ref: User)",
+    "provider": "Types.ObjectId (ref: Provider)",
+    "items": "Array<{id: string, name: string, quantity: number, price: number}>",
+    "status": "OrderStatus (enum)",
+    "totalAmount": "number",
+    "paymentStatus": "PaymentStatus (enum)",
+    "shippingAddress": "string"
+  },
+  "services": {
+    "name": "string",
+    "description": "string",
+    "category": "string",
+    "price": "number",
+    "duration": "number",
+    "image": "string",
+    "isActive": "boolean"
+  },
+  "vehicles": {
+    "user": "Types.ObjectId (ref: User)",
+    "make": "string",
+    "model": "string",
+    "year": "number",
+    "color": "string",
+    "licensePlate": "string",
+    "vin": "string",
+    "image": "string"
+  },
+  "wallets": {
+    "ownerId": "Types.ObjectId",
+    "ownerType": "string (user/provider)",
+    "balance": "number",
+    "loyaltyPoints": "number",
+    "currency": "string",
+    "isActive": "boolean"
+  },
+  "transactions": {
+    "transactionNumber": "string (unique)",
+    "wallet": "Types.ObjectId (ref: Wallet)",
+    "ownerId": "Types.ObjectId",
+    "type": "TransactionType (enum)",
+    "amount": "number",
+    "balanceBefore": "number",
+    "balanceAfter": "number",
+    "status": "string (completed, etc.)"
+  },
+  "notifications": {
+    "user": "Types.ObjectId (ref: User)",
+    "title": "string",
+    "message": "string",
+    "type": "string",
+    "isRead": "boolean",
+    "data": "Record<string, any>"
+  },
+  "chats": {
+    "participants": "Types.ObjectId[] (ref: User/Provider)",
+    "lastMessage": "string",
+    "messages": "Array<{sender: Types.ObjectId, text: string, createdAt: Date}>"
+  },
+  "reviews": {
+    "user": "Types.ObjectId (ref: User)",
+    "provider": "Types.ObjectId (ref: Provider)",
+    "rating": "number",
+    "comment": "string"
+  },
+  "pending_registrations": {
+    "phoneNumber": "string (unique)",
+    "fullName": "string",
+    "password": "string",
+    "accountType": "enum",
+    "otpCode": "string",
+    "expiresAt": "Date (TTL)"
+  },
+  "audit_logs": {
+    "admin": "Types.ObjectId (ref: Admin, optional)",
+    "adminEmail": "string",
+    "adminName": "string",
+    "action": "string (required, e.g. provider.approve)",
+    "entityType": "string (required, e.g. provider/service/setting/admin)",
+    "entityId": "Types.ObjectId (optional affected document)",
+    "summary": "string",
+    "before": "Record<string, any>",
+    "after": "Record<string, any>",
+    "metadata": "Record<string, any>",
+    "ipAddress": "string",
+    "userAgent": "string",
+    "createdAt": "Date",
+    "updatedAt": "Date"
+  },
+  "status_histories": {
+    "entityType": "string (default: order)",
+    "entityId": "Types.ObjectId (required, ref: Order)",
+    "orderNumber": "string",
+    "fromStatus": "string",
+    "toStatus": "string (required)",
+    "changedBy": "Types.ObjectId (optional user/provider/admin/system actor)",
+    "changedByRole": "string",
+    "changedByType": "string",
+    "reason": "string",
+    "metadata": "Record<string, any>",
+    "createdAt": "Date",
+    "updatedAt": "Date"
+  }
+}

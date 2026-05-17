@@ -12,14 +12,12 @@ import { RespondToReviewUseCase } from './application/use-cases/respond-to-revie
 import { DeleteReviewUseCase } from './application/use-cases/delete-review.use-case';
 import { ReviewsController } from './presentation/controllers/reviews.controller';
 import { OrdersModule } from '../orders/orders.module';
-import { BookingsModule } from '../bookings/bookings.module';
 import { ProvidersModule } from '../providers/providers.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Review.name, schema: ReviewSchema }]),
     forwardRef(() => OrdersModule),
-    forwardRef(() => BookingsModule),
     ProvidersModule,
   ],
   controllers: [ReviewsController],
@@ -33,6 +31,6 @@ import { ProvidersModule } from '../providers/providers.module';
       useClass: MongooseReviewRepository,
     },
   ],
-  exports: [IReviewRepository],
+  exports: [IReviewRepository, CreateReviewUseCase],
 })
 export class ReviewsModule {}

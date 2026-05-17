@@ -21,7 +21,7 @@ export class ReviewsController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Create a new review for an order or booking' })
+  @ApiOperation({ summary: 'Create a new review for an order' })
   async createReview(@Body() dto: CreateReviewDto, @Req() req: any) {
     return this.createReviewUseCase.execute(dto, req.user);
   }

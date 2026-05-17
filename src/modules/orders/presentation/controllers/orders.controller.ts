@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, HttpStatus, HttpCode, Get, Query, Param, Patch, Delete, Req } from '@nestjs/common';
+import { BadRequestException, Controller, Post, Body, UseGuards, HttpStatus, HttpCode, Get, Query, Param, Patch, Delete, Req } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { CreateOrderUseCase } from '../../application/use-cases/create-order.use-case';
 import { GetOrdersUseCase } from '../../application/use-cases/get-orders.use-case';
@@ -22,6 +22,7 @@ import { VerifyPaymentDto } from '../../application/dto/verify-payment.dto';
 import { CancelOrderDto } from '../../application/dto/cancel-order.dto';
 import { JwtAuthGuard } from '../../../../core/guards/jwt-auth.guard';
 import { OrderStatus } from '../../../../core/enums/status.enum';
+import { OrderStateMachine } from '../../domain/services/order-state-machine';
 
 @ApiTags('Orders')
 @Controller()
@@ -54,6 +55,20 @@ export class OrdersController {
     return this.createOrderUseCase.execute(createOrderDto);
   }
 
+  @Post('bookings')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a scheduled booking backed by the orders collection' })
+  async createBooking(@Body() createOrderDto: CreateOrderDto, @Req() req: any) {
+    if (!createOrderDto.scheduleTime) {
+      throw new BadRequestException('scheduleTime is required for bookings');
+    }
+
+    createOrderDto.userId = req.user._id;
+    return this.createOrderUseCase.execute(createOrderDto);
+  }
+
   @Get('orders')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
@@ -74,6 +89,39 @@ export class OrdersController {
       else criteria.user = req.user._id;
     }
     return this.getOrdersUseCase.execute(criteria, Number(page) || 1, Number(limit) || 10);
+  }
+
+  @Get('bookings')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Get scheduled bookings backed by the orders collection' })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'status', required: false, enum: OrderStatus })
+  async getAllBookings(
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+    @Query('status') status?: OrderStatus,
+    @Req() req?: any
+  ) {
+    const criteria: any = { isScheduled: true, ...(status ? { status } : {}) };
+    if (req.user.role !== 'admin') {
+      if (req.user.role === 'provider') criteria.provider = req.user._id;
+      else criteria.user = req.user._id;
+    }
+    return this.getOrdersUseCase.execute(criteria, Number(page) || 1, Number(limit) || 10);
+  }
+
+  @Get('bookings/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Get scheduled booking details by ID' })
+  async getBookingById(@Param('id') id: string, @Req() req: any) {
+    const order = await this.getOrderByIdUseCase.execute(id, req.user);
+    if (!order.isScheduled) {
+      throw new BadRequestException('This order is not a scheduled booking');
+    }
+    return order;
   }
 
   @Get('orders/search')
@@ -103,6 +151,20 @@ export class OrdersController {
   @ApiOperation({ summary: 'Get order statistics' })
   async getStats(@Query('period') period: string = 'week') {
     return this.getOrderStatsUseCase.execute(period);
+  }
+
+  @Get('orders/:id/status-transitions')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Get allowed next statuses for an order' })
+  async getAllowedStatusTransitions(@Param('id') id: string, @Req() req: any) {
+    const order = await this.getOrderByIdUseCase.execute(id, req.user);
+    return {
+      orderId: id,
+      currentStatus: order.status,
+      allowedNextStatuses: OrderStateMachine.allowedNextStatuses(order.status),
+      isTerminal: OrderStateMachine.isTerminal(order.status),
+    };
   }
 
   @Get('orders/:id')

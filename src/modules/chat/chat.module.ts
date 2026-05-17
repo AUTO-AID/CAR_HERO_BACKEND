@@ -7,9 +7,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { ChatController } from './presentation/controllers/chat.controller';
 import { ChatService } from './application/services/chat.service';
 import { ChatGateway } from './presentation/gateways/chat.gateway';
-import { Chat, ChatSchema } from '../../modules/chat/infrastructure/persistence/mongoose/schemas/chat.schema';
+import { Chat, ChatSchema, Message, MessageSchema } from './infrastructure/persistence/mongoose/schemas/chat.schema';
 import { OrdersModule } from '../orders/orders.module';
-import { BookingsModule } from '../bookings/bookings.module';
 import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
@@ -20,7 +19,6 @@ import { NotificationsModule } from '../notifications/notifications.module';
     ]),
     JwtModule.register({}),
     OrdersModule,
-    BookingsModule,
     NotificationsModule,
   ],
   controllers: [ChatController],

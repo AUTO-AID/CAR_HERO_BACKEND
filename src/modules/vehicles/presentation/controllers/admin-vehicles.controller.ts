@@ -24,6 +24,8 @@ import { GetVehicleStatsUseCase } from '../../application/use-cases/get-vehicle-
 import { GetTopVehicleModelsUseCase } from '../../application/use-cases/get-top-vehicle-models.use-case';
 import { GetVehicleDistributionUseCase } from '../../application/use-cases/get-vehicle-distribution.use-case';
 import { GetVehicleYearStatsUseCase } from '../../application/use-cases/get-vehicle-year-stats.use-case';
+import { CurrentUser } from '../../../../core/decorators/current-user.decorator';
+import { AuditLogService } from '../../../audit/application/services/audit-log.service';
 
 @ApiTags('Admin - Vehicles')
 @Controller('admin/vehicles')
@@ -39,7 +41,12 @@ export class AdminVehiclesController {
     private readonly getTopVehicleModelsUseCase: GetTopVehicleModelsUseCase,
     private readonly getVehicleDistributionUseCase: GetVehicleDistributionUseCase,
     private readonly getVehicleYearStatsUseCase: GetVehicleYearStatsUseCase,
+    private readonly auditLogService: AuditLogService,
   ) {}
+
+  private getActorId(admin: any): string | undefined {
+    return admin?._id || admin?.userId || admin?.id;
+  }
 
   /**
    * GET /api/v1/admin/vehicles
@@ -132,8 +139,19 @@ export class AdminVehiclesController {
   @ApiResponse({ status: 204, description: 'Vehicle deleted successfully' })
   @ApiResponse({ status: 404, description: 'Vehicle not found' })
   @ApiResponse({ status: 403, description: 'Admin access required' })
-  async deleteVehicle(@Param('id') id: string) {
-    return this.deleteVehicleAdminUseCase.execute(id);
+  async deleteVehicle(@Param('id') id: string, @CurrentUser() admin: any) {
+    const result = await this.deleteVehicleAdminUseCase.execute(id);
+    await this.auditLogService.record({
+      admin: this.getActorId(admin),
+      adminEmail: admin?.email,
+      adminName: admin?.name,
+      action: 'vehicle.delete',
+      entityType: 'vehicle',
+      entityId: id,
+      summary: `vehicle.delete on vehicle:${id}`,
+      after: result as any,
+    });
+    return result;
   }
 
   /**

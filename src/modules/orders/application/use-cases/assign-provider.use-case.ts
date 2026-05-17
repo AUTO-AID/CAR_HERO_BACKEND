@@ -4,6 +4,8 @@ import { IOrderRepository } from '../../domain/repositories/order.repository.int
 import { OrderEntity } from '../../domain/entities/order.entity';
 import { OrderStatus } from '../../../../core/enums/status.enum';
 import { OrderEvents, OrderStatusChangedEvent } from '../../domain/events/order.events';
+import { StatusHistoryService } from '../../../status-history/application/services/status-history.service';
+import { OrderStateMachine } from '../../domain/services/order-state-machine';
 
 @Injectable()
 export class AssignProviderUseCase {
@@ -11,6 +13,7 @@ export class AssignProviderUseCase {
     @Inject(IOrderRepository)
     private readonly orderRepository: IOrderRepository,
     private readonly eventEmitter: EventEmitter2,
+    private readonly statusHistoryService: StatusHistoryService,
   ) {}
 
   async execute(id: string, providerId: string): Promise<OrderEntity> {
@@ -20,6 +23,7 @@ export class AssignProviderUseCase {
     }
 
     const oldStatus = order.status;
+    OrderStateMachine.assertTransition(oldStatus, OrderStatus.ACCEPTED, 'admin');
     const updateData: any = {
       provider: providerId,
       status: OrderStatus.ACCEPTED,
@@ -27,6 +31,21 @@ export class AssignProviderUseCase {
     };
 
     const updatedOrder = await this.orderRepository.update(id, updateData);
+
+    await this.statusHistoryService.record({
+      entityType: 'order',
+      entityId: id,
+      orderNumber: order.orderNumber,
+      fromStatus: oldStatus,
+      toStatus: OrderStatus.ACCEPTED,
+      changedBy: providerId,
+      changedByRole: 'admin',
+      changedByType: 'admin',
+      metadata: {
+        providerId,
+        transitionSource: 'assign_provider',
+      },
+    });
 
     // Emit event for automation
     this.eventEmitter.emit(

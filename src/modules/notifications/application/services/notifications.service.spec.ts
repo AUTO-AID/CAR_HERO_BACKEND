@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { NotificationsService } from './notifications.service';
 import { Notification } from '../../../../modules/notifications/infrastructure/persistence/mongoose/schemas/notification.schema';
-import { NotificationsGateway } from './notifications.gateway';
+import { NotificationsGateway } from '../../presentation/gateways/notifications.gateway';
 import { Types } from 'mongoose';
 
 describe('NotificationsService (Unit Audit)', () => {
@@ -25,17 +25,12 @@ describe('NotificationsService (Unit Audit)', () => {
     emitUnreadCount: jest.fn(),
   };
 
-  const mockBookingRepo = {
-    findAll: jest.fn(),
-  };
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         NotificationsService,
         { provide: getModelToken(Notification.name), useValue: mockNotificationModel },
         { provide: NotificationsGateway, useValue: mockGateway },
-        { provide: 'IBookingRepository', useValue: mockBookingRepo },
       ],
     }).compile();
 

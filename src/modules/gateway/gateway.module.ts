@@ -2,25 +2,28 @@
  * Gateway Module
  * WebSocket real-time communication
  */
-import { Module } from '@nestjs/common';
+import { Module, Global } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppGateway } from './app.gateway';
 import { WsJwtGuard } from '../../core/guards/ws-jwt.guard';
 
+@Global()
 @Module({
   imports: [
+    ConfigModule,
     JwtModule.registerAsync({
+      imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('jwt.secret') || 'default-secret',
+        secret: configService.get<string>('JWT_SECRET') || 'default-secret',
         signOptions: {
-          expiresIn: configService.get<string>('jwt.expiresIn') || '15m',
+          expiresIn: configService.get<string>('JWT_EXPIRES_IN') || '15m',
         } as any,
       }),
       inject: [ConfigService],
     }),
   ],
   providers: [AppGateway, WsJwtGuard],
-  exports: [AppGateway],
+  exports: [AppGateway, WsJwtGuard, JwtModule],
 })
 export class GatewayModule {}

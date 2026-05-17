@@ -23,7 +23,6 @@ import { ProvidersModule } from './modules/providers/providers.module';
 import { VehiclesModule } from './modules/vehicles/vehicles.module';
 import { ServicesModule } from './modules/services/services.module';
 import { OrdersModule } from './modules/orders/orders.module';
-import { BookingsModule } from './modules/bookings/bookings.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { WalletModule } from './modules/wallet/wallet.module';
 import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
@@ -34,6 +33,7 @@ import { AiModule } from './modules/ai/ai.module';
 import { GatewayModule } from './modules/gateway/gateway.module';
 import { ProfileModule } from './modules/profile/profile.module';
 import { WhatsAppModule } from './modules/whatsapp/whatsapp.module';
+import { AuditModule } from './modules/audit/audit.module';
 
 @Module({
   imports: [
@@ -65,12 +65,12 @@ import { WhatsAppModule } from './modules/whatsapp/whatsapp.module';
     VehiclesModule,
     ServicesModule,
     OrdersModule,
-    BookingsModule,
     ChatModule,
     WalletModule,
     SubscriptionsModule,
     ReviewsModule,
     NotificationsModule,
+    AuditModule,
     AdminModule,
     AiModule,
     GatewayModule,

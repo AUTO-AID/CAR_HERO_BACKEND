@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
@@ -7,6 +7,8 @@ import { OrderEntity } from '../../domain/entities/order.entity';
 import { OrderStatus } from '../../../../core/enums/status.enum';
 import { OrderEvents, OrderStatusChangedEvent } from '../../domain/events/order.events';
 import { TransferEarningsUseCase } from '../../../../modules/wallet/application/use-cases/transfer-earnings.use-case';
+import { StatusHistoryService } from '../../../status-history/application/services/status-history.service';
+import { OrderStateMachine } from '../../domain/services/order-state-machine';
 
 @Injectable()
 export class UpdateOrderStatusUseCase {
@@ -17,6 +19,7 @@ export class UpdateOrderStatusUseCase {
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
     private readonly transferEarnings: TransferEarningsUseCase,
+    private readonly statusHistoryService: StatusHistoryService,
   ) {}
 
   async execute(id: string, status: OrderStatus, currentUser: any): Promise<OrderEntity> {
@@ -33,20 +36,32 @@ export class UpdateOrderStatusUseCase {
       throw new ForbiddenException('You do not have permission to update status for this order');
     }
 
-    // Business Logic: Prevent invalid transitions if necessary
-    if (order.status === OrderStatus.CANCELLED) {
-      throw new BadRequestException('Cannot update status of a cancelled order');
-    }
+    OrderStateMachine.assertTransition(order.status, status, currentUser?.role);
 
     const oldStatus = order.status;
     const updateData: any = { status };
 
     // Update specific timestamps
+    if (status === OrderStatus.ACCEPTED || status === OrderStatus.PROVIDER_ASSIGNED) updateData.acceptedAt = new Date();
     if (status === OrderStatus.COMPLETED) updateData.completedAt = new Date();
-    if (status === OrderStatus.CANCELLED) updateData.cancelledAt = new Date();
+    if (status === OrderStatus.CANCELLED || status === OrderStatus.REJECTED) updateData.cancelledAt = new Date();
     if (status === OrderStatus.IN_PROGRESS) updateData.startedAt = new Date();
 
     const updatedOrder = await this.orderRepository.update(id, updateData);
+
+    await this.statusHistoryService.record({
+      entityType: 'order',
+      entityId: id,
+      orderNumber: order.orderNumber,
+      fromStatus: oldStatus,
+      toStatus: status,
+      changedBy: currentUser?._id || currentUser?.userId || currentUser?.id,
+      changedByRole: currentUser?.role,
+      changedByType: currentUser?.accountType || currentUser?.role,
+      metadata: {
+        isScheduled: !!order.isScheduled,
+      },
+    });
 
     // 💰 Special Logic: Transfer earnings to provider on completion
     if (status === OrderStatus.COMPLETED && updatedOrder.providerId && updatedOrder.total > 0) {

@@ -1,16 +1,11 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString, IsArray, Min, Max, IsUUID, IsMongoId } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString, IsArray, Min, Max, IsMongoId } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateReviewDto {
-  @ApiProperty({ example: '60d5ecb8b392d66514703902', required: false })
-  @IsOptional()
+  @ApiProperty({ example: '60d5ecb8b392d66514703902' })
+  @IsNotEmpty()
   @IsMongoId()
-  orderId?: string;
-
-  @ApiProperty({ example: '60d5ecb8b392d66514703903', required: false })
-  @IsOptional()
-  @IsMongoId()
-  bookingId?: string;
+  orderId: string;
 
   @ApiProperty({ example: 5, minimum: 1, maximum: 5 })
   @IsNotEmpty()

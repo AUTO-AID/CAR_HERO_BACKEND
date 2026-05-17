@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
-import { WhatsAppWebService } from '../services/whatsapp-web.service';
+import { WhatsAppWebService } from '../../application/services/whatsapp-web.service';
 import { Public } from '../../../../core/decorators';
 
 @ApiTags('WhatsApp')
@@ -81,6 +81,7 @@ export class WhatsAppController {
   async getQRCode() {
     const qrCode = this.whatsappService.getQRCode();
     const isReady = this.whatsappService.isClientReady();
+    const lastError = this.whatsappService.getLastError();
 
     if (isReady) {
       return {
@@ -92,8 +93,8 @@ export class WhatsAppController {
 
     if (!qrCode) {
       return {
-        status: 'loading',
-        message: 'Please wait, generating QR code...',
+        status: lastError ? 'error' : 'loading',
+        message: lastError || 'Please wait, generating QR code...',
         qrCode: null,
       };
     }
@@ -117,15 +118,19 @@ export class WhatsAppController {
   getStatus() {
     const isReady = this.whatsappService.isClientReady();
     const hasQR = !!this.whatsappService.getQRCode();
+    const lastError = this.whatsappService.getLastError();
 
     return {
       isReady,
       hasQR,
-      status: isReady ? 'connected' : hasQR ? 'waiting_qr' : 'initializing',
+      lastError,
+      status: isReady ? 'connected' : hasQR ? 'waiting_qr' : lastError ? 'error' : 'initializing',
       message: isReady
         ? 'WhatsApp is connected'
         : hasQR
         ? 'Please scan QR code'
+        : lastError
+        ? lastError
         : 'Initializing...',
     };
   }

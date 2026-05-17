@@ -6,8 +6,14 @@ import { LoggingInterceptor } from './interceptors/logging.interceptor';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { MaintenanceGuard } from './guards/maintenance.guard';
 
+import { Setting, SettingSchema } from '../modules/admin/infrastructure/persistence/mongoose/schemas/setting.schema';
+import { MongooseModule } from '@nestjs/mongoose';
+
 @Global()
 @Module({
+  imports: [
+    MongooseModule.forFeature([{ name: Setting.name, schema: SettingSchema }]),
+  ],
   providers: [
     {
       provide: APP_FILTER,

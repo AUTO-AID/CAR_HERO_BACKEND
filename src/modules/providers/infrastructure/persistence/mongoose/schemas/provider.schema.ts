@@ -178,10 +178,6 @@ export class Provider {
   @Prop({ default: 10 })
   commissionRate: number;
 
-  // Wallet/earnings balance
-  @Prop({ default: 0 })
-  walletBalance: number;
-
   @Prop()
   lastOnlineAt?: Date;
 }
@@ -192,7 +188,6 @@ export const ProviderSchema = SchemaFactory.createForClass(Provider);
 ProviderSchema.index({ location: '2dsphere' });
 
 // Other indexes
-ProviderSchema.index({ phone: 1 }, { unique: true });
 ProviderSchema.index({ status: 1 });
 ProviderSchema.index({ serviceCategories: 1 });
 ProviderSchema.index({ isActive: 1, isApproved: 1 });

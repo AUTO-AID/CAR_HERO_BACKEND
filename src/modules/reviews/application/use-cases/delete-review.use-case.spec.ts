@@ -2,12 +2,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException, ForbiddenException } from '@nestjs/common';
 import { DeleteReviewUseCase } from './delete-review.use-case';
 import { IReviewRepository } from '../../domain/repositories/review.repository.interface';
-import { ProvidersService } from '../../../providers/providers.service';
+import { RecalculateProviderRatingUseCase } from '../../../providers/application/use-cases/recalculate-provider-rating.use-case';
 
 describe('DeleteReviewUseCase', () => {
   let useCase: DeleteReviewUseCase;
   let reviewRepository: jest.Mocked<IReviewRepository>;
-  let providersService: jest.Mocked<ProvidersService>;
+  let recalculateProviderRatingUseCase: jest.Mocked<RecalculateProviderRatingUseCase>;
 
   const mockReviewRepository = {
     findById: jest.fn(),
@@ -15,8 +15,8 @@ describe('DeleteReviewUseCase', () => {
     getAverageRating: jest.fn(),
   };
 
-  const mockProvidersService = {
-    recalculateRating: jest.fn(),
+  const mockRecalculateProviderRatingUseCase = {
+    execute: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -24,13 +24,13 @@ describe('DeleteReviewUseCase', () => {
       providers: [
         DeleteReviewUseCase,
         { provide: IReviewRepository, useValue: mockReviewRepository },
-        { provide: ProvidersService, useValue: mockProvidersService },
+        { provide: RecalculateProviderRatingUseCase, useValue: mockRecalculateProviderRatingUseCase },
       ],
     }).compile();
 
     useCase = module.get<DeleteReviewUseCase>(DeleteReviewUseCase);
     reviewRepository = module.get(IReviewRepository);
-    providersService = module.get(ProvidersService);
+    recalculateProviderRatingUseCase = module.get(RecalculateProviderRatingUseCase);
   });
 
   const currentUser = { _id: 'user-123', role: 'user' };
@@ -46,7 +46,7 @@ describe('DeleteReviewUseCase', () => {
 
     expect(result).toBe(true);
     expect(reviewRepository.delete).toHaveBeenCalledWith('review-123');
-    expect(providersService.recalculateRating).toHaveBeenCalledWith('provider-123', 4.5, 10);
+    expect(recalculateProviderRatingUseCase.execute).toHaveBeenCalledWith('provider-123', 4.5, 10);
   });
 
   it('should delete a review successfully when the user is an admin', async () => {

@@ -24,7 +24,6 @@ export interface IUserResponse {
   fullName: string;
   phoneNumber: string;
   accountType: string;
-  pointsBalance: number;
   loyaltyLevel: number;
   isPremium: boolean;
   premiumExpiresAt?: Date;

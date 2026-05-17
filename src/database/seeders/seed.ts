@@ -7,9 +7,9 @@ import { Model } from 'mongoose';
 import { getModelToken } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import { AppModule } from '../../app.module';
-import { Admin } from '../schemas/admin.schema';
-import { SubscriptionPlan } from '../schemas/subscription.schema';
-import { Service } from '../schemas/service.schema';
+import { Admin } from '../../modules/admin/infrastructure/persistence/mongoose/schemas/admin.schema';
+import { SubscriptionPlan } from '../../modules/subscriptions/infrastructure/persistence/mongoose/schemas/subscription-plan.schema';
+import { Service } from '../../modules/services/infrastructure/persistence/mongoose/schemas/service.schema';
 import { ServiceCategory } from '../../core/enums/status.enum';
 import { Role } from '../../core/enums/roles.enum';
 
@@ -149,7 +149,7 @@ async function seedSubscriptionPlans(app: any) {
           { name: '3x loyalty points', nameAr: '3x نقاط ولاء' },
         ],
       },
-    ]);
+    ] as any);
 
     console.log('✅ Subscription plans created');
   } else {

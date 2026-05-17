@@ -123,7 +123,6 @@ export class Order {
 export const OrderSchema = SchemaFactory.createForClass(Order);
 
 // Indexes
-OrderSchema.index({ orderNumber: 1 }, { unique: true });
 OrderSchema.index({ user: 1 });
 OrderSchema.index({ provider: 1 });
 OrderSchema.index({ status: 1 });

@@ -11,4 +11,8 @@ export class GetSubscriptionPlansUseCase {
   async execute(activeOnly: boolean = true) {
     return this.subscriptionRepository.findAllPlans(activeOnly);
   }
+
+  async findById(id: string) {
+    return this.subscriptionRepository.findPlanById(id);
+  }
 }

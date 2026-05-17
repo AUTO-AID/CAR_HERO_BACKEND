@@ -8,7 +8,8 @@ import { UpdateMembershipPlanDto } from '../../application/dtos/update-membershi
 import { Public, Roles, CurrentUser, Permissions } from '../../../../core/decorators';
 import { Role } from '../../../../core/enums/roles.enum';
 import { RolesGuard, PermissionsGuard } from '../../../../core/guards';
-import { RegistrationStatus, BookingStatus } from '../../../../core/enums/status.enum';
+import { RegistrationStatus } from '../../../../core/enums/status.enum';
+import { AuditLogService } from '../../../audit/application/services/audit-log.service';
 
 @ApiTags('Admin')
 @Controller('admin')
@@ -17,7 +18,26 @@ export class AdminController {
   constructor(
     private readonly adminService: AdminService,
     private readonly loginUseCase: LoginUseCase,
+    private readonly auditLogService: AuditLogService,
   ) {}
+
+  private getActorId(admin: any): string | undefined {
+    return admin?._id || admin?.userId || admin?.id;
+  }
+
+  private async audit(admin: any, action: string, entityType: string, entityId?: string, after?: any, metadata?: Record<string, any>) {
+    await this.auditLogService.record({
+      admin: this.getActorId(admin),
+      adminEmail: admin?.email,
+      adminName: admin?.name,
+      action,
+      entityType,
+      entityId,
+      summary: `${action} on ${entityType}${entityId ? `:${entityId}` : ''}`,
+      after: after || {},
+      metadata: metadata || {},
+    });
+  }
 
   @Public()
   @Post('login')
@@ -57,61 +77,6 @@ export class AdminController {
   }
 
   // ===========================================
-  // USERS MANAGEMENT
-  // ===========================================
-
-  @Get('users')
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
-  @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Get all users' })
-  async getAllUsers(
-    @Query('page') page: number,
-    @Query('limit') limit: number,
-  ) {
-    return this.adminService.getAllUsers(Number(page) || 1, Number(limit) || 10);
-  }
-
-  @Get('users/search')
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
-  @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Search users by name or phone' })
-  async searchUsers(@Query('query') query: string) {
-    return this.adminService.searchUsers(query);
-  }
-
-  @Get('users/:id')
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
-  @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Get user by ID' })
-  async getUserById(@Param('id') id: string) {
-    return this.adminService.getUserById(id);
-  }
-
-  @Patch('users/:id/status')
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
-  @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Activate/Deactivate user' })
-  async updateUserStatus(
-    @Param('id') id: string,
-    @Body('isActive') isActive: boolean,
-  ) {
-    return this.adminService.updateUserStatus(id, isActive);
-  }
-
-  @Delete('users/:id')
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
-  @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Delete user' })
-  async deleteUser(@Param('id') id: string) {
-    return this.adminService.deleteUser(id);
-  }
-
-  // ===========================================
   // PROVIDERS MANAGEMENT
   // ===========================================
 
@@ -142,8 +107,10 @@ export class AdminController {
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Approve provider registration' })
-  async approveProvider(@Param('id') id: string) {
-    return this.adminService.approveProvider(id);
+  async approveProvider(@Param('id') id: string, @CurrentUser() admin: any) {
+    const result = await this.adminService.approveProvider(id);
+    await this.audit(admin, 'provider.approve', 'provider', id, result);
+    return result;
   }
 
   @Patch('providers/:id/reject')
@@ -154,8 +121,11 @@ export class AdminController {
   async rejectProvider(
     @Param('id') id: string,
     @Body('reason') reason: string,
+    @CurrentUser() admin: any,
   ) {
-    return this.adminService.rejectProvider(id, reason);
+    const result = await this.adminService.rejectProvider(id, reason);
+    await this.audit(admin, 'provider.reject', 'provider', id, result, { reason });
+    return result;
   }
 
   @Patch('providers/:id')
@@ -166,8 +136,11 @@ export class AdminController {
   async updateProvider(
     @Param('id') id: string,
     @Body() updateData: any,
+    @CurrentUser() admin: any,
   ) {
-    return this.adminService.updateProvider(id, updateData);
+    const result = await this.adminService.updateProvider(id, updateData);
+    await this.audit(admin, 'provider.update', 'provider', id, result, { fields: Object.keys(updateData || {}) });
+    return result;
   }
 
   // ===========================================
@@ -188,8 +161,10 @@ export class AdminController {
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Create new system service' })
-  async createService(@Body() serviceData: any) {
-    return this.adminService.createService(serviceData);
+  async createService(@Body() serviceData: any, @CurrentUser() admin: any) {
+    const result = await this.adminService.createService(serviceData);
+    await this.audit(admin, 'service.create', 'service', String(result?._id || result?.id || ''), result);
+    return result;
   }
 
   @Patch('services/:id')
@@ -200,8 +175,11 @@ export class AdminController {
   async updateService(
     @Param('id') id: string,
     @Body() updateData: any,
+    @CurrentUser() admin: any,
   ) {
-    return this.adminService.updateService(id, updateData);
+    const result = await this.adminService.updateService(id, updateData);
+    await this.audit(admin, 'service.update', 'service', id, result, { fields: Object.keys(updateData || {}) });
+    return result;
   }
 
   @Delete('services/:id')
@@ -209,54 +187,10 @@ export class AdminController {
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Delete system service' })
-  async deleteService(@Param('id') id: string) {
-    return this.adminService.deleteService(id);
-  }
-
-  // ===========================================
-  // BOOKINGS MANAGEMENT
-  // ===========================================
-
-  @Get('bookings')
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
-  @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Get all bookings' })
-  async getAllBookings(
-    @Query('page') page: number,
-    @Query('limit') limit: number,
-  ) {
-    return this.adminService.getAllBookings(Number(page) || 1, Number(limit) || 10);
-  }
-
-  @Get('bookings/:id')
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
-  @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Get booking by ID' })
-  async getBookingById(@Param('id') id: string) {
-    return this.adminService.getBookingById(id);
-  }
-
-  @Patch('bookings/:id/status')
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
-  @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Update booking status' })
-  async updateBookingStatus(
-    @Param('id') id: string,
-    @Body('status') status: BookingStatus,
-  ) {
-    return this.adminService.updateBookingStatus(id, status);
-  }
-
-  @Delete('bookings/:id')
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
-  @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Delete booking' })
-  async deleteBooking(@Param('id') id: string) {
-    return this.adminService.deleteBooking(id);
+  async deleteService(@Param('id') id: string, @CurrentUser() admin: any) {
+    const result = await this.adminService.deleteService(id);
+    await this.audit(admin, 'service.delete', 'service', id, result);
+    return result;
   }
 
   // ===========================================
@@ -272,13 +206,13 @@ export class AdminController {
     return this.adminService.getGeneralStats();
   }
 
-  @Get('stats/bookings')
+  @Get('stats/orders')
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Get booking statistics by status' })
-  async getBookingStats() {
-    return this.adminService.getBookingStats();
+  @ApiOperation({ summary: 'Get order statistics by status' })
+  async getOrderStats() {
+    return this.adminService.getOrderStats();
   }
 
   @Get('stats/revenue')
@@ -307,51 +241,116 @@ export class AdminController {
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Get all membership plans' })
+  @ApiOperation({ summary: 'Legacy: get all membership plans. Prefer GET /admin/subscription-plans' })
   async getAllMembershipPlans() {
     return this.adminService.getAllMembershipPlans();
+  }
+
+  @Get('subscription-plans')
+  @Roles(Role.ADMIN)
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Get all subscription plans (canonical admin API)' })
+  async getAllSubscriptionPlans() {
+    return this.getAllMembershipPlans();
   }
 
   @Post('memberships')
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Create new membership plan' })
-  async createMembershipPlan(@Body() dto: CreateMembershipPlanDto) {
-    return this.adminService.createMembershipPlan(dto);
+  @ApiOperation({ summary: 'Legacy: create membership plan. Prefer POST /admin/subscription-plans' })
+  async createMembershipPlan(@Body() dto: CreateMembershipPlanDto, @CurrentUser() admin: any) {
+    const result = await this.adminService.createMembershipPlan(dto);
+    await this.audit(admin, 'membership.create', 'subscription_plan', String(result?._id || result?.id || ''), result);
+    return result;
+  }
+
+  @Post('subscription-plans')
+  @Roles(Role.ADMIN)
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Create subscription plan (canonical admin API)' })
+  async createSubscriptionPlan(@Body() dto: CreateMembershipPlanDto, @CurrentUser() admin: any) {
+    const result = await this.adminService.createMembershipPlan(dto);
+    await this.audit(admin, 'subscription_plan.create', 'subscription_plan', String(result?._id || result?.id || ''), result);
+    return result;
   }
 
   @Patch('memberships/:id')
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Update membership plan' })
+  @ApiOperation({ summary: 'Legacy: update membership plan. Prefer PATCH /admin/subscription-plans/:id' })
   async updateMembershipPlan(
     @Param('id') id: string,
     @Body() dto: UpdateMembershipPlanDto,
+    @CurrentUser() admin: any,
   ) {
-    return this.adminService.updateMembershipPlan(id, dto);
+    const result = await this.adminService.updateMembershipPlan(id, dto);
+    await this.audit(admin, 'membership.update', 'subscription_plan', id, result, { fields: Object.keys(dto || {}) });
+    return result;
+  }
+
+  @Patch('subscription-plans/:id')
+  @Roles(Role.ADMIN)
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Update subscription plan (canonical admin API)' })
+  async updateSubscriptionPlan(
+    @Param('id') id: string,
+    @Body() dto: UpdateMembershipPlanDto,
+    @CurrentUser() admin: any,
+  ) {
+    const result = await this.adminService.updateMembershipPlan(id, dto);
+    await this.audit(admin, 'subscription_plan.update', 'subscription_plan', id, result, { fields: Object.keys(dto || {}) });
+    return result;
   }
 
   @Delete('memberships/:id')
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Delete membership plan' })
-  async deleteMembershipPlan(@Param('id') id: string) {
-    return this.adminService.deleteMembershipPlan(id);
+  @ApiOperation({ summary: 'Legacy: delete membership plan. Prefer DELETE /admin/subscription-plans/:id' })
+  async deleteMembershipPlan(@Param('id') id: string, @CurrentUser() admin: any) {
+    const result = await this.adminService.deleteMembershipPlan(id);
+    await this.audit(admin, 'membership.delete', 'subscription_plan', id, result);
+    return result;
+  }
+
+  @Delete('subscription-plans/:id')
+  @Roles(Role.ADMIN)
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Delete subscription plan (canonical admin API)' })
+  async deleteSubscriptionPlan(@Param('id') id: string, @CurrentUser() admin: any) {
+    const result = await this.adminService.deleteMembershipPlan(id);
+    await this.audit(admin, 'subscription_plan.delete', 'subscription_plan', id, result);
+    return result;
   }
 
   @Get('memberships/subscribers')
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Get all subscribed users' })
+  @ApiOperation({ summary: 'Legacy: get all subscribed users. Prefer GET /admin/subscriptions' })
   async getMembershipSubscribers(
     @Query('page') page: number,
     @Query('limit') limit: number,
   ) {
     return this.adminService.getMembershipSubscribers(Number(page) || 1, Number(limit) || 10);
+  }
+
+  @Get('subscriptions')
+  @Roles(Role.ADMIN)
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Get all user subscriptions (canonical admin API)' })
+  async getUserSubscriptions(
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+  ) {
+    return this.getMembershipSubscribers(page, limit);
   }
 
   // ===========================================
@@ -374,8 +373,11 @@ export class AdminController {
   @ApiOperation({ summary: 'Toggle maintenance mode' })
   async updateMaintenanceMode(
     @Body() dto: { maintenanceMode: boolean; message?: string; messageAr?: string },
+    @CurrentUser() admin: any,
   ) {
-    return this.adminService.updateMaintenanceMode(dto);
+    const result = await this.adminService.updateMaintenanceMode(dto);
+    await this.audit(admin, 'setting.maintenance_update', 'setting', undefined, result, dto);
+    return result;
   }
 
   // ===========================================
@@ -396,8 +398,10 @@ export class AdminController {
   @Permissions('all')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Create a new admin account' })
-  async createAdmin(@Body() adminData: any) {
-    return this.adminService.createAdmin(adminData);
+  async createAdmin(@Body() adminData: any, @CurrentUser() admin: any) {
+    const result = await this.adminService.createAdmin(adminData);
+    await this.audit(admin, 'admin.create', 'admin', String(result?._id || result?.id || ''), result);
+    return result;
   }
 
   @Patch(':id/permissions')
@@ -408,8 +412,11 @@ export class AdminController {
   async updateAdminPermissions(
     @Param('id') id: string,
     @Body('permissions') permissions: string[],
+    @CurrentUser() admin: any,
   ) {
-    return this.adminService.updateAdminPermissions(id, permissions);
+    const result = await this.adminService.updateAdminPermissions(id, permissions);
+    await this.audit(admin, 'admin.permissions_update', 'admin', id, result, { permissions });
+    return result;
   }
 
   @Patch(':id/status')
@@ -420,8 +427,11 @@ export class AdminController {
   async toggleAdminStatus(
     @Param('id') id: string,
     @Body('isActive') isActive: boolean,
+    @CurrentUser() admin: any,
   ) {
-    return this.adminService.toggleAdminStatus(id, isActive);
+    const result = await this.adminService.toggleAdminStatus(id, isActive);
+    await this.audit(admin, 'admin.status_update', 'admin', id, result, { isActive });
+    return result;
   }
 
   @Delete(':id')
@@ -429,7 +439,9 @@ export class AdminController {
   @Permissions('all')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Delete an admin account' })
-  async deleteAdmin(@Param('id') id: string) {
-    return this.adminService.deleteAdmin(id);
+  async deleteAdmin(@Param('id') id: string, @CurrentUser() admin: any) {
+    const result = await this.adminService.deleteAdmin(id);
+    await this.audit(admin, 'admin.delete', 'admin', id, result);
+    return result;
   }
 }

@@ -22,7 +22,6 @@ export class GetUserStatsUseCase {
         accountType: user.accountType,
         isPremium: user.isPremium,
         loyaltyLevel: user.loyaltyLevel,
-        pointsBalance: user.pointsBalance,
       },
       stats: {
         totalOrders: 0, 

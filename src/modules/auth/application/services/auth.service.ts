@@ -14,7 +14,8 @@ import { Provider, ProviderDocument } from '../../../providers/infrastructure/pe
 import {
   PendingRegistration,
   PendingRegistrationDocument,
-} from '../schemas/pending-registration.schema';
+} from '../../infrastructure/persistence/mongoose/schemas/pending-registration.schema';
+
 
 import {
   RegisterDto,
@@ -22,7 +23,7 @@ import {
   VerifyOtpDto,
   ResetPasswordDto,
   ForgotPasswordDto,
-} from '../dto';
+} from '../dtos';
 
 import {
   IAuthResponse,
@@ -39,8 +40,8 @@ import {
 
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from '../../../../core/constants';
 import { OtpService } from './otp.service';
-import { Logout, LogoutDocument } from '../schemas/logout.schema';
-import { NotificationsService } from '../../notifications/notifications.service';
+import { Logout, LogoutDocument } from '../../infrastructure/persistence/mongoose/schemas/logout.schema';
+import { NotificationsService } from '../../../notifications/application/services/notifications.service';
 import { NotificationType } from '../../../../core/enums/status.enum';
 import { Admin, AdminDocument } from '../../../admin/infrastructure/persistence/mongoose/schemas/admin.schema';
 

@@ -9,7 +9,7 @@ import {
 } from '@nestjs/websockets';
 import { UseGuards, Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
-import { WsJwtGuard } from '../../core/guards/ws-jwt.guard';
+import { WsJwtGuard } from '../../../../core/guards/ws-jwt.guard';
 
 @WebSocketGateway({
   cors: { origin: '*' },

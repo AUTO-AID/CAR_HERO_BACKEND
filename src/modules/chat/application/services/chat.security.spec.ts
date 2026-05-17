@@ -2,12 +2,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { ChatService } from './chat.service';
-import { Chat } from '../../../../modules/chat/infrastructure/persistence/mongoose/schemas/chat.schema';
-import { IOrderRepository } from '../orders/domain/repositories/order.repository.interface';
-import { IBookingRepository } from '../bookings/domain/repositories/booking.repository.interface';
-import { OrderEntity } from '../orders/domain/entities/order.entity';
+import { Chat, Message } from '../../infrastructure/persistence/mongoose/schemas/chat.schema';
+import { IOrderRepository } from '../../../orders/domain/repositories/order.repository.interface';
+import { OrderEntity } from '../../../orders/domain/entities/order.entity';
 import { OrderStatus } from '../../../../core/enums/status.enum';
-import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationsService } from '../../../notifications/application/services/notifications.service';
+import { MessageType } from '../dtos/chat.dto';
 import { Types } from 'mongoose';
 
 describe('Chat Module: Security & Integration Audit', () => {
@@ -34,10 +34,6 @@ describe('Chat Module: Security & Integration Audit', () => {
     findById: jest.fn(),
   };
 
-  const mockBookingRepo = {
-    findById: jest.fn(),
-  };
-
   const mockNotificationsService = {
     sendChatNotification: jest.fn(),
     createNotification: jest.fn().mockResolvedValue({}),
@@ -50,7 +46,6 @@ describe('Chat Module: Security & Integration Audit', () => {
         { provide: getModelToken(Chat.name), useValue: mockChatModel },
         { provide: getModelToken(Message.name), useValue: mockMessageModel },
         { provide: Symbol.for('IOrderRepository'), useValue: mockOrderRepo },
-        { provide: 'IBookingRepository', useValue: mockBookingRepo },
         { provide: NotificationsService, useValue: mockNotificationsService },
       ],
     }).compile();

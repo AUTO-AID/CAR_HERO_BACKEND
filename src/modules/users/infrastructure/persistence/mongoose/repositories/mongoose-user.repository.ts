@@ -18,7 +18,6 @@ export class MongooseUserRepository implements IUserRepository {
       doc.phoneNumber,
       doc.accountType as UserAccountType,
       doc.profileImage,
-      doc.pointsBalance,
       doc.loyaltyLevel,
       doc.isPremium,
       doc.premiumExpiresAt,

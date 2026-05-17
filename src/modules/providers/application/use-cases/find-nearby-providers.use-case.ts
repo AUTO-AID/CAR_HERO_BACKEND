@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { IProviderRepository } from '../../domain/repositories/provider.repository.interface';
 import { NearbyProviderDto } from '../dtos/provider.dto';
 
@@ -10,6 +10,9 @@ export class FindNearbyProvidersUseCase {
   ) {}
 
   async execute(dto: NearbyProviderDto) {
+    if (dto.longitude < -180 || dto.longitude > 180 || dto.latitude < -90 || dto.latitude > 90) {
+      throw new BadRequestException('Invalid coordinates');
+    }
     return this.providerRepository.findNearby(dto);
   }
 }

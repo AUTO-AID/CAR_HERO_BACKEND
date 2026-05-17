@@ -5,7 +5,6 @@ export class ReviewEntity {
     public readonly provider: string,
     public readonly rating: number,
     public readonly order?: string,
-    public readonly booking?: string,
     public readonly comment?: string,
     public readonly serviceQuality?: number,
     public readonly punctuality?: number,
@@ -31,8 +30,8 @@ export class ReviewEntity {
     if (this.rating < 1 || this.rating > 5) {
       throw new Error('Rating must be between 1 and 5');
     }
-    if (!this.order && !this.booking) {
-      throw new Error('Review must be linked to an order or a booking');
+    if (!this.order) {
+      throw new Error('Review must be linked to an order');
     }
   }
 
@@ -41,7 +40,6 @@ export class ReviewEntity {
     provider: string;
     rating: number;
     order?: string;
-    booking?: string;
     comment?: string;
     serviceQuality?: number;
     punctuality?: number;
@@ -55,7 +53,6 @@ export class ReviewEntity {
       props.provider,
       props.rating,
       props.order,
-      props.booking,
       props.comment,
       props.serviceQuality,
       props.punctuality,

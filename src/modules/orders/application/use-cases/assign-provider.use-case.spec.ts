@@ -4,6 +4,7 @@ import { AssignProviderUseCase } from './assign-provider.use-case';
 import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
 import { OrderStatus } from '../../../../core/enums/status.enum';
 import { NotFoundException } from '@nestjs/common';
+import { StatusHistoryService } from '../../../status-history/application/services/status-history.service';
 
 describe('AssignProviderUseCase', () => {
   let useCase: AssignProviderUseCase;
@@ -18,12 +19,16 @@ describe('AssignProviderUseCase', () => {
     mockEventEmitter = {
       emit: jest.fn(),
     };
+    const mockStatusHistoryService = {
+      record: jest.fn(),
+    };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AssignProviderUseCase,
         { provide: IOrderRepository, useValue: mockRepo },
         { provide: EventEmitter2, useValue: mockEventEmitter },
+        { provide: StatusHistoryService, useValue: mockStatusHistoryService },
       ],
     }).compile();
 

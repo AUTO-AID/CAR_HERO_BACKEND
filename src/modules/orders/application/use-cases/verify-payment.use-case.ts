@@ -5,7 +5,7 @@ import { IOrderRepository } from '../../domain/repositories/order.repository.int
 import { OrderEntity } from '../../domain/entities/order.entity';
 import { PaymentStatus } from '../../../../core/enums/status.enum';
 import { VerifyPaymentDto } from '../dto/verify-payment.dto';
-import { IWalletRepository } from '../../../../modules/wallet/domain/repositories/wallet.repository.interface';
+import type { IWalletRepository } from '../../../../modules/wallet/domain/repositories/wallet.repository.interface';
 import { Transaction } from '../../../../modules/wallet/domain/entities/transaction.entity';
 import { TransactionType } from '../../../../core/enums/status.enum';
 

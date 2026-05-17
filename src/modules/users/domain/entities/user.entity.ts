@@ -25,7 +25,6 @@ export class UserEntity {
     public readonly phoneNumber: string,
     public readonly accountType: UserAccountType,
     public readonly profileImage?: string | null,
-    public readonly pointsBalance: number = 0,
     public readonly loyaltyLevel: number = 1,
     public readonly isPremium: boolean = false,
     public readonly premiumExpiresAt?: Date | null,

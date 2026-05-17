@@ -5,6 +5,7 @@ import { CancelOrderUseCase } from './cancel-order.use-case';
 import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
 import { OrderStatus } from '../../../../core/enums/status.enum';
 import { BadRequestException } from '@nestjs/common';
+import { StatusHistoryService } from '../../../status-history/application/services/status-history.service';
 
 describe('CancelOrderUseCase', () => {
   let useCase: CancelOrderUseCase;
@@ -22,6 +23,9 @@ describe('CancelOrderUseCase', () => {
     const mockWalletRepo = {
       executeTransaction: jest.fn(),
     };
+    const mockStatusHistoryService = {
+      record: jest.fn(),
+    };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -30,6 +34,7 @@ describe('CancelOrderUseCase', () => {
         { provide: EventEmitter2, useValue: { emit: jest.fn() } },
         { provide: CACHE_MANAGER, useValue: mockCacheManager },
         { provide: 'IWalletRepository', useValue: mockWalletRepo },
+        { provide: StatusHistoryService, useValue: mockStatusHistoryService },
       ],
     }).compile();
 

@@ -8,6 +8,8 @@ import { JwtAuthGuard } from '../../../../core/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../../core/guards/roles.guard';
 import { Roles } from '../../../../core/decorators/roles.decorator';
 import { Role } from '../../../../core/enums/roles.enum';
+import { CurrentUser } from '../../../../core/decorators/current-user.decorator';
+import { AuditLogService } from '../../../audit/application/services/audit-log.service';
 
 @Controller('v1/admin/wallet')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -19,11 +21,16 @@ export class AdminWalletController {
     private readonly adminLogsUseCase: GetAdminTransactionLogsUseCase,
     private readonly financialSummary: GetFinancialSummaryUseCase,
     private readonly processPayout: ProcessPayoutUseCase,
+    private readonly auditLogService: AuditLogService,
   ) {
     this.SYSTEM_OWNER_ID = 'platform_earnings';
   }
 
   private readonly SYSTEM_OWNER_ID: string;
+
+  private getActorId(admin: any): string | undefined {
+    return admin?._id || admin?.userId || admin?.id;
+  }
 
   @Get('stats')
   async getStats() {
@@ -46,9 +53,22 @@ export class AdminWalletController {
     @Param('id') id: string,
     @Body('action') action: 'complete' | 'reject',
     @Body('note') note: string,
+    @CurrentUser() admin: any,
   ) {
     await this.processPayout.execute(id, action, note);
-    return { success: true, message: `Payout ${action}ed successfully` };
+    const result = { success: true, message: `Payout ${action}ed successfully` };
+    await this.auditLogService.record({
+      admin: this.getActorId(admin),
+      adminEmail: admin?.email,
+      adminName: admin?.name,
+      action: `wallet.payout_${action}`,
+      entityType: 'transaction',
+      entityId: id,
+      summary: `wallet.payout_${action} on transaction:${id}`,
+      after: result,
+      metadata: { note },
+    });
+    return result;
   }
 
   @Get('platform')
@@ -84,8 +104,20 @@ export class AdminWalletController {
   }
 
   @Post(':ownerId/adjust')
-  async adjustBalance(@Param('ownerId') ownerId: string, @Body() dto: any) {
+  async adjustBalance(@Param('ownerId') ownerId: string, @Body() dto: any, @CurrentUser() admin: any) {
     // Logic for manual adjustment could be added here
-    return { success: true, message: 'Balance adjusted successfully (Skeleton)' };
+    const result = { success: true, message: 'Balance adjusted successfully (Skeleton)' };
+    await this.auditLogService.record({
+      admin: this.getActorId(admin),
+      adminEmail: admin?.email,
+      adminName: admin?.name,
+      action: 'wallet.adjust',
+      entityType: 'wallet',
+      entityId: ownerId,
+      summary: `wallet.adjust on wallet owner:${ownerId}`,
+      after: result,
+      metadata: dto || {},
+    });
+    return result;
   }
 }
