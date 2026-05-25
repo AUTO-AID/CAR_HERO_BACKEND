@@ -16,7 +16,6 @@ import {
   PendingRegistrationDocument,
 } from '../../infrastructure/persistence/mongoose/schemas/pending-registration.schema';
 
-
 import {
   RegisterDto,
   LoginDto,
@@ -134,7 +133,7 @@ export class AuthService {
       lastLoginAt: new Date(),
     });
 
-    // 🆕 Automated Provider Registration
+    // Automated Provider Registration
     if (pendingRegistration.accountType === 'provider') {
       await this.providerModel.create({
         phone: pendingRegistration.phoneNumber,
@@ -145,14 +144,14 @@ export class AuthService {
         isApproved: false,
         isActive: false,
       });
-      
-      // 🔔 Notify Admin about new registration
+
+      // Notify Admin about new registration
       const admin = await this.adminModel.findOne({ isActive: true });
       if (admin) {
         await this.notificationsService.createNotification({
           recipientId: admin._id.toString(),
           recipientType: 'admin',
-          title: 'New Provider Registration 🆕',
+          title: 'New Provider Registration',
           body: `A new provider "${pendingRegistration.fullName}" is waiting for approval.`,
           type: NotificationType.ALERT,
           data: { phoneNumber: pendingRegistration.phoneNumber }
@@ -453,12 +452,22 @@ export class AuthService {
   // GENERATE AUTH RESPONSE
   // ===========================================
   private async createAuthResponse(user: UserDocument): Promise<IAuthResponse> {
+    let providerId: string | undefined;
+    if (user.accountType === 'provider') {
+      const provider = await this.providerModel.findOne({ phone: user.phoneNumber });
+      if (provider) {
+        providerId = provider._id.toString();
+      }
+    }
+
     const payload: IJwtPayload = {
       userId: user._id.toString(),
       phoneNumber: user.phoneNumber,
       accountType: user.accountType,
-      role: user.accountType, // In this model, accountType is the role
+      // Normalize: 'customer' accountType → 'user' role so RolesGuard(Role.USER) passes
+      role: user.accountType === 'customer' ? 'user' : user.accountType,
       isPremium: user.isPremium,
+      providerId,
     };
 
     const tokens = await TokenUtil.generateTokens(

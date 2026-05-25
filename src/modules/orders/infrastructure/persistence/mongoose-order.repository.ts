@@ -43,6 +43,9 @@ export class MongooseOrderRepository implements IOrderRepository {
       service: order.serviceId,
       provider: order.providerId,
       vehicle: order.vehicleId,
+      totalAmount: order.total,
+      payableAmount: order.total,
+      location: order.userLocation,
     });
     const doc = await created.save();
     return this.mapToEntity(doc);
@@ -76,9 +79,17 @@ export class MongooseOrderRepository implements IOrderRepository {
   }
 
   async update(id: string, data: Partial<OrderEntity>): Promise<OrderEntity> {
+    const updateData: any = { ...data };
+    if (data.total !== undefined) {
+      updateData.totalAmount = data.total;
+      updateData.payableAmount = data.total;
+    }
+    if (data.userLocation !== undefined) {
+      updateData.location = data.userLocation;
+    }
     const doc = await this.orderModel.findByIdAndUpdate(
       id,
-      { $set: data },
+      { $set: updateData },
       { new: true }
     ).exec();
     if (!doc) throw new Error('Order not found');

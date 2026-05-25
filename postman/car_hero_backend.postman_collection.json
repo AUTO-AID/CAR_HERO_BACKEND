@@ -1278,6 +1278,456 @@
             "description": "Get order statistics by status\n\nModule: admin\nController: AdminController.getOrderStats\nAuth: JWT\nRelated collections: admins, orders\nSource: src/modules/admin/presentation/controllers/admin.controller.ts"
           },
           "response": []
+        },
+        {
+          "name": "GET /admin/dashboard/summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/dashboard/summary",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "dashboard",
+                "summary"
+              ],
+              "query": []
+            },
+            "description": "Get dashboard summary statistics.\n\nModule: admin\nFile: modules/admin/presentation/controllers/admin.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/dashboard/providers-by-governorate",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/dashboard/providers-by-governorate",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "dashboard",
+                "providers-by-governorate"
+              ],
+              "query": []
+            },
+            "description": "Get providers count by governorate.\n\nModule: admin\nFile: modules/admin/presentation/controllers/admin.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/dashboard/providers-by-service",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/dashboard/providers-by-service",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "dashboard",
+                "providers-by-service"
+              ],
+              "query": []
+            },
+            "description": "Get providers count by service category.\n\nModule: admin\nFile: modules/admin/presentation/controllers/admin.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/dashboard/providers-growth",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/dashboard/providers-growth",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "dashboard",
+                "providers-growth"
+              ],
+              "query": []
+            },
+            "description": "Get provider registration growth over months.\n\nModule: admin\nFile: modules/admin/presentation/controllers/admin.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/dashboard/top-cities",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/dashboard/top-cities",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "dashboard",
+                "top-cities"
+              ],
+              "query": []
+            },
+            "description": "Get top active cities.\n\nModule: admin\nFile: modules/admin/presentation/controllers/admin.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/dashboard/map/syria-providers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/dashboard/map/syria-providers",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "dashboard",
+                "map",
+                "syria-providers"
+              ],
+              "query": []
+            },
+            "description": "Get location markers for providers on Syria map.\n\nModule: admin\nFile: modules/admin/presentation/controllers/admin.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/memberships",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/memberships",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "memberships"
+              ],
+              "query": []
+            },
+            "description": "Get all membership plans/packages.\n\nModule: admin\nFile: modules/admin/presentation/controllers/admin.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /admin/memberships",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/memberships",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "memberships"
+              ],
+              "query": []
+            },
+            "description": "Create a new membership package.\n\nModule: admin\nFile: modules/admin/presentation/controllers/admin.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /admin/memberships/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/memberships/{{id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "memberships",
+                "{{id}}"
+              ],
+              "query": []
+            },
+            "description": "Update a membership package by ID.\n\nModule: admin\nFile: modules/admin/presentation/controllers/admin.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE /admin/memberships/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/memberships/{{id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "memberships",
+                "{{id}}"
+              ],
+              "query": []
+            },
+            "description": "Delete a membership package by ID.\n\nModule: admin\nFile: modules/admin/presentation/controllers/admin.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/memberships/subscribers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/memberships/subscribers",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "memberships",
+                "subscribers"
+              ],
+              "query": []
+            },
+            "description": "Get members subscribers list.\n\nModule: admin\nFile: modules/admin/presentation/controllers/admin.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
@@ -1964,6 +2414,172 @@
               }
             }
           ]
+        },
+        {
+          "name": "GET /subscriptions/admin/subscriptions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/subscriptions/admin/subscriptions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "subscriptions",
+                "admin",
+                "subscriptions"
+              ],
+              "query": []
+            },
+            "description": "Get subscriptions list for admin review.\n\nModule: subscriptions\nFile: modules/subscriptions/presentation/controllers/subscriptions.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /subscriptions/admin/plans",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/subscriptions/admin/plans",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "subscriptions",
+                "admin",
+                "plans"
+              ],
+              "query": []
+            },
+            "description": "Create a new subscription plan for providers.\n\nModule: subscriptions\nFile: modules/subscriptions/presentation/controllers/subscriptions.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /subscriptions/admin/plans/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/subscriptions/admin/plans/{{id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "subscriptions",
+                "admin",
+                "plans",
+                "{{id}}"
+              ],
+              "query": []
+            },
+            "description": "Update a subscription plan by ID.\n\nModule: subscriptions\nFile: modules/subscriptions/presentation/controllers/subscriptions.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE /subscriptions/admin/plans/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/subscriptions/admin/plans/{{id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "subscriptions",
+                "admin",
+                "plans",
+                "{{id}}"
+              ],
+              "query": []
+            },
+            "description": "Delete a subscription plan by ID.\n\nModule: subscriptions\nFile: modules/subscriptions/presentation/controllers/subscriptions.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
@@ -2180,6 +2796,47 @@
                 }
               }
             }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/users/search",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/users/search",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "users",
+                "search"
+              ],
+              "query": []
+            },
+            "description": "Search users in the platform.\n\nModule: users\nFile: modules/users/presentation/controllers/admin-users.controller.ts\nAuth: Bearer JWT"
           },
           "event": [
             {
@@ -4538,6 +5195,251 @@
               ]
             },
             "description": "Top rated providers\n\nModule: providers\nController: ProvidersController.topRated\nAuth: Public\nRelated collections: providers\nSource: src/modules/providers/presentation/controllers/providers.controller.ts:84"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /providers/apply",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/providers/apply",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "providers",
+                "apply"
+              ],
+              "query": []
+            },
+            "description": "Submit registration application as a new service provider.\n\nModule: providers\nFile: modules/providers/presentation/controllers/providers.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /providers/public/governorates",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/providers/public/governorates",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "providers",
+                "public",
+                "governorates"
+              ],
+              "query": []
+            },
+            "description": "Get governorates list for public view.\n\nModule: providers\nFile: modules/providers/presentation/controllers/providers.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /providers/dashboard/summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/providers/dashboard/summary",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "providers",
+                "dashboard",
+                "summary"
+              ],
+              "query": []
+            },
+            "description": "Get provider dashboard summary stats.\n\nModule: providers\nFile: modules/providers/presentation/controllers/providers.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /providers/dashboard/orders-stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/providers/dashboard/orders-stats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "providers",
+                "dashboard",
+                "orders-stats"
+              ],
+              "query": []
+            },
+            "description": "Get provider dashboard orders stats.\n\nModule: providers\nFile: modules/providers/presentation/controllers/providers.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /providers/dashboard/revenue-stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/providers/dashboard/revenue-stats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "providers",
+                "dashboard",
+                "revenue-stats"
+              ],
+              "query": []
+            },
+            "description": "Get provider dashboard earnings and revenue stats.\n\nModule: providers\nFile: modules/providers/presentation/controllers/providers.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /providers/dashboard/services-performance",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/providers/dashboard/services-performance",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "providers",
+                "dashboard",
+                "services-performance"
+              ],
+              "query": []
+            },
+            "description": "Get provider dashboard services performance.\n\nModule: providers\nFile: modules/providers/presentation/controllers/providers.controller.ts\nAuth: Bearer JWT"
           },
           "event": [
             {

@@ -5,6 +5,7 @@ import { AdminLoginDto } from '../../application/dtos/admin-login.dto';
 import { LoginUseCase } from '../../application/use-cases/login.use-case';
 import { CreateMembershipPlanDto } from '../../application/dtos/create-membership-plan.dto';
 import { UpdateMembershipPlanDto } from '../../application/dtos/update-membership-plan.dto';
+import { CreateServiceDto } from '../../../services/application/dto/create-service.dto';
 import { Public, Roles, CurrentUser, Permissions } from '../../../../core/decorators';
 import { Role } from '../../../../core/enums/roles.enum';
 import { RolesGuard, PermissionsGuard } from '../../../../core/guards';
@@ -161,7 +162,7 @@ export class AdminController {
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Create new system service' })
-  async createService(@Body() serviceData: any, @CurrentUser() admin: any) {
+  async createService(@Body() serviceData: CreateServiceDto, @CurrentUser() admin: any) {
     const result = await this.adminService.createService(serviceData);
     await this.audit(admin, 'service.create', 'service', String(result?._id || result?.id || ''), result);
     return result;
@@ -231,6 +232,73 @@ export class AdminController {
   @ApiOperation({ summary: 'Get top requested services' })
   async getTopServices() {
     return this.adminService.getTopServices();
+  }
+
+  // ===========================================
+  // DASHBOARD ANALYTICS (PROVIDERS)
+  // ===========================================
+
+  @Get('dashboard/summary')
+  @Roles(Role.ADMIN)
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Get comprehensive dashboard summary' })
+  async getDashboardSummary() {
+    return this.adminService.getDashboardSummary();
+  }
+
+  @Get('dashboard/excel-summary')
+  @Roles(Role.ADMIN)
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Get excel data analytics summary' })
+  async getExcelSummary() {
+    return this.adminService.getExcelSummary();
+  }
+
+  @Get('dashboard/providers-by-governorate')
+  @Roles(Role.ADMIN)
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Get providers count by governorate' })
+  async getProvidersByGovernorate() {
+    return this.adminService.getProvidersByGovernorate();
+  }
+
+  @Get('dashboard/providers-by-service')
+  @Roles(Role.ADMIN)
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Get providers count by service category' })
+  async getProvidersByService() {
+    return this.adminService.getProvidersByService();
+  }
+
+  @Get('dashboard/providers-growth')
+  @Roles(Role.ADMIN)
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Get providers growth over time' })
+  async getProvidersGrowth() {
+    return this.adminService.getProvidersGrowth();
+  }
+
+  @Get('dashboard/top-cities')
+  @Roles(Role.ADMIN)
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Get top cities by providers count' })
+  async getTopCities() {
+    return this.adminService.getTopCities();
+  }
+
+  @Get('dashboard/map/syria-providers')
+  @Roles(Role.ADMIN)
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Get providers locations for map visualization' })
+  async getSyriaProvidersMap() {
+    return this.adminService.getSyriaProvidersMap();
   }
 
   // ===========================================

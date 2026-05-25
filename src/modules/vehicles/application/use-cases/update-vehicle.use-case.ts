@@ -19,16 +19,16 @@ export class UpdateVehicleUseCase {
   ) {}
 
   async execute(vehicleId: string, dto: UpdateVehicleDto, userId: string): Promise<VehicleEntity> {
-    // Verify ownership
-    const belongsToUser = await this.vehicleRepository.belongsToUser(vehicleId, userId);
-    if (!belongsToUser) {
-      throw new ForbiddenException('You do not have permission to update this vehicle');
-    }
-
     // Find vehicle
     const vehicle = await this.vehicleRepository.findById(vehicleId);
     if (!vehicle) {
       throw new NotFoundException('Vehicle not found');
+    }
+
+    // Verify ownership
+    const belongsToUser = await this.vehicleRepository.belongsToUser(vehicleId, userId);
+    if (!belongsToUser) {
+      throw new ForbiddenException('You do not have permission to update this vehicle');
     }
 
     // Validate year if provided

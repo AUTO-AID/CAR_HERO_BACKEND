@@ -78,6 +78,12 @@ export class Provider {
   @Prop()
   email?: string;
 
+  @Prop()
+  website?: string;
+
+  @Prop()
+  facebookUrl?: string;
+
   @Prop({ required: true })
   businessName: string;
 
@@ -86,6 +92,21 @@ export class Provider {
 
   @Prop()
   description?: string;
+
+  @Prop()
+  businessType?: string;
+
+  @Prop()
+  category?: string;
+
+  @Prop()
+  slug?: string;
+
+  @Prop()
+  plusCode?: string;
+
+  @Prop()
+  googleId?: string;
 
   @Prop()
   logo?: string;
@@ -98,6 +119,12 @@ export class Provider {
 
   @Prop({ type: String, enum: ProviderStatus, default: ProviderStatus.OFFLINE })
   status: ProviderStatus;
+
+  @Prop({ type: String, enum: ['active', 'suspended', 'pending'], default: 'pending' })
+  accountStatus: string;
+
+  @Prop()
+  accountType?: string;
 
   @Prop({ type: String, enum: RegistrationStatus, default: RegistrationStatus.PENDING })
   registrationStatus: RegistrationStatus;
@@ -123,6 +150,9 @@ export class Provider {
   city?: string;
 
   @Prop()
+  governorate?: string;
+
+  @Prop()
   state?: string;
 
   @Prop()
@@ -131,6 +161,9 @@ export class Provider {
   @Prop()
   postalCode?: string;
 
+  @Prop({ type: [String], default: [] })
+  coverageAreas: string[];
+
   // Service categories provided
   @Prop({ type: [String], enum: ServiceCategory, default: [] })
   serviceCategories: ServiceCategory[];
@@ -138,6 +171,42 @@ export class Provider {
   // Services offered (reference to Service documents)
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Service' }] })
   services: Types.ObjectId[];
+
+  @Prop({ type: [String], default: [] })
+  requestedServices: string[];
+
+  @Prop({ type: [Object], default: [] })
+  services_list: Record<string, any>[];
+
+  @Prop({ type: Object, default: {} })
+  servicePrices: Record<string, any>;
+
+  @Prop({ default: false })
+  emergency247: boolean;
+
+  @Prop({ default: false })
+  is_emergency: boolean;
+
+  @Prop({ default: 0 })
+  serviceRadiusKm: number;
+
+  @Prop({ type: [String], default: [] })
+  paymentMethods: string[];
+
+  @Prop({ type: [String], default: [] })
+  facilities: string[];
+
+  @Prop({ default: 0 })
+  experienceYears: number;
+
+  @Prop({ default: 0 })
+  techCount: number;
+
+  @Prop({ type: [String], default: [] })
+  tags: string[];
+
+  @Prop({ default: false })
+  isPhoneVerified: boolean;
 
   // Working hours
   @Prop({ type: [WorkingHours], default: [] })
@@ -170,6 +239,9 @@ export class Provider {
   @Prop({ type: [String], default: [] })
   documents: string[];
 
+  @Prop({ type: [Object], default: [] })
+  shopPhotos: Record<string, any>[];
+
   // Bank account for payments
   @Prop({ type: BankAccount })
   bankAccount?: BankAccount;
@@ -193,3 +265,6 @@ ProviderSchema.index({ serviceCategories: 1 });
 ProviderSchema.index({ isActive: 1, isApproved: 1 });
 ProviderSchema.index({ averageRating: -1 });
 ProviderSchema.index({ createdAt: -1 });
+ProviderSchema.index({ governorate: 1 });
+ProviderSchema.index({ city: 1 });
+ProviderSchema.index({ accountType: 1 });

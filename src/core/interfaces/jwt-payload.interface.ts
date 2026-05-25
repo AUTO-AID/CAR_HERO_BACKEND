@@ -6,5 +6,6 @@ export interface IJwtPayload {
   email?: string;
   accountType?: string;
   isPremium?: boolean;
+  providerId?: string;
 }
 

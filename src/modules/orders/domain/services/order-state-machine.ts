@@ -48,6 +48,7 @@ const transitions: Record<OrderStatus, OrderStatus[]> = {
 };
 
 const providerAllowedTargets = new Set<OrderStatus>([
+  OrderStatus.ACCEPTED,
   OrderStatus.PROVIDER_EN_ROUTE,
   OrderStatus.PROVIDER_ARRIVED,
   OrderStatus.IN_PROGRESS,

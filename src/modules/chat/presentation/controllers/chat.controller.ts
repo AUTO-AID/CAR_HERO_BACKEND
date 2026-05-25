@@ -18,7 +18,7 @@ import { JwtAuthGuard } from '../../../../core/guards/jwt-auth.guard';
 import { CurrentUser } from '../../../../core/decorators/current-user.decorator';
 import { CreateChatDto } from '../../application/dtos/chat.dto';
 
-@Controller('v1/chat')
+@Controller('chat')
 @UseGuards(JwtAuthGuard)
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}

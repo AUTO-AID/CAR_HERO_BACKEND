@@ -17,16 +17,16 @@ export class DeleteVehicleUseCase {
   ) {}
 
   async execute(vehicleId: string, userId: string): Promise<void> {
-    // Verify ownership
-    const belongsToUser = await this.vehicleRepository.belongsToUser(vehicleId, userId);
-    if (!belongsToUser) {
-      throw new ForbiddenException('You do not have permission to delete this vehicle');
-    }
-
     // Find vehicle
     const vehicle = await this.vehicleRepository.findById(vehicleId);
     if (!vehicle) {
       throw new NotFoundException('Vehicle not found');
+    }
+
+    // Verify ownership
+    const belongsToUser = await this.vehicleRepository.belongsToUser(vehicleId, userId);
+    if (!belongsToUser) {
+      throw new ForbiddenException('You do not have permission to delete this vehicle');
     }
 
     // Business Rule: Prevent deleting the default vehicle if it's the only one

@@ -151,79 +151,149 @@ export class MongooseWalletRepository implements IWalletRepository {
     await this.transactionModel.findByIdAndUpdate(id, update).exec();
   }
 
-  async executeTransaction(ownerId: string, ownerType: string, operation: (wallet: WalletEntity, session: ClientSession) => Promise<{ wallet: WalletEntity; transaction: TransactionEntity; }>): Promise<void> {
-    const session = await this.connection.startSession();
-    session.startTransaction();
+  async executeTransaction(ownerId: string, ownerType: string, operation: (wallet: WalletEntity, session?: ClientSession) => Promise<{ wallet: WalletEntity; transaction: TransactionEntity; }>): Promise<void> {
     try {
-      const wallet = await this.findByOwnerId(ownerId, ownerType as any);
-      if (!wallet) throw new Error(`Wallet not found for ${ownerType} ${ownerId}`);
-      
-      const { wallet: updatedWallet, transaction } = await operation(wallet, session);
-      
-      await this.updateWallet(updatedWallet, session);
-      await this.createTransaction(transaction, session);
-      
-      await session.commitTransaction();
-    } catch (error) {
-      await session.abortTransaction();
-      throw error;
-    } finally {
-      session.endSession();
+      const session = await this.connection.startSession();
+      session.startTransaction();
+      try {
+        let wallet = await this.findByOwnerId(ownerId, ownerType as any);
+        if (!wallet) {
+          wallet = await this.createWallet(new WalletEntity(ownerId, ownerType as any, 0));
+        }
+        
+        const { wallet: updatedWallet, transaction } = await operation(wallet, session);
+        
+        await this.updateWallet(updatedWallet, session);
+        await this.createTransaction(transaction, session);
+        
+        await session.commitTransaction();
+      } catch (error) {
+        await session.abortTransaction();
+        throw error;
+      } finally {
+        session.endSession();
+      }
+    } catch (transactionError: any) {
+      const errMsg = transactionError?.message || '';
+      if (
+        errMsg.includes('Transaction numbers are only allowed') ||
+        errMsg.includes('replica set') ||
+        errMsg.includes('transactions')
+      ) {
+        let wallet = await this.findByOwnerId(ownerId, ownerType as any);
+        if (!wallet) {
+          wallet = await this.createWallet(new WalletEntity(ownerId, ownerType as any, 0));
+        }
+        
+        const { wallet: updatedWallet, transaction } = await operation(wallet);
+        
+        await this.updateWallet(updatedWallet);
+        await this.createTransaction(transaction);
+      } else {
+        throw transactionError;
+      }
     }
   }
 
   async executeMultiWalletTransaction(
     walletsToUpdate: { ownerId: string, ownerType: string, amount: number, type: 'deposit' | 'withdraw', description: string, referenceType?: string, referenceId?: string }[]
   ): Promise<void> {
-    const session = await this.connection.startSession();
-    session.startTransaction();
     try {
-      for (const update of walletsToUpdate) {
-        let wallet = await this.findByOwnerId(update.ownerId, update.ownerType as any);
+      const session = await this.connection.startSession();
+      session.startTransaction();
+      try {
+        for (const update of walletsToUpdate) {
+          let wallet = await this.findByOwnerId(update.ownerId, update.ownerType as any);
+          
+          // Lazy create wallet if it doesn't exist
+          if (!wallet) {
+            wallet = await this.createWallet(new WalletEntity(update.ownerId, update.ownerType as any, 0));
+          }
+
+          const balanceBefore = wallet.balance;
+          if (update.type === 'deposit') {
+            wallet.deposit(update.amount);
+          } else {
+            wallet.withdraw(update.amount);
+          }
+          const balanceAfter = wallet.balance;
+
+          const transaction = new TransactionEntity(
+            TransactionEntity.generateTransactionNumber(),
+            wallet.id!,
+            wallet.ownerId,
+            wallet.ownerType,
+            update.type === 'deposit' ? TransactionType.CREDIT : TransactionType.DEBIT,
+            update.amount,
+            balanceBefore,
+            balanceAfter,
+            update.description,
+            undefined,
+            update.referenceType as any,
+            update.referenceId,
+            undefined,
+            undefined,
+            'completed'
+          );
+
+          await this.updateWallet(wallet, session);
+          await this.createTransaction(transaction, session);
+        }
         
-        // Lazy create for system wallet if it doesn't exist
-        if (!wallet && update.ownerType === 'system') {
-          wallet = await this.createWallet(new WalletEntity(update.ownerId, 'system', 0));
-        }
-
-        if (!wallet) throw new Error(`Wallet not found for ${update.ownerType} ${update.ownerId}`);
-
-        const balanceBefore = wallet.balance;
-        if (update.type === 'deposit') {
-          wallet.deposit(update.amount);
-        } else {
-          wallet.withdraw(update.amount);
-        }
-        const balanceAfter = wallet.balance;
-
-        const transaction = new TransactionEntity(
-          TransactionEntity.generateTransactionNumber(),
-          wallet.id!,
-          wallet.ownerId,
-          wallet.ownerType,
-          update.type === 'deposit' ? TransactionType.CREDIT : TransactionType.DEBIT,
-          update.amount,
-          balanceBefore,
-          balanceAfter,
-          update.description,
-          undefined,
-          update.referenceType as any,
-          update.referenceId,
-          undefined,
-          undefined,
-          'completed'
-        );
-
-        await this.updateWallet(wallet, session);
-        await this.createTransaction(transaction, session);
+        await session.commitTransaction();
+      } catch (error) {
+        await session.abortTransaction();
+        throw error;
+      } finally {
+        session.endSession();
       }
-      
-      await session.commitTransaction();
-    } catch (error) {
-      await session.abortTransaction();
-      throw error;
-    } finally {
-      session.endSession();
+    } catch (transactionError: any) {
+      const errMsg = transactionError?.message || '';
+      if (
+        errMsg.includes('Transaction numbers are only allowed') ||
+        errMsg.includes('replica set') ||
+        errMsg.includes('transactions')
+      ) {
+        for (const update of walletsToUpdate) {
+          let wallet = await this.findByOwnerId(update.ownerId, update.ownerType as any);
+          
+          // Lazy create wallet if it doesn't exist
+          if (!wallet) {
+            wallet = await this.createWallet(new WalletEntity(update.ownerId, update.ownerType as any, 0));
+          }
+
+          const balanceBefore = wallet.balance;
+          if (update.type === 'deposit') {
+            wallet.deposit(update.amount);
+          } else {
+            wallet.withdraw(update.amount);
+          }
+          const balanceAfter = wallet.balance;
+
+          const transaction = new TransactionEntity(
+            TransactionEntity.generateTransactionNumber(),
+            wallet.id!,
+            wallet.ownerId,
+            wallet.ownerType,
+            update.type === 'deposit' ? TransactionType.CREDIT : TransactionType.DEBIT,
+            update.amount,
+            balanceBefore,
+            balanceAfter,
+            update.description,
+            undefined,
+            update.referenceType as any,
+            update.referenceId,
+            undefined,
+            undefined,
+            'completed'
+          );
+
+          await this.updateWallet(wallet);
+          await this.createTransaction(transaction);
+        }
+      } else {
+        throw transactionError;
+      }
     }
   }
 }

@@ -20,12 +20,15 @@ export class ManageProvidersUseCase {
   async create(dto: CreateProviderDto) {
     this.validateCoordinates(dto.longitude, dto.latitude);
     const existing = await this.providerRepository.findByPhone(dto.phone);
-    if (existing) {
-      throw new ConflictException('Provider with this phone already exists');
-    }
 
-    return this.providerRepository.create({
+    const mappedData = {
       ...dto,
+      category: dto.category || dto.businessType,
+      accountStatus: dto.accountStatus || (dto.isApproved ? 'active' : 'pending'),
+      is_emergency: dto.is_emergency ?? dto.emergency247 ?? false,
+      emergency247: dto.emergency247 ?? dto.is_emergency ?? false,
+      requestedServices: dto.requestedServices || (dto.services_list || []).map((service: any) => service.service_id).filter(Boolean),
+      servicePrices: dto.servicePrices || Object.fromEntries((dto.services_list || []).map((service: any) => [service.service_id, service.price]).filter(([id]) => Boolean(id))),
       location: { type: 'Point', coordinates: [dto.longitude, dto.latitude] },
       serviceCategories: dto.serviceCategories || [],
       services: dto.services || [],
@@ -33,7 +36,13 @@ export class ManageProvidersUseCase {
       isActive: dto.isActive ?? true,
       isApproved: dto.isApproved ?? false,
       registrationStatus: dto.isApproved ? RegistrationStatus.APPROVED : RegistrationStatus.PENDING,
-    });
+    };
+
+    if (existing) {
+      return this.providerRepository.update(existing.id, mappedData);
+    }
+
+    return this.providerRepository.create(mappedData);
   }
 
   async reject(id: string, dto: RejectProviderDto) {

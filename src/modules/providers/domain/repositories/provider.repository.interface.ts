@@ -28,6 +28,7 @@ export interface IProviderRepository {
     busy: number;
     offline: number;
   }>;
+  getProvidersByGovernorate(): Promise<{ _id: string; count: number }[]>;
 }
 
 export const IProviderRepository = Symbol('IProviderRepository');

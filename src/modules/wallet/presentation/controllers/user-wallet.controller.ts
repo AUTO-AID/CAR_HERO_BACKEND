@@ -9,7 +9,7 @@ import { Role } from '../../../../core/enums/roles.enum';
 import { CurrentUser } from '../../../../core/decorators/current-user.decorator';
 import { DepositDto } from '../../application/dto/wallet.dto';
 
-@Controller('v1/wallet')
+@Controller('wallet')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(Role.USER)
 export class UserWalletController {

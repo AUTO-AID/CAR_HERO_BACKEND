@@ -45,7 +45,47 @@ export class CreateProviderDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
+  website?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  facebookUrl?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
   description?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  businessType?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  category?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  slug?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  plusCode?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  googleId?: string;
+
+  @ApiPropertyOptional({ enum: ['active', 'suspended', 'pending'] })
+  @IsOptional()
+  @IsString()
+  accountStatus?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -56,6 +96,11 @@ export class CreateProviderDto {
   @IsOptional()
   @IsString()
   city?: string;
+
+  @ApiPropertyOptional({ type: [String] })
+  @IsOptional()
+  @IsArray()
+  coverageAreas?: string[];
 
   @ApiProperty({ example: 46.6753 })
   @Type(() => Number)
@@ -77,6 +122,81 @@ export class CreateProviderDto {
   @IsOptional()
   @IsArray()
   services?: string[];
+
+  @ApiPropertyOptional({ type: [String] })
+  @IsOptional()
+  @IsArray()
+  requestedServices?: string[];
+
+  @ApiPropertyOptional({ type: [Object] })
+  @IsOptional()
+  @IsArray()
+  services_list?: Record<string, any>[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsObject()
+  servicePrices?: Record<string, any>;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  emergency247?: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  is_emergency?: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNumber()
+  serviceRadiusKm?: number;
+
+  @ApiPropertyOptional({ type: [String] })
+  @IsOptional()
+  @IsArray()
+  paymentMethods?: string[];
+
+  @ApiPropertyOptional({ type: [String] })
+  @IsOptional()
+  @IsArray()
+  facilities?: string[];
+
+  @ApiPropertyOptional({ type: [String] })
+  @IsOptional()
+  @IsArray()
+  tags?: string[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNumber()
+  experienceYears?: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNumber()
+  techCount?: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  isPhoneVerified?: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNumber()
+  averageRating?: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNumber()
+  totalReviews?: number;
+
+  @ApiPropertyOptional({ type: [Object] })
+  @IsOptional()
+  @IsArray()
+  shopPhotos?: Record<string, any>[];
 
   @ApiPropertyOptional()
   @IsOptional()

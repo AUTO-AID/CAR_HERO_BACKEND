@@ -76,16 +76,16 @@ export class MongooseVehicleRepository implements IVehicleRepository {
     skip = 0,
     limit = 10,
   ): Promise<{ vehicles: VehicleEntity[]; total: number }> {
-    const userObjectId = new Types.ObjectId(userId);
+    const ownerCriteria = { $in: [userId, new Types.ObjectId(userId)] };
 
     const [docs, total] = await Promise.all([
       this.vehicleModel
-        .find({ owner: userObjectId })
+        .find({ owner: ownerCriteria })
         .sort({ isDefault: -1, createdAt: -1 })
         .skip(skip)
         .limit(limit)
         .exec(),
-      this.vehicleModel.countDocuments({ owner: userObjectId }),
+      this.vehicleModel.countDocuments({ owner: ownerCriteria }),
     ]);
 
     return {
@@ -96,7 +96,7 @@ export class MongooseVehicleRepository implements IVehicleRepository {
 
   async findDefaultByUserId(userId: string): Promise<VehicleEntity | null> {
     const doc = await this.vehicleModel
-      .findOne({ owner: new Types.ObjectId(userId), isDefault: true })
+      .findOne({ owner: { $in: [userId, new Types.ObjectId(userId)] }, isDefault: true })
       .exec();
     return doc ? this.mapToEntity(doc) : null;
   }
@@ -168,14 +168,14 @@ export class MongooseVehicleRepository implements IVehicleRepository {
   }
 
   async countByUserId(userId: string): Promise<number> {
-    return this.vehicleModel.countDocuments({ owner: new Types.ObjectId(userId) }).exec();
+    return this.vehicleModel.countDocuments({ owner: { $in: [userId, new Types.ObjectId(userId)] } }).exec();
   }
 
   async belongsToUser(vehicleId: string, userId: string): Promise<boolean> {
     const count = await this.vehicleModel
       .countDocuments({
         _id: new Types.ObjectId(vehicleId),
-        owner: new Types.ObjectId(userId),
+        owner: { $in: [userId, new Types.ObjectId(userId)] },
       })
       .exec();
     return count > 0;

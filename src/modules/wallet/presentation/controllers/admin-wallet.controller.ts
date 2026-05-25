@@ -11,7 +11,7 @@ import { Role } from '../../../../core/enums/roles.enum';
 import { CurrentUser } from '../../../../core/decorators/current-user.decorator';
 import { AuditLogService } from '../../../audit/application/services/audit-log.service';
 
-@Controller('v1/admin/wallet')
+@Controller('admin/wallet')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(Role.ADMIN)
 export class AdminWalletController {

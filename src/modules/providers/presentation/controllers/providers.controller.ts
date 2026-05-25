@@ -9,8 +9,12 @@ import {
   Param,
   Query,
   UseGuards,
+  Inject,
+  UnauthorizedException,
+  NotFoundException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { IProviderRepository } from '../../domain/repositories/provider.repository.interface';
 import {
   CreateProviderDto,
   RejectProviderDto,
@@ -43,6 +47,7 @@ import { ApproveProviderUseCase } from '../../application/use-cases/approve-prov
 import { ManageProvidersUseCase } from '../../application/use-cases/manage-providers.use-case';
 import { GetProviderStatsUseCase } from '../../application/use-cases/get-provider-stats.use-case';
 import { GetTopRatedProvidersUseCase } from '../../application/use-cases/get-top-rated-providers.use-case';
+import { GetProviderDashboardUseCase } from '../../application/use-cases/get-provider-dashboard.use-case';
 import { AuditLogService } from '../../../audit/application/services/audit-log.service';
 
 @ApiTags('Providers')
@@ -59,7 +64,10 @@ export class ProvidersController {
     private readonly manageProvidersUseCase: ManageProvidersUseCase,
     private readonly getProviderStatsUseCase: GetProviderStatsUseCase,
     private readonly getTopRatedProvidersUseCase: GetTopRatedProvidersUseCase,
+    private readonly getProviderDashboardUseCase: GetProviderDashboardUseCase,
     private readonly auditLogService: AuditLogService,
+    @Inject(IProviderRepository)
+    private readonly providerRepository: IProviderRepository,
   ) {}
 
   private getActorId(admin: any): string | undefined {
@@ -84,18 +92,26 @@ export class ProvidersController {
   @Post('apply')
   @ApiOperation({ summary: 'Apply to become a provider from the website form' })
   @ApiResponse({ status: 201, description: 'Application submitted successfully' })
-  async apply(@Body() dto: any) { // Using any for now to accept flexible frontend data
+  async apply(@Body() dto: CreateProviderDto) {
     // Temporarily using the manageProvidersUseCase.create but overriding status
     return this.manageProvidersUseCase.create({
       ...dto,
       isApproved: false,
       isActive: false,
       registrationStatus: 'pending',
-    });
+    } as any);
   }
 
-  private getCurrentProviderId(user: any): string {
-    return user?.id || user?._id || user?.userId;
+  private async getCurrentProviderId(user: any): Promise<string> {
+    const phone = user?.phoneNumber || user?.phone;
+    if (!phone) {
+      throw new UnauthorizedException('Phone number not found in token');
+    }
+    const provider = await this.providerRepository.findByPhone(phone);
+    if (!provider) {
+      throw new NotFoundException('Provider profile not found for this account');
+    }
+    return provider.id;
   }
 
   @Public()
@@ -122,6 +138,18 @@ export class ProvidersController {
     return this.getTopRatedProvidersUseCase.execute(Number(limit) || 10);
   }
 
+  @Public()
+  @Get('public/governorates')
+  @ApiOperation({ summary: 'Get active/approved providers count by governorate for public map' })
+  @ApiResponse({ status: 200, description: 'Provider counts by governorate' })
+  async getPublicGovernorates() {
+    const rawList = await this.providerRepository.getProvidersByGovernorate();
+    return {
+      success: true,
+      data: rawList,
+    };
+  }
+
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.PROVIDER)
   @Get('me')
@@ -129,7 +157,8 @@ export class ProvidersController {
   @ApiOperation({ summary: 'Get current provider profile' })
   @ApiResponse({ status: 200, description: 'Provider profile' })
   async getProfile(@CurrentUser() user: any) {
-    return this.getProviderByIdUseCase.execute(this.getCurrentProviderId(user));
+    const providerId = await this.getCurrentProviderId(user);
+    return this.getProviderByIdUseCase.execute(providerId);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -139,7 +168,8 @@ export class ProvidersController {
   @ApiOperation({ summary: 'Update current provider profile' })
   @ApiResponse({ status: 200, description: 'Updated provider profile' })
   async updateProfile(@CurrentUser() user: any, @Body() dto: UpdateProviderDto) {
-    return this.updateProviderUseCase.execute(this.getCurrentProviderId(user), dto);
+    const providerId = await this.getCurrentProviderId(user);
+    return this.updateProviderUseCase.execute(providerId, dto);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -149,7 +179,8 @@ export class ProvidersController {
   @ApiOperation({ summary: 'Update provider location' })
   @ApiResponse({ status: 200, description: 'Location updated' })
   async updateLocation(@CurrentUser() user: any, @Body() dto: UpdateLocationDto) {
-    return this.updateProviderLocationUseCase.execute(this.getCurrentProviderId(user), dto.longitude, dto.latitude);
+    const providerId = await this.getCurrentProviderId(user);
+    return this.updateProviderLocationUseCase.execute(providerId, dto.longitude, dto.latitude);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -159,7 +190,8 @@ export class ProvidersController {
   @ApiOperation({ summary: 'Update provider status' })
   @ApiResponse({ status: 200, description: 'Status updated' })
   async updateStatus(@CurrentUser() user: any, @Body() dto: UpdateStatusDto) {
-    return this.updateProviderStatusUseCase.execute(this.getCurrentProviderId(user), dto.status);
+    const providerId = await this.getCurrentProviderId(user);
+    return this.updateProviderStatusUseCase.execute(providerId, dto.status);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -168,7 +200,8 @@ export class ProvidersController {
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Update current provider services and categories' })
   async updateMyServices(@CurrentUser() user: any, @Body() dto: UpdateProviderServicesDto) {
-    return this.manageProvidersUseCase.updateServices(this.getCurrentProviderId(user), dto);
+    const providerId = await this.getCurrentProviderId(user);
+    return this.manageProvidersUseCase.updateServices(providerId, dto);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -177,7 +210,8 @@ export class ProvidersController {
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Update current provider working hours' })
   async updateMyWorkingHours(@CurrentUser() user: any, @Body() dto: UpdateProviderWorkingHoursDto) {
-    return this.manageProvidersUseCase.updateWorkingHours(this.getCurrentProviderId(user), dto);
+    const providerId = await this.getCurrentProviderId(user);
+    return this.manageProvidersUseCase.updateWorkingHours(providerId, dto);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -186,7 +220,8 @@ export class ProvidersController {
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Update current provider verification documents' })
   async updateMyDocuments(@CurrentUser() user: any, @Body() dto: UpdateProviderDocumentsDto) {
-    return this.manageProvidersUseCase.updateDocuments(this.getCurrentProviderId(user), dto);
+    const providerId = await this.getCurrentProviderId(user);
+    return this.manageProvidersUseCase.updateDocuments(providerId, dto);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -195,7 +230,52 @@ export class ProvidersController {
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Update current provider bank account' })
   async updateMyBankAccount(@CurrentUser() user: any, @Body() dto: UpdateProviderBankAccountDto) {
-    return this.manageProvidersUseCase.updateBankAccount(this.getCurrentProviderId(user), dto);
+    const providerId = await this.getCurrentProviderId(user);
+    return this.manageProvidersUseCase.updateBankAccount(providerId, dto);
+  }
+
+  // ===========================================
+  // PROVIDER DASHBOARD
+  // ===========================================
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.PROVIDER)
+  @Get('dashboard/summary')
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Get dashboard summary for current provider' })
+  async getDashboardSummary(@CurrentUser() user: any) {
+    const providerId = await this.getCurrentProviderId(user);
+    return this.getProviderDashboardUseCase.getSummary(providerId);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.PROVIDER)
+  @Get('dashboard/orders-stats')
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Get orders statistics for current provider' })
+  async getOrdersStats(@CurrentUser() user: any) {
+    const providerId = await this.getCurrentProviderId(user);
+    return this.getProviderDashboardUseCase.getOrdersStats(providerId);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.PROVIDER)
+  @Get('dashboard/revenue-stats')
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Get monthly revenue statistics for current provider' })
+  async getRevenueStats(@CurrentUser() user: any) {
+    const providerId = await this.getCurrentProviderId(user);
+    return this.getProviderDashboardUseCase.getRevenueStats(providerId);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.PROVIDER)
+  @Get('dashboard/services-performance')
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Get services performance for current provider' })
+  async getServicesPerformance(@CurrentUser() user: any) {
+    const providerId = await this.getCurrentProviderId(user);
+    return this.getProviderDashboardUseCase.getServicesPerformance(providerId);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

@@ -20,7 +20,10 @@ import { UpdateProviderRatingUseCase } from './application/use-cases/update-prov
 import { RecalculateProviderRatingUseCase } from './application/use-cases/recalculate-provider-rating.use-case';
 import { ManageProvidersUseCase } from './application/use-cases/manage-providers.use-case';
 import { GetProviderStatsUseCase } from './application/use-cases/get-provider-stats.use-case';
+import { GetProviderDashboardUseCase } from './application/use-cases/get-provider-dashboard.use-case';
 import { GetTopRatedProvidersUseCase } from './application/use-cases/get-top-rated-providers.use-case';
+
+import { Order, OrderSchema } from '../orders/infrastructure/persistence/mongoose/schemas/order.schema';
 
 const UseCases = [
   GetProvidersUseCase,
@@ -34,12 +37,16 @@ const UseCases = [
   RecalculateProviderRatingUseCase,
   ManageProvidersUseCase,
   GetProviderStatsUseCase,
+  GetProviderDashboardUseCase,
   GetTopRatedProvidersUseCase,
 ];
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Provider.name, schema: ProviderSchema }]),
+    MongooseModule.forFeature([
+      { name: Provider.name, schema: ProviderSchema },
+      { name: Order.name, schema: OrderSchema },
+    ]),
   ],
   controllers: [ProvidersController],
   providers: [

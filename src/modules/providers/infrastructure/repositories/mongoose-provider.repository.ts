@@ -53,6 +53,28 @@ export class MongooseProviderRepository implements IProviderRepository {
       doc.lastOnlineAt,
       (doc as any).createdAt,
       (doc as any).updatedAt,
+      (doc as any).businessType,
+      (doc as any).category,
+      (doc as any).accountStatus,
+      (doc as any).coverageAreas || [],
+      (doc as any).requestedServices || [],
+      (doc as any).services_list || [],
+      (doc as any).servicePrices || {},
+      Boolean((doc as any).emergency247),
+      Boolean((doc as any).is_emergency),
+      (doc as any).serviceRadiusKm || 0,
+      (doc as any).paymentMethods || [],
+      (doc as any).facilities || [],
+      (doc as any).experienceYears || 0,
+      (doc as any).techCount || 0,
+      (doc as any).shopPhotos || [],
+      (doc as any).website,
+      (doc as any).facebookUrl,
+      (doc as any).slug,
+      (doc as any).plusCode,
+      (doc as any).googleId,
+      (doc as any).tags || [],
+      Boolean((doc as any).isPhoneVerified),
     );
   }
 
@@ -270,5 +292,23 @@ export class MongooseProviderRepository implements IProviderRepository {
       busy,
       offline,
     };
+  }
+
+  async getProvidersByGovernorate(): Promise<{ _id: string; count: number }[]> {
+    return this.providerModel.aggregate([
+      {
+        $match: {
+          isActive: true,
+          isApproved: true,
+        }
+      },
+      {
+        $group: {
+          _id: { $cond: [ { $eq: ['$governorate', null] }, 'Unknown', '$governorate' ] },
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { count: -1 } }
+    ]).exec();
   }
 }

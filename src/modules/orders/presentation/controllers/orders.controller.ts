@@ -85,7 +85,7 @@ export class OrdersController {
     const criteria: any = status ? { status } : {};
     // If not Admin, only show own orders
     if (req.user.role !== 'admin') {
-      if (req.user.role === 'provider') criteria.provider = req.user._id;
+      if (req.user.role === 'provider') criteria.provider = req.user.providerId || req.user._id;
       else criteria.user = req.user._id;
     }
     return this.getOrdersUseCase.execute(criteria, Number(page) || 1, Number(limit) || 10);
@@ -106,7 +106,7 @@ export class OrdersController {
   ) {
     const criteria: any = { isScheduled: true, ...(status ? { status } : {}) };
     if (req.user.role !== 'admin') {
-      if (req.user.role === 'provider') criteria.provider = req.user._id;
+      if (req.user.role === 'provider') criteria.provider = req.user.providerId || req.user._id;
       else criteria.user = req.user._id;
     }
     return this.getOrdersUseCase.execute(criteria, Number(page) || 1, Number(limit) || 10);

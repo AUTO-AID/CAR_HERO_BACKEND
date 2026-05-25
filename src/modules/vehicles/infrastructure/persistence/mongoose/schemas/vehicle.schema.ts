@@ -19,10 +19,10 @@ export type VehicleDocument = Vehicle & Document;
 })
 export class Vehicle {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  user: Types.ObjectId;
+  owner: Types.ObjectId;
 
   @Prop({ required: true })
-  make: string; // e.g., Toyota
+  brand: string; // e.g., Toyota
 
   @Prop({ required: true })
   model: string; // e.g., Camry
@@ -56,5 +56,6 @@ export class Vehicle {
 export const VehicleSchema = SchemaFactory.createForClass(Vehicle);
 
 // Indexes
-VehicleSchema.index({ user: 1 });
+VehicleSchema.index({ owner: 1 });
 VehicleSchema.index({ plateNumber: 1 });
+
