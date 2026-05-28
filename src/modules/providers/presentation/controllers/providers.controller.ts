@@ -240,6 +240,17 @@ export class ProvidersController {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.PROVIDER)
+  @Get('dashboard/all-stats')
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Get combined dashboard stats for current provider' })
+  async getCombinedStats(@CurrentUser() user: any) {
+    const providerId = await this.getCurrentProviderId(user);
+    const stats = await this.getProviderDashboardUseCase.getCombinedStats(providerId);
+    return { success: true, data: stats };
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.PROVIDER)
   @Get('dashboard/summary')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Get dashboard summary for current provider' })

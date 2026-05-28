@@ -79,4 +79,26 @@ export class GetProviderDashboardUseCase {
       { $sort: { count: -1 } }
     ]);
   }
+
+  async getCombinedStats(providerId: string) {
+    const [
+      summary,
+      ordersStats,
+      revenueStats,
+      servicesPerformance
+    ] = await Promise.all([
+      this.getSummary(providerId),
+      this.getOrdersStats(providerId),
+      this.getRevenueStats(providerId),
+      this.getServicesPerformance(providerId),
+    ]);
+
+    return {
+      summary,
+      ordersStats,
+      revenueStats,
+      servicesPerformance,
+    };
+  }
 }
+

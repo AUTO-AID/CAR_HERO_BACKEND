@@ -6,6 +6,9 @@ import { RespondToReviewUseCase } from '../../application/use-cases/respond-to-r
 import { DeleteReviewUseCase } from '../../application/use-cases/delete-review.use-case';
 import { CreateReviewDto, ProviderResponseDto, ReviewQueryDto } from '../dtos/review.dto';
 import { JwtAuthGuard } from '../../../../core/guards/jwt-auth.guard';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Review, ReviewDocument } from '../../infrastructure/persistence/mongoose/schemas/review.schema';
 
 @ApiTags('Reviews')
 @Controller('reviews')
@@ -15,7 +18,50 @@ export class ReviewsController {
     private readonly getProviderReviewsUseCase: GetProviderReviewsUseCase,
     private readonly respondToReviewUseCase: RespondToReviewUseCase,
     private readonly deleteReviewUseCase: DeleteReviewUseCase,
+    @InjectModel(Review.name) private readonly reviewModel: Model<ReviewDocument>,
   ) {}
+
+  @Get()
+  @ApiOperation({ summary: 'Get all reviews with filters for admin' })
+  async getReviews(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+    @Query('isReported') isReported?: string,
+    @Query('isVisible') isVisible?: string,
+  ) {
+    const query: any = {};
+    if (isReported !== undefined) {
+      query.isReported = isReported === 'true' || isReported === '1';
+    }
+    if (isVisible !== undefined) {
+      query.isVisible = isVisible === 'true' || isVisible === '1';
+    }
+
+    const skip = (Number(page) - 1) * Number(limit);
+
+    const [docs, total] = await Promise.all([
+      this.reviewModel.find(query)
+        .populate('user')
+        .populate('provider')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(Number(limit))
+        .exec(),
+      this.reviewModel.countDocuments(query),
+    ]);
+
+    return {
+      success: true,
+      data: {
+        reviews: docs,
+        pagination: {
+          total,
+          page: Number(page),
+          limit: Number(limit),
+        }
+      }
+    };
+  }
 
   @Post()
   @UseGuards(JwtAuthGuard)

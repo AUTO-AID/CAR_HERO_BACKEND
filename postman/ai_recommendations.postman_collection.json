@@ -1,0 +1,403 @@
+{
+  "info": {
+    "name": "CarHero AI Recommendation & Analytics API",
+    "description": "Postman collection containing examples for testing the AI service provider recommendation engine and the administrative analytics dashboard, equipped with automated test scripts.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "AI Recommendation Engine",
+      "item": [
+        {
+          "name": "POST /ai/recommend-provider (Success Request)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"serviceCategory\": \"towing\",\n  \"city\": \"Damascus\",\n  \"location\": {\n    \"lat\": 33.5138,\n    \"lng\": 36.29128\n  },\n  \"urgencyLevel\": \"emergency\",\n  \"preferredTime\": \"2026-05-27T22:30:00Z\",\n  \"vehicleType\": \"Sedan\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/ai/recommend-provider",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "ai",
+                "recommend-provider"
+              ]
+            },
+            "description": "Request smart recommendations for towing service providers in Damascus using the active AI/Rule mode."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is valid AI recommendation structure', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('recommendationId');",
+                  "    pm.expect(jsonData).to.have.property('modelType');",
+                  "    pm.expect(jsonData).to.have.property('confidence');",
+                  "    pm.expect(jsonData.recommendations).to.be.an('array');",
+                  "    ",
+                  "    // Save recommendationId for downstream testing",
+                  "    if (jsonData.recommendationId) {",
+                  "        pm.collectionVariables.set('last_recommendation_id', jsonData.recommendationId);",
+                  "    }",
+                  "});",
+                  "",
+                  "pm.test('Scoring breakdown is present on recommendations', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.recommendations.length > 0) {",
+                  "        const firstRec = jsonData.recommendations[0];",
+                  "        pm.expect(firstRec).to.have.property('score');",
+                  "        pm.expect(firstRec).to.have.property('scoringBreakdown');",
+                  "        pm.expect(firstRec.scoringBreakdown).to.have.property('distance');",
+                  "        pm.expect(firstRec.scoringBreakdown).to.have.property('rating');",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "POST /ai/recommend-provider (Fallback Request)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"serviceCategory\": \"non_existent_specialty\",\n  \"city\": \"Damascus\",\n  \"location\": {\n    \"lat\": 33.5138,\n    \"lng\": 36.29128\n  },\n  \"urgencyLevel\": \"normal\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/ai/recommend-provider",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "ai",
+                "recommend-provider"
+              ]
+            },
+            "description": "Request recommendations for a non-existent specialty category. This triggers the fallback query to find general active providers in Damascus."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Fallback query was executed', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.criteria).to.have.property('isFallbackUsed');",
+                  "    pm.expect(jsonData.criteria.isFallbackUsed).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "POST /ai/recommend-provider (With Exclusion List Request)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"serviceCategory\": \"towing\",\n  \"city\": \"Damascus\",\n  \"location\": {\n    \"lat\": 33.5138,\n    \"lng\": 36.29128\n  },\n  \"urgencyLevel\": \"emergency\",\n  \"excludeProviderIds\": [\"60b8d295f1d293001f3e4c8b\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/ai/recommend-provider",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "ai",
+                "recommend-provider"
+              ]
+            },
+            "description": "Request recommendations excluding specific providers that failed to respond or accept the order."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "AI Admin Dashboard Analytics",
+      "item": [
+        {
+          "name": "GET /admin/ai-recommendations/summary",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/admin/ai-recommendations/summary",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "ai-recommendations",
+                "summary"
+              ]
+            },
+            "description": "Get overall statistics for AI recommendations, daily request trends, and average model confidence ratings."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Summary contains essential KPIs', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('totalRecommendations');",
+                  "    pm.expect(jsonData).to.have.property('successRate');",
+                  "    pm.expect(jsonData).to.have.property('averageConfidence');",
+                  "    pm.expect(jsonData.modelTypeDistribution).to.be.an('array');",
+                  "    pm.expect(jsonData.dailyTrend).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "GET /admin/ai-recommendations/top-providers",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/admin/ai-recommendations/top-providers?limit=5",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "ai-recommendations",
+                "top-providers"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "5"
+                }
+              ]
+            },
+            "description": "Get the most recommended service providers, ranked by frequency of recommendation."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Returns top providers list', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('topProviders');",
+                  "    pm.expect(jsonData.topProviders).to.be.an('array');",
+                  "    if (jsonData.topProviders.length > 0) {",
+                  "        pm.expect(jsonData.topProviders[0]).to.have.property('providerId');",
+                  "        pm.expect(jsonData.topProviders[0]).to.have.property('recommendationCount');",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "GET /admin/ai-recommendations/service-performance",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/admin/ai-recommendations/service-performance",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "ai-recommendations",
+                "service-performance"
+              ]
+            },
+            "description": "Get performance statistics grouped by service category (e.g. towing, tire, battery)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Returns service performance array', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('servicePerformance');",
+                  "    pm.expect(jsonData.servicePerformance).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "GET /admin/ai-recommendations/city-performance",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/admin/ai-recommendations/city-performance",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "ai-recommendations",
+                "city-performance"
+              ]
+            },
+            "description": "Get performance statistics grouped by city/governorate location."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Returns city performance array', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('cityPerformance');",
+                  "    pm.expect(jsonData.cityPerformance).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "POST /admin/ai-recommendations/retrain",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/admin/ai-recommendations/retrain",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "ai-recommendations",
+                "retrain"
+              ]
+            },
+            "description": "Manually trigger the Machine Learning recommendation model retraining pipeline and notify FastAPI to hot-reload."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 201 Created or 200 OK', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test('Retraining status is successful', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.eql(true);",
+                  "    pm.expect(jsonData).to.have.property('message');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "your_jwt_bearer_token_here",
+      "type": "string"
+    },
+    {
+      "key": "last_recommendation_id",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

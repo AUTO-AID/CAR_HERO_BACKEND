@@ -30,6 +30,7 @@ import { ReviewsModule } from './modules/reviews/reviews.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { AiModule } from './modules/ai/ai.module';
+import { AiRecommendationModule } from './modules/ai-recommendation/ai-recommendation.module';
 import { GatewayModule } from './modules/gateway/gateway.module';
 import { ProfileModule } from './modules/profile/profile.module';
 import { WhatsAppModule } from './modules/whatsapp/whatsapp.module';
@@ -73,6 +74,7 @@ import { AuditModule } from './modules/audit/audit.module';
     AuditModule,
     AdminModule,
     AiModule,
+    AiRecommendationModule,
     GatewayModule,
     ProfileModule,
   ],
