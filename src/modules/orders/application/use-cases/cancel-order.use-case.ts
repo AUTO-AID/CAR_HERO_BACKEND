@@ -34,7 +34,9 @@ export class CancelOrderUseCase {
 
     // Ownership Verification
     const isOwner = order.userId?.toString() === currentUser._id?.toString();
-    const isProvider = order.providerId?.toString() === currentUser._id?.toString();
+    const isProvider =
+      order.providerId?.toString() === currentUser.providerId?.toString() ||
+      order.providerId?.toString() === currentUser._id?.toString();
     const isAdmin = currentUser.role === 'admin';
 
     if (!isOwner && !isProvider && !isAdmin) {

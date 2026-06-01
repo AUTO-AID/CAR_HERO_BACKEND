@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsNumber, IsBoolean, IsOptional, IsArray, ValidateNested } from 'class-validator';
+import { IsString, IsNumber, IsBoolean, IsOptional, IsArray, ValidateNested, IsIn, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 
 class PlanBenefitDto {
@@ -43,11 +43,31 @@ export class CreateMembershipPlanDto {
 
   @ApiProperty()
   @IsNumber()
+  @Min(0)
   price: number;
 
   @ApiProperty()
   @IsNumber()
+  @Min(1)
   durationDays: number;
+
+  @ApiPropertyOptional({ enum: ['basic', 'silver', 'gold', 'platinum'], default: 'basic' })
+  @IsString()
+  @IsIn(['basic', 'silver', 'gold', 'platinum'])
+  @IsOptional()
+  tier?: string;
+
+  @ApiPropertyOptional({ type: [String] })
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  features?: string[];
+
+  @ApiPropertyOptional({ type: [String] })
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  featuresAr?: string[];
 
   @ApiPropertyOptional({ default: 'SAR' })
   @IsString()

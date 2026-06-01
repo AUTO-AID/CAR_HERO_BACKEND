@@ -12,6 +12,30 @@ export class GetProviderDashboardUseCase {
     @InjectModel(Order.name) private orderModel: Model<OrderDocument>,
   ) {}
 
+  private readonly revenueExpression = {
+    $let: {
+      vars: {
+        recordedAmount: {
+          $ifNull: ['$payableAmount', { $ifNull: ['$totalAmount', { $ifNull: ['$total', 0] }] }]
+        },
+        serviceAmount: {
+          $cond: [
+            { $gt: [{ $ifNull: ['$serviceDetails.discountedPrice', 0] }, 0] },
+            '$serviceDetails.discountedPrice',
+            { $ifNull: ['$serviceDetails.basePrice', 0] }
+          ]
+        }
+      },
+      in: {
+        $cond: [
+          { $gt: ['$$recordedAmount', 0] },
+          '$$recordedAmount',
+          '$$serviceAmount'
+        ]
+      }
+    }
+  };
+
   async getSummary(providerId: string) {
     const objectId = new Types.ObjectId(providerId);
 
@@ -21,7 +45,16 @@ export class GetProviderDashboardUseCase {
       this.orderModel.countDocuments({ provider: objectId, status: OrderStatus.COMPLETED }),
       this.orderModel.aggregate([
         { $match: { provider: objectId, status: OrderStatus.COMPLETED } },
-        { $group: { _id: null, total: { $sum: '$payableAmount' } } }
+        {
+          $lookup: {
+            from: 'services',
+            localField: 'service',
+            foreignField: '_id',
+            as: 'serviceDetails'
+          }
+        },
+        { $unwind: { path: '$serviceDetails', preserveNullAndEmptyArrays: true } },
+        { $group: { _id: null, total: { $sum: this.revenueExpression } } }
       ])
     ]);
 
@@ -52,12 +85,22 @@ export class GetProviderDashboardUseCase {
     return this.orderModel.aggregate([
       { $match: { provider: objectId, status: OrderStatus.COMPLETED } },
       {
+        $lookup: {
+          from: 'services',
+          localField: 'service',
+          foreignField: '_id',
+          as: 'serviceDetails'
+        }
+      },
+      { $unwind: { path: '$serviceDetails', preserveNullAndEmptyArrays: true } },
+      {
         $group: {
           _id: {
             month: { $month: '$createdAt' },
             year: { $year: '$createdAt' }
           },
-          revenue: { $sum: '$payableAmount' }
+          revenue: { $sum: this.revenueExpression },
+          count: { $sum: 1 }
         }
       },
       { $sort: { '_id.year': -1, '_id.month': -1 } },
@@ -70,10 +113,24 @@ export class GetProviderDashboardUseCase {
     return this.orderModel.aggregate([
       { $match: { provider: objectId, status: OrderStatus.COMPLETED } },
       {
+        $lookup: {
+          from: 'services',
+          localField: 'service',
+          foreignField: '_id',
+          as: 'serviceDetails'
+        }
+      },
+      { $unwind: { path: '$serviceDetails', preserveNullAndEmptyArrays: true } },
+      {
         $group: {
-          _id: '$service',
+          _id: {
+            $ifNull: [
+              '$serviceDetails.nameAr',
+              { $ifNull: ['$serviceDetails.name', 'خدمة غير معروفة'] }
+            ]
+          },
           count: { $sum: 1 },
-          revenue: { $sum: '$payableAmount' }
+          revenue: { $sum: this.revenueExpression }
         }
       },
       { $sort: { count: -1 } }
@@ -101,4 +158,3 @@ export class GetProviderDashboardUseCase {
     };
   }
 }
-

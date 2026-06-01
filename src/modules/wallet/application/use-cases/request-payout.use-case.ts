@@ -3,12 +3,17 @@ import type { IWalletRepository } from '../../domain/repositories/wallet.reposit
 import { Transaction } from '../../domain/entities/transaction.entity';
 import { TransactionType, PayoutStatus } from '../../../../core/enums/status.enum';
 import { WithdrawDto } from '../dto/wallet.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Setting, SettingDocument } from '../../../admin/infrastructure/persistence/mongoose/schemas/setting.schema';
 
 @Injectable()
 export class RequestPayoutUseCase {
   constructor(
     @Inject('IWalletRepository')
     private readonly walletRepository: IWalletRepository,
+    @InjectModel(Setting.name)
+    private readonly settingModel: Model<SettingDocument>,
   ) {}
 
   async execute(providerId: string, dto: WithdrawDto): Promise<void> {
@@ -19,6 +24,11 @@ export class RequestPayoutUseCase {
 
     if (wallet.balance < dto.amount) {
       throw new BadRequestException('Insufficient balance');
+    }
+
+    const minimum = await this.getMinimumPayout();
+    if (dto.amount < minimum) {
+      throw new BadRequestException(`Minimum payout amount is ${minimum}`);
     }
 
     // Create a pending debit transaction
@@ -55,5 +65,11 @@ export class RequestPayoutUseCase {
 
       return { wallet: w, transaction };
     });
+  }
+
+  private async getMinimumPayout() {
+    const setting = await this.settingModel.findOne({ key: 'min_withdrawal_amount' }).lean().exec();
+    const minimum = Number(setting?.value ?? 0);
+    return Number.isFinite(minimum) && minimum >= 0 ? minimum : 0;
   }
 }

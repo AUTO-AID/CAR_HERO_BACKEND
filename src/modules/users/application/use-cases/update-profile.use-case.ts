@@ -1,4 +1,4 @@
-import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { IUserRepository } from '../../domain/repositories/user.repository.interface';
 import { UserEntity } from '../../domain/entities/user.entity';
 import { UpdateUserDto } from '../dto/update-user.dto';
@@ -11,6 +11,11 @@ export class UpdateProfileUseCase {
   ) {}
 
   async execute(userId: string, dto: UpdateUserDto): Promise<UserEntity> {
+    const notifications = dto.preferences?.notifications;
+    if (notifications && Object.values(notifications).some((value) => typeof value !== 'boolean')) {
+      throw new BadRequestException('Notification preferences must be boolean values');
+    }
+
     const user = await this.userRepository.findById(userId);
     if (!user) {
       throw new NotFoundException('المستخدم غير موجود');

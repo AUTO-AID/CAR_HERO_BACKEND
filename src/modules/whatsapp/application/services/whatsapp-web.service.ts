@@ -14,6 +14,12 @@ export class WhatsAppWebService implements OnModuleInit, OnModuleDestroy {
   private lastError: string | null = null;
 
   async onModuleInit() {
+    if (process.env.DISABLE_WHATSAPP === 'true') {
+      this.lastError = 'WhatsApp initialization disabled by DISABLE_WHATSAPP=true';
+      this.logger.warn(this.lastError);
+      return;
+    }
+
     await this.initializeClient();
   }
 

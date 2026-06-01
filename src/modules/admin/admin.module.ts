@@ -1,6 +1,9 @@
 /**
  * Admin Module
  * Dashboard and administrative functions
+/**
+ * Admin Module
+ * Dashboard and administrative functions
  */
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -9,6 +12,14 @@ import { Admin, AdminSchema } from './infrastructure/persistence/mongoose/schema
 import { Setting, SettingSchema } from './infrastructure/persistence/mongoose/schemas/setting.schema';
 import { AdminController } from './presentation/controllers/admin.controller';
 import { AdminService } from './application/services/admin.service';
+import { AdminAuthService } from './application/services/admin-auth.service';
+import { AdminUsersService } from './application/services/admin-users.service';
+import { AdminProvidersService } from './application/services/admin-providers.service';
+import { AdminServicesService } from './application/services/admin-services.service';
+import { AdminStatsService } from './application/services/admin-stats.service';
+import { AdminAdminsService } from './application/services/admin-admins.service';
+import { AdminMembershipsService } from './application/services/admin-memberships.service';
+import { AdminSettingsService } from './application/services/admin-settings.service';
 import { UsersModule } from '../users/users.module';
 import { ProvidersModule } from '../providers/providers.module';
 import { ServicesModule } from '../services/services.module';
@@ -49,6 +60,14 @@ import { UserSubscription, UserSubscriptionSchema } from '../subscriptions/infra
   controllers: [AdminController],
   providers: [
     AdminService,
+    AdminAuthService,
+    AdminUsersService,
+    AdminProvidersService,
+    AdminServicesService,
+    AdminStatsService,
+    AdminAdminsService,
+    AdminMembershipsService,
+    AdminSettingsService,
     LoginUseCase,
     {
       provide: IAdminRepository,

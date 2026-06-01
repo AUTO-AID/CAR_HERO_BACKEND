@@ -12,7 +12,14 @@ import {
   Inject,
   UnauthorizedException,
   NotFoundException,
+  BadRequestException,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { existsSync, mkdirSync } from 'fs';
+import { extname, join } from 'path';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { IProviderRepository } from '../../domain/repositories/provider.repository.interface';
 import {
@@ -21,6 +28,7 @@ import {
   UpdateProviderBankAccountDto,
   UpdateProviderDocumentsDto,
   UpdateProviderDto,
+  UpdateProviderProfileDto,
   ProviderQueryDto,
   NearbyProviderDto,
   UpdateLocationDto,
@@ -30,7 +38,9 @@ import {
 } from '../../application/dtos/provider.dto';
 import { JwtAuthGuard } from '../../../../core/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../../core/guards/roles.guard';
+import { PermissionsGuard } from '../../../../core/guards/permissions.guard';
 import { Roles } from '../../../../core/decorators/roles.decorator';
+import { Permissions } from '../../../../core/decorators/permissions.decorator';
 import { CurrentUser } from '../../../../core/decorators/current-user.decorator';
 import { Public } from '../../../../core/decorators/public.decorator';
 import { Role } from '../../../../core/enums/roles.enum';
@@ -49,6 +59,9 @@ import { GetProviderStatsUseCase } from '../../application/use-cases/get-provide
 import { GetTopRatedProvidersUseCase } from '../../application/use-cases/get-top-rated-providers.use-case';
 import { GetProviderDashboardUseCase } from '../../application/use-cases/get-provider-dashboard.use-case';
 import { AuditLogService } from '../../../audit/application/services/audit-log.service';
+
+const providerDocumentsPath = join(process.cwd(), 'uploads', 'provider-documents');
+if (!existsSync(providerDocumentsPath)) mkdirSync(providerDocumentsPath, { recursive: true });
 
 @ApiTags('Providers')
 @Controller('providers')
@@ -167,7 +180,7 @@ export class ProvidersController {
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Update current provider profile' })
   @ApiResponse({ status: 200, description: 'Updated provider profile' })
-  async updateProfile(@CurrentUser() user: any, @Body() dto: UpdateProviderDto) {
+  async updateProfile(@CurrentUser() user: any, @Body() dto: UpdateProviderProfileDto) {
     const providerId = await this.getCurrentProviderId(user);
     return this.updateProviderUseCase.execute(providerId, dto);
   }
@@ -222,6 +235,37 @@ export class ProvidersController {
   async updateMyDocuments(@CurrentUser() user: any, @Body() dto: UpdateProviderDocumentsDto) {
     const providerId = await this.getCurrentProviderId(user);
     return this.manageProvidersUseCase.updateDocuments(providerId, dto);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.PROVIDER)
+  @Post('me/documents/upload')
+  @UseInterceptors(FileInterceptor('file', {
+    storage: diskStorage({
+      destination: providerDocumentsPath,
+      filename: (_request, file, callback) => {
+        const extension = {
+          'application/pdf': '.pdf',
+          'image/jpeg': '.jpg',
+          'image/png': '.png',
+        }[file.mimetype] || extname(file.originalname).toLowerCase();
+        callback(null, `${Date.now()}-${Math.round(Math.random() * 1e9)}${extension}`);
+      },
+    }),
+    limits: { fileSize: 5 * 1024 * 1024 },
+    fileFilter: (_request, file, callback) => {
+      const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+      if (!allowedTypes.includes(file.mimetype)) {
+        return callback(new BadRequestException('Only PDF, JPG, and PNG documents are allowed'), false);
+      }
+      callback(null, true);
+    },
+  }))
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Upload a current provider verification document' })
+  uploadMyDocument(@UploadedFile() file?: Express.Multer.File) {
+    if (!file) throw new BadRequestException('Document file is required');
+    return { fileUrl: `/uploads/provider-documents/${file.filename}` };
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -289,8 +333,9 @@ export class ProvidersController {
     return this.getProviderDashboardUseCase.getServicesPerformance(providerId);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
   @Roles(Role.ADMIN)
+  @Permissions('providers.read')
   @Get('admin/stats')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Get provider statistics (Admin only)' })
@@ -298,8 +343,9 @@ export class ProvidersController {
     return this.getProviderStatsUseCase.execute();
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
   @Roles(Role.ADMIN)
+  @Permissions('providers.create')
   @Post('admin')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Create provider (Admin only)' })
@@ -309,8 +355,9 @@ export class ProvidersController {
     return result;
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
   @Roles(Role.ADMIN)
+  @Permissions('providers.read')
   @Get('admin/:id')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Get provider by ID for admin' })
@@ -318,8 +365,9 @@ export class ProvidersController {
     return this.getProviderByIdUseCase.execute(id);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
   @Roles(Role.ADMIN)
+  @Permissions('providers.update')
   @Patch('admin/:id')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Update provider (Admin only)' })
@@ -329,8 +377,9 @@ export class ProvidersController {
     return result;
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
   @Roles(Role.ADMIN)
+  @Permissions('providers.status')
   @Patch('admin/:id/status')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Activate/deactivate provider (Admin only)' })
@@ -340,8 +389,9 @@ export class ProvidersController {
     return result;
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
   @Roles(Role.ADMIN)
+  @Permissions('providers.reject')
   @Patch('admin/:id/reject')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Reject provider registration (Admin only)' })
@@ -351,8 +401,9 @@ export class ProvidersController {
     return result;
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
   @Roles(Role.ADMIN)
+  @Permissions('providers.delete')
   @Delete('admin/:id')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Deactivate provider (Admin only)' })
@@ -370,8 +421,9 @@ export class ProvidersController {
     return this.getProviderByIdUseCase.execute(id);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
   @Roles(Role.ADMIN)
+  @Permissions('providers.approve')
   @Post(':id/approve')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Approve provider (Admin only)' })

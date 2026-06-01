@@ -29,8 +29,9 @@ export class MongooseWalletRepository implements IWalletRepository {
     );
   }
 
-  private mapTransactionToEntity(doc: TransactionDocument): TransactionEntity {
-    return new TransactionEntity(
+  private mapTransactionToEntity(doc: TransactionDocument | any): TransactionEntity {
+    const source: any = typeof doc?.toObject === 'function' ? doc.toObject() : doc;
+    const entity = new TransactionEntity(
       doc.transactionNumber,
       doc.wallet?.toString() || '',
       doc.ownerId?.toString() || '',
@@ -47,7 +48,20 @@ export class MongooseWalletRepository implements IWalletRepository {
       doc.paymentId,
       doc.status as any,
       doc.metadata,
+      source.createdAt,
+      source.updatedAt,
     );
+    return Object.assign(entity, {
+      _id: source._id?.toString?.() || entity.id,
+      id: source._id?.toString?.() || entity.id,
+      createdAt: source.createdAt,
+      updatedAt: source.updatedAt,
+      ownerName: source.ownerName,
+      ownerPhone: source.ownerPhone,
+      providerName: source.providerName || source.ownerName,
+      bankAccount: source.metadata?.bankAccount,
+      bankName: source.metadata?.bankName,
+    });
   }
 
   async findByOwnerId(ownerId: string, ownerType: 'user' | 'provider' | 'system'): Promise<WalletEntity | null> {
@@ -105,7 +119,7 @@ export class MongooseWalletRepository implements IWalletRepository {
       balanceAfter: transaction.balanceAfter,
       description: transaction.description,
       referenceType: transaction.referenceType,
-      referenceId: transaction.referenceId ? new Types.ObjectId(transaction.referenceId) : null,
+      referenceId: transaction.referenceId && Types.ObjectId.isValid(transaction.referenceId) ? new Types.ObjectId(transaction.referenceId) : null,
       paymentMethod: transaction.paymentMethod,
       paymentId: transaction.paymentId,
       status: transaction.status,
@@ -133,14 +147,123 @@ export class MongooseWalletRepository implements IWalletRepository {
   }
 
   async findAllTransactions(filter: any, skip: number, limit: number): Promise<{ data: TransactionEntity[]; total: number; }> {
-    const [docs, total] = await Promise.all([
-      this.transactionModel.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).exec(),
-      this.transactionModel.countDocuments(filter),
-    ]);
+    const {
+      __search,
+      __dateFrom,
+      __dateTo,
+      __sortBy = 'createdAt',
+      __sortOrder = 'desc',
+      ...rawFilter
+    } = filter || {};
+    const normalizedFilter = this.normalizeTransactionFilter(rawFilter);
+    const createdAt: Record<string, Date> = {};
+    if (__dateFrom) {
+      const from = new Date(__dateFrom);
+      if (!Number.isNaN(from.getTime())) createdAt.$gte = from;
+    }
+    if (__dateTo) {
+      const to = new Date(__dateTo);
+      if (!Number.isNaN(to.getTime())) {
+        to.setHours(23, 59, 59, 999);
+        createdAt.$lte = to;
+      }
+    }
+    if (Object.keys(createdAt).length) normalizedFilter.createdAt = createdAt;
+    const sortField = ['createdAt', 'updatedAt', 'amount', 'type', 'status', 'ownerType', 'referenceType'].includes(__sortBy)
+      ? __sortBy
+      : 'createdAt';
+    const sortDirection = __sortOrder === 'asc' ? 1 : -1;
+    const pipeline: any[] = [
+      { $match: normalizedFilter },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'ownerId',
+          foreignField: '_id',
+          as: 'userDetails',
+        },
+      },
+      {
+        $lookup: {
+          from: 'providers',
+          localField: 'ownerId',
+          foreignField: '_id',
+          as: 'providerDetails',
+        },
+      },
+      {
+        $addFields: {
+          ownerName: {
+            $ifNull: [
+              { $first: '$providerDetails.businessName' },
+              { $ifNull: [{ $first: '$userDetails.fullName' }, '$ownerType'] },
+            ],
+          },
+          ownerPhone: {
+            $ifNull: [
+              { $first: '$providerDetails.phone' },
+              { $first: '$userDetails.phoneNumber' },
+            ],
+          },
+          providerName: { $first: '$providerDetails.businessName' },
+          referenceIdText: { $toString: '$referenceId' },
+        },
+      },
+    ];
+
+    if (__search) {
+      const regex = new RegExp(this.escapeRegex(String(__search).trim()), 'i');
+      pipeline.push({
+        $match: {
+          $or: [
+            { transactionNumber: regex },
+            { description: regex },
+            { referenceType: regex },
+            { referenceIdText: regex },
+            { paymentMethod: regex },
+            { paymentId: regex },
+            { ownerName: regex },
+            { ownerPhone: regex },
+          ],
+        },
+      });
+    }
+
+    pipeline.push(
+      { $sort: { [sortField]: sortDirection, _id: -1 } },
+      {
+        $facet: {
+          data: [
+            { $skip: Math.max(0, skip) },
+            { $limit: Math.max(1, limit) },
+            { $project: { userDetails: 0, providerDetails: 0, referenceIdText: 0 } },
+          ],
+          meta: [{ $count: 'total' }],
+        },
+      },
+    );
+
+    const [result] = await this.transactionModel.aggregate(pipeline).exec();
+    const docs = result?.data || [];
+    const total = result?.meta?.[0]?.total || 0;
     return {
       data: docs.map(doc => this.mapTransactionToEntity(doc)),
       total,
     };
+  }
+
+  private normalizeTransactionFilter(filter: any): any {
+    const normalized: any = { ...filter };
+    for (const key of ['_id', 'ownerId', 'referenceId', 'wallet']) {
+      if (typeof normalized[key] === 'string' && Types.ObjectId.isValid(normalized[key])) {
+        normalized[key] = new Types.ObjectId(normalized[key]);
+      }
+    }
+    return normalized;
+  }
+
+  private escapeRegex(value: string): string {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 
   async updateTransactionStatus(id: string, status: string, metadata?: any): Promise<void> {

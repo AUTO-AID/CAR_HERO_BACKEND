@@ -9,6 +9,7 @@ import { Admin, AdminDocument } from '../../../admin/infrastructure/persistence/
 import { Provider, ProviderDocument } from '../../../providers/infrastructure/persistence/mongoose/schemas/provider.schema';
 import { IJwtPayload } from '../../../../core/interfaces';
 import { ERROR_MESSAGES } from '../../../../core/constants';
+import { Role } from '../../../../core/enums/roles.enum';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -37,7 +38,15 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       if (!admin.isActive) {
         throw new UnauthorizedException(ERROR_MESSAGES.AUTH.ACCOUNT_DEACTIVATED);
       }
-      return { ...payload, _id: userId, id: userId };
+      return {
+        ...payload,
+        _id: userId,
+        id: userId,
+        role: Role.ADMIN,
+        email: admin.email,
+        name: admin.name,
+        permissions: admin.permissions || [],
+      };
     }
 
     // Otherwise, validate as User

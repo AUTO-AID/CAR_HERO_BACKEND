@@ -5,7 +5,7 @@
 import { Module, Global } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AppGateway } from './app.gateway';
+import { AppGateway } from './presentation/app.gateway';
 import { WsJwtGuard } from '../../core/guards/ws-jwt.guard';
 
 @Global()
@@ -15,7 +15,7 @@ import { WsJwtGuard } from '../../core/guards/ws-jwt.guard';
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET') || 'default-secret',
+        secret: configService.getOrThrow<string>('JWT_SECRET'),
         signOptions: {
           expiresIn: configService.get<string>('JWT_EXPIRES_IN') || '15m',
         } as any,

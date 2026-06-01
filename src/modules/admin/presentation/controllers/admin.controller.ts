@@ -11,6 +11,8 @@ import { Role } from '../../../../core/enums/roles.enum';
 import { RolesGuard, PermissionsGuard } from '../../../../core/guards';
 import { RegistrationStatus } from '../../../../core/enums/status.enum';
 import { AuditLogService } from '../../../audit/application/services/audit-log.service';
+import { CreateAdminDto, ResetAdminPasswordDto, UpdateAdminPermissionsDto, UpdateAdminStatusDto } from '../../application/dtos/admin-management.dto';
+import { UpdateAppSettingsDto, UpdateMaintenanceDto } from '../../application/dtos/update-settings.dto';
 
 @ApiTags('Admin')
 @Controller('admin')
@@ -60,6 +62,7 @@ export class AdminController {
 
   @Post('logout')
   @Roles(Role.ADMIN)
+  @Permissions('admin.profile')
   @ApiBearerAuth('JWT-auth')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Admin logout' })
@@ -69,7 +72,9 @@ export class AdminController {
 
   @Get('me')
   @Roles(Role.ADMIN)
+  @Permissions('admin.profile')
   @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
   @ApiBearerAuth('JWT-auth')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get current admin profile' })
@@ -83,6 +88,7 @@ export class AdminController {
 
   @Get('providers')
   @Roles(Role.ADMIN)
+  @Permissions('providers.read')
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Get all providers' })
@@ -90,12 +96,37 @@ export class AdminController {
     @Query('status') status: RegistrationStatus,
     @Query('page') page: number,
     @Query('limit') limit: number,
+    @Query('search') search?: string,
+    @Query('isActive') isActive?: string,
+    @Query('runtimeStatus') runtimeStatus?: string,
+    @Query('city') city?: string,
+    @Query('service') service?: string,
+    @Query('emergency') emergency?: string,
+    @Query('minRating') minRating?: string,
+    @Query('sortBy') sortBy?: string,
+    @Query('sortOrder') sortOrder?: 'asc' | 'desc',
   ) {
-    return this.adminService.getAllProviders(status, Number(page) || 1, Number(limit) || 10);
+    return this.adminService.getAllProviders(
+      {
+        status,
+        search,
+        isActive: isActive === undefined ? undefined : isActive === 'true',
+        runtimeStatus,
+        city,
+        service,
+        emergency: emergency === undefined ? undefined : emergency === 'true',
+        minRating: minRating === undefined ? undefined : Number(minRating),
+        sortBy,
+        sortOrder,
+      },
+      Number(page) || 1,
+      Number(limit) || 10,
+    );
   }
 
   @Get('providers/:id')
   @Roles(Role.ADMIN)
+  @Permissions('providers.read')
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Get provider by ID' })
@@ -105,6 +136,7 @@ export class AdminController {
 
   @Patch('providers/:id/approve')
   @Roles(Role.ADMIN)
+  @Permissions('providers.approve')
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Approve provider registration' })
@@ -116,6 +148,7 @@ export class AdminController {
 
   @Patch('providers/:id/reject')
   @Roles(Role.ADMIN)
+  @Permissions('providers.reject')
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Reject provider registration' })
@@ -131,6 +164,7 @@ export class AdminController {
 
   @Patch('providers/:id')
   @Roles(Role.ADMIN)
+  @Permissions('providers.update')
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Update provider data' })
@@ -150,15 +184,37 @@ export class AdminController {
 
   @Get('services')
   @Roles(Role.ADMIN)
+  @Permissions('services.read')
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Get all system services' })
-  async getAllServices() {
-    return this.adminService.getAllServices();
+  async getAllServices(
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('search') search?: string,
+    @Query('category') category?: any,
+    @Query('isActive') isActive?: string,
+    @Query('isEmergency') isEmergency?: string,
+    @Query('sortBy') sortBy?: string,
+    @Query('sortOrder') sortOrder?: 'asc' | 'desc',
+  ) {
+    return this.adminService.getAllServices(
+      {
+        search,
+        category,
+        isActive: isActive === undefined ? undefined : isActive === 'true',
+        isEmergency: isEmergency === undefined ? undefined : isEmergency === 'true',
+        sortBy,
+        sortOrder,
+      },
+      Number(page) || 1,
+      Number(limit) || 100,
+    );
   }
 
   @Post('services')
   @Roles(Role.ADMIN)
+  @Permissions('services.create')
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Create new system service' })
@@ -170,6 +226,7 @@ export class AdminController {
 
   @Patch('services/:id')
   @Roles(Role.ADMIN)
+  @Permissions('services.update')
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Update system service' })
@@ -185,6 +242,7 @@ export class AdminController {
 
   @Delete('services/:id')
   @Roles(Role.ADMIN)
+  @Permissions('services.delete')
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Delete system service' })
@@ -200,6 +258,7 @@ export class AdminController {
 
   @Get('stats')
   @Roles(Role.ADMIN)
+  @Permissions('analytics.read')
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Get general platform statistics' })
@@ -209,6 +268,7 @@ export class AdminController {
 
   @Get('stats/orders')
   @Roles(Role.ADMIN)
+  @Permissions('analytics.read')
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Get order statistics by status' })
@@ -218,20 +278,41 @@ export class AdminController {
 
   @Get('stats/revenue')
   @Roles(Role.ADMIN)
+  @Permissions('finance.read')
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Get monthly revenue statistics' })
   async getMonthlyRevenue() {
     return this.adminService.getMonthlyRevenue();
   }
-
   @Get('stats/top-services')
   @Roles(Role.ADMIN)
+  @Permissions('analytics.read')
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Get top requested services' })
   async getTopServices() {
     return this.adminService.getTopServices();
+  }
+
+  @Get('stats/bookings-analytics')
+  @Roles(Role.ADMIN)
+  @Permissions('analytics.read')
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Get scheduled bookings analytics for admin dashboard charts' })
+  async getBookingsAnalytics() {
+    return this.adminService.getBookingsAnalytics();
+  }
+
+  @Get('stats/users-analytics')
+  @Roles(Role.ADMIN)
+  @Permissions('analytics.read')
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Get users growth and loyalty analytics' })
+  async getUsersAnalytics() {
+    return this.adminService.getUsersAnalytics();
   }
 
   // ===========================================
@@ -240,6 +321,7 @@ export class AdminController {
 
   @Get('dashboard/summary')
   @Roles(Role.ADMIN)
+  @Permissions('analytics.read')
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Get comprehensive dashboard summary' })
@@ -249,6 +331,7 @@ export class AdminController {
 
   @Get('dashboard/excel-summary')
   @Roles(Role.ADMIN)
+  @Permissions('analytics.read')
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Get excel data analytics summary' })
@@ -258,6 +341,7 @@ export class AdminController {
 
   @Get('dashboard/providers-by-governorate')
   @Roles(Role.ADMIN)
+  @Permissions('analytics.read')
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Get providers count by governorate' })
@@ -267,6 +351,7 @@ export class AdminController {
 
   @Get('dashboard/providers-by-service')
   @Roles(Role.ADMIN)
+  @Permissions('analytics.read')
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Get providers count by service category' })
@@ -276,6 +361,7 @@ export class AdminController {
 
   @Get('dashboard/providers-growth')
   @Roles(Role.ADMIN)
+  @Permissions('analytics.read')
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Get providers growth over time' })
@@ -285,6 +371,7 @@ export class AdminController {
 
   @Get('dashboard/top-cities')
   @Roles(Role.ADMIN)
+  @Permissions('analytics.read')
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Get top cities by providers count' })
@@ -294,6 +381,7 @@ export class AdminController {
 
   @Get('dashboard/map/syria-providers')
   @Roles(Role.ADMIN)
+  @Permissions('analytics.read')
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Get providers locations for map visualization' })
@@ -307,6 +395,7 @@ export class AdminController {
 
   @Get('memberships')
   @Roles(Role.ADMIN)
+  @Permissions('subscriptions.read')
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Legacy: get all membership plans. Prefer GET /admin/subscription-plans' })
@@ -316,6 +405,7 @@ export class AdminController {
 
   @Get('subscription-plans')
   @Roles(Role.ADMIN)
+  @Permissions('subscriptions.read')
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Get all subscription plans (canonical admin API)' })
@@ -325,6 +415,7 @@ export class AdminController {
 
   @Post('memberships')
   @Roles(Role.ADMIN)
+  @Permissions('subscriptions.create')
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Legacy: create membership plan. Prefer POST /admin/subscription-plans' })
@@ -336,6 +427,7 @@ export class AdminController {
 
   @Post('subscription-plans')
   @Roles(Role.ADMIN)
+  @Permissions('subscriptions.create')
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Create subscription plan (canonical admin API)' })
@@ -347,6 +439,7 @@ export class AdminController {
 
   @Patch('memberships/:id')
   @Roles(Role.ADMIN)
+  @Permissions('subscriptions.update')
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Legacy: update membership plan. Prefer PATCH /admin/subscription-plans/:id' })
@@ -362,6 +455,7 @@ export class AdminController {
 
   @Patch('subscription-plans/:id')
   @Roles(Role.ADMIN)
+  @Permissions('subscriptions.update')
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Update subscription plan (canonical admin API)' })
@@ -377,6 +471,7 @@ export class AdminController {
 
   @Delete('memberships/:id')
   @Roles(Role.ADMIN)
+  @Permissions('subscriptions.delete')
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Legacy: delete membership plan. Prefer DELETE /admin/subscription-plans/:id' })
@@ -388,6 +483,7 @@ export class AdminController {
 
   @Delete('subscription-plans/:id')
   @Roles(Role.ADMIN)
+  @Permissions('subscriptions.delete')
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Delete subscription plan (canonical admin API)' })
@@ -399,34 +495,56 @@ export class AdminController {
 
   @Get('memberships/subscribers')
   @Roles(Role.ADMIN)
+  @Permissions('subscriptions.read')
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Legacy: get all subscribed users. Prefer GET /admin/subscriptions' })
   async getMembershipSubscribers(
     @Query('page') page: number,
     @Query('limit') limit: number,
+    @Query() filters: any,
   ) {
-    return this.adminService.getMembershipSubscribers(Number(page) || 1, Number(limit) || 10);
+    return this.adminService.getMembershipSubscribers(Number(page) || 1, Number(limit) || 10, filters);
+  }
+
+  @Get('memberships/stats')
+  @Roles(Role.ADMIN)
+  @Permissions('subscriptions.read')
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Get subscription analytics for admin dashboard' })
+  async getMembershipStats() {
+    return this.adminService.getMembershipStats();
   }
 
   @Get('subscriptions')
   @Roles(Role.ADMIN)
+  @Permissions('subscriptions.read')
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Get all user subscriptions (canonical admin API)' })
   async getUserSubscriptions(
     @Query('page') page: number,
     @Query('limit') limit: number,
+    @Query() filters: any,
   ) {
-    return this.getMembershipSubscribers(page, limit);
+    return this.getMembershipSubscribers(page, limit, filters);
   }
 
   // ===========================================
   // SETTINGS MANAGEMENT
   // ===========================================
 
+  @Public()
+  @Get('settings/public')
+  @ApiOperation({ summary: 'Get non-sensitive public application settings' })
+  async getPublicSettings() {
+    return this.adminService.getPublicSettings();
+  }
+
   @Get('settings')
   @Roles(Role.ADMIN)
+  @Permissions('settings.read')
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Get application settings' })
@@ -434,13 +552,26 @@ export class AdminController {
     return this.adminService.getAppSettings();
   }
 
+  @Patch('settings')
+  @Roles(Role.ADMIN)
+  @Permissions('settings.update')
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Update supported application settings' })
+  async updateSettings(@Body() dto: UpdateAppSettingsDto, @CurrentUser() admin: any) {
+    const result = await this.adminService.updateAppSettings(dto);
+    await this.audit(admin, 'setting.update', 'setting', undefined, result, { fields: Object.keys(dto) });
+    return result;
+  }
+
   @Patch('settings/maintenance')
   @Roles(Role.ADMIN)
+  @Permissions('settings.update')
   @UseGuards(RolesGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Toggle maintenance mode' })
   async updateMaintenanceMode(
-    @Body() dto: { maintenanceMode: boolean; message?: string; messageAr?: string },
+    @Body() dto: UpdateMaintenanceDto,
     @CurrentUser() admin: any,
   ) {
     const result = await this.adminService.updateMaintenanceMode(dto);
@@ -454,19 +585,23 @@ export class AdminController {
 
   @Get('list')
   @Roles(Role.ADMIN)
-  @Permissions('all')
+  @Permissions('admins.read')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'List all administrative accounts' })
-  async listAdmins() {
-    return this.adminService.listAdmins();
+  async listAdmins(
+    @Query('search') search?: string,
+    @Query('status') status?: 'all' | 'active' | 'inactive',
+    @Query('permission') permission?: string,
+  ) {
+    return this.adminService.listAdmins({ search, status, permission });
   }
 
   @Post('create')
   @Roles(Role.ADMIN)
-  @Permissions('all')
+  @Permissions('admins.create')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Create a new admin account' })
-  async createAdmin(@Body() adminData: any, @CurrentUser() admin: any) {
+  async createAdmin(@Body() adminData: CreateAdminDto, @CurrentUser() admin: any) {
     const result = await this.adminService.createAdmin(adminData);
     await this.audit(admin, 'admin.create', 'admin', String(result?._id || result?.id || ''), result);
     return result;
@@ -474,41 +609,52 @@ export class AdminController {
 
   @Patch(':id/permissions')
   @Roles(Role.ADMIN)
-  @Permissions('all')
+  @Permissions('admins.update')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Update admin permissions' })
   async updateAdminPermissions(
     @Param('id') id: string,
-    @Body('permissions') permissions: string[],
+    @Body() dto: UpdateAdminPermissionsDto,
     @CurrentUser() admin: any,
   ) {
-    const result = await this.adminService.updateAdminPermissions(id, permissions);
-    await this.audit(admin, 'admin.permissions_update', 'admin', id, result, { permissions });
+    const result = await this.adminService.updateAdminPermissions(id, dto.permissions, this.getActorId(admin)!);
+    await this.audit(admin, 'admin.permissions_update', 'admin', id, result, { permissions: dto.permissions });
     return result;
   }
 
   @Patch(':id/status')
   @Roles(Role.ADMIN)
-  @Permissions('all')
+  @Permissions('admins.update')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Toggle admin active status' })
   async toggleAdminStatus(
     @Param('id') id: string,
-    @Body('isActive') isActive: boolean,
+    @Body() dto: UpdateAdminStatusDto,
     @CurrentUser() admin: any,
   ) {
-    const result = await this.adminService.toggleAdminStatus(id, isActive);
-    await this.audit(admin, 'admin.status_update', 'admin', id, result, { isActive });
+    const result = await this.adminService.toggleAdminStatus(id, dto.isActive, this.getActorId(admin)!);
+    await this.audit(admin, 'admin.status_update', 'admin', id, result, { isActive: dto.isActive });
+    return result;
+  }
+
+  @Patch(':id/password')
+  @Roles(Role.ADMIN)
+  @Permissions('admins.update')
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Reset another admin password' })
+  async resetAdminPassword(@Param('id') id: string, @Body() dto: ResetAdminPasswordDto, @CurrentUser() admin: any) {
+    const result = await this.adminService.resetAdminPassword(id, dto.password, this.getActorId(admin)!);
+    await this.audit(admin, 'admin.password_reset', 'admin', id);
     return result;
   }
 
   @Delete(':id')
   @Roles(Role.ADMIN)
-  @Permissions('all')
+  @Permissions('admins.delete')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Delete an admin account' })
   async deleteAdmin(@Param('id') id: string, @CurrentUser() admin: any) {
-    const result = await this.adminService.deleteAdmin(id);
+    const result = await this.adminService.deleteAdmin(id, this.getActorId(admin)!);
     await this.audit(admin, 'admin.delete', 'admin', id, result);
     return result;
   }

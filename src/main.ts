@@ -24,13 +24,13 @@ async function bootstrap() {
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
   app.setViewEngine('ejs');
 
-  // Serve Static Assets (Chat Uploads)
-  const uploadsPath = join(__dirname, '..', 'uploads', 'chat');
+  // Serve uploaded assets while keeping feature-specific folders isolated.
+  const uploadsPath = join(process.cwd(), 'uploads');
   if (!existsSync(uploadsPath)) {
     mkdirSync(uploadsPath, { recursive: true });
   }
   app.useStaticAssets(uploadsPath, {
-    prefix: '/uploads/chat',
+    prefix: '/uploads',
   });
 
   // Security - Helmet

@@ -20,7 +20,16 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "docs:sync": "ts-node scripts/sync-docs.ts",
-    "seed": "ts-node src/database/seeders/seed.ts"
+    "seed": "ts-node src/database/seeders/seed.ts",
+    "db:start-local": "node scripts/start-local-db.cjs",
+    "test:postman": "node scripts/run-postman-tests.cjs",
+    "seed:operational": "node scripts/seed-operational-data.cjs",
+    "seed:historical": "node scripts/seed-historical-data.cjs",
+    "seed:recommendation": "node scripts/seed-recommendation-logs.cjs",
+    "metrics:recalculate": "node scripts/recalculate-provider-metrics.cjs",
+    "db:migrate": "node scripts/migrate-db.cjs",
+    "db:sync:local": "node scripts/db-sync-to-local.js",
+    "db:sync:global": "node scripts/db-sync-to-global.js"
   },
   "dependencies": {
     "@nestjs/cache-manager": "^3.1.0",
@@ -49,6 +58,7 @@
     "ejs": "^3.1.10",
     "firebase-admin": "^13.6.0",
     "helmet": "^8.1.0",
+    "mongodb": "^7.2.0",
     "mongoose": "^9.0.2",
     "multer": "^2.0.2",
     "passport": "^0.7.0",
@@ -84,6 +94,7 @@
     "husky": "^9.1.7",
     "jest": "^30.0.0",
     "lint-staged": "^16.2.7",
+    "mongodb-memory-server": "^11.2.0",
     "prettier": "^3.4.2",
     "source-map-support": "^0.5.21",
     "supertest": "^7.0.0",

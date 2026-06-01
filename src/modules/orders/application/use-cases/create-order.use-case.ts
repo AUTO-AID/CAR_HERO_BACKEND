@@ -9,6 +9,8 @@ import { Service, ServiceDocument } from '../../../../modules/services/infrastru
 import { NotificationsService } from '../../../notifications/application/services/notifications.service';
 import { NotificationType } from '../../../../core/enums/status.enum';
 import { StatusHistoryService } from '../../../status-history/application/services/status-history.service';
+import { SchedulingAvailabilityService } from '../services/scheduling-availability.service';
+import { Provider, ProviderDocument } from '../../../providers/infrastructure/persistence/mongoose/schemas/provider.schema';
 
 @Injectable()
 export class CreateOrderUseCase {
@@ -17,8 +19,11 @@ export class CreateOrderUseCase {
     private readonly orderRepository: IOrderRepository,
     @InjectModel(Service.name)
     private readonly serviceModel: Model<ServiceDocument>,
+    @InjectModel(Provider.name)
+    private readonly providerModel: Model<ProviderDocument>,
     private readonly notificationsService: NotificationsService,
     private readonly statusHistoryService: StatusHistoryService,
+    private readonly schedulingAvailabilityService: SchedulingAvailabilityService,
   ) {}
 
   async execute(dto: CreateOrderDto): Promise<OrderEntity> {
@@ -26,6 +31,21 @@ export class CreateOrderUseCase {
     const service = await this.serviceModel.findById(dto.serviceId);
     if (!service) {
       throw new NotFoundException('Service not found');
+    }
+    const provider = dto.providerId ? await this.providerModel.findById(dto.providerId).lean().exec() : null;
+    if (dto.providerId && !provider) throw new NotFoundException('Provider not found');
+    if (provider) {
+      const selectedServiceIds = (provider.services || []).map((serviceId) => serviceId.toString());
+      if (!selectedServiceIds.includes(dto.serviceId) || provider.serviceAvailability?.[dto.serviceId] === false) {
+        throw new NotFoundException('Service is not currently offered by this provider');
+      }
+    }
+    if (dto.providerId && dto.scheduleTime) {
+      await this.schedulingAvailabilityService.assertAvailable(
+        dto.providerId,
+        new Date(dto.scheduleTime),
+        service.estimatedDuration,
+      );
     }
 
     // 2. Prepare Order Data
@@ -37,8 +57,8 @@ export class CreateOrderUseCase {
       vehicleId: dto.vehicleId,
       status: OrderStatus.PENDING,
       serviceName: service.name,
-      servicePrice: service.basePrice,
-      total: service.basePrice,
+      servicePrice: provider?.servicePrices?.[dto.serviceId] ?? (service.discountedPrice || service.basePrice),
+      total: provider?.servicePrices?.[dto.serviceId] ?? (service.discountedPrice || service.basePrice),
       userLocation: {
         type: 'Point',
         coordinates: dto.location.coordinates,
@@ -47,6 +67,9 @@ export class CreateOrderUseCase {
       scheduledAt: dto.scheduleTime ? new Date(dto.scheduleTime) : undefined,
       isScheduled: !!dto.scheduleTime,
     };
+    (orderData as any).metadata = dto.scheduleTime
+      ? { scheduledDurationMinutes: service.estimatedDuration }
+      : {};
 
     // 3. Save Order
     const order = await this.orderRepository.create(orderData);

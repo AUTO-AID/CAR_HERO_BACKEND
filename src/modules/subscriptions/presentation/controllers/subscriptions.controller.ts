@@ -18,8 +18,10 @@ import { ListSubscriptionsQueryDto } from '../../application/dto/list-subscripti
 import { JwtAuthGuard } from '../../../../core/guards/jwt-auth.guard';
 import { Public } from '../../../../core/decorators/public.decorator';
 import { Roles } from '../../../../core/decorators/roles.decorator';
+import { Permissions } from '../../../../core/decorators/permissions.decorator';
 import { Role } from '../../../../core/enums/roles.enum';
 import { RolesGuard } from '../../../../core/guards/roles.guard';
+import { PermissionsGuard } from '../../../../core/guards/permissions.guard';
 import { CurrentUser } from '../../../../core/decorators/current-user.decorator';
 import { AuditLogService } from '../../../audit/application/services/audit-log.service';
 
@@ -142,8 +144,9 @@ export class SubscriptionsController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
   @Roles(Role.ADMIN)
+  @Permissions('subscriptions.read')
   @Get('admin/subscriptions')
   @ApiOperation({ summary: 'Admin: list user subscriptions' })
   async listSubscriptions(@Query() query: ListSubscriptionsQueryDto) {
@@ -151,8 +154,9 @@ export class SubscriptionsController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
   @Roles(Role.ADMIN)
+  @Permissions('subscriptions.read')
   @Get('admin/stats')
   @ApiOperation({ summary: 'Admin: get subscription statistics' })
   async getStats() {
@@ -160,8 +164,9 @@ export class SubscriptionsController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
   @Roles(Role.ADMIN)
+  @Permissions('subscriptions.create')
   @Post('admin/plans')
   @ApiOperation({ summary: 'Admin: create subscription plan' })
   async createPlan(@Body() dto: CreateSubscriptionPlanDto, @CurrentUser() admin: any) {
@@ -171,8 +176,9 @@ export class SubscriptionsController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
   @Roles(Role.ADMIN)
+  @Permissions('subscriptions.update')
   @Patch('admin/plans/:id')
   @ApiOperation({ summary: 'Admin: update subscription plan' })
   async updatePlan(@Param('id') id: string, @Body() dto: UpdateSubscriptionPlanDto, @CurrentUser() admin: any) {
@@ -182,8 +188,9 @@ export class SubscriptionsController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
   @Roles(Role.ADMIN)
+  @Permissions('subscriptions.delete')
   @Delete('admin/plans/:id')
   @ApiOperation({ summary: 'Admin: delete subscription plan' })
   async deletePlan(@Param('id') id: string, @CurrentUser() admin: any) {

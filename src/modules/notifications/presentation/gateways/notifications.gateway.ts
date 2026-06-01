@@ -2,7 +2,6 @@ import {
   WebSocketGateway,
   WebSocketServer,
   SubscribeMessage,
-  MessageBody,
   ConnectedSocket,
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -22,8 +21,6 @@ export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisco
   private readonly logger = new Logger(NotificationsGateway.name);
 
   async handleConnection(client: Socket) {
-    // Note: WsJwtGuard handles auth on SubscribeMessage. 
-    // To handle it on connection, we'd use a middleware or verify manually.
     this.logger.log(`Notification client connected: ${client.id}`);
   }
 
@@ -34,7 +31,8 @@ export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisco
   @UseGuards(WsJwtGuard)
   @SubscribeMessage('join_notifications')
   handleJoinNotifications(@ConnectedSocket() client: Socket) {
-    const userId = client.data.user.id;
+    const userId = client.data?.user?.id;
+    if (!userId) return { success: false };
     const room = `user_${userId}`;
     client.join(room);
     this.logger.log(`User ${userId} joined notification room: ${room}`);
@@ -45,15 +43,19 @@ export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisco
    * Send real-time notification to a specific user
    */
   sendToUser(userId: string, payload: any) {
-    const room = `user_${userId}`;
-    this.server.to(room).emit('notification', payload);
+    if (this.server) {
+      const room = `user_${userId}`;
+      this.server.to(room).emit('notification', payload);
+    }
   }
 
   /**
    * Broadcast unread count update
    */
   emitUnreadCount(userId: string, count: number) {
-    const room = `user_${userId}`;
-    this.server.to(room).emit('unread_count', { count });
+    if (this.server) {
+      const room = `user_${userId}`;
+      this.server.to(room).emit('unread_count', { count });
+    }
   }
 }

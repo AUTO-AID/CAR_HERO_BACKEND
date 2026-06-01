@@ -80,9 +80,31 @@ export class OrdersController {
     @Query('page') page: number,
     @Query('limit') limit: number,
     @Query('status') status?: OrderStatus,
+    @Query('statuses') statuses?: string,
+    @Query('search') search?: string,
+    @Query('paymentStatus') paymentStatus?: string,
+    @Query('paymentMethod') paymentMethod?: string,
+    @Query('isScheduled') isScheduled?: string,
+    @Query('dateFrom') dateFrom?: string,
+    @Query('dateTo') dateTo?: string,
+    @Query('minAmount') minAmount?: string,
+    @Query('maxAmount') maxAmount?: string,
+    @Query('sortBy') sortBy?: string,
+    @Query('sortOrder') sortOrder?: 'asc' | 'desc',
     @Req() req?: any
   ) {
     const criteria: any = status ? { status } : {};
+    if (statuses) criteria.__statuses = statuses;
+    if (search) criteria.__search = search;
+    if (paymentStatus) criteria.__paymentStatus = paymentStatus;
+    if (paymentMethod) criteria.__paymentMethod = paymentMethod;
+    if (isScheduled !== undefined) criteria.__isScheduled = isScheduled === 'true';
+    if (dateFrom) criteria.__dateFrom = dateFrom;
+    if (dateTo) criteria.__dateTo = dateTo;
+    if (minAmount !== undefined) criteria.__minAmount = minAmount;
+    if (maxAmount !== undefined) criteria.__maxAmount = maxAmount;
+    if (sortBy) criteria.__sortBy = sortBy;
+    if (sortOrder) criteria.__sortOrder = sortOrder;
     // If not Admin, only show own orders
     if (req.user.role !== 'admin') {
       if (req.user.role === 'provider') criteria.provider = req.user.providerId || req.user._id;
@@ -102,9 +124,25 @@ export class OrdersController {
     @Query('page') page: number,
     @Query('limit') limit: number,
     @Query('status') status?: OrderStatus,
+    @Query('statuses') statuses?: string,
+    @Query('search') search?: string,
+    @Query('paymentStatus') paymentStatus?: string,
+    @Query('paymentMethod') paymentMethod?: string,
+    @Query('dateFrom') dateFrom?: string,
+    @Query('dateTo') dateTo?: string,
+    @Query('sortBy') sortBy?: string,
+    @Query('sortOrder') sortOrder?: 'asc' | 'desc',
     @Req() req?: any
   ) {
     const criteria: any = { isScheduled: true, ...(status ? { status } : {}) };
+    if (statuses) criteria.__statuses = statuses;
+    if (search) criteria.__search = search;
+    if (paymentStatus) criteria.__paymentStatus = paymentStatus;
+    if (paymentMethod) criteria.__paymentMethod = paymentMethod;
+    if (dateFrom) criteria.__dateFrom = dateFrom;
+    if (dateTo) criteria.__dateTo = dateTo;
+    if (sortBy) criteria.__sortBy = sortBy;
+    if (sortOrder) criteria.__sortOrder = sortOrder;
     if (req.user.role !== 'admin') {
       if (req.user.role === 'provider') criteria.provider = req.user.providerId || req.user._id;
       else criteria.user = req.user._id;

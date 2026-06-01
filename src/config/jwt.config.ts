@@ -7,7 +7,7 @@ import { JwtModuleAsyncOptions } from '@nestjs/jwt';
 
 export const jwtConfig: JwtModuleAsyncOptions = {
   useFactory: async (configService: ConfigService) => ({
-    secret: configService.get<string>('jwt.secret') || 'default-secret',
+    secret: configService.getOrThrow<string>('JWT_SECRET'),
     signOptions: {
       expiresIn: (configService.get<string>('jwt.expiresIn') || '15m') as any,
     },
@@ -19,6 +19,6 @@ export const jwtConfig: JwtModuleAsyncOptions = {
  * Get refresh token configuration
  */
 export const getRefreshTokenConfig = (configService: ConfigService) => ({
-  secret: configService.get<string>('jwt.refreshSecret'),
+  secret: configService.getOrThrow<string>('JWT_REFRESH_SECRET'),
   expiresIn: configService.get<string>('jwt.refreshExpiresIn'),
 });

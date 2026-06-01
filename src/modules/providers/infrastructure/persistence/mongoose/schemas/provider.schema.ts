@@ -27,13 +27,13 @@ class GeoLocation {
  */
 @Schema({ _id: false })
 class WorkingHours {
-  @Prop({ required: true })
+  @Prop({ required: true, enum: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] })
   day: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, match: /^([01]\d|2[0-3]):[0-5]\d$/ })
   open: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, match: /^([01]\d|2[0-3]):[0-5]\d$/ })
   close: string;
 
   @Prop({ default: false })
@@ -180,6 +180,9 @@ export class Provider {
 
   @Prop({ type: Object, default: {} })
   servicePrices: Record<string, any>;
+
+  @Prop({ type: Object, default: {} })
+  serviceAvailability: Record<string, boolean>;
 
   @Prop({ default: false })
   emergency247: boolean;

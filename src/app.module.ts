@@ -11,6 +11,8 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { CacheModule } from '@nestjs/cache-manager';
 
 // Core
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 import { CoreModule } from './core/core.module';
 import envConfig from './config/env.config';
 import { mongoConfig } from './config/mongo.config';
@@ -29,7 +31,6 @@ import { SubscriptionsModule } from './modules/subscriptions/subscriptions.modul
 import { ReviewsModule } from './modules/reviews/reviews.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { AdminModule } from './modules/admin/admin.module';
-import { AiModule } from './modules/ai/ai.module';
 import { AiRecommendationModule } from './modules/ai-recommendation/ai-recommendation.module';
 import { GatewayModule } from './modules/gateway/gateway.module';
 import { ProfileModule } from './modules/profile/profile.module';
@@ -73,10 +74,11 @@ import { AuditModule } from './modules/audit/audit.module';
     NotificationsModule,
     AuditModule,
     AdminModule,
-    AiModule,
     AiRecommendationModule,
     GatewayModule,
     ProfileModule,
   ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

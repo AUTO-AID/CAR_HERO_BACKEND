@@ -15,7 +15,9 @@ import {
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../../../core/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../../core/guards/roles.guard';
+import { PermissionsGuard } from '../../../../core/guards/permissions.guard';
 import { Role } from '../../../../core/enums/roles.enum';
+import { Permissions, Roles } from '../../../../core/decorators';
 import { GetUserVehiclesUseCase } from '../../application/use-cases/get-user-vehicles.use-case';
 import { GetAllVehiclesAdminUseCase } from '../../application/use-cases/get-all-vehicles-admin.use-case';
 import { GetVehicleDetailsAdminUseCase } from '../../application/use-cases/get-vehicle-details-admin.use-case';
@@ -29,7 +31,8 @@ import { AuditLogService } from '../../../audit/application/services/audit-log.s
 
 @ApiTags('Admin - Vehicles')
 @Controller('admin/vehicles')
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
+@Roles(Role.ADMIN)
 @ApiBearerAuth('JWT-auth')
 export class AdminVehiclesController {
   constructor(
@@ -51,8 +54,9 @@ export class AdminVehiclesController {
   /**
    * GET /api/v1/admin/vehicles
    * Get all vehicles in the system (admin only)
-   */
+  */
   @Get()
+  @Permissions('vehicles.read')
   @ApiOperation({ summary: 'Get all vehicles in the system (Admin only)' })
   @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number' })
   @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page' })
@@ -68,8 +72,9 @@ export class AdminVehiclesController {
   /**
    * GET /api/v1/admin/vehicles/stats
    * Get vehicle statistics by brand (admin only)
-   */
+  */
   @Get('stats')
+  @Permissions('vehicles.read')
   @ApiOperation({ summary: 'Get vehicle statistics by brand (Admin only)' })
   @ApiResponse({ status: 200, description: 'Vehicle statistics by brand' })
   @ApiResponse({ status: 403, description: 'Admin access required' })
@@ -80,8 +85,9 @@ export class AdminVehiclesController {
   /**
    * GET /api/v1/admin/vehicles/top-models
    * Get top vehicle models by usage (admin only)
-   */
+  */
   @Get('top-models')
+  @Permissions('vehicles.read')
   @ApiOperation({ summary: 'Get top vehicle models by usage (Admin only)' })
   @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Number of models to return' })
   @ApiResponse({ status: 200, description: 'Top vehicle models' })
@@ -95,8 +101,9 @@ export class AdminVehiclesController {
   /**
    * GET /api/v1/admin/vehicles/distribution
    * Get vehicle distribution by brand (admin only)
-   */
+  */
   @Get('distribution')
+  @Permissions('vehicles.read')
   @ApiOperation({ summary: 'Get vehicle distribution by brand (Admin only)' })
   @ApiResponse({ status: 200, description: 'Vehicle distribution with percentages' })
   @ApiResponse({ status: 403, description: 'Admin access required' })
@@ -107,8 +114,9 @@ export class AdminVehiclesController {
   /**
    * GET /api/v1/admin/vehicles/year-stats
    * Get vehicle statistics by manufacturing year (admin only)
-   */
+  */
   @Get('year-stats')
+  @Permissions('vehicles.read')
   @ApiOperation({ summary: 'Get vehicle statistics by year (Admin only)' })
   @ApiResponse({ status: 200, description: 'Vehicle statistics by manufacturing year' })
   @ApiResponse({ status: 403, description: 'Admin access required' })
@@ -119,8 +127,9 @@ export class AdminVehiclesController {
   /**
    * GET /api/v1/admin/vehicles/:id
    * Get vehicle details by ID (admin only)
-   */
+  */
   @Get(':id')
+  @Permissions('vehicles.read')
   @ApiOperation({ summary: 'Get vehicle details by ID (Admin only)' })
   @ApiResponse({ status: 200, description: 'Vehicle details' })
   @ApiResponse({ status: 404, description: 'Vehicle not found' })
@@ -132,8 +141,9 @@ export class AdminVehiclesController {
   /**
    * DELETE /api/v1/admin/vehicles/:id
    * Delete a vehicle (admin only)
-   */
+  */
   @Delete(':id')
+  @Permissions('vehicles.delete')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete a vehicle (Admin only)' })
   @ApiResponse({ status: 204, description: 'Vehicle deleted successfully' })
@@ -157,8 +167,9 @@ export class AdminVehiclesController {
   /**
    * GET /api/v1/admin/vehicles/user/:userId
    * Get all vehicles for a specific user (admin only)
-   */
+  */
   @Get('user/:userId')
+  @Permissions('vehicles.read')
   @ApiOperation({ summary: 'Get all vehicles for a specific user (Admin only)' })
   @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number' })
   @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page' })

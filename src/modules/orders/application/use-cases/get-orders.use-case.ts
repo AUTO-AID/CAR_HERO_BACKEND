@@ -9,8 +9,8 @@ export class GetOrdersUseCase {
     private readonly orderRepository: IOrderRepository,
   ) {}
 
-  async execute(criteria: any, page = 1, limit = 10): Promise<{ orders: OrderEntity[]; pagination: any }> {
-    const { orders, total } = await this.orderRepository.findByCriteria(criteria, { page, limit });
+  async execute(criteria: any, page = 1, limit = 10): Promise<{ orders: OrderEntity[]; pagination: any; facets?: any }> {
+    const { orders, total, facets } = await this.orderRepository.findByCriteria(criteria, { page, limit }) as any;
 
     return {
       orders,
@@ -20,6 +20,7 @@ export class GetOrdersUseCase {
         limit,
         pages: Math.ceil(total / limit),
       },
+      facets,
     };
   }
 }

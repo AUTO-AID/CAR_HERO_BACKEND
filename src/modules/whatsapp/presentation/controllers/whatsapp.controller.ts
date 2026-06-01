@@ -9,11 +9,14 @@ import {
   BadRequestException,
   Headers,
   Logger,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { WhatsAppWebService } from '../../application/services/whatsapp-web.service';
-import { Public } from '../../../../core/decorators';
+import { Permissions, Public, Roles } from '../../../../core/decorators';
+import { JwtAuthGuard, PermissionsGuard, RolesGuard } from '../../../../core/guards';
+import { Role } from '../../../../core/enums/roles.enum';
 
 @ApiTags('WhatsApp')
 @Controller('whatsapp')
@@ -28,7 +31,9 @@ export class WhatsAppController {
   /**
    * عرض صفحة تسجيل الدخول بالـ QR Code
    */
-  @Public()
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
+  @Roles(Role.ADMIN)
+  @Permissions('whatsapp.manage')
   @Get('login')
   @Render('qr')
   async loginPage() {
@@ -74,7 +79,9 @@ export class WhatsAppController {
   /**
    * الحصول على QR Code كـ JSON
    */
-  @Public()
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
+  @Roles(Role.ADMIN)
+  @Permissions('whatsapp.manage')
   @Get('qr')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get QR Code for WhatsApp login' })
@@ -111,7 +118,9 @@ export class WhatsAppController {
   /**
    * التحقق من حالة الاتصال
    */
-  @Public()
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
+  @Roles(Role.ADMIN)
+  @Permissions('whatsapp.read')
   @Get('status')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Check WhatsApp connection status' })
@@ -138,7 +147,9 @@ export class WhatsAppController {
   /**
    * إرسال رسالة (للاختبار - محمي بكلمة مرور)
    */
-  @Public()
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
+  @Roles(Role.ADMIN)
+  @Permissions('whatsapp.send')
   @Post('send-message')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Send WhatsApp message (Protected)' })
@@ -175,7 +186,9 @@ export class WhatsAppController {
   /**
    * إعادة تشغيل الـ Client
    */
-  @Public()
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
+  @Roles(Role.ADMIN)
+  @Permissions('whatsapp.manage')
   @Post('restart')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Restart WhatsApp client' })

@@ -44,7 +44,7 @@ export class MongooseProviderRepository implements IProviderRepository {
       doc.logo,
       doc.images,
       doc.address,
-      (doc.services || []).map(id => id.toString()),
+      (doc.services || []).map((service: any) => service?._id?.toString?.() ?? service.toString()),
       doc.workingHours,
       doc.documents,
       doc.bankAccount as any,
@@ -75,6 +75,7 @@ export class MongooseProviderRepository implements IProviderRepository {
       (doc as any).googleId,
       (doc as any).tags || [],
       Boolean((doc as any).isPhoneVerified),
+      (doc as any).serviceAvailability || {},
     );
   }
 

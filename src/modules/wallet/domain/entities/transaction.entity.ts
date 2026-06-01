@@ -18,6 +18,8 @@ export class Transaction {
     public readonly paymentId?: string,
     public readonly status: 'pending' | 'completed' | 'failed' | 'reversed' = 'completed',
     public readonly metadata: Record<string, any> = {},
+    public readonly createdAt?: Date,
+    public readonly updatedAt?: Date,
   ) {}
 
   static generateTransactionNumber(): string {

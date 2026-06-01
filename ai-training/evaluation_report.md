@@ -6,18 +6,18 @@
 
 | المقياس (Metric) | القيمة (Value) |
 | :--- | :--- |
-| **الدقة (Accuracy)** | `69.35%` |
-| **الدقة العالية (Precision)** | `69.49%` |
-| **الاستدعاء (Recall)** | `34.92%` |
+| **الدقة (Accuracy)** | `99.80%` |
+| **الدقة العالية (Precision)** | `100.00%` |
+| **الاستدعاء (Recall)** | `99.50%` |
 
 ## 2. مصفوفة الارتباك (Confusion Matrix)
 
 تبين مدى قدرة النموذج على توقع الرفض والقبول:
 
-- **True Negatives (توقع صحيح بالرفض):** `1141`
-- **False Positives (توقع خاطئ بالقبول):** `119`
-- **False Negatives (توقع خاطئ بالرفض):** `505`
-- **True Positives (توقع صحيح بالقبول):** `271`
+- **True Negatives (توقع صحيح بالرفض):** `300`
+- **False Positives (توقع خاطئ بالقبول):** `0`
+- **False Negatives (توقع خاطئ بالرفض):** `1`
+- **True Positives (توقع صحيح بالقبول):** `199`
 
 ## 3. الأهمية النسبية للميزات (Feature Importances)
 
@@ -25,26 +25,26 @@
 
 | الترتيب | الميزة (Feature) | الأهمية النسبية (Weight) |
 | :--- | :--- | :--- |
-| 1 | `distance` | `37.78%` |
-| 2 | `rating` | `16.71%` |
-| 3 | `expectedResponseTime` | `13.97%` |
-| 4 | `cancellationRate` | `9.71%` |
-| 5 | `completedOrders` | `9.67%` |
-| 6 | `serviceMatch` | `3.91%` |
-| 7 | `urgencyAlignment` | `3.35%` |
-| 8 | `workingHours` | `2.57%` |
-| 9 | `emergencySupport` | `2.34%` |
-| 10 | `cityMatch` | `0.00%` |
+| 1 | `cancellationRate` | `30.23%` |
+| 2 | `workingHours` | `27.85%` |
+| 3 | `urgencyAlignment` | `12.20%` |
+| 4 | `emergencySupport` | `8.96%` |
+| 5 | `distance` | `8.75%` |
+| 6 | `expectedResponseTime` | `7.07%` |
+| 7 | `cityMatch` | `2.47%` |
+| 8 | `completedOrders` | `1.81%` |
+| 9 | `serviceMatch` | `0.39%` |
+| 10 | `rating` | `0.28%` |
 
 ## 4. تقرير التصنيف التفصيلي (Classification Report)
 
 ```
               precision    recall  f1-score   support
 
-           0       0.69      0.91      0.79      1260
-           1       0.69      0.35      0.46       776
+           0       1.00      1.00      1.00       300
+           1       1.00      0.99      1.00       200
 
-    accuracy                           0.69      2036
-   macro avg       0.69      0.63      0.63      2036
-weighted avg       0.69      0.69      0.66      2036
+    accuracy                           1.00       500
+   macro avg       1.00      1.00      1.00       500
+weighted avg       1.00      1.00      1.00       500
 ```

@@ -37,6 +37,21 @@ export class Notification {
   @Prop({ type: Object, default: {} })
   data: Record<string, any>;
 
+  @Prop()
+  campaignId?: string;
+
+  @Prop()
+  audience?: string;
+
+  @Prop({ enum: ['scheduled', 'sent', 'failed'], default: 'sent' })
+  deliveryStatus: string;
+
+  @Prop()
+  scheduledAt?: Date;
+
+  @Prop()
+  sentAt?: Date;
+
   @Prop({ default: false })
   isRead: boolean;
 
@@ -49,3 +64,5 @@ export const NotificationSchema = SchemaFactory.createForClass(Notification);
 // Indexes
 NotificationSchema.index({ recipientId: 1, isRead: 1 });
 NotificationSchema.index({ createdAt: -1 });
+NotificationSchema.index({ campaignId: 1 });
+NotificationSchema.index({ deliveryStatus: 1, scheduledAt: 1 });

@@ -11,7 +11,9 @@ import { UpdateServiceDto } from '../../application/dto/update-service.dto';
 import { ListServicesQueryDto } from '../../application/dto/list-services-query.dto';
 import { JwtAuthGuard } from '../../../../core/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../../core/guards/roles.guard';
+import { PermissionsGuard } from '../../../../core/guards/permissions.guard';
 import { Roles } from '../../../../core/decorators/roles.decorator';
+import { Permissions } from '../../../../core/decorators/permissions.decorator';
 import { Role } from '../../../../core/enums/roles.enum';
 import { CurrentUser } from '../../../../core/decorators/current-user.decorator';
 import { AuditLogService } from '../../../audit/application/services/audit-log.service';
@@ -75,8 +77,9 @@ export class ServicesController {
   }
 
   @ApiBearerAuth('JWT-auth')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
   @Roles(Role.ADMIN)
+  @Permissions('services.read')
   @Get('admin/list')
   @ApiOperation({ summary: 'Admin: list services with filters and pagination' })
   async adminList(@Query() query: ListServicesQueryDto) {
@@ -84,8 +87,9 @@ export class ServicesController {
   }
 
   @ApiBearerAuth('JWT-auth')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
   @Roles(Role.ADMIN)
+  @Permissions('services.read')
   @Get('admin/stats')
   @ApiOperation({ summary: 'Admin: get service catalog statistics' })
   async adminStats() {
@@ -93,8 +97,9 @@ export class ServicesController {
   }
 
   @ApiBearerAuth('JWT-auth')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
   @Roles(Role.ADMIN)
+  @Permissions('services.read')
   @Get('admin/:id')
   @ApiOperation({ summary: 'Admin: get service details by ID including inactive services' })
   async adminFindOne(@Param('id') id: string) {
@@ -102,8 +107,9 @@ export class ServicesController {
   }
 
   @ApiBearerAuth('JWT-auth')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
   @Roles(Role.ADMIN)
+  @Permissions('services.create')
   @Post('admin')
   @ApiOperation({ summary: 'Admin: create service' })
   async create(@Body() dto: CreateServiceDto, @CurrentUser() admin: any) {
@@ -113,8 +119,9 @@ export class ServicesController {
   }
 
   @ApiBearerAuth('JWT-auth')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
   @Roles(Role.ADMIN)
+  @Permissions('services.update')
   @Patch('admin/:id')
   @ApiOperation({ summary: 'Admin: update service' })
   async update(@Param('id') id: string, @Body() dto: UpdateServiceDto, @CurrentUser() admin: any) {
@@ -124,8 +131,9 @@ export class ServicesController {
   }
 
   @ApiBearerAuth('JWT-auth')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
   @Roles(Role.ADMIN)
+  @Permissions('services.status')
   @Patch('admin/:id/status')
   @ApiOperation({ summary: 'Admin: activate or deactivate service' })
   async setStatus(@Param('id') id: string, @Body('isActive') isActive: boolean, @CurrentUser() admin: any) {
@@ -135,8 +143,9 @@ export class ServicesController {
   }
 
   @ApiBearerAuth('JWT-auth')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
   @Roles(Role.ADMIN)
+  @Permissions('services.delete')
   @Delete('admin/:id')
   @ApiOperation({ summary: 'Admin: deactivate service' })
   async delete(@Param('id') id: string, @CurrentUser() admin: any) {

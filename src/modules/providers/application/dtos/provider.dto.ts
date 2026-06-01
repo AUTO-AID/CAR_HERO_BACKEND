@@ -12,8 +12,16 @@ import {
   IsArray,
   IsEnum,
   IsObject,
+  ArrayMaxSize,
+  ArrayMinSize,
+  ArrayUnique,
+  MaxLength,
+  Matches,
+  MinLength,
   Min,
   Max,
+  ValidateNested,
+  IsMongoId,
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 import { ProviderStatus, ServiceCategory, RegistrationStatus } from '../../../../core/enums/status.enum';
@@ -95,6 +103,7 @@ export class CreateProviderDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
+  @MaxLength(100)
   city?: string;
 
   @ApiPropertyOptional({ type: [String] })
@@ -226,21 +235,27 @@ export class UpdateProviderDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
+  @MinLength(2)
+  @MaxLength(120)
   businessName?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
+  @MinLength(2)
+  @MaxLength(120)
   ownerName?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
+  @MaxLength(1000)
   description?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsEmail()
+  @MaxLength(160)
   email?: string;
 
   @ApiPropertyOptional()
@@ -256,11 +271,13 @@ export class UpdateProviderDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
+  @MaxLength(300)
   address?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
+  @MaxLength(100)
   city?: string;
 
   @ApiPropertyOptional()
@@ -293,6 +310,40 @@ export class UpdateProviderDto {
   @IsOptional()
   @IsObject()
   bankAccount?: Record<string, any>;
+}
+
+export class UpdateProviderProfileDto {
+  @IsOptional()
+  @IsString()
+  @MinLength(2)
+  @MaxLength(120)
+  businessName?: string;
+
+  @IsOptional()
+  @IsString()
+  @MinLength(2)
+  @MaxLength(120)
+  ownerName?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(1000)
+  description?: string;
+
+  @IsOptional()
+  @IsEmail()
+  @MaxLength(160)
+  email?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(300)
+  address?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  city?: string;
 }
 
 /**
@@ -348,6 +399,7 @@ export class ProviderQueryDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
+  @MaxLength(100)
   city?: string;
 }
 
@@ -416,6 +468,9 @@ export class RejectProviderDto {
 export class UpdateProviderServicesDto {
   @ApiProperty({ type: [String] })
   @IsArray()
+  @ArrayMaxSize(50)
+  @ArrayUnique()
+  @IsMongoId({ each: true })
   services: string[];
 
   @ApiPropertyOptional({ enum: ServiceCategory, isArray: true })
@@ -423,22 +478,50 @@ export class UpdateProviderServicesDto {
   @IsArray()
   @IsEnum(ServiceCategory, { each: true })
   serviceCategories?: ServiceCategory[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsObject()
+  servicePrices?: Record<string, number>;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsObject()
+  serviceAvailability?: Record<string, boolean>;
 }
 
 export class UpdateProviderWorkingHoursDto {
   @ApiProperty()
   @IsArray()
-  workingHours: {
-    day: string;
-    open: string;
-    close: string;
-    isClosed?: boolean;
-  }[];
+  @ArrayMinSize(7)
+  @ArrayMaxSize(7)
+  @ValidateNested({ each: true })
+  @Type(() => WorkingHourDto)
+  workingHours: WorkingHourDto[];
+}
+
+export class WorkingHourDto {
+  @IsString()
+  @Matches(/^(Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday)$/)
+  day: string;
+
+  @IsString()
+  @Matches(/^([01]\d|2[0-3]):[0-5]\d$/)
+  open: string;
+
+  @IsString()
+  @Matches(/^([01]\d|2[0-3]):[0-5]\d$/)
+  close: string;
+
+  @IsBoolean()
+  isClosed: boolean;
 }
 
 export class UpdateProviderDocumentsDto {
   @ApiProperty({ type: [String] })
   @IsArray()
+  @ArrayMaxSize(10)
+  @IsString({ each: true })
   documents: string[];
 }
 

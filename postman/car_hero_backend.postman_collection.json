@@ -50,7 +50,7 @@
               ],
               "query": []
             },
-            "description": "Delete an admin account\n\nModule: admin\nController: AdminController.deleteAdmin\nAuth: JWT\nRelated collections: admins\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:427"
+            "description": "Delete an admin account\n\nModule: admin\nController: AdminController.deleteAdmin\nAuth: JWT (any active admin)\nRelated collections: admins\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:427"
           },
           "event": [
             {
@@ -91,7 +91,7 @@
               ],
               "query": []
             },
-            "description": "Update admin permissions\n\nModule: admin\nController: AdminController.updateAdminPermissions\nAuth: JWT\nRelated collections: admins\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:403",
+            "description": "Update admin permissions\n\nModule: admin\nController: AdminController.updateAdminPermissions\nAuth: JWT (any active admin)\nRelated collections: admins\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:403",
             "body": {
               "mode": "raw",
               "raw": "{}",
@@ -141,7 +141,7 @@
               ],
               "query": []
             },
-            "description": "Toggle admin active status\n\nModule: admin\nController: AdminController.toggleAdminStatus\nAuth: JWT\nRelated collections: admins\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:415",
+            "description": "Toggle admin active status\n\nModule: admin\nController: AdminController.toggleAdminStatus\nAuth: JWT (any active admin)\nRelated collections: admins\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:415",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"status\": \"active\"\n}",
@@ -190,7 +190,7 @@
               ],
               "query": []
             },
-            "description": "Create a new admin account\n\nModule: admin\nController: AdminController.createAdmin\nAuth: JWT\nRelated collections: admins\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:394",
+            "description": "Create a new admin account\n\nModule: admin\nController: AdminController.createAdmin\nAuth: JWT (any active admin)\nRelated collections: admins\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:394",
             "body": {
               "mode": "raw",
               "raw": "{}",
@@ -235,7 +235,7 @@
               ],
               "query": []
             },
-            "description": "List all administrative accounts\n\nModule: admin\nController: AdminController.listAdmins\nAuth: JWT\nRelated collections: admins\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:385"
+            "description": "List all administrative accounts\n\nModule: admin\nController: AdminController.listAdmins\nAuth: JWT (any active admin)\nRelated collections: admins\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:385"
           },
           "event": [
             {
@@ -281,7 +281,7 @@
             "description": "Login successful\n\nModule: admin\nController: AdminController.login\nAuth: Public\nRelated collections: admins\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:23",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"admin@carhero.com\",\n  \"message\": \"Admin@123\"\n}",
+              "raw": "{\n  \"email\": \"{{admin_email}}\",\n  \"password\": \"{{admin_password}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -336,7 +336,7 @@
               ],
               "query": []
             },
-            "description": "Admin logout\n\nModule: admin\nController: AdminController.logout\nAuth: JWT\nRelated collections: admins, logouts\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:40",
+            "description": "Admin logout\n\nModule: admin\nController: AdminController.logout\nAuth: JWT (any active admin)\nRelated collections: admins, logouts\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:40",
             "body": {
               "mode": "raw",
               "raw": "{}",
@@ -381,7 +381,7 @@
               ],
               "query": []
             },
-            "description": "Get current admin profile\n\nModule: admin\nController: AdminController.getProfile\nAuth: JWT\nRelated collections: admins\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:49"
+            "description": "Get current admin profile\n\nModule: admin\nController: AdminController.getProfile\nAuth: JWT (any active admin)\nRelated collections: admins\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:49"
           },
           "event": [
             {
@@ -416,7 +416,7 @@
                 "subscription-plans"
               ]
             },
-            "description": "Get all membership plans\n\nModule: admin\nController: AdminController.getAllMembershipPlans\nAuth: JWT\nRelated collections: admins, subscription_plans, user_subscriptions\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:306"
+            "description": "Get all membership plans\n\nModule: admin\nController: AdminController.getAllMembershipPlans\nAuth: JWT (any active admin)\nRelated collections: admins, subscription_plans, user_subscriptions\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:306"
           },
           "event": [
             {
@@ -455,7 +455,7 @@
                 "subscription-plans"
               ]
             },
-            "description": "Create new membership plan\n\nModule: admin\nController: AdminController.createMembershipPlan\nAuth: JWT\nRelated collections: admins, subscription_plans, user_subscriptions\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:315",
+            "description": "Create new membership plan\n\nModule: admin\nController: AdminController.createMembershipPlan\nAuth: JWT (any active admin)\nRelated collections: admins, subscription_plans, user_subscriptions\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:315",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"sample_name\",\n  \"nameAr\": \"sample_nameAr\",\n  \"description\": \"sample_description\",\n  \"descriptionAr\": \"sample_descriptionAr\",\n  \"price\": 100,\n  \"durationDays\": 1,\n  \"currency\": \"sample_currency\",\n  \"benefits\": [],\n  \"serviceDiscount\": 1,\n  \"emergencyDiscount\": 1,\n  \"freeEmergencyServices\": 1,\n  \"freeTowingKm\": 1,\n  \"prioritySupport\": true,\n  \"loyaltyPointsMultiplier\": 1,\n  \"isActive\": true,\n  \"isFeatured\": true,\n  \"sortOrder\": 1\n}",
@@ -500,7 +500,7 @@
                 "{{id}}"
               ]
             },
-            "description": "Delete membership plan\n\nModule: admin\nController: AdminController.deleteMembershipPlan\nAuth: JWT\nRelated collections: admins, subscription_plans, user_subscriptions\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:336"
+            "description": "Delete membership plan\n\nModule: admin\nController: AdminController.deleteMembershipPlan\nAuth: JWT (any active admin)\nRelated collections: admins, subscription_plans, user_subscriptions\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:336"
           },
           "event": [
             {
@@ -540,7 +540,7 @@
                 "{{id}}"
               ]
             },
-            "description": "Update membership plan\n\nModule: admin\nController: AdminController.updateMembershipPlan\nAuth: JWT\nRelated collections: admins, subscription_plans, user_subscriptions\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:324",
+            "description": "Update membership plan\n\nModule: admin\nController: AdminController.updateMembershipPlan\nAuth: JWT (any active admin)\nRelated collections: admins, subscription_plans, user_subscriptions\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:324",
             "body": {
               "mode": "raw",
               "raw": "{}",
@@ -584,7 +584,7 @@
                 "subscriptions"
               ]
             },
-            "description": "Get all subscribed users\n\nModule: admin\nController: AdminController.getMembershipSubscribers\nAuth: JWT\nRelated collections: admins, subscription_plans, user_subscriptions\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:345"
+            "description": "Get all subscribed users\n\nModule: admin\nController: AdminController.getMembershipSubscribers\nAuth: JWT (any active admin)\nRelated collections: admins, subscription_plans, user_subscriptions\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:345"
           },
           "event": [
             {
@@ -620,7 +620,7 @@
               ],
               "query": []
             },
-            "description": "Get all providers\n\nModule: admin\nController: AdminController.getAllProviders\nAuth: JWT\nRelated collections: admins, providers\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:118"
+            "description": "Get all providers\n\nModule: admin\nController: AdminController.getAllProviders\nAuth: JWT (any active admin)\nRelated collections: admins, providers\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:118"
           },
           "event": [
             {
@@ -657,7 +657,7 @@
               ],
               "query": []
             },
-            "description": "Get provider by ID\n\nModule: admin\nController: AdminController.getProviderById\nAuth: JWT\nRelated collections: admins, providers\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:131"
+            "description": "Get provider by ID\n\nModule: admin\nController: AdminController.getProviderById\nAuth: JWT (any active admin)\nRelated collections: admins, providers\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:131"
           },
           "event": [
             {
@@ -698,7 +698,7 @@
               ],
               "query": []
             },
-            "description": "Update provider data\n\nModule: admin\nController: AdminController.updateProvider\nAuth: JWT\nRelated collections: admins, providers\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:161",
+            "description": "Update provider data\n\nModule: admin\nController: AdminController.updateProvider\nAuth: JWT (any active admin)\nRelated collections: admins, providers\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:161",
             "body": {
               "mode": "raw",
               "raw": "{}",
@@ -749,7 +749,7 @@
               ],
               "query": []
             },
-            "description": "Approve provider registration\n\nModule: admin\nController: AdminController.approveProvider\nAuth: JWT\nRelated collections: admins, providers\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:140",
+            "description": "Approve provider registration\n\nModule: admin\nController: AdminController.approveProvider\nAuth: JWT (any active admin)\nRelated collections: admins, providers\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:140",
             "body": {
               "mode": "raw",
               "raw": "{}",
@@ -800,7 +800,7 @@
               ],
               "query": []
             },
-            "description": "Reject provider registration\n\nModule: admin\nController: AdminController.rejectProvider\nAuth: JWT\nRelated collections: admins, providers\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:149",
+            "description": "Reject provider registration\n\nModule: admin\nController: AdminController.rejectProvider\nAuth: JWT (any active admin)\nRelated collections: admins, providers\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:149",
             "body": {
               "mode": "raw",
               "raw": "{}",
@@ -906,7 +906,7 @@
               ],
               "query": []
             },
-            "description": "Get all system services\n\nModule: admin\nController: AdminController.getAllServices\nAuth: JWT\nRelated collections: admins, services\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:177"
+            "description": "Get all system services\n\nModule: admin\nController: AdminController.getAllServices\nAuth: JWT (any active admin)\nRelated collections: admins, services\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:177"
           },
           "event": [
             {
@@ -946,7 +946,7 @@
               ],
               "query": []
             },
-            "description": "Create new system service\n\nModule: admin\nController: AdminController.createService\nAuth: JWT\nRelated collections: admins, services\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:186",
+            "description": "Create new system service\n\nModule: admin\nController: AdminController.createService\nAuth: JWT (any active admin)\nRelated collections: admins, services\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:186",
             "body": {
               "mode": "raw",
               "raw": "{}",
@@ -992,7 +992,7 @@
               ],
               "query": []
             },
-            "description": "Delete system service\n\nModule: admin\nController: AdminController.deleteService\nAuth: JWT\nRelated collections: admins, services\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:207"
+            "description": "Delete system service\n\nModule: admin\nController: AdminController.deleteService\nAuth: JWT (any active admin)\nRelated collections: admins, services\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:207"
           },
           "event": [
             {
@@ -1033,7 +1033,7 @@
               ],
               "query": []
             },
-            "description": "Update system service\n\nModule: admin\nController: AdminController.updateService\nAuth: JWT\nRelated collections: admins, services\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:195",
+            "description": "Update system service\n\nModule: admin\nController: AdminController.updateService\nAuth: JWT (any active admin)\nRelated collections: admins, services\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:195",
             "body": {
               "mode": "raw",
               "raw": "{}",
@@ -1078,7 +1078,7 @@
               ],
               "query": []
             },
-            "description": "Get application settings\n\nModule: admin\nController: AdminController.getSettings\nAuth: JWT\nRelated collections: admins, settings\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:361"
+            "description": "Get application settings\n\nModule: admin\nController: AdminController.getSettings\nAuth: JWT (any active admin)\nRelated collections: admins, settings\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:361"
           },
           "event": [
             {
@@ -1119,7 +1119,7 @@
               ],
               "query": []
             },
-            "description": "Toggle maintenance mode\n\nModule: admin\nController: AdminController.updateMaintenanceMode\nAuth: JWT\nRelated collections: admins, maintenancerecords, settings\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:370",
+            "description": "Toggle maintenance mode\n\nModule: admin\nController: AdminController.updateMaintenanceMode\nAuth: JWT (any active admin)\nRelated collections: admins, maintenancerecords, settings\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:370",
             "body": {
               "mode": "raw",
               "raw": "{}",
@@ -1164,7 +1164,7 @@
               ],
               "query": []
             },
-            "description": "Get general platform statistics\n\nModule: admin\nController: AdminController.getGeneralStats\nAuth: JWT\nRelated collections: admins\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:266"
+            "description": "Get general platform statistics\n\nModule: admin\nController: AdminController.getGeneralStats\nAuth: JWT (any active admin)\nRelated collections: admins\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:266"
           },
           "event": [
             {
@@ -1201,7 +1201,7 @@
               ],
               "query": []
             },
-            "description": "Get monthly revenue statistics\n\nModule: admin\nController: AdminController.getMonthlyRevenue\nAuth: JWT\nRelated collections: admins\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:284"
+            "description": "Get monthly revenue statistics\n\nModule: admin\nController: AdminController.getMonthlyRevenue\nAuth: JWT (any active admin)\nRelated collections: admins\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:284"
           },
           "event": [
             {
@@ -1238,7 +1238,7 @@
               ],
               "query": []
             },
-            "description": "Get top requested services\n\nModule: admin\nController: AdminController.getTopServices\nAuth: JWT\nRelated collections: admins\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:293"
+            "description": "Get top requested services\n\nModule: admin\nController: AdminController.getTopServices\nAuth: JWT (any active admin)\nRelated collections: admins\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:293"
           },
           "event": [
             {
@@ -1275,7 +1275,7 @@
                 "orders"
               ]
             },
-            "description": "Get order statistics by status\n\nModule: admin\nController: AdminController.getOrderStats\nAuth: JWT\nRelated collections: admins, orders\nSource: src/modules/admin/presentation/controllers/admin.controller.ts"
+            "description": "Get order statistics by status\n\nModule: admin\nController: AdminController.getOrderStats\nAuth: JWT (any active admin)\nRelated collections: admins, orders\nSource: src/modules/admin/presentation/controllers/admin.controller.ts"
           },
           "response": []
         },
@@ -1759,7 +1759,7 @@
               ],
               "query": []
             },
-            "description": "Create provider (Admin only)\n\nModule: providers\nController: ProvidersController.create\nAuth: JWT\nRelated collections: admins, providers\nSource: src/modules/providers/presentation/controllers/providers.controller.ts:178",
+            "description": "Create provider (Admin only)\n\nModule: providers\nController: ProvidersController.create\nAuth: JWT (any active admin)\nRelated collections: admins, providers\nSource: src/modules/providers/presentation/controllers/providers.controller.ts:178",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"phone\": \"{{phone_number}}\",\n  \"businessName\": \"sample_businessName\",\n  \"ownerName\": \"sample_ownerName\",\n  \"email\": \"test@example.com\",\n  \"description\": \"sample_description\",\n  \"address\": \"sample_address\",\n  \"city\": \"sample_city\",\n  \"longitude\": 46.6753,\n  \"latitude\": 24.7136,\n  \"serviceCategories\": [],\n  \"services\": [],\n  \"workingHours\": \"sample_workingHours\",\n  \"open\": \"sample_open\",\n  \"close\": \"sample_close\",\n  \"isClosed\": true,\n  \"isActive\": true,\n  \"isApproved\": true\n}",
@@ -1805,7 +1805,7 @@
               ],
               "query": []
             },
-            "description": "Deactivate provider (Admin only)\n\nModule: providers\nController: ProvidersController.delete\nAuth: JWT\nRelated collections: admins, providers\nSource: src/modules/providers/presentation/controllers/providers.controller.ts:223"
+            "description": "Deactivate provider (Admin only)\n\nModule: providers\nController: ProvidersController.delete\nAuth: JWT (any active admin)\nRelated collections: admins, providers\nSource: src/modules/providers/presentation/controllers/providers.controller.ts:223"
           },
           "event": [
             {
@@ -1842,7 +1842,7 @@
               ],
               "query": []
             },
-            "description": "Get provider by ID for admin\n\nModule: providers\nController: ProvidersController.adminFindOne\nAuth: JWT\nRelated collections: admins, providers\nSource: src/modules/providers/presentation/controllers/providers.controller.ts:187"
+            "description": "Get provider by ID for admin\n\nModule: providers\nController: ProvidersController.adminFindOne\nAuth: JWT (any active admin)\nRelated collections: admins, providers\nSource: src/modules/providers/presentation/controllers/providers.controller.ts:187"
           },
           "event": [
             {
@@ -1883,7 +1883,7 @@
               ],
               "query": []
             },
-            "description": "Update provider (Admin only)\n\nModule: providers\nController: ProvidersController.adminUpdate\nAuth: JWT\nRelated collections: admins, providers\nSource: src/modules/providers/presentation/controllers/providers.controller.ts:196",
+            "description": "Update provider (Admin only)\n\nModule: providers\nController: ProvidersController.adminUpdate\nAuth: JWT (any active admin)\nRelated collections: admins, providers\nSource: src/modules/providers/presentation/controllers/providers.controller.ts:196",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"businessName\": \"sample_businessName\",\n  \"ownerName\": \"sample_ownerName\",\n  \"description\": \"sample_description\",\n  \"email\": \"test@example.com\",\n  \"logo\": \"sample_logo\",\n  \"images\": [],\n  \"address\": \"sample_address\",\n  \"city\": \"sample_city\",\n  \"serviceCategories\": [],\n  \"workingHours\": \"sample_workingHours\",\n  \"open\": \"sample_open\",\n  \"close\": \"sample_close\",\n  \"isClosed\": true,\n  \"services\": [],\n  \"documents\": [],\n  \"bankAccount\": {}\n}",
@@ -1934,7 +1934,7 @@
               ],
               "query": []
             },
-            "description": "Reject provider registration (Admin only)\n\nModule: providers\nController: ProvidersController.reject\nAuth: JWT\nRelated collections: admins, providers\nSource: src/modules/providers/presentation/controllers/providers.controller.ts:214",
+            "description": "Reject provider registration (Admin only)\n\nModule: providers\nController: ProvidersController.reject\nAuth: JWT (any active admin)\nRelated collections: admins, providers\nSource: src/modules/providers/presentation/controllers/providers.controller.ts:214",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"reason\": \"sample_reason\"\n}",
@@ -1985,7 +1985,7 @@
               ],
               "query": []
             },
-            "description": "Activate/deactivate provider (Admin only)\n\nModule: providers\nController: ProvidersController.setActive\nAuth: JWT\nRelated collections: admins, providers\nSource: src/modules/providers/presentation/controllers/providers.controller.ts:205",
+            "description": "Activate/deactivate provider (Admin only)\n\nModule: providers\nController: ProvidersController.setActive\nAuth: JWT (any active admin)\nRelated collections: admins, providers\nSource: src/modules/providers/presentation/controllers/providers.controller.ts:205",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"isActive\": true\n}",
@@ -2031,7 +2031,7 @@
               ],
               "query": []
             },
-            "description": "Get provider statistics (Admin only)\n\nModule: providers\nController: ProvidersController.stats\nAuth: JWT\nRelated collections: admins, providers\nSource: src/modules/providers/presentation/controllers/providers.controller.ts:169"
+            "description": "Get provider statistics (Admin only)\n\nModule: providers\nController: ProvidersController.stats\nAuth: JWT (any active admin)\nRelated collections: admins, providers\nSource: src/modules/providers/presentation/controllers/providers.controller.ts:169"
           },
           "event": [
             {
@@ -2620,7 +2620,7 @@
                 }
               ]
             },
-            "description": "List of all users\n\nModule: users\nController: AdminUsersController.findAll\nAuth: JWT\nRelated collections: admins, users\nSource: src/modules/users/presentation/controllers/admin-users.controller.ts:37"
+            "description": "List of all users\n\nModule: users\nController: AdminUsersController.findAll\nAuth: JWT (any active admin)\nRelated collections: admins, users\nSource: src/modules/users/presentation/controllers/admin-users.controller.ts:37"
           },
           "event": [
             {
@@ -2657,7 +2657,7 @@
               ],
               "query": []
             },
-            "description": "User deleted successfully\n\nModule: users\nController: AdminUsersController.delete\nAuth: JWT\nRelated collections: admins, users\nSource: src/modules/users/presentation/controllers/admin-users.controller.ts:64"
+            "description": "User deleted successfully\n\nModule: users\nController: AdminUsersController.delete\nAuth: JWT (any active admin)\nRelated collections: admins, users\nSource: src/modules/users/presentation/controllers/admin-users.controller.ts:64"
           },
           "event": [
             {
@@ -2694,7 +2694,7 @@
               ],
               "query": []
             },
-            "description": "User details\n\nModule: users\nController: AdminUsersController.findById\nAuth: JWT\nRelated collections: admins, users\nSource: src/modules/users/presentation/controllers/admin-users.controller.ts:49"
+            "description": "User details\n\nModule: users\nController: AdminUsersController.findById\nAuth: JWT (any active admin)\nRelated collections: admins, users\nSource: src/modules/users/presentation/controllers/admin-users.controller.ts:49"
           },
           "event": [
             {
@@ -2735,7 +2735,7 @@
               ],
               "query": []
             },
-            "description": "User updated successfully\n\nModule: users\nController: AdminUsersController.update\nAuth: JWT\nRelated collections: admins, users\nSource: src/modules/users/presentation/controllers/admin-users.controller.ts:57",
+            "description": "User updated successfully\n\nModule: users\nController: AdminUsersController.update\nAuth: JWT (any active admin)\nRelated collections: admins, users\nSource: src/modules/users/presentation/controllers/admin-users.controller.ts:57",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"fullName\": \"sample_fullName\",\n  \"profileImage\": \"sample_profileImage\",\n  \"preferences\": \"sample_preferences\",\n  \"notifications\": true,\n  \"sms\": true,\n  \"email\": \"test@example.com\"\n}",
@@ -2786,7 +2786,7 @@
               ],
               "query": []
             },
-            "description": "Activate or deactivate a user account\n\nModule: admin\nController: AdminController.updateUserStatus\nAuth: JWT\nRelated collections: admins, users\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:93",
+            "description": "Activate or deactivate a user account\n\nModule: admin\nController: AdminController.updateUserStatus\nAuth: JWT (any active admin)\nRelated collections: admins, users\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:93",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"isActive\": true\n}",
@@ -2890,7 +2890,7 @@
                 }
               ]
             },
-            "description": "Page number\n\nModule: vehicles\nController: AdminVehiclesController.getAllVehicles\nAuth: JWT\nRelated collections: admins, vehicles\nSource: src/modules/vehicles/presentation/controllers/admin-vehicles.controller.ts:48"
+            "description": "Page number\n\nModule: vehicles\nController: AdminVehiclesController.getAllVehicles\nAuth: JWT (any active admin)\nRelated collections: admins, vehicles\nSource: src/modules/vehicles/presentation/controllers/admin-vehicles.controller.ts:48"
           },
           "event": [
             {
@@ -2927,7 +2927,7 @@
               ],
               "query": []
             },
-            "description": "Vehicle deleted successfully\n\nModule: vehicles\nController: AdminVehiclesController.deleteVehicle\nAuth: JWT\nRelated collections: admins, vehicles\nSource: src/modules/vehicles/presentation/controllers/admin-vehicles.controller.ts:129"
+            "description": "Vehicle deleted successfully\n\nModule: vehicles\nController: AdminVehiclesController.deleteVehicle\nAuth: JWT (any active admin)\nRelated collections: admins, vehicles\nSource: src/modules/vehicles/presentation/controllers/admin-vehicles.controller.ts:129"
           },
           "event": [
             {
@@ -2964,7 +2964,7 @@
               ],
               "query": []
             },
-            "description": "Vehicle details\n\nModule: vehicles\nController: AdminVehiclesController.getVehicleById\nAuth: JWT\nRelated collections: admins, vehicles\nSource: src/modules/vehicles/presentation/controllers/admin-vehicles.controller.ts:116"
+            "description": "Vehicle details\n\nModule: vehicles\nController: AdminVehiclesController.getVehicleById\nAuth: JWT (any active admin)\nRelated collections: admins, vehicles\nSource: src/modules/vehicles/presentation/controllers/admin-vehicles.controller.ts:116"
           },
           "event": [
             {
@@ -3001,7 +3001,7 @@
               ],
               "query": []
             },
-            "description": "Vehicle distribution with percentages\n\nModule: vehicles\nController: AdminVehiclesController.getDistribution\nAuth: JWT\nRelated collections: admins, vehicles\nSource: src/modules/vehicles/presentation/controllers/admin-vehicles.controller.ts:92"
+            "description": "Vehicle distribution with percentages\n\nModule: vehicles\nController: AdminVehiclesController.getDistribution\nAuth: JWT (any active admin)\nRelated collections: admins, vehicles\nSource: src/modules/vehicles/presentation/controllers/admin-vehicles.controller.ts:92"
           },
           "event": [
             {
@@ -3038,7 +3038,7 @@
               ],
               "query": []
             },
-            "description": "Vehicle statistics by brand\n\nModule: vehicles\nController: AdminVehiclesController.getVehicleStats\nAuth: JWT\nRelated collections: admins, vehicles\nSource: src/modules/vehicles/presentation/controllers/admin-vehicles.controller.ts:65"
+            "description": "Vehicle statistics by brand\n\nModule: vehicles\nController: AdminVehiclesController.getVehicleStats\nAuth: JWT (any active admin)\nRelated collections: admins, vehicles\nSource: src/modules/vehicles/presentation/controllers/admin-vehicles.controller.ts:65"
           },
           "event": [
             {
@@ -3082,7 +3082,7 @@
                 }
               ]
             },
-            "description": "Number of models to return\n\nModule: vehicles\nController: AdminVehiclesController.getTopModels\nAuth: JWT\nRelated collections: admins, vehicles\nSource: src/modules/vehicles/presentation/controllers/admin-vehicles.controller.ts:77"
+            "description": "Number of models to return\n\nModule: vehicles\nController: AdminVehiclesController.getTopModels\nAuth: JWT (any active admin)\nRelated collections: admins, vehicles\nSource: src/modules/vehicles/presentation/controllers/admin-vehicles.controller.ts:77"
           },
           "event": [
             {
@@ -3133,7 +3133,7 @@
                 }
               ]
             },
-            "description": "Page number\n\nModule: vehicles\nController: AdminVehiclesController.getUserVehicles\nAuth: JWT\nRelated collections: admins, vehicles\nSource: src/modules/vehicles/presentation/controllers/admin-vehicles.controller.ts:143"
+            "description": "Page number\n\nModule: vehicles\nController: AdminVehiclesController.getUserVehicles\nAuth: JWT (any active admin)\nRelated collections: admins, vehicles\nSource: src/modules/vehicles/presentation/controllers/admin-vehicles.controller.ts:143"
           },
           "event": [
             {
@@ -3170,7 +3170,7 @@
               ],
               "query": []
             },
-            "description": "Vehicle statistics by manufacturing year\n\nModule: vehicles\nController: AdminVehiclesController.getYearStats\nAuth: JWT\nRelated collections: admins, vehicles\nSource: src/modules/vehicles/presentation/controllers/admin-vehicles.controller.ts:104"
+            "description": "Vehicle statistics by manufacturing year\n\nModule: vehicles\nController: AdminVehiclesController.getYearStats\nAuth: JWT (any active admin)\nRelated collections: admins, vehicles\nSource: src/modules/vehicles/presentation/controllers/admin-vehicles.controller.ts:104"
           },
           "event": [
             {
@@ -3220,7 +3220,7 @@
                 }
               ]
             },
-            "description": "GetWallet\n\nModule: wallet\nController: AdminWalletController.getWallet\nAuth: JWT\nRelated collections: admins, wallets, transactions\nSource: src/modules/wallet/presentation/controllers/admin-wallet.controller.ts:69"
+            "description": "GetWallet\n\nModule: wallet\nController: AdminWalletController.getWallet\nAuth: JWT (any active admin)\nRelated collections: admins, wallets, transactions\nSource: src/modules/wallet/presentation/controllers/admin-wallet.controller.ts:69"
           },
           "event": [
             {
@@ -3263,7 +3263,7 @@
               ],
               "query": []
             },
-            "description": "AdjustBalance\n\nModule: wallet\nController: AdminWalletController.adjustBalance\nAuth: JWT\nRelated collections: admins, wallets, transactions\nSource: src/modules/wallet/presentation/controllers/admin-wallet.controller.ts:86",
+            "description": "AdjustBalance\n\nModule: wallet\nController: AdminWalletController.adjustBalance\nAuth: JWT (any active admin)\nRelated collections: admins, wallets, transactions\nSource: src/modules/wallet/presentation/controllers/admin-wallet.controller.ts:86",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"amount\": 100,\n  \"description\": \"Postman test\"\n}",
@@ -3311,7 +3311,7 @@
               ],
               "query": []
             },
-            "description": "GetTransactions\n\nModule: wallet\nController: AdminWalletController.getTransactions\nAuth: JWT\nRelated collections: admins, wallets, transactions\nSource: src/modules/wallet/presentation/controllers/admin-wallet.controller.ts:75"
+            "description": "GetTransactions\n\nModule: wallet\nController: AdminWalletController.getTransactions\nAuth: JWT (any active admin)\nRelated collections: admins, wallets, transactions\nSource: src/modules/wallet/presentation/controllers/admin-wallet.controller.ts:75"
           },
           "event": [
             {
@@ -3354,7 +3354,7 @@
               ],
               "query": []
             },
-            "description": "HandlePayout\n\nModule: wallet\nController: AdminWalletController.handlePayout\nAuth: JWT\nRelated collections: admins, wallets, transactions\nSource: src/modules/wallet/presentation/controllers/admin-wallet.controller.ts:44",
+            "description": "HandlePayout\n\nModule: wallet\nController: AdminWalletController.handlePayout\nAuth: JWT (any active admin)\nRelated collections: admins, wallets, transactions\nSource: src/modules/wallet/presentation/controllers/admin-wallet.controller.ts:44",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"amount\": 100,\n  \"bankAccount\": {}\n}",
@@ -3401,7 +3401,7 @@
               ],
               "query": []
             },
-            "description": "GetPlatformWallet\n\nModule: wallet\nController: AdminWalletController.getPlatformWallet\nAuth: JWT\nRelated collections: admins, wallets, transactions\nSource: src/modules/wallet/presentation/controllers/admin-wallet.controller.ts:54"
+            "description": "GetPlatformWallet\n\nModule: wallet\nController: AdminWalletController.getPlatformWallet\nAuth: JWT (any active admin)\nRelated collections: admins, wallets, transactions\nSource: src/modules/wallet/presentation/controllers/admin-wallet.controller.ts:54"
           },
           "event": [
             {
@@ -3440,7 +3440,7 @@
               ],
               "query": []
             },
-            "description": "GetPlatformTransactions\n\nModule: wallet\nController: AdminWalletController.getPlatformTransactions\nAuth: JWT\nRelated collections: admins, wallets, transactions\nSource: src/modules/wallet/presentation/controllers/admin-wallet.controller.ts:60"
+            "description": "GetPlatformTransactions\n\nModule: wallet\nController: AdminWalletController.getPlatformTransactions\nAuth: JWT (any active admin)\nRelated collections: admins, wallets, transactions\nSource: src/modules/wallet/presentation/controllers/admin-wallet.controller.ts:60"
           },
           "event": [
             {
@@ -3478,7 +3478,7 @@
               ],
               "query": []
             },
-            "description": "GetStats\n\nModule: wallet\nController: AdminWalletController.getStats\nAuth: JWT\nRelated collections: admins, wallets, transactions\nSource: src/modules/wallet/presentation/controllers/admin-wallet.controller.ts:28"
+            "description": "GetStats\n\nModule: wallet\nController: AdminWalletController.getStats\nAuth: JWT (any active admin)\nRelated collections: admins, wallets, transactions\nSource: src/modules/wallet/presentation/controllers/admin-wallet.controller.ts:28"
           },
           "event": [
             {
@@ -3517,7 +3517,7 @@
               ],
               "query": []
             },
-            "description": "GetAllTransactions\n\nModule: wallet\nController: AdminWalletController.getAllTransactions\nAuth: JWT\nRelated collections: admins, wallets, transactions\nSource: src/modules/wallet/presentation/controllers/admin-wallet.controller.ts:34"
+            "description": "GetAllTransactions\n\nModule: wallet\nController: AdminWalletController.getAllTransactions\nAuth: JWT (any active admin)\nRelated collections: admins, wallets, transactions\nSource: src/modules/wallet/presentation/controllers/admin-wallet.controller.ts:34"
           },
           "event": [
             {
@@ -7215,7 +7215,14 @@
               }
             ],
             "auth": {
-              "type": "noauth"
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
             },
             "url": {
               "raw": "{{base_url}}/auth/whatsapp/status",
@@ -7229,7 +7236,7 @@
               ],
               "query": []
             },
-            "description": "Check WhatsApp connection status\n\nModule: auth\nController: AuthController.checkWhatsAppStatus\nAuth: Public\nRelated collections: users, pending_registrations, logouts\nSource: src/modules/auth/presentation/controllers/auth.controller.ts:40"
+            "description": "Check WhatsApp connection status\n\nModule: auth\nController: AuthController.checkWhatsAppStatus\nAuth: JWT\nRelated collections: users, pending_registrations, logouts\nSource: src/modules/auth/presentation/controllers/auth.controller.ts:40"
           },
           "event": [
             {
@@ -7260,7 +7267,14 @@
               }
             ],
             "auth": {
-              "type": "noauth"
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
             },
             "url": {
               "raw": "{{base_url}}/whatsapp/login",
@@ -7273,7 +7287,7 @@
               ],
               "query": []
             },
-            "description": "LoginPage\n\nModule: whatsapp\nController: WhatsAppController.loginPage\nAuth: Public\nRelated collections: users, pending_registrations\nSource: src/modules/whatsapp/presentation/controllers/whatsapp.controller.ts:32"
+            "description": "LoginPage\n\nModule: whatsapp\nController: WhatsAppController.loginPage\nAuth: JWT\nRelated collections: users, pending_registrations\nSource: src/modules/whatsapp/presentation/controllers/whatsapp.controller.ts:32"
           },
           "event": [
             {
@@ -7308,7 +7322,14 @@
               }
             ],
             "auth": {
-              "type": "noauth"
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
             },
             "url": {
               "raw": "{{base_url}}/whatsapp/qr",
@@ -7321,7 +7342,7 @@
               ],
               "query": []
             },
-            "description": "Get QR Code for WhatsApp login\n\nModule: whatsapp\nController: WhatsAppController.getQRCode\nAuth: Public\nRelated collections: users, pending_registrations\nSource: src/modules/whatsapp/presentation/controllers/whatsapp.controller.ts:78"
+            "description": "Get QR Code for WhatsApp login\n\nModule: whatsapp\nController: WhatsAppController.getQRCode\nAuth: JWT\nRelated collections: users, pending_registrations\nSource: src/modules/whatsapp/presentation/controllers/whatsapp.controller.ts:78"
           },
           "event": [
             {
@@ -7351,7 +7372,14 @@
               }
             ],
             "auth": {
-              "type": "noauth"
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
             },
             "url": {
               "raw": "{{base_url}}/whatsapp/restart",
@@ -7364,7 +7392,7 @@
               ],
               "query": []
             },
-            "description": "Restart WhatsApp client\n\nModule: whatsapp\nController: WhatsAppController.restart\nAuth: Public\nRelated collections: users, pending_registrations\nSource: src/modules/whatsapp/presentation/controllers/whatsapp.controller.ts:174",
+            "description": "Restart WhatsApp client\n\nModule: whatsapp\nController: WhatsAppController.restart\nAuth: JWT\nRelated collections: users, pending_registrations\nSource: src/modules/whatsapp/presentation/controllers/whatsapp.controller.ts:174",
             "body": {
               "mode": "raw",
               "raw": "{}",
@@ -7403,7 +7431,14 @@
               }
             ],
             "auth": {
-              "type": "noauth"
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
             },
             "url": {
               "raw": "{{base_url}}/whatsapp/send-message",
@@ -7416,7 +7451,7 @@
               ],
               "query": []
             },
-            "description": "Send WhatsApp message (Protected)\n\nModule: whatsapp\nController: WhatsAppController.sendMessage\nAuth: Public\nRelated collections: users, pending_registrations\nSource: src/modules/whatsapp/presentation/controllers/whatsapp.controller.ts:137",
+            "description": "Send WhatsApp message (Protected)\n\nModule: whatsapp\nController: WhatsAppController.sendMessage\nAuth: JWT\nRelated collections: users, pending_registrations\nSource: src/modules/whatsapp/presentation/controllers/whatsapp.controller.ts:137",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"phoneNumber\": \"{{phone_number}}\",\n  \"message\": \"Hello from Postman\"\n}",
@@ -7451,7 +7486,14 @@
               }
             ],
             "auth": {
-              "type": "noauth"
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
             },
             "url": {
               "raw": "{{base_url}}/whatsapp/status",
@@ -7464,7 +7506,7 @@
               ],
               "query": []
             },
-            "description": "Check WhatsApp connection status\n\nModule: whatsapp\nController: WhatsAppController.getStatus\nAuth: Public\nRelated collections: users, pending_registrations\nSource: src/modules/whatsapp/presentation/controllers/whatsapp.controller.ts:114"
+            "description": "Check WhatsApp connection status\n\nModule: whatsapp\nController: WhatsAppController.getStatus\nAuth: JWT\nRelated collections: users, pending_registrations\nSource: src/modules/whatsapp/presentation/controllers/whatsapp.controller.ts:114"
           },
           "event": [
             {

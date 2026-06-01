@@ -9,6 +9,7 @@ import { IAdminRepository } from '../../domain/repositories/admin.repository.int
 import { AdminLoginDto } from '../dtos/admin-login.dto';
 import { PasswordUtil, TokenUtil } from '../../../../core/utils';
 import { IJwtPayload } from '../../../../core/interfaces';
+import { Role } from '../../../../core/enums/roles.enum';
 
 @Injectable()
 export class LoginUseCase {
@@ -43,7 +44,7 @@ export class LoginUseCase {
     const payload: IJwtPayload = {
       userId: admin.id,
       email: admin.email,
-      role: admin.role,
+      role: Role.ADMIN,
       permissions: admin.permissions,
     };
 
@@ -56,6 +57,7 @@ export class LoginUseCase {
     // 5. Update refresh token
     const refreshTokenHash = await PasswordUtil.hash(tokens.refreshToken);
     await this.adminRepository.updateRefreshToken(admin.id, refreshTokenHash);
+    await this.adminRepository.update(admin.id, { lastLoginAt: new Date() });
 
     return {
       message: 'Login successful',
@@ -63,7 +65,8 @@ export class LoginUseCase {
         id: admin.id,
         email: admin.email,
         name: admin.name,
-        role: admin.role,
+        role: Role.ADMIN,
+        permissions: admin.permissions,
       },
       ...tokens,
     };

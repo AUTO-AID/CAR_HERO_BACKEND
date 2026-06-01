@@ -5,6 +5,8 @@ import {
   Controller,
   Get,
   Patch,
+  Post,
+  Body,
   Param,
   Query,
   UseGuards,
@@ -14,6 +16,10 @@ import { NotificationsService } from '../../application/services/notifications.s
 import { JwtAuthGuard } from '../../../../core/guards/jwt-auth.guard';
 import { CurrentUser } from '../../../../core/decorators/current-user.decorator';
 import { ParseObjectIdPipe } from '../../../../core/pipes/parse-objectid.pipe';
+import { RolesGuard } from '../../../../core/guards/roles.guard';
+import { Roles } from '../../../../core/decorators/roles.decorator';
+import { Role } from '../../../../core/enums/roles.enum';
+import { NotificationType } from '../../../../core/enums/status.enum';
 
 @ApiTags('Notifications')
 @ApiBearerAuth('JWT-auth')
@@ -34,6 +40,30 @@ export class NotificationsController {
       page,
       limit,
     );
+  }
+
+  @Post('admin/broadcast')
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  @ApiOperation({ summary: 'Create an immediate or scheduled notification campaign' })
+  async createBroadcast(@Body() body: { audience: 'all' | 'users' | 'premium' | 'providers'; title: string; body: string; type: NotificationType; scheduledAt?: string }) {
+    return { success: true, data: await this.notificationsService.createBroadcast(body) };
+  }
+
+  @Get('admin/history')
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  @ApiOperation({ summary: 'Get paginated notification campaign history' })
+  async getAdminHistory(@Query('page') page = 1, @Query('limit') limit = 10, @Query() filters: any = {}) {
+    return { success: true, data: await this.notificationsService.getAdminHistory(page, limit, filters) };
+  }
+
+  @Get('admin/stats')
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  @ApiOperation({ summary: 'Get notification delivery statistics' })
+  async getAdminStats() {
+    return { success: true, data: await this.notificationsService.getAdminStats() };
   }
 
   @Get('unread-count')

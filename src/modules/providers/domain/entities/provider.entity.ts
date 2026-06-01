@@ -53,6 +53,7 @@ export class ProviderEntity {
     public readonly googleId?: string,
     public readonly tags: string[] = [],
     public readonly isPhoneVerified: boolean = false,
+    public readonly serviceAvailability: Record<string, boolean> = {},
   ) {}
 
   /**

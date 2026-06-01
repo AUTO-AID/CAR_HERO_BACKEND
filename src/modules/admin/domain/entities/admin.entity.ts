@@ -24,7 +24,7 @@ export class AdminEntity {
    * Checks if the admin has a specific permission
    */
   hasPermission(permission: string): boolean {
-    if (this.permissions.includes('all')) return true;
+    if (this.role === Role.ADMIN) return true;
     return this.permissions.includes(permission);
   }
 

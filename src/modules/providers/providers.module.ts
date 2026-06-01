@@ -24,6 +24,7 @@ import { GetProviderDashboardUseCase } from './application/use-cases/get-provide
 import { GetTopRatedProvidersUseCase } from './application/use-cases/get-top-rated-providers.use-case';
 
 import { Order, OrderSchema } from '../orders/infrastructure/persistence/mongoose/schemas/order.schema';
+import { Service, ServiceSchema } from '../services/infrastructure/persistence/mongoose/schemas/service.schema';
 
 const UseCases = [
   GetProvidersUseCase,
@@ -46,6 +47,7 @@ const UseCases = [
     MongooseModule.forFeature([
       { name: Provider.name, schema: ProviderSchema },
       { name: Order.name, schema: OrderSchema },
+      { name: Service.name, schema: ServiceSchema },
     ]),
   ],
   controllers: [ProvidersController],

@@ -65,10 +65,8 @@ def fetch_data_from_mongodb(uri):
                     provider_id = rec.get('provider')
                     if chosen_provider and provider_id and str(provider_id) == str(chosen_provider):
                         is_success = 1
-                    elif not chosen_provider and i == 0:
-                        is_success = 1 if np.random.rand() < 0.70 else 0
                     else:
-                        is_success = 1 if np.random.rand() < 0.15 else 0
+                        is_success = 0
                         
                     features['successfulRecommendation'] = is_success
                     data_rows.append(features)

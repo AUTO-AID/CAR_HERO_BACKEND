@@ -24,9 +24,8 @@ export class PermissionsGuard implements CanActivate {
       throw new ForbiddenException(ERROR_MESSAGES.AUTH.FORBIDDEN || 'Authentication required');
     }
 
-    // Admins with 'all' permission surpass specific checks
     const userPermissions = user.permissions || [];
-    if (userPermissions.includes('all')) {
+    if (userPermissions.includes('*') || userPermissions.includes('all')) {
       return true;
     }
 

@@ -6,6 +6,7 @@ import { OrderStatus } from '../../../../core/enums/status.enum';
 import { OrderEvents, OrderStatusChangedEvent } from '../../domain/events/order.events';
 import { StatusHistoryService } from '../../../status-history/application/services/status-history.service';
 import { OrderStateMachine } from '../../domain/services/order-state-machine';
+import { SchedulingAvailabilityService } from '../services/scheduling-availability.service';
 
 @Injectable()
 export class AssignProviderUseCase {
@@ -14,12 +15,17 @@ export class AssignProviderUseCase {
     private readonly orderRepository: IOrderRepository,
     private readonly eventEmitter: EventEmitter2,
     private readonly statusHistoryService: StatusHistoryService,
+    private readonly schedulingAvailabilityService: SchedulingAvailabilityService,
   ) {}
 
   async execute(id: string, providerId: string): Promise<OrderEntity> {
     const order = await this.orderRepository.findById(id);
     if (!order) {
       throw new NotFoundException('Order not found');
+    }
+    await this.schedulingAvailabilityService.assertOffersService(providerId, order.serviceId);
+    if (order.isScheduled && order.scheduledAt) {
+      await this.schedulingAvailabilityService.assertAvailable(providerId, new Date(order.scheduledAt), 60, id);
     }
 
     const oldStatus = order.status;

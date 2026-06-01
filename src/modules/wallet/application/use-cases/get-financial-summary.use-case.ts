@@ -11,24 +11,52 @@ export class GetFinancialSummaryUseCase {
 
   async execute() {
     const SYSTEM_OWNER_ID = 'platform_earnings';
-    
-    // 1. Get Platform Balance
     const platformWallet = await this.walletRepository.findByOwnerId(SYSTEM_OWNER_ID, 'system');
-    
-    // 2. Get Total Completed Payouts
-    const payouts = await this.walletRepository.findAllTransactions({
-        referenceType: 'payout',
-        status: 'completed',
-        type: TransactionType.DEBIT
-    }, 0, 1000000); // Simple hack for total, a real aggregate is better
 
-    const totalPayouts = payouts.data.reduce((sum, tx) => sum + tx.amount, 0);
+    const [orderPayments, providerEarnings, completedPayouts, pendingPayouts, allTransactions] = await Promise.all([
+      this.walletRepository.findAllTransactions({
+        referenceType: 'order',
+        status: 'completed',
+        type: TransactionType.DEBIT,
+        ownerType: 'user',
+      }, 0, 1000000),
+      this.walletRepository.findAllTransactions({
+        referenceType: 'order',
+        status: 'completed',
+        type: TransactionType.CREDIT,
+        ownerType: 'provider',
+      }, 0, 1000000),
+      this.walletRepository.findAllTransactions({
+        referenceType: { $in: ['payout', 'withdrawal'] },
+        status: 'completed',
+        type: TransactionType.DEBIT,
+        ownerType: 'provider',
+      }, 0, 1000000),
+      this.walletRepository.findAllTransactions({
+        referenceType: { $in: ['payout', 'withdrawal'] },
+        status: 'pending',
+        type: TransactionType.DEBIT,
+        ownerType: 'provider',
+      }, 0, 1000000),
+      this.walletRepository.findAllTransactions({}, 0, 1),
+    ]);
+
+    const totalOrderRevenue = orderPayments.data.reduce((sum, tx) => sum + tx.amount, 0);
+    const totalProviderEarnings = providerEarnings.data.reduce((sum, tx) => sum + tx.amount, 0);
+    const totalCommissionEarned = Math.max(totalOrderRevenue - totalProviderEarnings, 0);
+    const totalPayoutsProcessed = completedPayouts.data.reduce((sum, tx) => sum + tx.amount, 0);
+    const pendingPayoutsAmount = pendingPayouts.data.reduce((sum, tx) => sum + tx.amount, 0);
 
     return {
-      platformBalance: platformWallet?.balance || 0,
-      totalCommissionEarned: platformWallet?.balance || 0, // In this model, these are equivalent
-      totalPayoutsProcessed: totalPayouts,
-      currency: platformWallet?.currency || 'SAR',
+      platformBalance: platformWallet && platformWallet.balance > 0 ? platformWallet.balance : totalCommissionEarned,
+      totalCommissionEarned,
+      totalOrderRevenue,
+      totalProviderEarnings,
+      totalPayoutsProcessed,
+      pendingPayoutsAmount,
+      pendingPayoutsCount: pendingPayouts.total,
+      transactionsCount: allTransactions.total,
+      currency: platformWallet?.currency || 'SYP',
     };
   }
 }

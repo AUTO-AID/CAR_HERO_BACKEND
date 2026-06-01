@@ -26,12 +26,15 @@ import { WalletModule } from '../wallet/wallet.module';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { ReviewsModule } from '../reviews/reviews.module';
 import { StatusHistoryModule } from '../status-history/status-history.module';
+import { Provider, ProviderSchema } from '../providers/infrastructure/persistence/mongoose/schemas/provider.schema';
+import { SchedulingAvailabilityService } from './application/services/scheduling-availability.service';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Order.name, schema: OrderSchema },
       { name: Service.name, schema: ServiceSchema },
+      { name: Provider.name, schema: ProviderSchema },
     ]),
     WalletModule,
     StatusHistoryModule,
@@ -57,6 +60,7 @@ import { StatusHistoryModule } from '../status-history/status-history.module';
     CancelOrderUseCase,
     OrderNotificationsListener,
     OrdersCronService,
+    SchedulingAvailabilityService,
     {
       provide: IOrderRepository,
       useClass: MongooseOrderRepository,

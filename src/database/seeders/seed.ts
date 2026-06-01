@@ -69,7 +69,7 @@ async function seedAdmin(app: any) {
         name: adminData.name,
         role: Role.ADMIN,
         isActive: true,
-        permissions: ['all'],
+        permissions: [],
       });
 
       console.log(`✅ Admin user created: ${adminData.email} / ${adminData.password}`);

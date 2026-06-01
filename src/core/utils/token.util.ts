@@ -8,13 +8,15 @@ export class TokenUtil {
     jwtService: JwtService,
     configService: ConfigService,
   ): Promise<{ accessToken: string; refreshToken: string }> {
+    const jwtSecret = configService.getOrThrow<string>('JWT_SECRET');
+    const jwtRefreshSecret = configService.getOrThrow<string>('JWT_REFRESH_SECRET');
     const [accessToken, refreshToken] = await Promise.all([
       jwtService.signAsync(payload, {
-        secret: configService.get('JWT_SECRET'),
+        secret: jwtSecret,
         expiresIn: configService.get('JWT_EXPIRES_IN'),
       }),
       jwtService.signAsync(payload, {
-        secret: configService.get('JWT_REFRESH_SECRET'),
+        secret: jwtRefreshSecret,
         expiresIn: configService.get('JWT_REFRESH_EXPIRES_IN'),
       }),
     ]);
@@ -27,7 +29,7 @@ export class TokenUtil {
     configService: ConfigService,
   ): Promise<IJwtPayload> {
     return jwtService.verifyAsync(token, {
-      secret: configService.get('JWT_REFRESH_SECRET'),
+      secret: configService.getOrThrow<string>('JWT_REFRESH_SECRET'),
     });
   }
 }

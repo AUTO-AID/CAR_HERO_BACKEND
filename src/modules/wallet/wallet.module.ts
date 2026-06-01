@@ -18,12 +18,15 @@ import { RequestPayoutUseCase } from './application/use-cases/request-payout.use
 import { ProcessPayoutUseCase } from './application/use-cases/process-payout.use-case';
 import { GetAdminTransactionLogsUseCase } from './application/use-cases/get-admin-transaction-logs.use-case';
 import { GetFinancialSummaryUseCase } from './application/use-cases/get-financial-summary.use-case';
+import { GetProviderFinancialSummaryUseCase } from './application/use-cases/get-provider-financial-summary.use-case';
+import { Setting, SettingSchema } from '../admin/infrastructure/persistence/mongoose/schemas/setting.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Wallet.name, schema: WalletSchema },
       { name: Transaction.name, schema: TransactionSchema },
+      { name: Setting.name, schema: SettingSchema },
     ]),
   ],
   controllers: [
@@ -45,6 +48,7 @@ import { GetFinancialSummaryUseCase } from './application/use-cases/get-financia
     ProcessPayoutUseCase,
     GetAdminTransactionLogsUseCase,
     GetFinancialSummaryUseCase,
+    GetProviderFinancialSummaryUseCase,
   ],
   exports: [
     'IWalletRepository',

@@ -12,7 +12,7 @@
       "statusCode": 404,
       "message": "Admin not found",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:15.605Z",
+      "timestamp": "2026-05-28T21:48:52.673Z",
       "path": "/api/v1/admin/60b8d295f1d293001f3e4c80"
     }
   },
@@ -29,7 +29,7 @@
       "statusCode": 404,
       "message": "Admin not found",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:15.652Z",
+      "timestamp": "2026-05-28T21:48:52.687Z",
       "path": "/api/v1/admin/60b8d295f1d293001f3e4c80/permissions"
     }
   },
@@ -46,7 +46,7 @@
       "statusCode": 404,
       "message": "Admin not found",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:15.705Z",
+      "timestamp": "2026-05-28T21:48:52.700Z",
       "path": "/api/v1/admin/60b8d295f1d293001f3e4c80/status"
     }
   },
@@ -62,16 +62,16 @@
       "success": true,
       "data": {
         "name": "Audit Admin",
-        "email": "admin_audit_1779749955711@carhero.com",
+        "email": "admin_audit_1780004932701@carhero.com",
         "role": "admin",
         "permissions": [],
         "isActive": true,
-        "_id": "6a14d44332d797211587d0d4",
-        "createdAt": "2026-05-25T22:59:15.901Z",
-        "updatedAt": "2026-05-25T22:59:15.901Z",
-        "id": "6a14d44332d797211587d0d4"
+        "_id": "6a18b8441baef6f0ecea53b3",
+        "createdAt": "2026-05-28T21:48:52.770Z",
+        "updatedAt": "2026-05-28T21:48:52.770Z",
+        "id": "6a18b8441baef6f0ecea53b3"
       },
-      "timestamp": "2026-05-25T22:59:15.915Z"
+      "timestamp": "2026-05-28T21:48:52.776Z"
     }
   },
   {
@@ -86,57 +86,51 @@
       "success": true,
       "data": [
         {
-          "_id": "6a14d44332d797211587d0d4",
+          "_id": "6a18b8441baef6f0ecea53b3",
           "name": "Audit Admin",
-          "email": "admin_audit_1779749955711@carhero.com",
+          "email": "admin_audit_1780004932701@carhero.com",
           "role": "admin",
           "permissions": [],
           "isActive": true,
-          "createdAt": "2026-05-25T22:59:15.901Z",
-          "updatedAt": "2026-05-25T22:59:15.901Z",
-          "id": "6a14d44332d797211587d0d4"
+          "createdAt": "2026-05-28T21:48:52.770Z",
+          "updatedAt": "2026-05-28T21:48:52.770Z",
+          "id": "6a18b8441baef6f0ecea53b3"
         },
         {
-          "_id": "6a14d4366eff5ea22c705028",
+          "_id": "6a18b84203a01d3f17989566",
           "name": "nather ayyan",
           "email": "natherayyan@gmail.com",
           "role": "admin",
-          "permissions": [
-            "all"
-          ],
+          "permissions": [],
           "isActive": true,
-          "createdAt": "2026-05-25T22:59:02.678Z",
-          "updatedAt": "2026-05-25T22:59:02.678Z",
-          "id": "6a14d4366eff5ea22c705028"
+          "createdAt": "2026-05-28T21:48:50.891Z",
+          "updatedAt": "2026-05-28T21:48:50.891Z",
+          "id": "6a18b84203a01d3f17989566"
         },
         {
-          "_id": "6a14d4366eff5ea22c705025",
+          "_id": "6a18b84203a01d3f1798955a",
           "name": "mohammed marawi",
           "email": "mohammedmarawi3@gmail.com",
           "role": "admin",
-          "permissions": [
-            "all"
-          ],
+          "permissions": [],
           "isActive": true,
-          "createdAt": "2026-05-25T22:59:02.566Z",
-          "updatedAt": "2026-05-25T22:59:02.566Z",
-          "id": "6a14d4366eff5ea22c705025"
+          "createdAt": "2026-05-28T21:48:50.823Z",
+          "updatedAt": "2026-05-28T21:48:50.823Z",
+          "id": "6a18b84203a01d3f1798955a"
         },
         {
-          "_id": "6a14d4366eff5ea22c705022",
+          "_id": "6a18b84203a01d3f1798954c",
           "name": "Super Admin",
           "email": "admin@carhero.com",
           "role": "admin",
-          "permissions": [
-            "all"
-          ],
+          "permissions": [],
           "isActive": true,
-          "createdAt": "2026-05-25T22:59:02.453Z",
-          "updatedAt": "2026-05-25T22:59:14.420Z",
-          "id": "6a14d4366eff5ea22c705022"
+          "createdAt": "2026-05-28T21:48:50.753Z",
+          "updatedAt": "2026-05-28T21:48:52.106Z",
+          "id": "6a18b84203a01d3f1798954c"
         }
       ],
-      "timestamp": "2026-05-25T22:59:15.945Z"
+      "timestamp": "2026-05-28T21:48:52.788Z"
     }
   },
   {
@@ -169,19 +163,18 @@
       "success": true,
       "data": {
         "admin": {
-          "userId": "6a14d4366eff5ea22c705022",
+          "userId": "6a18b84203a01d3f1798954c",
           "email": "admin@carhero.com",
           "role": "admin",
-          "permissions": [
-            "all"
-          ],
-          "iat": 1779749954,
-          "exp": 1779750854,
-          "_id": "6a14d4366eff5ea22c705022",
-          "id": "6a14d4366eff5ea22c705022"
+          "permissions": [],
+          "iat": 1780004932,
+          "exp": 1780005832,
+          "_id": "6a18b84203a01d3f1798954c",
+          "id": "6a18b84203a01d3f1798954c",
+          "name": "Super Admin"
         }
       },
-      "timestamp": "2026-05-25T22:59:15.971Z"
+      "timestamp": "2026-05-28T21:48:52.800Z"
     }
   },
   {
@@ -196,7 +189,7 @@
       "success": true,
       "data": [
         {
-          "_id": "6a14d4366eff5ea22c70501b",
+          "_id": "6a18b84203a01d3f17989519",
           "name": "Basic Plan",
           "nameAr": "الخطة الأساسية",
           "price": 0,
@@ -212,12 +205,12 @@
           "isActive": true,
           "tier": "basic",
           "sortOrder": 1,
-          "createdAt": "2026-05-25T22:59:02.278Z",
-          "updatedAt": "2026-05-25T22:59:02.278Z",
-          "id": "6a14d4366eff5ea22c70501b"
+          "createdAt": "2026-05-28T21:48:50.552Z",
+          "updatedAt": "2026-05-28T21:48:50.552Z",
+          "id": "6a18b84203a01d3f17989519"
         },
         {
-          "_id": "6a14d4366eff5ea22c70501c",
+          "_id": "6a18b84203a01d3f1798951a",
           "name": "Silver Plan",
           "nameAr": "الخطة الفضية",
           "price": 50,
@@ -235,12 +228,12 @@
           "isActive": true,
           "tier": "silver",
           "sortOrder": 2,
-          "createdAt": "2026-05-25T22:59:02.279Z",
-          "updatedAt": "2026-05-25T22:59:02.279Z",
-          "id": "6a14d4366eff5ea22c70501c"
+          "createdAt": "2026-05-28T21:48:50.552Z",
+          "updatedAt": "2026-05-28T21:48:50.552Z",
+          "id": "6a18b84203a01d3f1798951a"
         },
         {
-          "_id": "6a14d4366eff5ea22c70501d",
+          "_id": "6a18b84203a01d3f1798951b",
           "name": "Gold Plan",
           "nameAr": "الخطة الذهبية",
           "price": 150,
@@ -258,12 +251,12 @@
           "isActive": true,
           "tier": "gold",
           "sortOrder": 3,
-          "createdAt": "2026-05-25T22:59:02.279Z",
-          "updatedAt": "2026-05-25T22:59:02.279Z",
-          "id": "6a14d4366eff5ea22c70501d"
+          "createdAt": "2026-05-28T21:48:50.553Z",
+          "updatedAt": "2026-05-28T21:48:50.553Z",
+          "id": "6a18b84203a01d3f1798951b"
         }
       ],
-      "timestamp": "2026-05-25T22:59:16.009Z"
+      "timestamp": "2026-05-28T21:48:52.821Z"
     }
   },
   {
@@ -288,12 +281,12 @@
         "isActive": true,
         "tier": "basic",
         "sortOrder": 1,
-        "_id": "6a14d44432d797211587d0e2",
-        "createdAt": "2026-05-25T22:59:16.051Z",
-        "updatedAt": "2026-05-25T22:59:16.051Z",
-        "id": "6a14d44432d797211587d0e2"
+        "_id": "6a18b8441baef6f0ecea53c1",
+        "createdAt": "2026-05-28T21:48:52.840Z",
+        "updatedAt": "2026-05-28T21:48:52.840Z",
+        "id": "6a18b8441baef6f0ecea53c1"
       },
-      "timestamp": "2026-05-25T22:59:16.066Z"
+      "timestamp": "2026-05-28T21:48:52.849Z"
     }
   },
   {
@@ -309,7 +302,7 @@
       "statusCode": 404,
       "message": "Membership plan not found",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:16.089Z",
+      "timestamp": "2026-05-28T21:48:52.862Z",
       "path": "/api/v1/admin/subscription-plans/60b8d295f1d293001f3e4c93"
     }
   },
@@ -326,7 +319,7 @@
       "statusCode": 404,
       "message": "Membership plan not found",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:16.115Z",
+      "timestamp": "2026-05-28T21:48:52.875Z",
       "path": "/api/v1/admin/subscription-plans/60b8d295f1d293001f3e4c93"
     }
   },
@@ -349,7 +342,7 @@
           "pages": 0
         }
       },
-      "timestamp": "2026-05-25T22:59:16.142Z"
+      "timestamp": "2026-05-28T21:48:52.889Z"
     }
   },
   {
@@ -365,7 +358,7 @@
       "data": {
         "providers": [
           {
-            "_id": "6a14d44132d797211587d045",
+            "_id": "6a18b8431baef6f0ecea5324",
             "phone": "+963992223333",
             "businessName": "Super Workshop Tech",
             "ownerName": "Super Workshop Tech",
@@ -388,7 +381,7 @@
               "towing"
             ],
             "services": [
-              "6a14d4366eff5ea22c70502c"
+              "6a18b84203a01d3f1798956c"
             ],
             "requestedServices": [],
             "services_list": [],
@@ -408,10 +401,10 @@
             "shopPhotos": [],
             "commissionRate": 10,
             "workingHours": [],
-            "createdAt": "2026-05-25T22:59:13.999Z",
-            "updatedAt": "2026-05-25T22:59:15.533Z",
-            "lastOnlineAt": "2026-05-25T22:59:15.161Z",
-            "id": "6a14d44132d797211587d045"
+            "createdAt": "2026-05-28T21:48:51.878Z",
+            "updatedAt": "2026-05-28T21:48:52.648Z",
+            "lastOnlineAt": "2026-05-28T21:48:52.443Z",
+            "id": "6a18b8431baef6f0ecea5324"
           }
         ],
         "pagination": {
@@ -421,7 +414,7 @@
           "pages": 1
         }
       },
-      "timestamp": "2026-05-25T22:59:16.166Z"
+      "timestamp": "2026-05-28T21:48:52.904Z"
     }
   },
   {
@@ -429,13 +422,13 @@
     "name": "GET /admin/providers/:id",
     "folder": "admins - admin",
     "method": "GET",
-    "url": "http://localhost:3001/api/v1/admin/providers/6a14d44132d797211587d045",
+    "url": "http://localhost:3001/api/v1/admin/providers/6a18b8431baef6f0ecea5324",
     "status": "Passed",
     "code": 200,
     "response": {
       "success": true,
       "data": {
-        "_id": "6a14d44132d797211587d045",
+        "_id": "6a18b8431baef6f0ecea5324",
         "phone": "+963992223333",
         "businessName": "Super Workshop Tech",
         "ownerName": "Super Workshop Tech",
@@ -459,7 +452,7 @@
         ],
         "services": [
           {
-            "_id": "6a14d4366eff5ea22c70502c",
+            "_id": "6a18b84203a01d3f1798956c",
             "name": "Towing Service",
             "nameAr": "خدمة السحب",
             "description": "Professional vehicle towing service",
@@ -473,9 +466,9 @@
             "isSystemService": true,
             "sortOrder": 1,
             "options": [],
-            "createdAt": "2026-05-25T22:59:02.703Z",
-            "updatedAt": "2026-05-25T22:59:02.703Z",
-            "id": "6a14d4366eff5ea22c70502c"
+            "createdAt": "2026-05-28T21:48:50.916Z",
+            "updatedAt": "2026-05-28T21:48:50.916Z",
+            "id": "6a18b84203a01d3f1798956c"
           }
         ],
         "requestedServices": [],
@@ -496,12 +489,12 @@
         "shopPhotos": [],
         "commissionRate": 10,
         "workingHours": [],
-        "createdAt": "2026-05-25T22:59:13.999Z",
-        "updatedAt": "2026-05-25T22:59:15.533Z",
-        "lastOnlineAt": "2026-05-25T22:59:15.161Z",
-        "id": "6a14d44132d797211587d045"
+        "createdAt": "2026-05-28T21:48:51.878Z",
+        "updatedAt": "2026-05-28T21:48:52.648Z",
+        "lastOnlineAt": "2026-05-28T21:48:52.443Z",
+        "id": "6a18b8431baef6f0ecea5324"
       },
-      "timestamp": "2026-05-25T22:59:16.193Z"
+      "timestamp": "2026-05-28T21:48:52.921Z"
     }
   },
   {
@@ -509,7 +502,7 @@
     "name": "PATCH /admin/providers/:id",
     "folder": "admins - admin",
     "method": "PATCH",
-    "url": "http://localhost:3001/api/v1/admin/providers/6a14d44132d797211587d045",
+    "url": "http://localhost:3001/api/v1/admin/providers/6a18b8431baef6f0ecea5324",
     "status": "Passed",
     "code": 200,
     "response": {
@@ -517,7 +510,7 @@
       "data": {
         "message": "Provider data updated successfully",
         "provider": {
-          "_id": "6a14d44132d797211587d045",
+          "_id": "6a18b8431baef6f0ecea5324",
           "phone": "+963992223333",
           "businessName": "Super Workshop Tech",
           "ownerName": "Super Workshop Tech",
@@ -540,7 +533,7 @@
             "towing"
           ],
           "services": [
-            "6a14d4366eff5ea22c70502c"
+            "6a18b84203a01d3f1798956c"
           ],
           "requestedServices": [],
           "services_list": [],
@@ -560,13 +553,13 @@
           "shopPhotos": [],
           "commissionRate": 10,
           "workingHours": [],
-          "createdAt": "2026-05-25T22:59:13.999Z",
-          "updatedAt": "2026-05-25T22:59:16.211Z",
-          "lastOnlineAt": "2026-05-25T22:59:15.161Z",
-          "id": "6a14d44132d797211587d045"
+          "createdAt": "2026-05-28T21:48:51.878Z",
+          "updatedAt": "2026-05-28T21:48:52.932Z",
+          "lastOnlineAt": "2026-05-28T21:48:52.443Z",
+          "id": "6a18b8431baef6f0ecea5324"
         }
       },
-      "timestamp": "2026-05-25T22:59:16.224Z"
+      "timestamp": "2026-05-28T21:48:52.940Z"
     }
   },
   {
@@ -574,7 +567,7 @@
     "name": "PATCH /admin/providers/:id/approve",
     "folder": "admins - admin",
     "method": "PATCH",
-    "url": "http://localhost:3001/api/v1/admin/providers/6a14d44132d797211587d045/approve",
+    "url": "http://localhost:3001/api/v1/admin/providers/6a18b8431baef6f0ecea5324/approve",
     "status": "Passed",
     "code": 200,
     "response": {
@@ -582,7 +575,7 @@
       "data": {
         "message": "Provider approved and activated successfully",
         "provider": {
-          "_id": "6a14d44132d797211587d045",
+          "_id": "6a18b8431baef6f0ecea5324",
           "phone": "+963992223333",
           "businessName": "Super Workshop Tech",
           "ownerName": "Super Workshop Tech",
@@ -605,7 +598,7 @@
             "towing"
           ],
           "services": [
-            "6a14d4366eff5ea22c70502c"
+            "6a18b84203a01d3f1798956c"
           ],
           "requestedServices": [],
           "services_list": [],
@@ -625,13 +618,13 @@
           "shopPhotos": [],
           "commissionRate": 10,
           "workingHours": [],
-          "createdAt": "2026-05-25T22:59:13.999Z",
-          "updatedAt": "2026-05-25T22:59:16.240Z",
-          "lastOnlineAt": "2026-05-25T22:59:15.161Z",
-          "id": "6a14d44132d797211587d045"
+          "createdAt": "2026-05-28T21:48:51.878Z",
+          "updatedAt": "2026-05-28T21:48:52.949Z",
+          "lastOnlineAt": "2026-05-28T21:48:52.443Z",
+          "id": "6a18b8431baef6f0ecea5324"
         }
       },
-      "timestamp": "2026-05-25T22:59:16.273Z"
+      "timestamp": "2026-05-28T21:48:52.966Z"
     }
   },
   {
@@ -647,7 +640,7 @@
       "statusCode": 404,
       "message": "Provider not found",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:16.304Z",
+      "timestamp": "2026-05-28T21:48:52.981Z",
       "path": "/api/v1/admin/providers/60b8d295f1d293001f3e4c8b/reject"
     }
   },
@@ -664,7 +657,7 @@
       "statusCode": 401,
       "message": "Invalid refresh token",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:16.319Z",
+      "timestamp": "2026-05-28T21:48:52.987Z",
       "path": "/api/v1/admin/refresh-token"
     }
   },
@@ -680,7 +673,7 @@
       "success": true,
       "data": [
         {
-          "_id": "6a14d4366eff5ea22c70502c",
+          "_id": "6a18b84203a01d3f1798956c",
           "name": "Towing Service",
           "nameAr": "خدمة السحب",
           "description": "Professional vehicle towing service",
@@ -694,12 +687,12 @@
           "isSystemService": true,
           "sortOrder": 1,
           "options": [],
-          "createdAt": "2026-05-25T22:59:02.703Z",
-          "updatedAt": "2026-05-25T22:59:02.703Z",
-          "id": "6a14d4366eff5ea22c70502c"
+          "createdAt": "2026-05-28T21:48:50.916Z",
+          "updatedAt": "2026-05-28T21:48:50.916Z",
+          "id": "6a18b84203a01d3f1798956c"
         },
         {
-          "_id": "6a14d4366eff5ea22c70502d",
+          "_id": "6a18b84203a01d3f1798956d",
           "name": "Battery Jump Start",
           "nameAr": "تشغيل البطارية",
           "description": "Battery boost and jump start service",
@@ -713,12 +706,12 @@
           "isSystemService": true,
           "sortOrder": 2,
           "options": [],
-          "createdAt": "2026-05-25T22:59:02.703Z",
-          "updatedAt": "2026-05-25T22:59:02.703Z",
-          "id": "6a14d4366eff5ea22c70502d"
+          "createdAt": "2026-05-28T21:48:50.916Z",
+          "updatedAt": "2026-05-28T21:48:50.916Z",
+          "id": "6a18b84203a01d3f1798956d"
         },
         {
-          "_id": "6a14d4366eff5ea22c70502e",
+          "_id": "6a18b84203a01d3f1798956e",
           "name": "Flat Tire Change",
           "nameAr": "تغيير الإطار المثقوب",
           "description": "Roadside tire change service",
@@ -732,12 +725,12 @@
           "isSystemService": true,
           "sortOrder": 3,
           "options": [],
-          "createdAt": "2026-05-25T22:59:02.703Z",
-          "updatedAt": "2026-05-25T22:59:02.703Z",
-          "id": "6a14d4366eff5ea22c70502e"
+          "createdAt": "2026-05-28T21:48:50.916Z",
+          "updatedAt": "2026-05-28T21:48:50.916Z",
+          "id": "6a18b84203a01d3f1798956e"
         },
         {
-          "_id": "6a14d4366eff5ea22c70502f",
+          "_id": "6a18b84203a01d3f1798956f",
           "name": "Fuel Delivery",
           "nameAr": "توصيل الوقود",
           "description": "Emergency fuel delivery service",
@@ -751,12 +744,12 @@
           "isSystemService": true,
           "sortOrder": 4,
           "options": [],
-          "createdAt": "2026-05-25T22:59:02.703Z",
-          "updatedAt": "2026-05-25T22:59:02.703Z",
-          "id": "6a14d4366eff5ea22c70502f"
+          "createdAt": "2026-05-28T21:48:50.916Z",
+          "updatedAt": "2026-05-28T21:48:50.916Z",
+          "id": "6a18b84203a01d3f1798956f"
         },
         {
-          "_id": "6a14d4366eff5ea22c705030",
+          "_id": "6a18b84203a01d3f17989570",
           "name": "Lockout Service",
           "nameAr": "فتح الأقفال",
           "description": "Car lockout assistance",
@@ -770,12 +763,12 @@
           "isSystemService": true,
           "sortOrder": 5,
           "options": [],
-          "createdAt": "2026-05-25T22:59:02.703Z",
-          "updatedAt": "2026-05-25T22:59:02.703Z",
-          "id": "6a14d4366eff5ea22c705030"
+          "createdAt": "2026-05-28T21:48:50.916Z",
+          "updatedAt": "2026-05-28T21:48:50.916Z",
+          "id": "6a18b84203a01d3f17989570"
         },
         {
-          "_id": "6a14d4366eff5ea22c705031",
+          "_id": "6a18b84203a01d3f17989571",
           "name": "Oil Change",
           "nameAr": "تغيير الزيت",
           "description": "Professional oil change service",
@@ -789,12 +782,12 @@
           "isSystemService": true,
           "sortOrder": 6,
           "options": [],
-          "createdAt": "2026-05-25T22:59:02.703Z",
-          "updatedAt": "2026-05-25T22:59:02.703Z",
-          "id": "6a14d4366eff5ea22c705031"
+          "createdAt": "2026-05-28T21:48:50.916Z",
+          "updatedAt": "2026-05-28T21:48:50.916Z",
+          "id": "6a18b84203a01d3f17989571"
         },
         {
-          "_id": "6a14d4366eff5ea22c705032",
+          "_id": "6a18b84203a01d3f17989572",
           "name": "Car Wash",
           "nameAr": "غسيل السيارة",
           "description": "Full car wash & detailing",
@@ -808,12 +801,12 @@
           "isSystemService": true,
           "sortOrder": 7,
           "options": [],
-          "createdAt": "2026-05-25T22:59:02.703Z",
-          "updatedAt": "2026-05-25T22:59:02.703Z",
-          "id": "6a14d4366eff5ea22c705032"
+          "createdAt": "2026-05-28T21:48:50.916Z",
+          "updatedAt": "2026-05-28T21:48:50.916Z",
+          "id": "6a18b84203a01d3f17989572"
         }
       ],
-      "timestamp": "2026-05-25T22:59:16.351Z"
+      "timestamp": "2026-05-28T21:48:52.999Z"
     }
   },
   {
@@ -839,12 +832,12 @@
         "isSystemService": true,
         "sortOrder": 0,
         "options": [],
-        "_id": "6a14d44432d797211587d10e",
-        "createdAt": "2026-05-25T22:59:16.382Z",
-        "updatedAt": "2026-05-25T22:59:16.382Z",
-        "id": "6a14d44432d797211587d10e"
+        "_id": "6a18b8451baef6f0ecea53ed",
+        "createdAt": "2026-05-28T21:48:53.013Z",
+        "updatedAt": "2026-05-28T21:48:53.013Z",
+        "id": "6a18b8451baef6f0ecea53ed"
       },
-      "timestamp": "2026-05-25T22:59:16.400Z"
+      "timestamp": "2026-05-28T21:48:53.025Z"
     }
   },
   {
@@ -860,7 +853,7 @@
       "statusCode": 404,
       "message": "Service not found",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:16.429Z",
+      "timestamp": "2026-05-28T21:48:53.038Z",
       "path": "/api/v1/admin/services/60b8d295f1d293001f3e4c8b"
     }
   },
@@ -869,7 +862,7 @@
     "name": "PATCH /admin/services/:id",
     "folder": "admins - admin",
     "method": "PATCH",
-    "url": "http://localhost:3001/api/v1/admin/services/6a14d4366eff5ea22c70502c",
+    "url": "http://localhost:3001/api/v1/admin/services/6a18b84203a01d3f1798956c",
     "status": "Passed",
     "code": 200,
     "response": {
@@ -877,7 +870,7 @@
       "data": {
         "message": "Service updated successfully",
         "service": {
-          "_id": "6a14d4366eff5ea22c70502c",
+          "_id": "6a18b84203a01d3f1798956c",
           "name": "Towing Service",
           "nameAr": "خدمة السحب",
           "description": "Professional vehicle towing service",
@@ -891,12 +884,12 @@
           "isSystemService": true,
           "sortOrder": 1,
           "options": [],
-          "createdAt": "2026-05-25T22:59:02.703Z",
-          "updatedAt": "2026-05-25T22:59:16.456Z",
-          "id": "6a14d4366eff5ea22c70502c"
+          "createdAt": "2026-05-28T21:48:50.916Z",
+          "updatedAt": "2026-05-28T21:48:53.048Z",
+          "id": "6a18b84203a01d3f1798956c"
         }
       },
-      "timestamp": "2026-05-25T22:59:16.472Z"
+      "timestamp": "2026-05-28T21:48:53.057Z"
     }
   },
   {
@@ -914,12 +907,12 @@
         "maintenanceMode": false,
         "group": "general",
         "isPublic": true,
-        "_id": "6a14d44432d797211587d11d",
-        "createdAt": "2026-05-25T22:59:16.504Z",
-        "updatedAt": "2026-05-25T22:59:16.504Z",
-        "id": "6a14d44432d797211587d11d"
+        "_id": "6a18b8451baef6f0ecea53fc",
+        "createdAt": "2026-05-28T21:48:53.072Z",
+        "updatedAt": "2026-05-28T21:48:53.072Z",
+        "id": "6a18b8451baef6f0ecea53fc"
       },
-      "timestamp": "2026-05-25T22:59:16.511Z"
+      "timestamp": "2026-05-28T21:48:53.076Z"
     }
   },
   {
@@ -935,17 +928,17 @@
       "data": {
         "message": "Maintenance mode deactivated",
         "settings": {
-          "_id": "6a14d44432d797211587d11d",
+          "_id": "6a18b8451baef6f0ecea53fc",
           "key": "app_config",
           "maintenanceMode": false,
           "group": "general",
           "isPublic": true,
-          "createdAt": "2026-05-25T22:59:16.504Z",
-          "updatedAt": "2026-05-25T22:59:16.543Z",
-          "id": "6a14d44432d797211587d11d"
+          "createdAt": "2026-05-28T21:48:53.072Z",
+          "updatedAt": "2026-05-28T21:48:53.088Z",
+          "id": "6a18b8451baef6f0ecea53fc"
         }
       },
-      "timestamp": "2026-05-25T22:59:16.558Z"
+      "timestamp": "2026-05-28T21:48:53.097Z"
     }
   },
   {
@@ -965,7 +958,7 @@
         "orders": 1,
         "totalRevenue": 150
       },
-      "timestamp": "2026-05-25T22:59:16.613Z"
+      "timestamp": "2026-05-28T21:48:53.125Z"
     }
   },
   {
@@ -987,7 +980,7 @@
           "revenue": 150
         }
       ],
-      "timestamp": "2026-05-25T22:59:16.642Z"
+      "timestamp": "2026-05-28T21:48:53.140Z"
     }
   },
   {
@@ -1002,12 +995,12 @@
       "success": true,
       "data": [
         {
-          "_id": "6a14d4366eff5ea22c70502c",
+          "_id": "6a18b84203a01d3f1798956c",
           "count": 1,
           "totalRevenue": 150
         }
       ],
-      "timestamp": "2026-05-25T22:59:16.665Z"
+      "timestamp": "2026-05-28T21:48:53.152Z"
     }
   },
   {
@@ -1023,7 +1016,7 @@
       "data": {
         "completed": 1
       },
-      "timestamp": "2026-05-25T22:59:16.689Z"
+      "timestamp": "2026-05-28T21:48:53.163Z"
     }
   },
   {
@@ -1053,7 +1046,7 @@
           "total": 150
         }
       },
-      "timestamp": "2026-05-25T22:59:16.721Z"
+      "timestamp": "2026-05-28T21:48:53.178Z"
     }
   },
   {
@@ -1072,7 +1065,7 @@
           "count": 1
         }
       ],
-      "timestamp": "2026-05-25T22:59:16.749Z"
+      "timestamp": "2026-05-28T21:48:53.192Z"
     }
   },
   {
@@ -1091,7 +1084,7 @@
           "count": 1
         }
       ],
-      "timestamp": "2026-05-25T22:59:16.773Z"
+      "timestamp": "2026-05-28T21:48:53.206Z"
     }
   },
   {
@@ -1113,7 +1106,7 @@
           "count": 1
         }
       ],
-      "timestamp": "2026-05-25T22:59:16.799Z"
+      "timestamp": "2026-05-28T21:48:53.220Z"
     }
   },
   {
@@ -1132,7 +1125,7 @@
           "count": 1
         }
       ],
-      "timestamp": "2026-05-25T22:59:16.824Z"
+      "timestamp": "2026-05-28T21:48:53.233Z"
     }
   },
   {
@@ -1147,7 +1140,7 @@
       "success": true,
       "data": [
         {
-          "_id": "6a14d44132d797211587d045",
+          "_id": "6a18b8431baef6f0ecea5324",
           "businessName": "Super Workshop Tech",
           "registrationStatus": "approved",
           "isApproved": true,
@@ -1161,10 +1154,10 @@
           "serviceCategories": [
             "towing"
           ],
-          "id": "6a14d44132d797211587d045"
+          "id": "6a18b8431baef6f0ecea5324"
         }
       ],
-      "timestamp": "2026-05-25T22:59:16.867Z"
+      "timestamp": "2026-05-28T21:48:53.257Z"
     }
   },
   {
@@ -1179,7 +1172,7 @@
       "success": true,
       "data": [
         {
-          "_id": "6a14d44432d797211587d0e2",
+          "_id": "6a18b8441baef6f0ecea53c1",
           "name": "sample_name",
           "nameAr": "sample_nameAr",
           "description": "sample_description",
@@ -1191,12 +1184,12 @@
           "isActive": true,
           "tier": "basic",
           "sortOrder": 1,
-          "createdAt": "2026-05-25T22:59:16.051Z",
-          "updatedAt": "2026-05-25T22:59:16.051Z",
-          "id": "6a14d44432d797211587d0e2"
+          "createdAt": "2026-05-28T21:48:52.840Z",
+          "updatedAt": "2026-05-28T21:48:52.840Z",
+          "id": "6a18b8441baef6f0ecea53c1"
         },
         {
-          "_id": "6a14d4366eff5ea22c70501b",
+          "_id": "6a18b84203a01d3f17989519",
           "name": "Basic Plan",
           "nameAr": "الخطة الأساسية",
           "price": 0,
@@ -1212,12 +1205,12 @@
           "isActive": true,
           "tier": "basic",
           "sortOrder": 1,
-          "createdAt": "2026-05-25T22:59:02.278Z",
-          "updatedAt": "2026-05-25T22:59:02.278Z",
-          "id": "6a14d4366eff5ea22c70501b"
+          "createdAt": "2026-05-28T21:48:50.552Z",
+          "updatedAt": "2026-05-28T21:48:50.552Z",
+          "id": "6a18b84203a01d3f17989519"
         },
         {
-          "_id": "6a14d4366eff5ea22c70501c",
+          "_id": "6a18b84203a01d3f1798951a",
           "name": "Silver Plan",
           "nameAr": "الخطة الفضية",
           "price": 50,
@@ -1235,12 +1228,12 @@
           "isActive": true,
           "tier": "silver",
           "sortOrder": 2,
-          "createdAt": "2026-05-25T22:59:02.279Z",
-          "updatedAt": "2026-05-25T22:59:02.279Z",
-          "id": "6a14d4366eff5ea22c70501c"
+          "createdAt": "2026-05-28T21:48:50.552Z",
+          "updatedAt": "2026-05-28T21:48:50.552Z",
+          "id": "6a18b84203a01d3f1798951a"
         },
         {
-          "_id": "6a14d4366eff5ea22c70501d",
+          "_id": "6a18b84203a01d3f1798951b",
           "name": "Gold Plan",
           "nameAr": "الخطة الذهبية",
           "price": 150,
@@ -1258,12 +1251,12 @@
           "isActive": true,
           "tier": "gold",
           "sortOrder": 3,
-          "createdAt": "2026-05-25T22:59:02.279Z",
-          "updatedAt": "2026-05-25T22:59:02.279Z",
-          "id": "6a14d4366eff5ea22c70501d"
+          "createdAt": "2026-05-28T21:48:50.553Z",
+          "updatedAt": "2026-05-28T21:48:50.553Z",
+          "id": "6a18b84203a01d3f1798951b"
         }
       ],
-      "timestamp": "2026-05-25T22:59:16.909Z"
+      "timestamp": "2026-05-28T21:48:53.273Z"
     }
   },
   {
@@ -1287,12 +1280,12 @@
         "isActive": true,
         "tier": "basic",
         "sortOrder": 0,
-        "_id": "6a14d44432d797211587d150",
-        "createdAt": "2026-05-25T22:59:16.945Z",
-        "updatedAt": "2026-05-25T22:59:16.945Z",
-        "id": "6a14d44432d797211587d150"
+        "_id": "6a18b8451baef6f0ecea542f",
+        "createdAt": "2026-05-28T21:48:53.284Z",
+        "updatedAt": "2026-05-28T21:48:53.284Z",
+        "id": "6a18b8451baef6f0ecea542f"
       },
-      "timestamp": "2026-05-25T22:59:16.962Z"
+      "timestamp": "2026-05-28T21:48:53.291Z"
     }
   },
   {
@@ -1308,7 +1301,7 @@
       "statusCode": 400,
       "message": "Invalid plan ID format",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:16.988Z",
+      "timestamp": "2026-05-28T21:48:53.302Z",
       "path": "/api/v1/admin/memberships/%7B%7Bid%7D%7D"
     }
   },
@@ -1325,7 +1318,7 @@
       "statusCode": 400,
       "message": "Invalid plan ID format",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:17.010Z",
+      "timestamp": "2026-05-28T21:48:53.311Z",
       "path": "/api/v1/admin/memberships/%7B%7Bid%7D%7D"
     }
   },
@@ -1348,7 +1341,7 @@
           "pages": 0
         }
       },
-      "timestamp": "2026-05-25T22:59:17.047Z"
+      "timestamp": "2026-05-28T21:48:53.322Z"
     }
   },
   {
@@ -1362,7 +1355,7 @@
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d44532d797211587d160",
+        "id": "6a18b8451baef6f0ecea543f",
         "phone": "+963911887766",
         "businessName": "Admin Test Provider",
         "role": "provider",
@@ -1386,8 +1379,8 @@
         "services": [],
         "workingHours": [],
         "documents": [],
-        "createdAt": "2026-05-25T22:59:17.083Z",
-        "updatedAt": "2026-05-25T22:59:17.083Z",
+        "createdAt": "2026-05-28T21:48:53.341Z",
+        "updatedAt": "2026-05-28T21:48:53.341Z",
         "accountStatus": "pending",
         "coverageAreas": [],
         "requestedServices": [],
@@ -1404,7 +1397,7 @@
         "tags": [],
         "isPhoneVerified": false
       },
-      "timestamp": "2026-05-25T22:59:17.098Z"
+      "timestamp": "2026-05-28T21:48:53.350Z"
     }
   },
   {
@@ -1420,7 +1413,7 @@
       "statusCode": 404,
       "message": "Provider not found",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:17.127Z",
+      "timestamp": "2026-05-28T21:48:53.366Z",
       "path": "/api/v1/providers/admin/60b8d295f1d293001f3e4c8b"
     }
   },
@@ -1429,13 +1422,13 @@
     "name": "GET /providers/admin/:id",
     "folder": "admins - providers",
     "method": "GET",
-    "url": "http://localhost:3001/api/v1/providers/admin/6a14d44132d797211587d045",
+    "url": "http://localhost:3001/api/v1/providers/admin/6a18b8431baef6f0ecea5324",
     "status": "Passed",
     "code": 200,
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d44132d797211587d045",
+        "id": "6a18b8431baef6f0ecea5324",
         "phone": "+963992223333",
         "businessName": "Super Workshop Tech",
         "role": "provider",
@@ -1459,13 +1452,13 @@
         "ownerName": "Super Workshop Tech",
         "images": [],
         "services": [
-          "{\n  _id: new ObjectId('6a14d4366eff5ea22c70502c'),\n  name: 'Towing Service',\n  nameAr: 'خدمة السحب',\n  description: 'Professional vehicle towing service',\n  descriptionAr: 'خدمة سحب المركبات الاحترافية',\n  category: 'towing',\n  basePrice: 150,\n  discountedPrice: 0,\n  estimatedDuration: 60,\n  isEmergency: true,\n  isActive: true,\n  isSystemService: true,\n  sortOrder: 1,\n  options: [],\n  createdAt: 2026-05-25T22:59:02.703Z,\n  updatedAt: 2026-05-25T22:59:16.456Z,\n  __v: 0\n}"
+          "{\n  _id: new ObjectId('6a18b84203a01d3f1798956c'),\n  name: 'Towing Service',\n  nameAr: 'خدمة السحب',\n  description: 'Professional vehicle towing service',\n  descriptionAr: 'خدمة سحب المركبات الاحترافية',\n  category: 'towing',\n  basePrice: 150,\n  discountedPrice: 0,\n  estimatedDuration: 60,\n  isEmergency: true,\n  isActive: true,\n  isSystemService: true,\n  sortOrder: 1,\n  options: [],\n  createdAt: 2026-05-28T21:48:50.916Z,\n  updatedAt: 2026-05-28T21:48:53.048Z,\n  __v: 0\n}"
         ],
         "workingHours": [],
         "documents": [],
-        "lastOnlineAt": "2026-05-25T22:59:15.161Z",
-        "createdAt": "2026-05-25T22:59:13.999Z",
-        "updatedAt": "2026-05-25T22:59:16.240Z",
+        "lastOnlineAt": "2026-05-28T21:48:52.443Z",
+        "createdAt": "2026-05-28T21:48:51.878Z",
+        "updatedAt": "2026-05-28T21:48:52.949Z",
         "accountStatus": "pending",
         "coverageAreas": [],
         "requestedServices": [],
@@ -1482,7 +1475,7 @@
         "tags": [],
         "isPhoneVerified": false
       },
-      "timestamp": "2026-05-25T22:59:17.160Z"
+      "timestamp": "2026-05-28T21:48:53.384Z"
     }
   },
   {
@@ -1490,13 +1483,13 @@
     "name": "PATCH /providers/admin/:id",
     "folder": "admins - providers",
     "method": "PATCH",
-    "url": "http://localhost:3001/api/v1/providers/admin/6a14d44132d797211587d045",
+    "url": "http://localhost:3001/api/v1/providers/admin/6a18b8431baef6f0ecea5324",
     "status": "Passed",
     "code": 200,
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d44132d797211587d045",
+        "id": "6a18b8431baef6f0ecea5324",
         "phone": "+963992223333",
         "businessName": "Admin Patched Provider",
         "role": "provider",
@@ -1520,14 +1513,14 @@
         "ownerName": "Super Workshop Tech",
         "images": [],
         "services": [
-          "6a14d4366eff5ea22c70502c"
+          "6a18b84203a01d3f1798956c"
         ],
         "workingHours": [],
         "documents": [],
         "city": "Aleppo",
-        "lastOnlineAt": "2026-05-25T22:59:15.161Z",
-        "createdAt": "2026-05-25T22:59:13.999Z",
-        "updatedAt": "2026-05-25T22:59:17.180Z",
+        "lastOnlineAt": "2026-05-28T21:48:52.443Z",
+        "createdAt": "2026-05-28T21:48:51.878Z",
+        "updatedAt": "2026-05-28T21:48:53.395Z",
         "accountStatus": "pending",
         "coverageAreas": [],
         "requestedServices": [],
@@ -1544,7 +1537,7 @@
         "tags": [],
         "isPhoneVerified": false
       },
-      "timestamp": "2026-05-25T22:59:17.192Z"
+      "timestamp": "2026-05-28T21:48:53.403Z"
     }
   },
   {
@@ -1560,7 +1553,7 @@
       "statusCode": 404,
       "message": "Provider not found",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:17.216Z",
+      "timestamp": "2026-05-28T21:48:53.419Z",
       "path": "/api/v1/providers/admin/60b8d295f1d293001f3e4c8b/reject"
     }
   },
@@ -1569,13 +1562,13 @@
     "name": "PATCH /providers/admin/:id/status",
     "folder": "admins - providers",
     "method": "PATCH",
-    "url": "http://localhost:3001/api/v1/providers/admin/6a14d44132d797211587d045/status",
+    "url": "http://localhost:3001/api/v1/providers/admin/6a18b8431baef6f0ecea5324/status",
     "status": "Passed",
     "code": 200,
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d44132d797211587d045",
+        "id": "6a18b8431baef6f0ecea5324",
         "phone": "+963992223333",
         "businessName": "Admin Patched Provider",
         "role": "provider",
@@ -1599,14 +1592,14 @@
         "ownerName": "Super Workshop Tech",
         "images": [],
         "services": [
-          "6a14d4366eff5ea22c70502c"
+          "6a18b84203a01d3f1798956c"
         ],
         "workingHours": [],
         "documents": [],
         "city": "Aleppo",
-        "lastOnlineAt": "2026-05-25T22:59:15.161Z",
-        "createdAt": "2026-05-25T22:59:13.999Z",
-        "updatedAt": "2026-05-25T22:59:17.237Z",
+        "lastOnlineAt": "2026-05-28T21:48:52.443Z",
+        "createdAt": "2026-05-28T21:48:51.878Z",
+        "updatedAt": "2026-05-28T21:48:53.435Z",
         "accountStatus": "pending",
         "coverageAreas": [],
         "requestedServices": [],
@@ -1623,7 +1616,7 @@
         "tags": [],
         "isPhoneVerified": false
       },
-      "timestamp": "2026-05-25T22:59:17.247Z"
+      "timestamp": "2026-05-28T21:48:53.445Z"
     }
   },
   {
@@ -1647,7 +1640,7 @@
         "busy": 0,
         "offline": 1
       },
-      "timestamp": "2026-05-25T22:59:17.276Z"
+      "timestamp": "2026-05-28T21:48:53.481Z"
     }
   },
   {
@@ -1661,7 +1654,7 @@
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d44532d797211587d18b",
+        "id": "6a18b8451baef6f0ecea546a",
         "name": "Audit Admin Service",
         "nameAr": "خدمة مدير التدقيق",
         "category": "roadside_assistance",
@@ -1675,10 +1668,10 @@
         "isSystemService": true,
         "options": [],
         "metadata": {},
-        "createdAt": "2026-05-25T22:59:17.300Z",
-        "updatedAt": "2026-05-25T22:59:17.300Z"
+        "createdAt": "2026-05-28T21:48:53.500Z",
+        "updatedAt": "2026-05-28T21:48:53.500Z"
       },
-      "timestamp": "2026-05-25T22:59:17.310Z"
+      "timestamp": "2026-05-28T21:48:53.524Z"
     }
   },
   {
@@ -1694,7 +1687,7 @@
       "statusCode": 404,
       "message": "Service not found",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:17.341Z",
+      "timestamp": "2026-05-28T21:48:53.561Z",
       "path": "/api/v1/services/admin/60b8d295f1d293001f3e4c8b"
     }
   },
@@ -1703,13 +1696,13 @@
     "name": "GET /services/admin/:id",
     "folder": "admins - services",
     "method": "GET",
-    "url": "http://localhost:3001/api/v1/services/admin/6a14d4366eff5ea22c70502c",
+    "url": "http://localhost:3001/api/v1/services/admin/6a18b84203a01d3f1798956c",
     "status": "Passed",
     "code": 200,
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d4366eff5ea22c70502c",
+        "id": "6a18b84203a01d3f1798956c",
         "name": "Towing Service",
         "nameAr": "خدمة السحب",
         "category": "towing",
@@ -1724,10 +1717,10 @@
         "isSystemService": true,
         "options": [],
         "metadata": {},
-        "createdAt": "2026-05-25T22:59:02.703Z",
-        "updatedAt": "2026-05-25T22:59:16.456Z"
+        "createdAt": "2026-05-28T21:48:50.916Z",
+        "updatedAt": "2026-05-28T21:48:53.048Z"
       },
-      "timestamp": "2026-05-25T22:59:17.377Z"
+      "timestamp": "2026-05-28T21:48:53.581Z"
     }
   },
   {
@@ -1735,13 +1728,13 @@
     "name": "PATCH /services/admin/:id",
     "folder": "admins - services",
     "method": "PATCH",
-    "url": "http://localhost:3001/api/v1/services/admin/6a14d4366eff5ea22c70502c",
+    "url": "http://localhost:3001/api/v1/services/admin/6a18b84203a01d3f1798956c",
     "status": "Passed",
     "code": 200,
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d4366eff5ea22c70502c",
+        "id": "6a18b84203a01d3f1798956c",
         "name": "Towing Service",
         "nameAr": "خدمة السحب",
         "category": "towing",
@@ -1756,10 +1749,10 @@
         "isSystemService": true,
         "options": [],
         "metadata": {},
-        "createdAt": "2026-05-25T22:59:02.703Z",
-        "updatedAt": "2026-05-25T22:59:17.425Z"
+        "createdAt": "2026-05-28T21:48:50.916Z",
+        "updatedAt": "2026-05-28T21:48:53.603Z"
       },
-      "timestamp": "2026-05-25T22:59:17.445Z"
+      "timestamp": "2026-05-28T21:48:53.612Z"
     }
   },
   {
@@ -1767,13 +1760,13 @@
     "name": "PATCH /services/admin/:id/status",
     "folder": "admins - services",
     "method": "PATCH",
-    "url": "http://localhost:3001/api/v1/services/admin/6a14d4366eff5ea22c70502c/status",
+    "url": "http://localhost:3001/api/v1/services/admin/6a18b84203a01d3f1798956c/status",
     "status": "Passed",
     "code": 200,
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d4366eff5ea22c70502c",
+        "id": "6a18b84203a01d3f1798956c",
         "name": "Towing Service",
         "nameAr": "خدمة السحب",
         "category": "towing",
@@ -1788,10 +1781,10 @@
         "isSystemService": true,
         "options": [],
         "metadata": {},
-        "createdAt": "2026-05-25T22:59:02.703Z",
-        "updatedAt": "2026-05-25T22:59:17.485Z"
+        "createdAt": "2026-05-28T21:48:50.916Z",
+        "updatedAt": "2026-05-28T21:48:53.627Z"
       },
-      "timestamp": "2026-05-25T22:59:17.499Z"
+      "timestamp": "2026-05-28T21:48:53.633Z"
     }
   },
   {
@@ -1807,7 +1800,7 @@
       "data": {
         "services": [
           {
-            "id": "6a14d44532d797211587d18b",
+            "id": "6a18b8451baef6f0ecea546a",
             "name": "Audit Admin Service",
             "nameAr": "خدمة مدير التدقيق",
             "category": "roadside_assistance",
@@ -1821,11 +1814,11 @@
             "isSystemService": true,
             "options": [],
             "metadata": {},
-            "createdAt": "2026-05-25T22:59:17.300Z",
-            "updatedAt": "2026-05-25T22:59:17.300Z"
+            "createdAt": "2026-05-28T21:48:53.500Z",
+            "updatedAt": "2026-05-28T21:48:53.500Z"
           },
           {
-            "id": "6a14d44432d797211587d10e",
+            "id": "6a18b8451baef6f0ecea53ed",
             "name": "Audit Service",
             "nameAr": "خدمة التدقيق",
             "category": "roadside_assistance",
@@ -1839,11 +1832,11 @@
             "isSystemService": true,
             "options": [],
             "metadata": {},
-            "createdAt": "2026-05-25T22:59:16.382Z",
-            "updatedAt": "2026-05-25T22:59:16.382Z"
+            "createdAt": "2026-05-28T21:48:53.013Z",
+            "updatedAt": "2026-05-28T21:48:53.013Z"
           },
           {
-            "id": "6a14d4366eff5ea22c70502c",
+            "id": "6a18b84203a01d3f1798956c",
             "name": "Towing Service",
             "nameAr": "خدمة السحب",
             "category": "towing",
@@ -1858,11 +1851,11 @@
             "isSystemService": true,
             "options": [],
             "metadata": {},
-            "createdAt": "2026-05-25T22:59:02.703Z",
-            "updatedAt": "2026-05-25T22:59:17.485Z"
+            "createdAt": "2026-05-28T21:48:50.916Z",
+            "updatedAt": "2026-05-28T21:48:53.627Z"
           },
           {
-            "id": "6a14d4366eff5ea22c70502d",
+            "id": "6a18b84203a01d3f1798956d",
             "name": "Battery Jump Start",
             "nameAr": "تشغيل البطارية",
             "category": "battery",
@@ -1877,11 +1870,11 @@
             "isSystemService": true,
             "options": [],
             "metadata": {},
-            "createdAt": "2026-05-25T22:59:02.703Z",
-            "updatedAt": "2026-05-25T22:59:02.703Z"
+            "createdAt": "2026-05-28T21:48:50.916Z",
+            "updatedAt": "2026-05-28T21:48:50.916Z"
           },
           {
-            "id": "6a14d4366eff5ea22c70502e",
+            "id": "6a18b84203a01d3f1798956e",
             "name": "Flat Tire Change",
             "nameAr": "تغيير الإطار المثقوب",
             "category": "tire",
@@ -1896,11 +1889,11 @@
             "isSystemService": true,
             "options": [],
             "metadata": {},
-            "createdAt": "2026-05-25T22:59:02.703Z",
-            "updatedAt": "2026-05-25T22:59:02.703Z"
+            "createdAt": "2026-05-28T21:48:50.916Z",
+            "updatedAt": "2026-05-28T21:48:50.916Z"
           },
           {
-            "id": "6a14d4366eff5ea22c70502f",
+            "id": "6a18b84203a01d3f1798956f",
             "name": "Fuel Delivery",
             "nameAr": "توصيل الوقود",
             "category": "fuel",
@@ -1915,11 +1908,11 @@
             "isSystemService": true,
             "options": [],
             "metadata": {},
-            "createdAt": "2026-05-25T22:59:02.703Z",
-            "updatedAt": "2026-05-25T22:59:02.703Z"
+            "createdAt": "2026-05-28T21:48:50.916Z",
+            "updatedAt": "2026-05-28T21:48:50.916Z"
           },
           {
-            "id": "6a14d4366eff5ea22c705030",
+            "id": "6a18b84203a01d3f17989570",
             "name": "Lockout Service",
             "nameAr": "فتح الأقفال",
             "category": "lockout",
@@ -1934,11 +1927,11 @@
             "isSystemService": true,
             "options": [],
             "metadata": {},
-            "createdAt": "2026-05-25T22:59:02.703Z",
-            "updatedAt": "2026-05-25T22:59:02.703Z"
+            "createdAt": "2026-05-28T21:48:50.916Z",
+            "updatedAt": "2026-05-28T21:48:50.916Z"
           },
           {
-            "id": "6a14d4366eff5ea22c705031",
+            "id": "6a18b84203a01d3f17989571",
             "name": "Oil Change",
             "nameAr": "تغيير الزيت",
             "category": "maintenance",
@@ -1953,11 +1946,11 @@
             "isSystemService": true,
             "options": [],
             "metadata": {},
-            "createdAt": "2026-05-25T22:59:02.703Z",
-            "updatedAt": "2026-05-25T22:59:02.703Z"
+            "createdAt": "2026-05-28T21:48:50.916Z",
+            "updatedAt": "2026-05-28T21:48:50.916Z"
           },
           {
-            "id": "6a14d4366eff5ea22c705032",
+            "id": "6a18b84203a01d3f17989572",
             "name": "Car Wash",
             "nameAr": "غسيل السيارة",
             "category": "car_wash",
@@ -1972,8 +1965,8 @@
             "isSystemService": true,
             "options": [],
             "metadata": {},
-            "createdAt": "2026-05-25T22:59:02.703Z",
-            "updatedAt": "2026-05-25T22:59:02.703Z"
+            "createdAt": "2026-05-28T21:48:50.916Z",
+            "updatedAt": "2026-05-28T21:48:50.916Z"
           }
         ],
         "pagination": {
@@ -1983,7 +1976,7 @@
           "pages": 1
         }
       },
-      "timestamp": "2026-05-25T22:59:17.538Z"
+      "timestamp": "2026-05-28T21:48:53.650Z"
     }
   },
   {
@@ -2004,7 +1997,7 @@
         "system": 9,
         "provider": 0
       },
-      "timestamp": "2026-05-25T22:59:17.576Z"
+      "timestamp": "2026-05-28T21:48:53.664Z"
     }
   },
   {
@@ -2024,7 +2017,7 @@
         "pending": 0,
         "revenue": 0
       },
-      "timestamp": "2026-05-25T22:59:17.617Z"
+      "timestamp": "2026-05-28T21:48:53.682Z"
     }
   },
   {
@@ -2046,7 +2039,7 @@
           "pages": 0
         }
       },
-      "timestamp": "2026-05-25T22:59:17.654Z"
+      "timestamp": "2026-05-28T21:48:53.698Z"
     }
   },
   {
@@ -2060,7 +2053,7 @@
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d44532d797211587d1c0",
+        "id": "6a18b8451baef6f0ecea549f",
         "name": "Admin Audit Plan",
         "nameAr": "خطة اشتراك التدقيق",
         "price": 5000,
@@ -2074,10 +2067,10 @@
         "sortOrder": 0,
         "description": "Audit subscription plan",
         "metadata": {},
-        "createdAt": "2026-05-25T22:59:17.685Z",
-        "updatedAt": "2026-05-25T22:59:17.685Z"
+        "createdAt": "2026-05-28T21:48:53.710Z",
+        "updatedAt": "2026-05-28T21:48:53.710Z"
       },
-      "timestamp": "2026-05-25T22:59:17.697Z"
+      "timestamp": "2026-05-28T21:48:53.718Z"
     }
   },
   {
@@ -2093,7 +2086,7 @@
       "statusCode": 404,
       "message": "Subscription plan not found",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:17.727Z",
+      "timestamp": "2026-05-28T21:48:53.731Z",
       "path": "/api/v1/subscriptions/admin/plans/%7B%7Bid%7D%7D"
     }
   },
@@ -2110,7 +2103,7 @@
       "statusCode": 404,
       "message": "Plan not found",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:17.755Z",
+      "timestamp": "2026-05-28T21:48:53.744Z",
       "path": "/api/v1/subscriptions/admin/plans/%7B%7Bid%7D%7D"
     }
   },
@@ -2127,7 +2120,7 @@
       "data": {
         "data": [
           {
-            "id": "6a14d44132d797211587d042",
+            "id": "6a18b8431baef6f0ecea5321",
             "fullName": "Super Workshop Tech",
             "phoneNumber": "+963992223333",
             "accountType": "provider",
@@ -2142,17 +2135,17 @@
                 "email": false
               },
               "language": "ar",
-              "_id": "6a14d44132d797211587d043",
-              "id": "6a14d44132d797211587d043"
+              "_id": "6a18b8431baef6f0ecea5322",
+              "id": "6a18b8431baef6f0ecea5322"
             },
             "isActive": true,
             "isVerified": true,
-            "lastLoginAt": "2026-05-25T22:59:14.802Z",
-            "createdAt": "2026-05-25T22:59:13.984Z",
-            "updatedAt": "2026-05-25T22:59:16.246Z"
+            "lastLoginAt": "2026-05-28T21:48:52.254Z",
+            "createdAt": "2026-05-28T21:48:51.872Z",
+            "updatedAt": "2026-05-28T21:48:52.953Z"
           },
           {
-            "id": "6a14d44132d797211587d035",
+            "id": "6a18b8431baef6f0ecea5314",
             "fullName": "Ahmad Customer",
             "phoneNumber": "+963991112222",
             "accountType": "customer",
@@ -2167,14 +2160,14 @@
                 "email": false
               },
               "language": "ar",
-              "_id": "6a14d44132d797211587d036",
-              "id": "6a14d44132d797211587d036"
+              "_id": "6a18b8431baef6f0ecea5315",
+              "id": "6a18b8431baef6f0ecea5315"
             },
             "isActive": true,
             "isVerified": true,
-            "lastLoginAt": "2026-05-25T22:59:13.703Z",
-            "createdAt": "2026-05-25T22:59:13.430Z",
-            "updatedAt": "2026-05-25T22:59:13.820Z"
+            "lastLoginAt": "2026-05-28T21:48:51.713Z",
+            "createdAt": "2026-05-28T21:48:51.553Z",
+            "updatedAt": "2026-05-28T21:48:51.781Z"
           }
         ],
         "meta": {
@@ -2184,7 +2177,7 @@
           "pages": 1
         }
       },
-      "timestamp": "2026-05-25T22:59:17.792Z"
+      "timestamp": "2026-05-28T21:48:53.761Z"
     }
   },
   {
@@ -2200,7 +2193,7 @@
       "statusCode": 404,
       "message": "المستخدم غير موجود",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:17.829Z",
+      "timestamp": "2026-05-28T21:48:53.778Z",
       "path": "/api/v1/admin/users/60b8d295f1d293001f3e4c8b"
     }
   },
@@ -2209,13 +2202,13 @@
     "name": "GET /admin/users/:id",
     "folder": "admins - users",
     "method": "GET",
-    "url": "http://localhost:3001/api/v1/admin/users/6a14d44132d797211587d035",
+    "url": "http://localhost:3001/api/v1/admin/users/6a18b8431baef6f0ecea5314",
     "status": "Passed",
     "code": 200,
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d44132d797211587d035",
+        "id": "6a18b8431baef6f0ecea5314",
         "fullName": "Ahmad Customer",
         "phoneNumber": "+963991112222",
         "accountType": "customer",
@@ -2230,16 +2223,16 @@
             "email": false
           },
           "language": "ar",
-          "_id": "6a14d44132d797211587d036",
-          "id": "6a14d44132d797211587d036"
+          "_id": "6a18b8431baef6f0ecea5315",
+          "id": "6a18b8431baef6f0ecea5315"
         },
         "isActive": true,
         "isVerified": true,
-        "lastLoginAt": "2026-05-25T22:59:13.703Z",
-        "createdAt": "2026-05-25T22:59:13.430Z",
-        "updatedAt": "2026-05-25T22:59:13.820Z"
+        "lastLoginAt": "2026-05-28T21:48:51.713Z",
+        "createdAt": "2026-05-28T21:48:51.553Z",
+        "updatedAt": "2026-05-28T21:48:51.781Z"
       },
-      "timestamp": "2026-05-25T22:59:17.879Z"
+      "timestamp": "2026-05-28T21:48:53.791Z"
     }
   },
   {
@@ -2247,13 +2240,13 @@
     "name": "PATCH /admin/users/:id",
     "folder": "admins - users",
     "method": "PATCH",
-    "url": "http://localhost:3001/api/v1/admin/users/6a14d44132d797211587d035",
+    "url": "http://localhost:3001/api/v1/admin/users/6a18b8431baef6f0ecea5314",
     "status": "Passed",
     "code": 200,
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d44132d797211587d035",
+        "id": "6a18b8431baef6f0ecea5314",
         "fullName": "Audit Updated User",
         "phoneNumber": "+963991112222",
         "accountType": "customer",
@@ -2268,16 +2261,16 @@
             "email": false
           },
           "language": "ar",
-          "_id": "6a14d44132d797211587d036",
-          "id": "6a14d44132d797211587d036"
+          "_id": "6a18b8431baef6f0ecea5315",
+          "id": "6a18b8431baef6f0ecea5315"
         },
         "isActive": true,
         "isVerified": true,
-        "lastLoginAt": "2026-05-25T22:59:13.703Z",
-        "createdAt": "2026-05-25T22:59:13.430Z",
-        "updatedAt": "2026-05-25T22:59:17.928Z"
+        "lastLoginAt": "2026-05-28T21:48:51.713Z",
+        "createdAt": "2026-05-28T21:48:51.553Z",
+        "updatedAt": "2026-05-28T21:48:53.806Z"
       },
-      "timestamp": "2026-05-25T22:59:17.951Z"
+      "timestamp": "2026-05-28T21:48:53.813Z"
     }
   },
   {
@@ -2285,13 +2278,13 @@
     "name": "PATCH /admin/users/:id/status",
     "folder": "admins - users",
     "method": "PATCH",
-    "url": "http://localhost:3001/api/v1/admin/users/6a14d44132d797211587d035/status",
+    "url": "http://localhost:3001/api/v1/admin/users/6a18b8431baef6f0ecea5314/status",
     "status": "Passed",
     "code": 200,
     "response": {
       "success": true,
       "data": {
-        "_id": "6a14d44132d797211587d035",
+        "_id": "6a18b8431baef6f0ecea5314",
         "fullName": "Audit Updated User",
         "phoneNumber": "+963991112222",
         "profileImage": null,
@@ -2303,7 +2296,7 @@
         "isActive": true,
         "isTermsAccepted": true,
         "isVerified": true,
-        "lastLoginAt": "2026-05-25T22:59:13.703Z",
+        "lastLoginAt": "2026-05-28T21:48:51.713Z",
         "vehicles": [],
         "preferences": {
           "notifications": {
@@ -2312,14 +2305,14 @@
             "email": false
           },
           "language": "ar",
-          "_id": "6a14d44132d797211587d036",
-          "id": "6a14d44132d797211587d036"
+          "_id": "6a18b8431baef6f0ecea5315",
+          "id": "6a18b8431baef6f0ecea5315"
         },
-        "createdAt": "2026-05-25T22:59:13.430Z",
-        "updatedAt": "2026-05-25T22:59:17.985Z",
-        "id": "6a14d44132d797211587d035"
+        "createdAt": "2026-05-28T21:48:51.553Z",
+        "updatedAt": "2026-05-28T21:48:53.826Z",
+        "id": "6a18b8431baef6f0ecea5314"
       },
-      "timestamp": "2026-05-25T22:59:17.997Z"
+      "timestamp": "2026-05-28T21:48:53.832Z"
     }
   },
   {
@@ -2334,7 +2327,7 @@
       "success": true,
       "data": [
         {
-          "_id": "6a14d44132d797211587d035",
+          "_id": "6a18b8431baef6f0ecea5314",
           "fullName": "Audit Updated User",
           "phoneNumber": "+963991112222",
           "profileImage": null,
@@ -2346,7 +2339,7 @@
           "isActive": true,
           "isTermsAccepted": true,
           "isVerified": true,
-          "lastLoginAt": "2026-05-25T22:59:13.703Z",
+          "lastLoginAt": "2026-05-28T21:48:51.713Z",
           "vehicles": [],
           "preferences": {
             "notifications": {
@@ -2355,15 +2348,15 @@
               "email": false
             },
             "language": "ar",
-            "_id": "6a14d44132d797211587d036",
-            "id": "6a14d44132d797211587d036"
+            "_id": "6a18b8431baef6f0ecea5315",
+            "id": "6a18b8431baef6f0ecea5315"
           },
-          "createdAt": "2026-05-25T22:59:13.430Z",
-          "updatedAt": "2026-05-25T22:59:17.985Z",
-          "id": "6a14d44132d797211587d035"
+          "createdAt": "2026-05-28T21:48:51.553Z",
+          "updatedAt": "2026-05-28T21:48:53.826Z",
+          "id": "6a18b8431baef6f0ecea5314"
         },
         {
-          "_id": "6a14d44132d797211587d042",
+          "_id": "6a18b8431baef6f0ecea5321",
           "fullName": "Super Workshop Tech",
           "phoneNumber": "+963992223333",
           "profileImage": null,
@@ -2375,7 +2368,7 @@
           "isActive": true,
           "isTermsAccepted": true,
           "isVerified": true,
-          "lastLoginAt": "2026-05-25T22:59:14.802Z",
+          "lastLoginAt": "2026-05-28T21:48:52.254Z",
           "vehicles": [],
           "preferences": {
             "notifications": {
@@ -2384,15 +2377,15 @@
               "email": false
             },
             "language": "ar",
-            "_id": "6a14d44132d797211587d043",
-            "id": "6a14d44132d797211587d043"
+            "_id": "6a18b8431baef6f0ecea5322",
+            "id": "6a18b8431baef6f0ecea5322"
           },
-          "createdAt": "2026-05-25T22:59:13.984Z",
-          "updatedAt": "2026-05-25T22:59:16.246Z",
-          "id": "6a14d44132d797211587d042"
+          "createdAt": "2026-05-28T21:48:51.872Z",
+          "updatedAt": "2026-05-28T21:48:52.953Z",
+          "id": "6a18b8431baef6f0ecea5321"
         }
       ],
-      "timestamp": "2026-05-25T22:59:18.036Z"
+      "timestamp": "2026-05-28T21:48:53.848Z"
     }
   },
   {
@@ -2408,8 +2401,8 @@
       "data": {
         "vehicles": [
           {
-            "id": "6a14d44232d797211587d067",
-            "userId": "6a14d44132d797211587d035",
+            "id": "6a18b8441baef6f0ecea5346",
+            "userId": "6a18b8431baef6f0ecea5314",
             "brand": "Toyota",
             "model": "Camry",
             "year": 2022,
@@ -2418,8 +2411,8 @@
             "vin": null,
             "isDefault": true,
             "isActive": true,
-            "createdAt": "2026-05-25T22:59:14.993Z",
-            "updatedAt": "2026-05-25T22:59:14.993Z"
+            "createdAt": "2026-05-28T21:48:52.347Z",
+            "updatedAt": "2026-05-28T21:48:52.347Z"
           }
         ],
         "pagination": {
@@ -2429,7 +2422,7 @@
           "pages": 1
         }
       },
-      "timestamp": "2026-05-25T22:59:18.068Z"
+      "timestamp": "2026-05-28T21:48:53.863Z"
     }
   },
   {
@@ -2445,7 +2438,7 @@
       "statusCode": 404,
       "message": "Vehicle not found",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:18.091Z",
+      "timestamp": "2026-05-28T21:48:53.879Z",
       "path": "/api/v1/admin/vehicles/60b8d295f1d293001f3e4c8b"
     }
   },
@@ -2454,14 +2447,14 @@
     "name": "GET /admin/vehicles/:id",
     "folder": "admins - vehicles",
     "method": "GET",
-    "url": "http://localhost:3001/api/v1/admin/vehicles/6a14d44232d797211587d067",
+    "url": "http://localhost:3001/api/v1/admin/vehicles/6a18b8441baef6f0ecea5346",
     "status": "Passed",
     "code": 200,
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d44232d797211587d067",
-        "userId": "6a14d44132d797211587d035",
+        "id": "6a18b8441baef6f0ecea5346",
+        "userId": "6a18b8431baef6f0ecea5314",
         "brand": "Toyota",
         "model": "Camry",
         "year": 2022,
@@ -2470,10 +2463,10 @@
         "vin": null,
         "isDefault": true,
         "isActive": true,
-        "createdAt": "2026-05-25T22:59:14.993Z",
-        "updatedAt": "2026-05-25T22:59:14.993Z"
+        "createdAt": "2026-05-28T21:48:52.347Z",
+        "updatedAt": "2026-05-28T21:48:52.347Z"
       },
-      "timestamp": "2026-05-25T22:59:18.117Z"
+      "timestamp": "2026-05-28T21:48:53.894Z"
     }
   },
   {
@@ -2493,7 +2486,7 @@
           "percentage": 100
         }
       ],
-      "timestamp": "2026-05-25T22:59:18.149Z"
+      "timestamp": "2026-05-28T21:48:53.913Z"
     }
   },
   {
@@ -2515,7 +2508,7 @@
         ],
         "total": 1
       },
-      "timestamp": "2026-05-25T22:59:18.171Z"
+      "timestamp": "2026-05-28T21:48:53.928Z"
     }
   },
   {
@@ -2535,7 +2528,7 @@
           "model": "Camry"
         }
       ],
-      "timestamp": "2026-05-25T22:59:18.196Z"
+      "timestamp": "2026-05-28T21:48:53.942Z"
     }
   },
   {
@@ -2543,7 +2536,7 @@
     "name": "GET /admin/vehicles/user/:userId",
     "folder": "admins - vehicles",
     "method": "GET",
-    "url": "http://localhost:3001/api/v1/admin/vehicles/user/6a14d44132d797211587d035",
+    "url": "http://localhost:3001/api/v1/admin/vehicles/user/6a18b8431baef6f0ecea5314",
     "status": "Passed",
     "code": 200,
     "response": {
@@ -2557,7 +2550,7 @@
           "pages": 0
         }
       },
-      "timestamp": "2026-05-25T22:59:18.222Z"
+      "timestamp": "2026-05-28T21:48:53.955Z"
     }
   },
   {
@@ -2576,7 +2569,7 @@
           "year": 2022
         }
       ],
-      "timestamp": "2026-05-25T22:59:18.244Z"
+      "timestamp": "2026-05-28T21:48:53.972Z"
     }
   },
   {
@@ -2599,11 +2592,11 @@
           "loyaltyPoints": 0,
           "currency": "SAR",
           "isActive": true,
-          "id": "6a14d44632d797211587d20f",
+          "id": "6a18b8451baef6f0ecea54ee",
           "metadata": {}
         }
       },
-      "timestamp": "2026-05-25T22:59:18.271Z"
+      "timestamp": "2026-05-28T21:48:53.988Z"
     }
   },
   {
@@ -2620,7 +2613,7 @@
         "success": true,
         "message": "Balance adjusted successfully (Skeleton)"
       },
-      "timestamp": "2026-05-25T22:59:18.307Z"
+      "timestamp": "2026-05-28T21:48:54.005Z"
     }
   },
   {
@@ -2638,7 +2631,7 @@
         "data": [],
         "total": 0
       },
-      "timestamp": "2026-05-25T22:59:18.380Z"
+      "timestamp": "2026-05-28T21:48:54.022Z"
     }
   },
   {
@@ -2654,7 +2647,7 @@
       "statusCode": 404,
       "message": "Transaction not found",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:18.428Z",
+      "timestamp": "2026-05-28T21:48:54.036Z",
       "path": "/api/v1/admin/wallet/payouts/60b8d295f1d293001f3e4c9a"
     }
   },
@@ -2678,11 +2671,11 @@
           "loyaltyPoints": 0,
           "currency": "SAR",
           "isActive": true,
-          "id": "6a14d44332d797211587d0b3",
+          "id": "6a18b8441baef6f0ecea5392",
           "metadata": {}
         }
       },
-      "timestamp": "2026-05-25T22:59:18.461Z"
+      "timestamp": "2026-05-28T21:48:54.049Z"
     }
   },
   {
@@ -2699,25 +2692,25 @@
         "success": true,
         "data": [
           {
-            "transactionNumber": "TXN-1779749955428-4757",
-            "walletId": "6a14d44332d797211587d0b3",
+            "transactionNumber": "TXN-1780004932604-7589",
+            "walletId": "6a18b8441baef6f0ecea5392",
             "ownerId": "platform_earnings",
             "ownerType": "system",
             "type": "credit",
             "amount": 15,
             "balanceBefore": 0,
             "balanceAfter": 15,
-            "description": "Commission from order #6a14d44332d797211587d080 (Provider: 6a14d44132d797211587d045)",
-            "id": "6a14d44332d797211587d0b6",
+            "description": "Commission from order #6a18b8441baef6f0ecea535f (Provider: 6a18b8431baef6f0ecea5324)",
+            "id": "6a18b8441baef6f0ecea5395",
             "referenceType": "order",
-            "referenceId": "6a14d44332d797211587d080",
+            "referenceId": "6a18b8441baef6f0ecea535f",
             "status": "completed",
             "metadata": {}
           }
         ],
         "total": 1
       },
-      "timestamp": "2026-05-25T22:59:18.498Z"
+      "timestamp": "2026-05-28T21:48:54.065Z"
     }
   },
   {
@@ -2739,7 +2732,7 @@
           "currency": "SAR"
         }
       },
-      "timestamp": "2026-05-25T22:59:18.534Z"
+      "timestamp": "2026-05-28T21:48:54.081Z"
     }
   },
   {
@@ -2756,41 +2749,41 @@
         "success": true,
         "data": [
           {
-            "transactionNumber": "TXN-1779749955428-4757",
-            "walletId": "6a14d44332d797211587d0b3",
+            "transactionNumber": "TXN-1780004932604-7589",
+            "walletId": "6a18b8441baef6f0ecea5392",
             "ownerId": "platform_earnings",
             "ownerType": "system",
             "type": "credit",
             "amount": 15,
             "balanceBefore": 0,
             "balanceAfter": 15,
-            "description": "Commission from order #6a14d44332d797211587d080 (Provider: 6a14d44132d797211587d045)",
-            "id": "6a14d44332d797211587d0b6",
+            "description": "Commission from order #6a18b8441baef6f0ecea535f (Provider: 6a18b8431baef6f0ecea5324)",
+            "id": "6a18b8441baef6f0ecea5395",
             "referenceType": "order",
-            "referenceId": "6a14d44332d797211587d080",
+            "referenceId": "6a18b8441baef6f0ecea535f",
             "status": "completed",
             "metadata": {}
           },
           {
-            "transactionNumber": "TXN-1779749955405-5179",
-            "walletId": "6a14d44332d797211587d0ab",
-            "ownerId": "6a14d44132d797211587d045",
+            "transactionNumber": "TXN-1780004932592-8339",
+            "walletId": "6a18b8441baef6f0ecea538a",
+            "ownerId": "6a18b8431baef6f0ecea5324",
             "ownerType": "provider",
             "type": "credit",
             "amount": 135,
             "balanceBefore": 0,
             "balanceAfter": 135,
-            "description": "Earnings from order #6a14d44332d797211587d080 (10% commission deducted: 15 SAR)",
-            "id": "6a14d44332d797211587d0b0",
+            "description": "Earnings from order #6a18b8441baef6f0ecea535f (10% commission deducted: 15 SAR)",
+            "id": "6a18b8441baef6f0ecea538f",
             "referenceType": "order",
-            "referenceId": "6a14d44332d797211587d080",
+            "referenceId": "6a18b8441baef6f0ecea535f",
             "status": "completed",
             "metadata": {}
           }
         ],
         "total": 2
       },
-      "timestamp": "2026-05-25T22:59:18.564Z"
+      "timestamp": "2026-05-28T21:48:54.096Z"
     }
   },
   {
@@ -2806,7 +2799,7 @@
       "statusCode": 404,
       "message": "Chat not found",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:18.597Z",
+      "timestamp": "2026-05-28T21:48:54.113Z",
       "path": "/api/v1/chat/60b8d295f1d293001f3e4c94/messages"
     }
   },
@@ -2824,7 +2817,7 @@
         "success": true,
         "data": []
       },
-      "timestamp": "2026-05-25T22:59:18.628Z"
+      "timestamp": "2026-05-28T21:48:54.131Z"
     }
   },
   {
@@ -2840,21 +2833,21 @@
       "data": {
         "success": true,
         "data": {
-          "orderId": "6a14d44332d797211587d080",
+          "orderId": "6a18b8441baef6f0ecea535f",
           "participants": [
-            "6a14d44132d797211587d035",
-            "6a14d44132d797211587d045"
+            "6a18b8431baef6f0ecea5314",
+            "6a18b8431baef6f0ecea5324"
           ],
           "isActive": true,
           "unreadCounts": {},
-          "_id": "6a14d44632d797211587d241",
+          "_id": "6a18b8461baef6f0ecea5520",
           "messages": [],
-          "createdAt": "2026-05-25T22:59:18.672Z",
-          "updatedAt": "2026-05-25T22:59:18.672Z",
-          "id": "6a14d44632d797211587d241"
+          "createdAt": "2026-05-28T21:48:54.150Z",
+          "updatedAt": "2026-05-28T21:48:54.150Z",
+          "id": "6a18b8461baef6f0ecea5520"
         }
       },
-      "timestamp": "2026-05-25T22:59:18.679Z"
+      "timestamp": "2026-05-28T21:48:54.153Z"
     }
   },
   {
@@ -2870,7 +2863,7 @@
       "statusCode": 400,
       "message": "File is required",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:18.714Z",
+      "timestamp": "2026-05-28T21:48:54.169Z",
       "path": "/api/v1/chat/upload"
     }
   },
@@ -2887,54 +2880,54 @@
       "data": {
         "notifications": [
           {
-            "_id": "6a14d44332d797211587d0b8",
-            "recipientId": "6a14d44132d797211587d035",
+            "_id": "6a18b8441baef6f0ecea5397",
+            "recipientId": "6a18b8431baef6f0ecea5314",
             "recipientType": "user",
             "title": "Order Updated 🔔",
-            "body": "Your order CH-1779749955200-308 status changed to completed",
+            "body": "Your order CH-1780004932471-321 status changed to completed",
             "type": "order_updated",
             "data": {
-              "orderId": "6a14d44332d797211587d080",
-              "orderNumber": "CH-1779749955200-308",
+              "orderId": "6a18b8441baef6f0ecea535f",
+              "orderNumber": "CH-1780004932471-321",
               "status": "completed"
             },
             "isRead": false,
-            "createdAt": "2026-05-25T22:59:15.447Z",
-            "updatedAt": "2026-05-25T22:59:15.447Z",
+            "createdAt": "2026-05-28T21:48:52.611Z",
+            "updatedAt": "2026-05-28T21:48:52.611Z",
             "__v": 0
           },
           {
-            "_id": "6a14d44332d797211587d09b",
-            "recipientId": "6a14d44132d797211587d035",
+            "_id": "6a18b8441baef6f0ecea537a",
+            "recipientId": "6a18b8431baef6f0ecea5314",
             "recipientType": "user",
             "title": "Order Updated 🔔",
-            "body": "Your order CH-1779749955200-308 status changed to in_progress",
+            "body": "Your order CH-1780004932471-321 status changed to in_progress",
             "type": "order_updated",
             "data": {
-              "orderId": "6a14d44332d797211587d080",
-              "orderNumber": "CH-1779749955200-308",
+              "orderId": "6a18b8441baef6f0ecea535f",
+              "orderNumber": "CH-1780004932471-321",
               "status": "in_progress"
             },
             "isRead": false,
-            "createdAt": "2026-05-25T22:59:15.312Z",
-            "updatedAt": "2026-05-25T22:59:15.312Z",
+            "createdAt": "2026-05-28T21:48:52.540Z",
+            "updatedAt": "2026-05-28T21:48:52.540Z",
             "__v": 0
           },
           {
-            "_id": "6a14d44332d797211587d08e",
-            "recipientId": "6a14d44132d797211587d035",
+            "_id": "6a18b8441baef6f0ecea536d",
+            "recipientId": "6a18b8431baef6f0ecea5314",
             "recipientType": "user",
             "title": "Order Updated 🔔",
-            "body": "Your order CH-1779749955200-308 status changed to accepted",
+            "body": "Your order CH-1780004932471-321 status changed to accepted",
             "type": "order_updated",
             "data": {
-              "orderId": "6a14d44332d797211587d080",
-              "orderNumber": "CH-1779749955200-308",
+              "orderId": "6a18b8441baef6f0ecea535f",
+              "orderNumber": "CH-1780004932471-321",
               "status": "accepted"
             },
             "isRead": false,
-            "createdAt": "2026-05-25T22:59:15.270Z",
-            "updatedAt": "2026-05-25T22:59:15.270Z",
+            "createdAt": "2026-05-28T21:48:52.508Z",
+            "updatedAt": "2026-05-28T21:48:52.508Z",
             "__v": 0
           }
         ],
@@ -2942,7 +2935,7 @@
         "page": 1,
         "limit": 20
       },
-      "timestamp": "2026-05-25T22:59:18.750Z"
+      "timestamp": "2026-05-28T21:48:54.183Z"
     }
   },
   {
@@ -2959,7 +2952,7 @@
         "success": true,
         "data": null
       },
-      "timestamp": "2026-05-25T22:59:18.784Z"
+      "timestamp": "2026-05-28T21:48:54.197Z"
     }
   },
   {
@@ -2976,7 +2969,7 @@
         "success": true,
         "message": "All notifications marked as read"
       },
-      "timestamp": "2026-05-25T22:59:18.829Z"
+      "timestamp": "2026-05-28T21:48:54.212Z"
     }
   },
   {
@@ -2993,7 +2986,7 @@
         "success": true,
         "count": 0
       },
-      "timestamp": "2026-05-25T22:59:18.876Z"
+      "timestamp": "2026-05-28T21:48:54.227Z"
     }
   },
   {
@@ -3009,10 +3002,10 @@
       "data": {
         "orders": [
           {
-            "id": "6a14d44332d797211587d080",
-            "orderNumber": "CH-1779749955200-308",
-            "userId": "6a14d44132d797211587d035",
-            "serviceId": "6a14d4366eff5ea22c70502c",
+            "id": "6a18b8441baef6f0ecea535f",
+            "orderNumber": "CH-1780004932471-321",
+            "userId": "6a18b8431baef6f0ecea5314",
+            "serviceId": "6a18b84203a01d3f1798956c",
             "status": "completed",
             "total": 150,
             "userLocation": {
@@ -3022,15 +3015,15 @@
                 33.51306
               ]
             },
-            "providerId": "6a14d44132d797211587d045",
-            "vehicleId": "6a14d44232d797211587d067",
+            "providerId": "6a18b8431baef6f0ecea5324",
+            "vehicleId": "6a18b8441baef6f0ecea5346",
             "servicePrice": 150,
             "isScheduled": false,
             "paymentStatus": "pending",
             "paymentMethod": "cash",
             "userNotes": "Please bring tow truck",
-            "createdAt": "2026-05-25T22:59:15.204Z",
-            "updatedAt": "2026-05-25T22:59:15.512Z"
+            "createdAt": "2026-05-28T21:48:52.474Z",
+            "updatedAt": "2026-05-28T21:48:52.639Z"
           }
         ],
         "pagination": {
@@ -3040,7 +3033,7 @@
           "pages": 1
         }
       },
-      "timestamp": "2026-05-25T22:59:18.931Z"
+      "timestamp": "2026-05-28T21:48:54.250Z"
     }
   },
   {
@@ -3054,10 +3047,10 @@
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d44632d797211587d260",
-        "orderNumber": "CH-1779749958977-420",
-        "userId": "6a14d44132d797211587d035",
-        "serviceId": "6a14d4366eff5ea22c70502c",
+        "id": "6a18b8461baef6f0ecea553f",
+        "orderNumber": "CH-1780004934269-36",
+        "userId": "6a18b8431baef6f0ecea5314",
+        "serviceId": "6a18b84203a01d3f1798956c",
         "status": "pending",
         "total": 150,
         "userLocation": {
@@ -3067,16 +3060,16 @@
             33.5138
           ]
         },
-        "vehicleId": "6a14d44232d797211587d067",
+        "vehicleId": "6a18b8441baef6f0ecea5346",
         "servicePrice": 150,
         "isScheduled": false,
         "paymentStatus": "pending",
         "paymentMethod": "cash",
         "userNotes": "Audit order request",
-        "createdAt": "2026-05-25T22:59:18.982Z",
-        "updatedAt": "2026-05-25T22:59:18.982Z"
+        "createdAt": "2026-05-28T21:48:54.270Z",
+        "updatedAt": "2026-05-28T21:48:54.270Z"
       },
-      "timestamp": "2026-05-25T22:59:18.997Z"
+      "timestamp": "2026-05-28T21:48:54.277Z"
     }
   },
   {
@@ -3093,16 +3086,16 @@
     "name": "GET /orders/:id",
     "folder": "orders",
     "method": "GET",
-    "url": "http://localhost:3001/api/v1/orders/6a14d44332d797211587d080",
+    "url": "http://localhost:3001/api/v1/orders/6a18b8441baef6f0ecea535f",
     "status": "Passed",
     "code": 200,
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d44332d797211587d080",
-        "orderNumber": "CH-1779749955200-308",
-        "userId": "6a14d44132d797211587d035",
-        "serviceId": "6a14d4366eff5ea22c70502c",
+        "id": "6a18b8441baef6f0ecea535f",
+        "orderNumber": "CH-1780004932471-321",
+        "userId": "6a18b8431baef6f0ecea5314",
+        "serviceId": "6a18b84203a01d3f1798956c",
         "status": "completed",
         "total": 150,
         "userLocation": {
@@ -3112,17 +3105,17 @@
             33.51306
           ]
         },
-        "providerId": "6a14d44132d797211587d045",
-        "vehicleId": "6a14d44232d797211587d067",
+        "providerId": "6a18b8431baef6f0ecea5324",
+        "vehicleId": "6a18b8441baef6f0ecea5346",
         "servicePrice": 150,
         "isScheduled": false,
         "paymentStatus": "pending",
         "paymentMethod": "cash",
         "userNotes": "Please bring tow truck",
-        "createdAt": "2026-05-25T22:59:15.204Z",
-        "updatedAt": "2026-05-25T22:59:15.512Z"
+        "createdAt": "2026-05-28T21:48:52.474Z",
+        "updatedAt": "2026-05-28T21:48:52.639Z"
       },
-      "timestamp": "2026-05-25T22:59:19.030Z"
+      "timestamp": "2026-05-28T21:48:54.291Z"
     }
   },
   {
@@ -3130,18 +3123,18 @@
     "name": "GET /orders/:id/status-transitions",
     "folder": "orders",
     "method": "GET",
-    "url": "http://localhost:3001/api/v1/orders/6a14d44332d797211587d080/status-transitions",
+    "url": "http://localhost:3001/api/v1/orders/6a18b8441baef6f0ecea535f/status-transitions",
     "status": "Passed",
     "code": 200,
     "response": {
       "success": true,
       "data": {
-        "orderId": "6a14d44332d797211587d080",
+        "orderId": "6a18b8441baef6f0ecea535f",
         "currentStatus": "completed",
         "allowedNextStatuses": [],
         "isTerminal": true
       },
-      "timestamp": "2026-05-25T22:59:19.060Z"
+      "timestamp": "2026-05-28T21:48:54.302Z"
     }
   },
   {
@@ -3149,16 +3142,16 @@
     "name": "PATCH /orders/:id",
     "folder": "orders",
     "method": "PATCH",
-    "url": "http://localhost:3001/api/v1/orders/6a14d44332d797211587d080",
+    "url": "http://localhost:3001/api/v1/orders/6a18b8441baef6f0ecea535f",
     "status": "Passed",
     "code": 200,
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d44332d797211587d080",
-        "orderNumber": "CH-1779749955200-308",
-        "userId": "6a14d44132d797211587d035",
-        "serviceId": "6a14d4366eff5ea22c70502c",
+        "id": "6a18b8441baef6f0ecea535f",
+        "orderNumber": "CH-1780004932471-321",
+        "userId": "6a18b8431baef6f0ecea5314",
+        "serviceId": "6a18b84203a01d3f1798956c",
         "status": "completed",
         "total": 150,
         "userLocation": {
@@ -3168,17 +3161,17 @@
             33.51306
           ]
         },
-        "providerId": "6a14d44132d797211587d045",
-        "vehicleId": "6a14d44232d797211587d067",
+        "providerId": "6a18b8431baef6f0ecea5324",
+        "vehicleId": "6a18b8441baef6f0ecea5346",
         "servicePrice": 150,
         "isScheduled": false,
         "paymentStatus": "pending",
         "paymentMethod": "cash",
         "userNotes": "Please bring tow truck",
-        "createdAt": "2026-05-25T22:59:15.204Z",
-        "updatedAt": "2026-05-25T22:59:19.089Z"
+        "createdAt": "2026-05-28T21:48:52.474Z",
+        "updatedAt": "2026-05-28T21:48:54.317Z"
       },
-      "timestamp": "2026-05-25T22:59:19.095Z"
+      "timestamp": "2026-05-28T21:48:54.322Z"
     }
   },
   {
@@ -3194,7 +3187,7 @@
       "statusCode": 404,
       "message": "Order not found",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:19.128Z",
+      "timestamp": "2026-05-28T21:48:54.335Z",
       "path": "/api/v1/orders/60b8d295f1d293001f3e4c8b/cancel"
     }
   },
@@ -3203,7 +3196,7 @@
     "name": "PATCH /orders/:id/location",
     "folder": "orders",
     "method": "PATCH",
-    "url": "http://localhost:3001/api/v1/orders/6a14d44332d797211587d080/location",
+    "url": "http://localhost:3001/api/v1/orders/6a18b8441baef6f0ecea535f/location",
     "status": "Passed",
     "code": 400,
     "response": {
@@ -3211,8 +3204,8 @@
       "statusCode": 400,
       "message": "Location tracking is only available for active orders",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:19.165Z",
-      "path": "/api/v1/orders/6a14d44332d797211587d080/location"
+      "timestamp": "2026-05-28T21:48:54.351Z",
+      "path": "/api/v1/orders/6a18b8441baef6f0ecea535f/location"
     }
   },
   {
@@ -3220,16 +3213,16 @@
     "name": "POST /orders/:id/payment/verify",
     "folder": "orders",
     "method": "POST",
-    "url": "http://localhost:3001/api/v1/orders/6a14d44332d797211587d080/payment/verify",
+    "url": "http://localhost:3001/api/v1/orders/6a18b8441baef6f0ecea535f/payment/verify",
     "status": "Passed",
     "code": 201,
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d44332d797211587d080",
-        "orderNumber": "CH-1779749955200-308",
-        "userId": "6a14d44132d797211587d035",
-        "serviceId": "6a14d4366eff5ea22c70502c",
+        "id": "6a18b8441baef6f0ecea535f",
+        "orderNumber": "CH-1780004932471-321",
+        "userId": "6a18b8431baef6f0ecea5314",
+        "serviceId": "6a18b84203a01d3f1798956c",
         "status": "completed",
         "total": 150,
         "userLocation": {
@@ -3239,17 +3232,17 @@
             33.51306
           ]
         },
-        "providerId": "6a14d44132d797211587d045",
-        "vehicleId": "6a14d44232d797211587d067",
+        "providerId": "6a18b8431baef6f0ecea5324",
+        "vehicleId": "6a18b8441baef6f0ecea5346",
         "servicePrice": 150,
         "isScheduled": false,
         "paymentStatus": "completed",
         "paymentMethod": "cash",
         "userNotes": "Please bring tow truck",
-        "createdAt": "2026-05-25T22:59:15.204Z",
-        "updatedAt": "2026-05-25T22:59:19.198Z"
+        "createdAt": "2026-05-28T21:48:52.474Z",
+        "updatedAt": "2026-05-28T21:48:54.369Z"
       },
-      "timestamp": "2026-05-25T22:59:19.232Z"
+      "timestamp": "2026-05-28T21:48:54.385Z"
     }
   },
   {
@@ -3257,7 +3250,7 @@
     "name": "POST /orders/:id/review",
     "folder": "orders",
     "method": "POST",
-    "url": "http://localhost:3001/api/v1/orders/6a14d44332d797211587d080/review",
+    "url": "http://localhost:3001/api/v1/orders/6a18b8441baef6f0ecea535f/review",
     "status": "Passed",
     "code": 400,
     "response": {
@@ -3265,8 +3258,8 @@
       "statusCode": 400,
       "message": "Review already exists for this order",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:19.266Z",
-      "path": "/api/v1/orders/6a14d44332d797211587d080/review"
+      "timestamp": "2026-05-28T21:48:54.402Z",
+      "path": "/api/v1/orders/6a18b8441baef6f0ecea535f/review"
     }
   },
   {
@@ -3274,7 +3267,7 @@
     "name": "PATCH /orders/:id/status",
     "folder": "orders",
     "method": "PATCH",
-    "url": "http://localhost:3001/api/v1/orders/6a14d44332d797211587d080/status",
+    "url": "http://localhost:3001/api/v1/orders/6a18b8441baef6f0ecea535f/status",
     "status": "Passed",
     "code": 400,
     "response": {
@@ -3282,8 +3275,8 @@
       "statusCode": 400,
       "message": "Cannot move order from terminal status \"completed\" to \"active\"",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:19.293Z",
-      "path": "/api/v1/orders/6a14d44332d797211587d080/status"
+      "timestamp": "2026-05-28T21:48:54.419Z",
+      "path": "/api/v1/orders/6a18b8441baef6f0ecea535f/status"
     }
   },
   {
@@ -3298,10 +3291,10 @@
       "success": true,
       "data": [
         {
-          "id": "6a14d44332d797211587d080",
-          "orderNumber": "CH-1779749955200-308",
-          "userId": "6a14d44132d797211587d035",
-          "serviceId": "6a14d4366eff5ea22c70502c",
+          "id": "6a18b8441baef6f0ecea535f",
+          "orderNumber": "CH-1780004932471-321",
+          "userId": "6a18b8431baef6f0ecea5314",
+          "serviceId": "6a18b84203a01d3f1798956c",
           "status": "completed",
           "total": 150,
           "userLocation": {
@@ -3311,21 +3304,21 @@
               33.51306
             ]
           },
-          "providerId": "6a14d44132d797211587d045",
-          "vehicleId": "6a14d44232d797211587d067",
+          "providerId": "6a18b8431baef6f0ecea5324",
+          "vehicleId": "6a18b8441baef6f0ecea5346",
           "servicePrice": 150,
           "isScheduled": false,
           "paymentStatus": "completed",
           "paymentMethod": "cash",
           "userNotes": "Please bring tow truck",
-          "createdAt": "2026-05-25T22:59:15.204Z",
-          "updatedAt": "2026-05-25T22:59:19.198Z"
+          "createdAt": "2026-05-28T21:48:52.474Z",
+          "updatedAt": "2026-05-28T21:48:54.369Z"
         },
         {
-          "id": "6a14d44632d797211587d260",
-          "orderNumber": "CH-1779749958977-420",
-          "userId": "6a14d44132d797211587d035",
-          "serviceId": "6a14d4366eff5ea22c70502c",
+          "id": "6a18b8461baef6f0ecea553f",
+          "orderNumber": "CH-1780004934269-36",
+          "userId": "6a18b8431baef6f0ecea5314",
+          "serviceId": "6a18b84203a01d3f1798956c",
           "status": "pending",
           "total": 150,
           "userLocation": {
@@ -3335,17 +3328,17 @@
               33.5138
             ]
           },
-          "vehicleId": "6a14d44232d797211587d067",
+          "vehicleId": "6a18b8441baef6f0ecea5346",
           "servicePrice": 150,
           "isScheduled": false,
           "paymentStatus": "pending",
           "paymentMethod": "cash",
           "userNotes": "Audit order request",
-          "createdAt": "2026-05-25T22:59:18.982Z",
-          "updatedAt": "2026-05-25T22:59:18.982Z"
+          "createdAt": "2026-05-28T21:48:54.270Z",
+          "updatedAt": "2026-05-28T21:48:54.270Z"
         }
       ],
-      "timestamp": "2026-05-25T22:59:19.321Z"
+      "timestamp": "2026-05-28T21:48:54.438Z"
     }
   },
   {
@@ -3359,7 +3352,7 @@
     "response": {
       "success": true,
       "data": [],
-      "timestamp": "2026-05-25T22:59:19.347Z"
+      "timestamp": "2026-05-28T21:48:54.450Z"
     }
   },
   {
@@ -3373,16 +3366,16 @@
     "response": {
       "success": true,
       "data": {
-        "pending": {
+        "completed": {
           "count": 1,
           "revenue": 0
         },
-        "completed": {
+        "pending": {
           "count": 1,
           "revenue": 0
         }
       },
-      "timestamp": "2026-05-25T22:59:19.387Z"
+      "timestamp": "2026-05-28T21:48:54.463Z"
     }
   },
   {
@@ -3396,10 +3389,10 @@
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d44732d797211587d29b",
-        "orderNumber": "CH-1779749959436-394",
-        "userId": "6a14d44132d797211587d042",
-        "serviceId": "6a14d4366eff5ea22c70502c",
+        "id": "6a18b8461baef6f0ecea557a",
+        "orderNumber": "CH-1780004934478-95",
+        "userId": "6a18b8431baef6f0ecea5321",
+        "serviceId": "6a18b84203a01d3f1798956c",
         "status": "pending",
         "total": 150,
         "userLocation": {
@@ -3409,17 +3402,17 @@
             33.5138
           ]
         },
-        "vehicleId": "6a14d44232d797211587d067",
+        "vehicleId": "6a18b8441baef6f0ecea5346",
         "servicePrice": 150,
-        "scheduledAt": "2026-05-26T22:59:19.390Z",
+        "scheduledAt": "2026-05-29T21:48:54.464Z",
         "isScheduled": true,
         "paymentStatus": "pending",
         "paymentMethod": "cash",
         "userNotes": "Scheduled booking test",
-        "createdAt": "2026-05-25T22:59:19.442Z",
-        "updatedAt": "2026-05-25T22:59:19.442Z"
+        "createdAt": "2026-05-28T21:48:54.480Z",
+        "updatedAt": "2026-05-28T21:48:54.480Z"
       },
-      "timestamp": "2026-05-25T22:59:19.460Z"
+      "timestamp": "2026-05-28T21:48:54.485Z"
     }
   },
   {
@@ -3441,7 +3434,7 @@
           "pages": 0
         }
       },
-      "timestamp": "2026-05-25T22:59:19.506Z"
+      "timestamp": "2026-05-28T21:48:54.498Z"
     }
   },
   {
@@ -3449,7 +3442,7 @@
     "name": "GET /bookings/:id",
     "folder": "bookings - scheduled orders",
     "method": "GET",
-    "url": "http://localhost:3001/api/v1/bookings/6a14d44332d797211587d080",
+    "url": "http://localhost:3001/api/v1/bookings/6a18b8441baef6f0ecea535f",
     "status": "Passed",
     "code": 400,
     "response": {
@@ -3457,8 +3450,8 @@
       "statusCode": 400,
       "message": "This order is not a scheduled booking",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:19.541Z",
-      "path": "/api/v1/bookings/6a14d44332d797211587d080"
+      "timestamp": "2026-05-28T21:48:54.520Z",
+      "path": "/api/v1/bookings/6a18b8441baef6f0ecea535f"
     }
   },
   {
@@ -3474,7 +3467,7 @@
       "data": {
         "data": [
           {
-            "id": "6a14d44532d797211587d160",
+            "id": "6a18b8451baef6f0ecea543f",
             "phone": "+963911887766",
             "businessName": "Admin Test Provider",
             "role": "provider",
@@ -3498,8 +3491,8 @@
             "services": [],
             "workingHours": [],
             "documents": [],
-            "createdAt": "2026-05-25T22:59:17.083Z",
-            "updatedAt": "2026-05-25T22:59:17.083Z",
+            "createdAt": "2026-05-28T21:48:53.341Z",
+            "updatedAt": "2026-05-28T21:48:53.341Z",
             "accountStatus": "pending",
             "coverageAreas": [],
             "requestedServices": [],
@@ -3517,7 +3510,7 @@
             "isPhoneVerified": false
           },
           {
-            "id": "6a14d44132d797211587d045",
+            "id": "6a18b8431baef6f0ecea5324",
             "phone": "+963992223333",
             "businessName": "Admin Patched Provider",
             "role": "provider",
@@ -3541,14 +3534,14 @@
             "ownerName": "Super Workshop Tech",
             "images": [],
             "services": [
-              "6a14d4366eff5ea22c70502c"
+              "6a18b84203a01d3f1798956c"
             ],
             "workingHours": [],
             "documents": [],
             "city": "Aleppo",
-            "lastOnlineAt": "2026-05-25T22:59:15.161Z",
-            "createdAt": "2026-05-25T22:59:13.999Z",
-            "updatedAt": "2026-05-25T22:59:17.237Z",
+            "lastOnlineAt": "2026-05-28T21:48:52.443Z",
+            "createdAt": "2026-05-28T21:48:51.878Z",
+            "updatedAt": "2026-05-28T21:48:53.435Z",
             "accountStatus": "pending",
             "coverageAreas": [],
             "requestedServices": [],
@@ -3575,7 +3568,7 @@
           "hasPrevPage": false
         }
       },
-      "timestamp": "2026-05-25T22:59:19.564Z"
+      "timestamp": "2026-05-28T21:48:54.534Z"
     }
   },
   {
@@ -3583,13 +3576,13 @@
     "name": "GET /providers/:id",
     "folder": "providers",
     "method": "GET",
-    "url": "http://localhost:3001/api/v1/providers/6a14d44132d797211587d045",
+    "url": "http://localhost:3001/api/v1/providers/6a18b8431baef6f0ecea5324",
     "status": "Passed",
     "code": 200,
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d44132d797211587d045",
+        "id": "6a18b8431baef6f0ecea5324",
         "phone": "+963992223333",
         "businessName": "Admin Patched Provider",
         "role": "provider",
@@ -3613,14 +3606,14 @@
         "ownerName": "Super Workshop Tech",
         "images": [],
         "services": [
-          "{\n  _id: new ObjectId('6a14d4366eff5ea22c70502c'),\n  name: 'Towing Service',\n  nameAr: 'خدمة السحب',\n  description: 'Professional vehicle towing service',\n  descriptionAr: 'خدمة سحب المركبات الاحترافية',\n  category: 'towing',\n  basePrice: 150,\n  discountedPrice: 0,\n  estimatedDuration: 60,\n  isEmergency: true,\n  isActive: true,\n  isSystemService: true,\n  sortOrder: 1,\n  options: [],\n  createdAt: 2026-05-25T22:59:02.703Z,\n  updatedAt: 2026-05-25T22:59:17.485Z,\n  __v: 0\n}"
+          "{\n  _id: new ObjectId('6a18b84203a01d3f1798956c'),\n  name: 'Towing Service',\n  nameAr: 'خدمة السحب',\n  description: 'Professional vehicle towing service',\n  descriptionAr: 'خدمة سحب المركبات الاحترافية',\n  category: 'towing',\n  basePrice: 150,\n  discountedPrice: 0,\n  estimatedDuration: 60,\n  isEmergency: true,\n  isActive: true,\n  isSystemService: true,\n  sortOrder: 1,\n  options: [],\n  createdAt: 2026-05-28T21:48:50.916Z,\n  updatedAt: 2026-05-28T21:48:53.627Z,\n  __v: 0\n}"
         ],
         "workingHours": [],
         "documents": [],
         "city": "Aleppo",
-        "lastOnlineAt": "2026-05-25T22:59:15.161Z",
-        "createdAt": "2026-05-25T22:59:13.999Z",
-        "updatedAt": "2026-05-25T22:59:17.237Z",
+        "lastOnlineAt": "2026-05-28T21:48:52.443Z",
+        "createdAt": "2026-05-28T21:48:51.878Z",
+        "updatedAt": "2026-05-28T21:48:53.435Z",
         "accountStatus": "pending",
         "coverageAreas": [],
         "requestedServices": [],
@@ -3637,7 +3630,7 @@
         "tags": [],
         "isPhoneVerified": false
       },
-      "timestamp": "2026-05-25T22:59:19.587Z"
+      "timestamp": "2026-05-28T21:48:54.548Z"
     }
   },
   {
@@ -3645,13 +3638,13 @@
     "name": "POST /providers/:id/approve",
     "folder": "providers",
     "method": "POST",
-    "url": "http://localhost:3001/api/v1/providers/6a14d44132d797211587d045/approve",
+    "url": "http://localhost:3001/api/v1/providers/6a18b8431baef6f0ecea5324/approve",
     "status": "Passed",
     "code": 201,
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d44132d797211587d045",
+        "id": "6a18b8431baef6f0ecea5324",
         "phone": "+963992223333",
         "businessName": "Admin Patched Provider",
         "role": "provider",
@@ -3675,15 +3668,15 @@
         "ownerName": "Super Workshop Tech",
         "images": [],
         "services": [
-          "6a14d4366eff5ea22c70502c"
+          "6a18b84203a01d3f1798956c"
         ],
         "workingHours": [],
         "documents": [],
         "rejectionReason": null,
         "city": "Aleppo",
-        "lastOnlineAt": "2026-05-25T22:59:15.161Z",
-        "createdAt": "2026-05-25T22:59:13.999Z",
-        "updatedAt": "2026-05-25T22:59:19.619Z",
+        "lastOnlineAt": "2026-05-28T21:48:52.443Z",
+        "createdAt": "2026-05-28T21:48:51.878Z",
+        "updatedAt": "2026-05-28T21:48:54.562Z",
         "accountStatus": "pending",
         "coverageAreas": [],
         "requestedServices": [],
@@ -3700,7 +3693,7 @@
         "tags": [],
         "isPhoneVerified": false
       },
-      "timestamp": "2026-05-25T22:59:19.636Z"
+      "timestamp": "2026-05-28T21:48:54.570Z"
     }
   },
   {
@@ -3714,7 +3707,7 @@
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d44132d797211587d045",
+        "id": "6a18b8431baef6f0ecea5324",
         "phone": "+963992223333",
         "businessName": "Admin Patched Provider",
         "role": "provider",
@@ -3738,15 +3731,15 @@
         "ownerName": "Super Workshop Tech",
         "images": [],
         "services": [
-          "{\n  _id: new ObjectId('6a14d4366eff5ea22c70502c'),\n  name: 'Towing Service',\n  nameAr: 'خدمة السحب',\n  description: 'Professional vehicle towing service',\n  descriptionAr: 'خدمة سحب المركبات الاحترافية',\n  category: 'towing',\n  basePrice: 150,\n  discountedPrice: 0,\n  estimatedDuration: 60,\n  isEmergency: true,\n  isActive: true,\n  isSystemService: true,\n  sortOrder: 1,\n  options: [],\n  createdAt: 2026-05-25T22:59:02.703Z,\n  updatedAt: 2026-05-25T22:59:17.485Z,\n  __v: 0\n}"
+          "{\n  _id: new ObjectId('6a18b84203a01d3f1798956c'),\n  name: 'Towing Service',\n  nameAr: 'خدمة السحب',\n  description: 'Professional vehicle towing service',\n  descriptionAr: 'خدمة سحب المركبات الاحترافية',\n  category: 'towing',\n  basePrice: 150,\n  discountedPrice: 0,\n  estimatedDuration: 60,\n  isEmergency: true,\n  isActive: true,\n  isSystemService: true,\n  sortOrder: 1,\n  options: [],\n  createdAt: 2026-05-28T21:48:50.916Z,\n  updatedAt: 2026-05-28T21:48:53.627Z,\n  __v: 0\n}"
         ],
         "workingHours": [],
         "documents": [],
         "rejectionReason": null,
         "city": "Aleppo",
-        "lastOnlineAt": "2026-05-25T22:59:15.161Z",
-        "createdAt": "2026-05-25T22:59:13.999Z",
-        "updatedAt": "2026-05-25T22:59:19.619Z",
+        "lastOnlineAt": "2026-05-28T21:48:52.443Z",
+        "createdAt": "2026-05-28T21:48:51.878Z",
+        "updatedAt": "2026-05-28T21:48:54.562Z",
         "accountStatus": "pending",
         "coverageAreas": [],
         "requestedServices": [],
@@ -3763,7 +3756,7 @@
         "tags": [],
         "isPhoneVerified": false
       },
-      "timestamp": "2026-05-25T22:59:19.679Z"
+      "timestamp": "2026-05-28T21:48:54.592Z"
     }
   },
   {
@@ -3777,7 +3770,7 @@
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d44132d797211587d045",
+        "id": "6a18b8431baef6f0ecea5324",
         "phone": "+963992223333",
         "businessName": "Updated Test Business",
         "role": "provider",
@@ -3802,15 +3795,15 @@
         "description": "Updated via audit",
         "images": [],
         "services": [
-          "6a14d4366eff5ea22c70502c"
+          "6a18b84203a01d3f1798956c"
         ],
         "workingHours": [],
         "documents": [],
         "rejectionReason": null,
         "city": "Damascus",
-        "lastOnlineAt": "2026-05-25T22:59:15.161Z",
-        "createdAt": "2026-05-25T22:59:13.999Z",
-        "updatedAt": "2026-05-25T22:59:19.714Z",
+        "lastOnlineAt": "2026-05-28T21:48:52.443Z",
+        "createdAt": "2026-05-28T21:48:51.878Z",
+        "updatedAt": "2026-05-28T21:48:54.610Z",
         "accountStatus": "pending",
         "coverageAreas": [],
         "requestedServices": [],
@@ -3827,7 +3820,7 @@
         "tags": [],
         "isPhoneVerified": false
       },
-      "timestamp": "2026-05-25T22:59:19.722Z"
+      "timestamp": "2026-05-28T21:48:54.616Z"
     }
   },
   {
@@ -3841,7 +3834,7 @@
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d44132d797211587d045",
+        "id": "6a18b8431baef6f0ecea5324",
         "phone": "+963992223333",
         "businessName": "Updated Test Business",
         "role": "provider",
@@ -3866,7 +3859,7 @@
         "description": "Updated via audit",
         "images": [],
         "services": [
-          "6a14d4366eff5ea22c70502c"
+          "6a18b84203a01d3f1798956c"
         ],
         "workingHours": [],
         "documents": [],
@@ -3876,9 +3869,9 @@
         },
         "rejectionReason": null,
         "city": "Damascus",
-        "lastOnlineAt": "2026-05-25T22:59:15.161Z",
-        "createdAt": "2026-05-25T22:59:13.999Z",
-        "updatedAt": "2026-05-25T22:59:19.764Z",
+        "lastOnlineAt": "2026-05-28T21:48:52.443Z",
+        "createdAt": "2026-05-28T21:48:51.878Z",
+        "updatedAt": "2026-05-28T21:48:54.639Z",
         "accountStatus": "pending",
         "coverageAreas": [],
         "requestedServices": [],
@@ -3895,7 +3888,7 @@
         "tags": [],
         "isPhoneVerified": false
       },
-      "timestamp": "2026-05-25T22:59:19.773Z"
+      "timestamp": "2026-05-28T21:48:54.644Z"
     }
   },
   {
@@ -3909,7 +3902,7 @@
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d44132d797211587d045",
+        "id": "6a18b8431baef6f0ecea5324",
         "phone": "+963992223333",
         "businessName": "Updated Test Business",
         "role": "provider",
@@ -3934,7 +3927,7 @@
         "description": "Updated via audit",
         "images": [],
         "services": [
-          "6a14d4366eff5ea22c70502c"
+          "6a18b84203a01d3f1798956c"
         ],
         "workingHours": [],
         "documents": [
@@ -3947,9 +3940,9 @@
         },
         "rejectionReason": null,
         "city": "Damascus",
-        "lastOnlineAt": "2026-05-25T22:59:15.161Z",
-        "createdAt": "2026-05-25T22:59:13.999Z",
-        "updatedAt": "2026-05-25T22:59:19.820Z",
+        "lastOnlineAt": "2026-05-28T21:48:52.443Z",
+        "createdAt": "2026-05-28T21:48:51.878Z",
+        "updatedAt": "2026-05-28T21:48:54.668Z",
         "accountStatus": "pending",
         "coverageAreas": [],
         "requestedServices": [],
@@ -3966,7 +3959,7 @@
         "tags": [],
         "isPhoneVerified": false
       },
-      "timestamp": "2026-05-25T22:59:19.828Z"
+      "timestamp": "2026-05-28T21:48:54.672Z"
     }
   },
   {
@@ -3980,7 +3973,7 @@
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d44132d797211587d045",
+        "id": "6a18b8431baef6f0ecea5324",
         "phone": "+963992223333",
         "businessName": "Updated Test Business",
         "role": "provider",
@@ -4005,7 +3998,7 @@
         "description": "Updated via audit",
         "images": [],
         "services": [
-          "6a14d4366eff5ea22c70502c"
+          "6a18b84203a01d3f1798956c"
         ],
         "workingHours": [],
         "documents": [
@@ -4018,9 +4011,9 @@
         },
         "rejectionReason": null,
         "city": "Damascus",
-        "lastOnlineAt": "2026-05-25T22:59:15.161Z",
-        "createdAt": "2026-05-25T22:59:13.999Z",
-        "updatedAt": "2026-05-25T22:59:19.860Z",
+        "lastOnlineAt": "2026-05-28T21:48:52.443Z",
+        "createdAt": "2026-05-28T21:48:51.878Z",
+        "updatedAt": "2026-05-28T21:48:54.688Z",
         "accountStatus": "pending",
         "coverageAreas": [],
         "requestedServices": [],
@@ -4037,7 +4030,7 @@
         "tags": [],
         "isPhoneVerified": false
       },
-      "timestamp": "2026-05-25T22:59:19.869Z"
+      "timestamp": "2026-05-28T21:48:54.692Z"
     }
   },
   {
@@ -4051,7 +4044,7 @@
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d44132d797211587d045",
+        "id": "6a18b8431baef6f0ecea5324",
         "phone": "+963992223333",
         "businessName": "Updated Test Business",
         "role": "provider",
@@ -4076,7 +4069,7 @@
         "description": "Updated via audit",
         "images": [],
         "services": [
-          "6a14d4366eff5ea22c70502c"
+          "6a18b84203a01d3f1798956c"
         ],
         "workingHours": [],
         "documents": [
@@ -4089,9 +4082,9 @@
         },
         "rejectionReason": null,
         "city": "Damascus",
-        "lastOnlineAt": "2026-05-25T22:59:15.161Z",
-        "createdAt": "2026-05-25T22:59:13.999Z",
-        "updatedAt": "2026-05-25T22:59:19.937Z",
+        "lastOnlineAt": "2026-05-28T21:48:52.443Z",
+        "createdAt": "2026-05-28T21:48:51.878Z",
+        "updatedAt": "2026-05-28T21:48:54.713Z",
         "accountStatus": "pending",
         "coverageAreas": [],
         "requestedServices": [],
@@ -4108,7 +4101,7 @@
         "tags": [],
         "isPhoneVerified": false
       },
-      "timestamp": "2026-05-25T22:59:19.949Z"
+      "timestamp": "2026-05-28T21:48:54.718Z"
     }
   },
   {
@@ -4122,7 +4115,7 @@
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d44132d797211587d045",
+        "id": "6a18b8431baef6f0ecea5324",
         "phone": "+963992223333",
         "businessName": "Updated Test Business",
         "role": "provider",
@@ -4147,7 +4140,7 @@
         "description": "Updated via audit",
         "images": [],
         "services": [
-          "6a14d4366eff5ea22c70502c"
+          "6a18b84203a01d3f1798956c"
         ],
         "workingHours": [],
         "documents": [
@@ -4160,9 +4153,9 @@
         },
         "rejectionReason": null,
         "city": "Damascus",
-        "lastOnlineAt": "2026-05-25T22:59:20.013Z",
-        "createdAt": "2026-05-25T22:59:13.999Z",
-        "updatedAt": "2026-05-25T22:59:20.013Z",
+        "lastOnlineAt": "2026-05-28T21:48:54.739Z",
+        "createdAt": "2026-05-28T21:48:51.878Z",
+        "updatedAt": "2026-05-28T21:48:54.739Z",
         "accountStatus": "pending",
         "coverageAreas": [],
         "requestedServices": [],
@@ -4179,7 +4172,7 @@
         "tags": [],
         "isPhoneVerified": false
       },
-      "timestamp": "2026-05-25T22:59:20.028Z"
+      "timestamp": "2026-05-28T21:48:54.742Z"
     }
   },
   {
@@ -4193,7 +4186,7 @@
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d44132d797211587d045",
+        "id": "6a18b8431baef6f0ecea5324",
         "phone": "+963992223333",
         "businessName": "Updated Test Business",
         "role": "provider",
@@ -4218,7 +4211,7 @@
         "description": "Updated via audit",
         "images": [],
         "services": [
-          "6a14d4366eff5ea22c70502c"
+          "6a18b84203a01d3f1798956c"
         ],
         "workingHours": [
           {
@@ -4253,9 +4246,9 @@
         },
         "rejectionReason": null,
         "city": "Damascus",
-        "lastOnlineAt": "2026-05-25T22:59:20.013Z",
-        "createdAt": "2026-05-25T22:59:13.999Z",
-        "updatedAt": "2026-05-25T22:59:20.082Z",
+        "lastOnlineAt": "2026-05-28T21:48:54.739Z",
+        "createdAt": "2026-05-28T21:48:51.878Z",
+        "updatedAt": "2026-05-28T21:48:54.767Z",
         "accountStatus": "pending",
         "coverageAreas": [],
         "requestedServices": [],
@@ -4272,7 +4265,7 @@
         "tags": [],
         "isPhoneVerified": false
       },
-      "timestamp": "2026-05-25T22:59:20.092Z"
+      "timestamp": "2026-05-28T21:48:54.773Z"
     }
   },
   {
@@ -4287,7 +4280,7 @@
       "success": true,
       "data": [
         {
-          "id": "6a14d44132d797211587d045",
+          "id": "6a18b8431baef6f0ecea5324",
           "phone": "+963992223333",
           "businessName": "Updated Test Business",
           "role": "provider",
@@ -4312,7 +4305,7 @@
           "description": "Updated via audit",
           "images": [],
           "services": [
-            "6a14d4366eff5ea22c70502c"
+            "6a18b84203a01d3f1798956c"
           ],
           "workingHours": [
             {
@@ -4347,9 +4340,9 @@
           },
           "rejectionReason": null,
           "city": "Damascus",
-          "lastOnlineAt": "2026-05-25T22:59:20.013Z",
-          "createdAt": "2026-05-25T22:59:13.999Z",
-          "updatedAt": "2026-05-25T22:59:20.082Z",
+          "lastOnlineAt": "2026-05-28T21:48:54.739Z",
+          "createdAt": "2026-05-28T21:48:51.878Z",
+          "updatedAt": "2026-05-28T21:48:54.767Z",
           "accountStatus": "pending",
           "coverageAreas": [],
           "requestedServices": [],
@@ -4368,7 +4361,7 @@
           "distance": 0
         }
       ],
-      "timestamp": "2026-05-25T22:59:20.113Z"
+      "timestamp": "2026-05-28T21:48:54.784Z"
     }
   },
   {
@@ -4383,7 +4376,7 @@
       "success": true,
       "data": [
         {
-          "id": "6a14d44132d797211587d045",
+          "id": "6a18b8431baef6f0ecea5324",
           "phone": "+963992223333",
           "businessName": "Updated Test Business",
           "role": "provider",
@@ -4408,7 +4401,7 @@
           "description": "Updated via audit",
           "images": [],
           "services": [
-            "6a14d4366eff5ea22c70502c"
+            "6a18b84203a01d3f1798956c"
           ],
           "workingHours": [
             {
@@ -4443,9 +4436,9 @@
           },
           "rejectionReason": null,
           "city": "Damascus",
-          "lastOnlineAt": "2026-05-25T22:59:20.013Z",
-          "createdAt": "2026-05-25T22:59:13.999Z",
-          "updatedAt": "2026-05-25T22:59:20.082Z",
+          "lastOnlineAt": "2026-05-28T21:48:54.739Z",
+          "createdAt": "2026-05-28T21:48:51.878Z",
+          "updatedAt": "2026-05-28T21:48:54.767Z",
           "accountStatus": "pending",
           "coverageAreas": [],
           "requestedServices": [],
@@ -4463,7 +4456,7 @@
           "isPhoneVerified": false
         }
       ],
-      "timestamp": "2026-05-25T22:59:20.128Z"
+      "timestamp": "2026-05-28T21:48:54.793Z"
     }
   },
   {
@@ -4477,7 +4470,7 @@
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d44832d797211587d2e8",
+        "id": "6a18b8461baef6f0ecea55c7",
         "phone": "+963912345678",
         "businessName": "Apply Test Business",
         "role": "provider",
@@ -4501,8 +4494,8 @@
         "services": [],
         "workingHours": [],
         "documents": [],
-        "createdAt": "2026-05-25T22:59:20.142Z",
-        "updatedAt": "2026-05-25T22:59:20.142Z",
+        "createdAt": "2026-05-28T21:48:54.801Z",
+        "updatedAt": "2026-05-28T21:48:54.801Z",
         "accountStatus": "pending",
         "coverageAreas": [],
         "requestedServices": [],
@@ -4519,7 +4512,7 @@
         "tags": [],
         "isPhoneVerified": false
       },
-      "timestamp": "2026-05-25T22:59:20.147Z"
+      "timestamp": "2026-05-28T21:48:54.804Z"
     }
   },
   {
@@ -4541,7 +4534,7 @@
           }
         ]
       },
-      "timestamp": "2026-05-25T22:59:20.160Z"
+      "timestamp": "2026-05-28T21:48:54.810Z"
     }
   },
   {
@@ -4562,7 +4555,7 @@
         "totalRevenue": 0,
         "status": "online"
       },
-      "timestamp": "2026-05-25T22:59:20.195Z"
+      "timestamp": "2026-05-28T21:48:54.835Z"
     }
   },
   {
@@ -4576,7 +4569,7 @@
     "response": {
       "success": true,
       "data": {},
-      "timestamp": "2026-05-25T22:59:20.224Z"
+      "timestamp": "2026-05-28T21:48:54.853Z"
     }
   },
   {
@@ -4590,7 +4583,7 @@
     "response": {
       "success": true,
       "data": [],
-      "timestamp": "2026-05-25T22:59:20.254Z"
+      "timestamp": "2026-05-28T21:48:54.870Z"
     }
   },
   {
@@ -4604,7 +4597,7 @@
     "response": {
       "success": true,
       "data": [],
-      "timestamp": "2026-05-25T22:59:20.289Z"
+      "timestamp": "2026-05-28T21:48:54.893Z"
     }
   },
   {
@@ -4612,7 +4605,7 @@
     "name": "GET /reviews/provider/:providerId",
     "folder": "providers - reviews",
     "method": "GET",
-    "url": "http://localhost:3001/api/v1/reviews/provider/6a14d44132d797211587d045",
+    "url": "http://localhost:3001/api/v1/reviews/provider/6a18b8431baef6f0ecea5324",
     "status": "Passed",
     "code": 200,
     "response": {
@@ -4620,24 +4613,24 @@
       "data": {
         "reviews": [
           {
-            "id": "6a14d44332d797211587d0c3",
-            "user": "6a14d44132d797211587d035",
-            "provider": "6a14d44132d797211587d045",
+            "id": "6a18b8441baef6f0ecea53a2",
+            "user": "6a18b8431baef6f0ecea5314",
+            "provider": "6a18b8431baef6f0ecea5324",
             "rating": 5,
-            "order": "6a14d44332d797211587d080",
+            "order": "6a18b8441baef6f0ecea535f",
             "comment": "Excellent towing service, very fast and professional!",
             "images": [],
             "isVisible": true,
             "isFlagged": false,
             "helpfulCount": 0,
             "helpfulVoters": [],
-            "createdAt": "2026-05-25T22:59:15.505Z",
-            "updatedAt": "2026-05-25T22:59:15.505Z"
+            "createdAt": "2026-05-28T21:48:52.636Z",
+            "updatedAt": "2026-05-28T21:48:52.636Z"
           }
         ],
         "total": 1
       },
-      "timestamp": "2026-05-25T22:59:20.315Z"
+      "timestamp": "2026-05-28T21:48:54.905Z"
     }
   },
   {
@@ -4653,18 +4646,18 @@
       "data": {
         "success": true,
         "data": {
-          "ownerId": "6a14d44132d797211587d045",
+          "ownerId": "6a18b8431baef6f0ecea5324",
           "ownerType": "provider",
           "balance": 135,
           "pendingBalance": 0,
           "loyaltyPoints": 0,
           "currency": "SAR",
           "isActive": true,
-          "id": "6a14d44332d797211587d0ab",
+          "id": "6a18b8441baef6f0ecea538a",
           "metadata": {}
         }
       },
-      "timestamp": "2026-05-25T22:59:20.349Z"
+      "timestamp": "2026-05-28T21:48:54.920Z"
     }
   },
   {
@@ -4681,7 +4674,7 @@
         "success": true,
         "message": "Payout request submitted successfully"
       },
-      "timestamp": "2026-05-25T22:59:20.446Z"
+      "timestamp": "2026-05-28T21:48:54.949Z"
     }
   },
   {
@@ -4698,16 +4691,16 @@
         "success": true,
         "data": [
           {
-            "transactionNumber": "TXN-1779749960426-2722",
-            "walletId": "6a14d44332d797211587d0ab",
-            "ownerId": "6a14d44132d797211587d045",
+            "transactionNumber": "TXN-1780004934942-5614",
+            "walletId": "6a18b8441baef6f0ecea538a",
+            "ownerId": "6a18b8431baef6f0ecea5324",
             "ownerType": "provider",
             "type": "debit",
             "amount": 100,
             "balanceBefore": 135,
             "balanceAfter": 35,
             "description": "Payout request to sample_bankName (sample_bankAccount)",
-            "id": "6a14d44832d797211587d312",
+            "id": "6a18b8461baef6f0ecea55f1",
             "referenceType": "payout",
             "paymentMethod": "bank_transfer",
             "status": "pending",
@@ -4717,25 +4710,25 @@
             }
           },
           {
-            "transactionNumber": "TXN-1779749955405-5179",
-            "walletId": "6a14d44332d797211587d0ab",
-            "ownerId": "6a14d44132d797211587d045",
+            "transactionNumber": "TXN-1780004932592-8339",
+            "walletId": "6a18b8441baef6f0ecea538a",
+            "ownerId": "6a18b8431baef6f0ecea5324",
             "ownerType": "provider",
             "type": "credit",
             "amount": 135,
             "balanceBefore": 0,
             "balanceAfter": 135,
-            "description": "Earnings from order #6a14d44332d797211587d080 (10% commission deducted: 15 SAR)",
-            "id": "6a14d44332d797211587d0b0",
+            "description": "Earnings from order #6a18b8441baef6f0ecea535f (10% commission deducted: 15 SAR)",
+            "id": "6a18b8441baef6f0ecea538f",
             "referenceType": "order",
-            "referenceId": "6a14d44332d797211587d080",
+            "referenceId": "6a18b8441baef6f0ecea535f",
             "status": "completed",
             "metadata": {}
           }
         ],
         "total": 2
       },
-      "timestamp": "2026-05-25T22:59:20.507Z"
+      "timestamp": "2026-05-28T21:48:54.965Z"
     }
   },
   {
@@ -4752,7 +4745,7 @@
         "success": true,
         "message": "Withdrawal request submitted successfully"
       },
-      "timestamp": "2026-05-25T22:59:20.584Z"
+      "timestamp": "2026-05-28T21:48:54.992Z"
     }
   },
   {
@@ -4768,7 +4761,7 @@
       "statusCode": 404,
       "message": "Order not found",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:20.632Z",
+      "timestamp": "2026-05-28T21:48:55.008Z",
       "path": "/api/v1/reviews"
     }
   },
@@ -4786,29 +4779,29 @@
     "name": "PATCH /reviews/:id/respond",
     "folder": "reviews",
     "method": "PATCH",
-    "url": "http://localhost:3001/api/v1/reviews/6a14d44332d797211587d0c3/respond",
+    "url": "http://localhost:3001/api/v1/reviews/6a18b8441baef6f0ecea53a2/respond",
     "status": "Passed",
     "code": 200,
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d44332d797211587d0c3",
-        "user": "6a14d44132d797211587d035",
-        "provider": "6a14d44132d797211587d045",
+        "id": "6a18b8441baef6f0ecea53a2",
+        "user": "6a18b8431baef6f0ecea5314",
+        "provider": "6a18b8431baef6f0ecea5324",
         "rating": 5,
-        "order": "6a14d44332d797211587d080",
+        "order": "6a18b8441baef6f0ecea535f",
         "comment": "Excellent towing service, very fast and professional!",
         "images": [],
         "providerResponse": "Thank you for your feedback!",
-        "providerRespondedAt": "2026-05-25T22:59:20.699Z",
+        "providerRespondedAt": "2026-05-28T21:48:55.023Z",
         "isVisible": true,
         "isFlagged": false,
         "helpfulCount": 0,
         "helpfulVoters": [],
-        "createdAt": "2026-05-25T22:59:15.505Z",
-        "updatedAt": "2026-05-25T22:59:20.700Z"
+        "createdAt": "2026-05-28T21:48:52.636Z",
+        "updatedAt": "2026-05-28T21:48:55.023Z"
       },
-      "timestamp": "2026-05-25T22:59:20.713Z"
+      "timestamp": "2026-05-28T21:48:55.027Z"
     }
   },
   {
@@ -4823,7 +4816,7 @@
       "success": true,
       "data": [
         {
-          "id": "6a14d44532d797211587d18b",
+          "id": "6a18b8451baef6f0ecea546a",
           "name": "Audit Admin Service",
           "nameAr": "خدمة مدير التدقيق",
           "category": "roadside_assistance",
@@ -4837,11 +4830,11 @@
           "isSystemService": true,
           "options": [],
           "metadata": {},
-          "createdAt": "2026-05-25T22:59:17.300Z",
-          "updatedAt": "2026-05-25T22:59:17.300Z"
+          "createdAt": "2026-05-28T21:48:53.500Z",
+          "updatedAt": "2026-05-28T21:48:53.500Z"
         },
         {
-          "id": "6a14d44432d797211587d10e",
+          "id": "6a18b8451baef6f0ecea53ed",
           "name": "Audit Service",
           "nameAr": "خدمة التدقيق",
           "category": "roadside_assistance",
@@ -4855,11 +4848,11 @@
           "isSystemService": true,
           "options": [],
           "metadata": {},
-          "createdAt": "2026-05-25T22:59:16.382Z",
-          "updatedAt": "2026-05-25T22:59:16.382Z"
+          "createdAt": "2026-05-28T21:48:53.013Z",
+          "updatedAt": "2026-05-28T21:48:53.013Z"
         },
         {
-          "id": "6a14d4366eff5ea22c70502c",
+          "id": "6a18b84203a01d3f1798956c",
           "name": "Towing Service",
           "nameAr": "خدمة السحب",
           "category": "towing",
@@ -4874,11 +4867,11 @@
           "isSystemService": true,
           "options": [],
           "metadata": {},
-          "createdAt": "2026-05-25T22:59:02.703Z",
-          "updatedAt": "2026-05-25T22:59:17.485Z"
+          "createdAt": "2026-05-28T21:48:50.916Z",
+          "updatedAt": "2026-05-28T21:48:53.627Z"
         },
         {
-          "id": "6a14d4366eff5ea22c70502d",
+          "id": "6a18b84203a01d3f1798956d",
           "name": "Battery Jump Start",
           "nameAr": "تشغيل البطارية",
           "category": "battery",
@@ -4893,11 +4886,11 @@
           "isSystemService": true,
           "options": [],
           "metadata": {},
-          "createdAt": "2026-05-25T22:59:02.703Z",
-          "updatedAt": "2026-05-25T22:59:02.703Z"
+          "createdAt": "2026-05-28T21:48:50.916Z",
+          "updatedAt": "2026-05-28T21:48:50.916Z"
         },
         {
-          "id": "6a14d4366eff5ea22c70502e",
+          "id": "6a18b84203a01d3f1798956e",
           "name": "Flat Tire Change",
           "nameAr": "تغيير الإطار المثقوب",
           "category": "tire",
@@ -4912,11 +4905,11 @@
           "isSystemService": true,
           "options": [],
           "metadata": {},
-          "createdAt": "2026-05-25T22:59:02.703Z",
-          "updatedAt": "2026-05-25T22:59:02.703Z"
+          "createdAt": "2026-05-28T21:48:50.916Z",
+          "updatedAt": "2026-05-28T21:48:50.916Z"
         },
         {
-          "id": "6a14d4366eff5ea22c70502f",
+          "id": "6a18b84203a01d3f1798956f",
           "name": "Fuel Delivery",
           "nameAr": "توصيل الوقود",
           "category": "fuel",
@@ -4931,11 +4924,11 @@
           "isSystemService": true,
           "options": [],
           "metadata": {},
-          "createdAt": "2026-05-25T22:59:02.703Z",
-          "updatedAt": "2026-05-25T22:59:02.703Z"
+          "createdAt": "2026-05-28T21:48:50.916Z",
+          "updatedAt": "2026-05-28T21:48:50.916Z"
         },
         {
-          "id": "6a14d4366eff5ea22c705030",
+          "id": "6a18b84203a01d3f17989570",
           "name": "Lockout Service",
           "nameAr": "فتح الأقفال",
           "category": "lockout",
@@ -4950,11 +4943,11 @@
           "isSystemService": true,
           "options": [],
           "metadata": {},
-          "createdAt": "2026-05-25T22:59:02.703Z",
-          "updatedAt": "2026-05-25T22:59:02.703Z"
+          "createdAt": "2026-05-28T21:48:50.916Z",
+          "updatedAt": "2026-05-28T21:48:50.916Z"
         },
         {
-          "id": "6a14d4366eff5ea22c705031",
+          "id": "6a18b84203a01d3f17989571",
           "name": "Oil Change",
           "nameAr": "تغيير الزيت",
           "category": "maintenance",
@@ -4969,11 +4962,11 @@
           "isSystemService": true,
           "options": [],
           "metadata": {},
-          "createdAt": "2026-05-25T22:59:02.703Z",
-          "updatedAt": "2026-05-25T22:59:02.703Z"
+          "createdAt": "2026-05-28T21:48:50.916Z",
+          "updatedAt": "2026-05-28T21:48:50.916Z"
         },
         {
-          "id": "6a14d4366eff5ea22c705032",
+          "id": "6a18b84203a01d3f17989572",
           "name": "Car Wash",
           "nameAr": "غسيل السيارة",
           "category": "car_wash",
@@ -4988,11 +4981,11 @@
           "isSystemService": true,
           "options": [],
           "metadata": {},
-          "createdAt": "2026-05-25T22:59:02.703Z",
-          "updatedAt": "2026-05-25T22:59:02.703Z"
+          "createdAt": "2026-05-28T21:48:50.916Z",
+          "updatedAt": "2026-05-28T21:48:50.916Z"
         }
       ],
-      "timestamp": "2026-05-25T22:59:20.741Z"
+      "timestamp": "2026-05-28T21:48:55.034Z"
     }
   },
   {
@@ -5000,13 +4993,13 @@
     "name": "GET /services/:id",
     "folder": "services",
     "method": "GET",
-    "url": "http://localhost:3001/api/v1/services/6a14d4366eff5ea22c70502c",
+    "url": "http://localhost:3001/api/v1/services/6a18b84203a01d3f1798956c",
     "status": "Passed",
     "code": 200,
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d4366eff5ea22c70502c",
+        "id": "6a18b84203a01d3f1798956c",
         "name": "Towing Service",
         "nameAr": "خدمة السحب",
         "category": "towing",
@@ -5021,10 +5014,10 @@
         "isSystemService": true,
         "options": [],
         "metadata": {},
-        "createdAt": "2026-05-25T22:59:02.703Z",
-        "updatedAt": "2026-05-25T22:59:17.485Z"
+        "createdAt": "2026-05-28T21:48:50.916Z",
+        "updatedAt": "2026-05-28T21:48:53.627Z"
       },
-      "timestamp": "2026-05-25T22:59:20.759Z"
+      "timestamp": "2026-05-28T21:48:55.038Z"
     }
   },
   {
@@ -5071,7 +5064,7 @@
           "count": 1
         }
       ],
-      "timestamp": "2026-05-25T22:59:20.781Z"
+      "timestamp": "2026-05-28T21:48:55.045Z"
     }
   },
   {
@@ -5086,7 +5079,7 @@
       "success": true,
       "data": [
         {
-          "id": "6a14d4366eff5ea22c70502c",
+          "id": "6a18b84203a01d3f1798956c",
           "name": "Towing Service",
           "nameAr": "خدمة السحب",
           "category": "towing",
@@ -5101,11 +5094,11 @@
           "isSystemService": true,
           "options": [],
           "metadata": {},
-          "createdAt": "2026-05-25T22:59:02.703Z",
-          "updatedAt": "2026-05-25T22:59:17.485Z"
+          "createdAt": "2026-05-28T21:48:50.916Z",
+          "updatedAt": "2026-05-28T21:48:53.627Z"
         },
         {
-          "id": "6a14d4366eff5ea22c70502d",
+          "id": "6a18b84203a01d3f1798956d",
           "name": "Battery Jump Start",
           "nameAr": "تشغيل البطارية",
           "category": "battery",
@@ -5120,11 +5113,11 @@
           "isSystemService": true,
           "options": [],
           "metadata": {},
-          "createdAt": "2026-05-25T22:59:02.703Z",
-          "updatedAt": "2026-05-25T22:59:02.703Z"
+          "createdAt": "2026-05-28T21:48:50.916Z",
+          "updatedAt": "2026-05-28T21:48:50.916Z"
         },
         {
-          "id": "6a14d4366eff5ea22c70502e",
+          "id": "6a18b84203a01d3f1798956e",
           "name": "Flat Tire Change",
           "nameAr": "تغيير الإطار المثقوب",
           "category": "tire",
@@ -5139,11 +5132,11 @@
           "isSystemService": true,
           "options": [],
           "metadata": {},
-          "createdAt": "2026-05-25T22:59:02.703Z",
-          "updatedAt": "2026-05-25T22:59:02.703Z"
+          "createdAt": "2026-05-28T21:48:50.916Z",
+          "updatedAt": "2026-05-28T21:48:50.916Z"
         },
         {
-          "id": "6a14d4366eff5ea22c70502f",
+          "id": "6a18b84203a01d3f1798956f",
           "name": "Fuel Delivery",
           "nameAr": "توصيل الوقود",
           "category": "fuel",
@@ -5158,11 +5151,11 @@
           "isSystemService": true,
           "options": [],
           "metadata": {},
-          "createdAt": "2026-05-25T22:59:02.703Z",
-          "updatedAt": "2026-05-25T22:59:02.703Z"
+          "createdAt": "2026-05-28T21:48:50.916Z",
+          "updatedAt": "2026-05-28T21:48:50.916Z"
         },
         {
-          "id": "6a14d4366eff5ea22c705030",
+          "id": "6a18b84203a01d3f17989570",
           "name": "Lockout Service",
           "nameAr": "فتح الأقفال",
           "category": "lockout",
@@ -5177,11 +5170,11 @@
           "isSystemService": true,
           "options": [],
           "metadata": {},
-          "createdAt": "2026-05-25T22:59:02.703Z",
-          "updatedAt": "2026-05-25T22:59:02.703Z"
+          "createdAt": "2026-05-28T21:48:50.916Z",
+          "updatedAt": "2026-05-28T21:48:50.916Z"
         }
       ],
-      "timestamp": "2026-05-25T22:59:20.805Z"
+      "timestamp": "2026-05-28T21:48:55.053Z"
     }
   },
   {
@@ -5196,7 +5189,7 @@
       "success": true,
       "data": [
         {
-          "id": "6a14d44532d797211587d18b",
+          "id": "6a18b8451baef6f0ecea546a",
           "name": "Audit Admin Service",
           "nameAr": "خدمة مدير التدقيق",
           "category": "roadside_assistance",
@@ -5210,11 +5203,11 @@
           "isSystemService": true,
           "options": [],
           "metadata": {},
-          "createdAt": "2026-05-25T22:59:17.300Z",
-          "updatedAt": "2026-05-25T22:59:17.300Z"
+          "createdAt": "2026-05-28T21:48:53.500Z",
+          "updatedAt": "2026-05-28T21:48:53.500Z"
         },
         {
-          "id": "6a14d44432d797211587d10e",
+          "id": "6a18b8451baef6f0ecea53ed",
           "name": "Audit Service",
           "nameAr": "خدمة التدقيق",
           "category": "roadside_assistance",
@@ -5228,11 +5221,11 @@
           "isSystemService": true,
           "options": [],
           "metadata": {},
-          "createdAt": "2026-05-25T22:59:16.382Z",
-          "updatedAt": "2026-05-25T22:59:16.382Z"
+          "createdAt": "2026-05-28T21:48:53.013Z",
+          "updatedAt": "2026-05-28T21:48:53.013Z"
         },
         {
-          "id": "6a14d4366eff5ea22c70502c",
+          "id": "6a18b84203a01d3f1798956c",
           "name": "Towing Service",
           "nameAr": "خدمة السحب",
           "category": "towing",
@@ -5247,11 +5240,11 @@
           "isSystemService": true,
           "options": [],
           "metadata": {},
-          "createdAt": "2026-05-25T22:59:02.703Z",
-          "updatedAt": "2026-05-25T22:59:17.485Z"
+          "createdAt": "2026-05-28T21:48:50.916Z",
+          "updatedAt": "2026-05-28T21:48:53.627Z"
         },
         {
-          "id": "6a14d4366eff5ea22c70502d",
+          "id": "6a18b84203a01d3f1798956d",
           "name": "Battery Jump Start",
           "nameAr": "تشغيل البطارية",
           "category": "battery",
@@ -5266,11 +5259,11 @@
           "isSystemService": true,
           "options": [],
           "metadata": {},
-          "createdAt": "2026-05-25T22:59:02.703Z",
-          "updatedAt": "2026-05-25T22:59:02.703Z"
+          "createdAt": "2026-05-28T21:48:50.916Z",
+          "updatedAt": "2026-05-28T21:48:50.916Z"
         },
         {
-          "id": "6a14d4366eff5ea22c70502e",
+          "id": "6a18b84203a01d3f1798956e",
           "name": "Flat Tire Change",
           "nameAr": "تغيير الإطار المثقوب",
           "category": "tire",
@@ -5285,11 +5278,11 @@
           "isSystemService": true,
           "options": [],
           "metadata": {},
-          "createdAt": "2026-05-25T22:59:02.703Z",
-          "updatedAt": "2026-05-25T22:59:02.703Z"
+          "createdAt": "2026-05-28T21:48:50.916Z",
+          "updatedAt": "2026-05-28T21:48:50.916Z"
         },
         {
-          "id": "6a14d4366eff5ea22c70502f",
+          "id": "6a18b84203a01d3f1798956f",
           "name": "Fuel Delivery",
           "nameAr": "توصيل الوقود",
           "category": "fuel",
@@ -5304,11 +5297,11 @@
           "isSystemService": true,
           "options": [],
           "metadata": {},
-          "createdAt": "2026-05-25T22:59:02.703Z",
-          "updatedAt": "2026-05-25T22:59:02.703Z"
+          "createdAt": "2026-05-28T21:48:50.916Z",
+          "updatedAt": "2026-05-28T21:48:50.916Z"
         },
         {
-          "id": "6a14d4366eff5ea22c705030",
+          "id": "6a18b84203a01d3f17989570",
           "name": "Lockout Service",
           "nameAr": "فتح الأقفال",
           "category": "lockout",
@@ -5323,11 +5316,11 @@
           "isSystemService": true,
           "options": [],
           "metadata": {},
-          "createdAt": "2026-05-25T22:59:02.703Z",
-          "updatedAt": "2026-05-25T22:59:02.703Z"
+          "createdAt": "2026-05-28T21:48:50.916Z",
+          "updatedAt": "2026-05-28T21:48:50.916Z"
         },
         {
-          "id": "6a14d4366eff5ea22c705031",
+          "id": "6a18b84203a01d3f17989571",
           "name": "Oil Change",
           "nameAr": "تغيير الزيت",
           "category": "maintenance",
@@ -5342,11 +5335,11 @@
           "isSystemService": true,
           "options": [],
           "metadata": {},
-          "createdAt": "2026-05-25T22:59:02.703Z",
-          "updatedAt": "2026-05-25T22:59:02.703Z"
+          "createdAt": "2026-05-28T21:48:50.916Z",
+          "updatedAt": "2026-05-28T21:48:50.916Z"
         },
         {
-          "id": "6a14d4366eff5ea22c705032",
+          "id": "6a18b84203a01d3f17989572",
           "name": "Car Wash",
           "nameAr": "غسيل السيارة",
           "category": "car_wash",
@@ -5361,11 +5354,11 @@
           "isSystemService": true,
           "options": [],
           "metadata": {},
-          "createdAt": "2026-05-25T22:59:02.703Z",
-          "updatedAt": "2026-05-25T22:59:02.703Z"
+          "createdAt": "2026-05-28T21:48:50.916Z",
+          "updatedAt": "2026-05-28T21:48:50.916Z"
         }
       ],
-      "timestamp": "2026-05-25T22:59:20.827Z"
+      "timestamp": "2026-05-28T21:48:55.063Z"
     }
   },
   {
@@ -5381,7 +5374,7 @@
       "statusCode": 400,
       "message": "No active subscription found",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:20.886Z",
+      "timestamp": "2026-05-28T21:48:55.089Z",
       "path": "/api/v1/subscriptions/cancel"
     }
   },
@@ -5396,7 +5389,7 @@
     "response": {
       "success": true,
       "data": [],
-      "timestamp": "2026-05-25T22:59:20.929Z"
+      "timestamp": "2026-05-28T21:48:55.103Z"
     }
   },
   {
@@ -5411,7 +5404,7 @@
       "success": true,
       "data": [
         {
-          "id": "6a14d44432d797211587d150",
+          "id": "6a18b8451baef6f0ecea542f",
           "name": "Audit Plan",
           "nameAr": "خطة التدقيق",
           "price": 1000,
@@ -5423,11 +5416,11 @@
           "sortOrder": 0,
           "description": "Audit membership plan",
           "metadata": {},
-          "createdAt": "2026-05-25T22:59:16.945Z",
-          "updatedAt": "2026-05-25T22:59:16.945Z"
+          "createdAt": "2026-05-28T21:48:53.284Z",
+          "updatedAt": "2026-05-28T21:48:53.284Z"
         },
         {
-          "id": "6a14d44532d797211587d1c0",
+          "id": "6a18b8451baef6f0ecea549f",
           "name": "Admin Audit Plan",
           "nameAr": "خطة اشتراك التدقيق",
           "price": 5000,
@@ -5441,11 +5434,11 @@
           "sortOrder": 0,
           "description": "Audit subscription plan",
           "metadata": {},
-          "createdAt": "2026-05-25T22:59:17.685Z",
-          "updatedAt": "2026-05-25T22:59:17.685Z"
+          "createdAt": "2026-05-28T21:48:53.710Z",
+          "updatedAt": "2026-05-28T21:48:53.710Z"
         },
         {
-          "id": "6a14d4366eff5ea22c70501b",
+          "id": "6a18b84203a01d3f17989519",
           "name": "Basic Plan",
           "nameAr": "الخطة الأساسية",
           "price": 0,
@@ -5462,11 +5455,11 @@
           "tier": "basic",
           "sortOrder": 1,
           "metadata": {},
-          "createdAt": "2026-05-25T22:59:02.278Z",
-          "updatedAt": "2026-05-25T22:59:02.278Z"
+          "createdAt": "2026-05-28T21:48:50.552Z",
+          "updatedAt": "2026-05-28T21:48:50.552Z"
         },
         {
-          "id": "6a14d44432d797211587d0e2",
+          "id": "6a18b8441baef6f0ecea53c1",
           "name": "sample_name",
           "nameAr": "sample_nameAr",
           "price": 100,
@@ -5479,11 +5472,11 @@
           "description": "sample_description",
           "descriptionAr": "sample_descriptionAr",
           "metadata": {},
-          "createdAt": "2026-05-25T22:59:16.051Z",
-          "updatedAt": "2026-05-25T22:59:16.051Z"
+          "createdAt": "2026-05-28T21:48:52.840Z",
+          "updatedAt": "2026-05-28T21:48:52.840Z"
         },
         {
-          "id": "6a14d4366eff5ea22c70501c",
+          "id": "6a18b84203a01d3f1798951a",
           "name": "Silver Plan",
           "nameAr": "الخطة الفضية",
           "price": 50,
@@ -5502,11 +5495,11 @@
           "tier": "silver",
           "sortOrder": 2,
           "metadata": {},
-          "createdAt": "2026-05-25T22:59:02.279Z",
-          "updatedAt": "2026-05-25T22:59:02.279Z"
+          "createdAt": "2026-05-28T21:48:50.552Z",
+          "updatedAt": "2026-05-28T21:48:50.552Z"
         },
         {
-          "id": "6a14d4366eff5ea22c70501d",
+          "id": "6a18b84203a01d3f1798951b",
           "name": "Gold Plan",
           "nameAr": "الخطة الذهبية",
           "price": 150,
@@ -5525,11 +5518,11 @@
           "tier": "gold",
           "sortOrder": 3,
           "metadata": {},
-          "createdAt": "2026-05-25T22:59:02.279Z",
-          "updatedAt": "2026-05-25T22:59:02.279Z"
+          "createdAt": "2026-05-28T21:48:50.553Z",
+          "updatedAt": "2026-05-28T21:48:50.553Z"
         }
       ],
-      "timestamp": "2026-05-25T22:59:20.954Z"
+      "timestamp": "2026-05-28T21:48:55.115Z"
     }
   },
   {
@@ -5545,7 +5538,7 @@
       "statusCode": 404,
       "message": "Subscription plan not found",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:20.973Z",
+      "timestamp": "2026-05-28T21:48:55.122Z",
       "path": "/api/v1/subscriptions/plans/60b8d295f1d293001f3e4c93"
     }
   },
@@ -5562,7 +5555,7 @@
       "statusCode": 400,
       "message": "No active subscription found",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:21.026Z",
+      "timestamp": "2026-05-28T21:48:55.144Z",
       "path": "/api/v1/subscriptions/renew"
     }
   },
@@ -5580,7 +5573,7 @@
         "isActive": false,
         "message": "No active subscription found"
       },
-      "timestamp": "2026-05-25T22:59:21.069Z"
+      "timestamp": "2026-05-28T21:48:55.170Z"
     }
   },
   {
@@ -5598,7 +5591,7 @@
         "property paymentMethod should not exist"
       ],
       "errors": null,
-      "timestamp": "2026-05-25T22:59:21.101Z",
+      "timestamp": "2026-05-28T21:48:55.197Z",
       "path": "/api/v1/subscriptions/subscribe"
     }
   },
@@ -5619,7 +5612,7 @@
         "planId must be a string"
       ],
       "errors": null,
-      "timestamp": "2026-05-25T22:59:21.130Z",
+      "timestamp": "2026-05-28T21:48:55.219Z",
       "path": "/api/v1/subscriptions/upgrade"
     }
   },
@@ -5636,7 +5629,7 @@
       "statusCode": 404,
       "message": "Cannot GET /api/v1/",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:21.139Z",
+      "timestamp": "2026-05-28T21:48:55.224Z",
       "path": "/api/v1/"
     }
   },
@@ -5660,7 +5653,7 @@
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d44132d797211587d035",
+        "id": "6a18b8431baef6f0ecea5314",
         "fullName": "Audit Updated User",
         "phoneNumber": "+963991112222",
         "accountType": "customer",
@@ -5675,16 +5668,16 @@
             "email": false
           },
           "language": "ar",
-          "_id": "6a14d44132d797211587d036",
-          "id": "6a14d44132d797211587d036"
+          "_id": "6a18b8431baef6f0ecea5315",
+          "id": "6a18b8431baef6f0ecea5315"
         },
         "isActive": true,
         "isVerified": true,
-        "lastLoginAt": "2026-05-25T22:59:13.703Z",
-        "createdAt": "2026-05-25T22:59:13.430Z",
-        "updatedAt": "2026-05-25T22:59:17.985Z"
+        "lastLoginAt": "2026-05-28T21:48:51.713Z",
+        "createdAt": "2026-05-28T21:48:51.553Z",
+        "updatedAt": "2026-05-28T21:48:53.826Z"
       },
-      "timestamp": "2026-05-25T22:59:21.172Z"
+      "timestamp": "2026-05-28T21:48:55.254Z"
     }
   },
   {
@@ -5698,7 +5691,7 @@
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d44132d797211587d035",
+        "id": "6a18b8431baef6f0ecea5314",
         "fullName": "Audit Updated User",
         "phoneNumber": "+963991112222",
         "accountType": "customer",
@@ -5713,16 +5706,16 @@
             "email": false
           },
           "language": "ar",
-          "_id": "6a14d44132d797211587d036",
-          "id": "6a14d44132d797211587d036"
+          "_id": "6a18b8431baef6f0ecea5315",
+          "id": "6a18b8431baef6f0ecea5315"
         },
         "isActive": true,
         "isVerified": true,
-        "lastLoginAt": "2026-05-25T22:59:13.703Z",
-        "createdAt": "2026-05-25T22:59:13.430Z",
-        "updatedAt": "2026-05-25T22:59:21.207Z"
+        "lastLoginAt": "2026-05-28T21:48:51.713Z",
+        "createdAt": "2026-05-28T21:48:51.553Z",
+        "updatedAt": "2026-05-28T21:48:55.276Z"
       },
-      "timestamp": "2026-05-25T22:59:21.216Z"
+      "timestamp": "2026-05-28T21:48:55.283Z"
     }
   },
   {
@@ -5751,7 +5744,7 @@
           "averageRating": 0
         }
       },
-      "timestamp": "2026-05-25T22:59:21.250Z"
+      "timestamp": "2026-05-28T21:48:55.307Z"
     }
   },
   {
@@ -5793,18 +5786,18 @@
       "success": true,
       "data": {
         "user": {
-          "userId": "6a14d44132d797211587d035",
+          "userId": "6a18b8431baef6f0ecea5314",
           "phoneNumber": "+963991112222",
           "accountType": "customer",
           "role": "user",
           "isPremium": false,
-          "iat": 1779749953,
-          "exp": 1779750853,
-          "_id": "6a14d44132d797211587d035",
-          "id": "6a14d44132d797211587d035"
+          "iat": 1780004931,
+          "exp": 1780005831,
+          "_id": "6a18b8431baef6f0ecea5314",
+          "id": "6a18b8431baef6f0ecea5314"
         }
       },
-      "timestamp": "2026-05-25T22:59:21.277Z"
+      "timestamp": "2026-05-28T21:48:55.324Z"
     }
   },
   {
@@ -5820,7 +5813,7 @@
       "statusCode": 401,
       "message": "Invalid or expired refresh token",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:21.289Z",
+      "timestamp": "2026-05-28T21:48:55.332Z",
       "path": "/api/v1/auth/refresh-token"
     }
   },
@@ -5846,7 +5839,7 @@
       "statusCode": 404,
       "message": "Registration not found or expired. Please register again.",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:21.301Z",
+      "timestamp": "2026-05-28T21:48:55.340Z",
       "path": "/api/v1/auth/resend-otp"
     }
   },
@@ -5900,7 +5893,7 @@
         "connected": false,
         "message": "WhatsApp is not connected"
       },
-      "timestamp": "2026-05-25T22:59:21.307Z"
+      "timestamp": "2026-05-28T21:48:55.344Z"
     }
   },
   {
@@ -5919,15 +5912,14 @@
     "method": "GET",
     "url": "http://localhost:3001/api/v1/whatsapp/qr",
     "status": "Passed",
-    "code": 200,
+    "code": 403,
     "response": {
-      "success": true,
-      "data": {
-        "status": "error",
-        "message": "net::ERR_NAME_NOT_RESOLVED at https://web.whatsapp.com/",
-        "qrCode": null
-      },
-      "timestamp": "2026-05-25T22:59:21.314Z"
+      "success": false,
+      "statusCode": 403,
+      "message": "You do not have permission to access this resource",
+      "errors": null,
+      "timestamp": "2026-05-28T21:48:55.359Z",
+      "path": "/api/v1/whatsapp/qr"
     }
   },
   {
@@ -5937,8 +5929,15 @@
     "method": "POST",
     "url": "http://localhost:3001/api/v1/whatsapp/restart",
     "status": "Passed",
-    "code": "ERR",
-    "response": "timeout of 5000ms exceeded"
+    "code": 403,
+    "response": {
+      "success": false,
+      "statusCode": 403,
+      "message": "You do not have permission to access this resource",
+      "errors": null,
+      "timestamp": "2026-05-28T21:48:55.374Z",
+      "path": "/api/v1/whatsapp/restart"
+    }
   },
   {
     "id": 167,
@@ -5947,13 +5946,13 @@
     "method": "POST",
     "url": "http://localhost:3001/api/v1/whatsapp/send-message",
     "status": "Passed",
-    "code": 400,
+    "code": 403,
     "response": {
       "success": false,
-      "statusCode": 400,
-      "message": "Phone number is required",
+      "statusCode": 403,
+      "message": "You do not have permission to access this resource",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:26.345Z",
+      "timestamp": "2026-05-28T21:48:55.388Z",
       "path": "/api/v1/whatsapp/send-message"
     }
   },
@@ -5964,17 +5963,14 @@
     "method": "GET",
     "url": "http://localhost:3001/api/v1/whatsapp/status",
     "status": "Passed",
-    "code": 200,
+    "code": 403,
     "response": {
-      "success": true,
-      "data": {
-        "isReady": false,
-        "hasQR": false,
-        "lastError": null,
-        "status": "initializing",
-        "message": "Initializing..."
-      },
-      "timestamp": "2026-05-25T22:59:26.352Z"
+      "success": false,
+      "statusCode": 403,
+      "message": "You do not have permission to access this resource",
+      "errors": null,
+      "timestamp": "2026-05-28T21:48:55.400Z",
+      "path": "/api/v1/whatsapp/status"
     }
   },
   {
@@ -5988,8 +5984,8 @@
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d44e32d797211587d35d",
-        "userId": "6a14d44132d797211587d035",
+        "id": "6a18b8471baef6f0ecea5648",
+        "userId": "6a18b8431baef6f0ecea5314",
         "brand": "Kia",
         "model": "Rio",
         "year": 2020,
@@ -5998,10 +5994,10 @@
         "vin": "1HGBH41JXMN109186",
         "isDefault": false,
         "isActive": true,
-        "createdAt": "2026-05-25T22:59:26.390Z",
-        "updatedAt": "2026-05-25T22:59:26.390Z"
+        "createdAt": "2026-05-28T21:48:55.418Z",
+        "updatedAt": "2026-05-28T21:48:55.418Z"
       },
-      "timestamp": "2026-05-25T22:59:26.396Z"
+      "timestamp": "2026-05-28T21:48:55.422Z"
     }
   },
   {
@@ -6017,7 +6013,7 @@
       "statusCode": 404,
       "message": "Vehicle not found",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:26.427Z",
+      "timestamp": "2026-05-28T21:48:55.439Z",
       "path": "/api/v1/vehicles/60b8d295f1d293001f3e4c8b"
     }
   },
@@ -6026,14 +6022,14 @@
     "name": "GET /vehicles/:id",
     "folder": "vehicles",
     "method": "GET",
-    "url": "http://localhost:3001/api/v1/vehicles/6a14d44232d797211587d067",
+    "url": "http://localhost:3001/api/v1/vehicles/6a18b8441baef6f0ecea5346",
     "status": "Passed",
     "code": 200,
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d44232d797211587d067",
-        "userId": "6a14d44132d797211587d035",
+        "id": "6a18b8441baef6f0ecea5346",
+        "userId": "6a18b8431baef6f0ecea5314",
         "brand": "Toyota",
         "model": "Camry",
         "year": 2022,
@@ -6042,10 +6038,10 @@
         "vin": null,
         "isDefault": true,
         "isActive": true,
-        "createdAt": "2026-05-25T22:59:14.993Z",
-        "updatedAt": "2026-05-25T22:59:14.993Z"
+        "createdAt": "2026-05-28T21:48:52.347Z",
+        "updatedAt": "2026-05-28T21:48:52.347Z"
       },
-      "timestamp": "2026-05-25T22:59:26.459Z"
+      "timestamp": "2026-05-28T21:48:55.454Z"
     }
   },
   {
@@ -6053,14 +6049,14 @@
     "name": "PATCH /vehicles/:id",
     "folder": "vehicles",
     "method": "PATCH",
-    "url": "http://localhost:3001/api/v1/vehicles/6a14d44232d797211587d067",
+    "url": "http://localhost:3001/api/v1/vehicles/6a18b8441baef6f0ecea5346",
     "status": "Passed",
     "code": 200,
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d44232d797211587d067",
-        "userId": "6a14d44132d797211587d035",
+        "id": "6a18b8441baef6f0ecea5346",
+        "userId": "6a18b8431baef6f0ecea5314",
         "brand": "Toyota",
         "model": "Camry",
         "year": 2022,
@@ -6069,10 +6065,10 @@
         "vin": null,
         "isDefault": true,
         "isActive": true,
-        "createdAt": "2026-05-25T22:59:14.993Z",
-        "updatedAt": "2026-05-25T22:59:26.516Z"
+        "createdAt": "2026-05-28T21:48:52.347Z",
+        "updatedAt": "2026-05-28T21:48:55.475Z"
       },
-      "timestamp": "2026-05-25T22:59:26.529Z"
+      "timestamp": "2026-05-28T21:48:55.479Z"
     }
   },
   {
@@ -6088,7 +6084,7 @@
       "statusCode": 403,
       "message": "You do not have permission to view this vehicle records",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:26.605Z",
+      "timestamp": "2026-05-28T21:48:55.494Z",
       "path": "/api/v1/vehicles/60b8d295f1d293001f3e4c98/maintenance"
     }
   },
@@ -6105,7 +6101,7 @@
       "statusCode": 403,
       "message": "You do not have permission to add records to this vehicle",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:26.665Z",
+      "timestamp": "2026-05-28T21:48:55.510Z",
       "path": "/api/v1/vehicles/60b8d295f1d293001f3e4c98/maintenance"
     }
   },
@@ -6122,7 +6118,7 @@
       "statusCode": 403,
       "message": "You do not have permission to view this vehicle reminders",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:26.727Z",
+      "timestamp": "2026-05-28T21:48:55.526Z",
       "path": "/api/v1/vehicles/60b8d295f1d293001f3e4c99/reminders"
     }
   },
@@ -6139,7 +6135,7 @@
       "statusCode": 403,
       "message": "You do not have permission to add reminders to this vehicle",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:26.778Z",
+      "timestamp": "2026-05-28T21:48:55.544Z",
       "path": "/api/v1/vehicles/60b8d295f1d293001f3e4c99/reminders"
     }
   },
@@ -6148,14 +6144,14 @@
     "name": "PATCH /vehicles/:id/set-default",
     "folder": "vehicles",
     "method": "PATCH",
-    "url": "http://localhost:3001/api/v1/vehicles/6a14d44232d797211587d067/set-default",
+    "url": "http://localhost:3001/api/v1/vehicles/6a18b8441baef6f0ecea5346/set-default",
     "status": "Passed",
     "code": 200,
     "response": {
       "success": true,
       "data": {
-        "id": "6a14d44232d797211587d067",
-        "userId": "6a14d44132d797211587d035",
+        "id": "6a18b8441baef6f0ecea5346",
+        "userId": "6a18b8431baef6f0ecea5314",
         "brand": "Toyota",
         "model": "Camry",
         "year": 2022,
@@ -6164,10 +6160,10 @@
         "vin": null,
         "isDefault": true,
         "isActive": true,
-        "createdAt": "2026-05-25T22:59:14.993Z",
-        "updatedAt": "2026-05-25T22:59:26.516Z"
+        "createdAt": "2026-05-28T21:48:52.347Z",
+        "updatedAt": "2026-05-28T21:48:55.475Z"
       },
-      "timestamp": "2026-05-25T22:59:26.824Z"
+      "timestamp": "2026-05-28T21:48:55.561Z"
     }
   },
   {
@@ -6183,7 +6179,7 @@
       "statusCode": 404,
       "message": "Maintenance record not found",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:26.861Z",
+      "timestamp": "2026-05-28T21:48:55.576Z",
       "path": "/api/v1/vehicles/maintenance/60b8d295f1d293001f3e4c98"
     }
   },
@@ -6200,7 +6196,7 @@
       "statusCode": 404,
       "message": "Maintenance record not found",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:26.894Z",
+      "timestamp": "2026-05-28T21:48:55.593Z",
       "path": "/api/v1/vehicles/maintenance/60b8d295f1d293001f3e4c98"
     }
   },
@@ -6217,8 +6213,8 @@
       "data": {
         "vehicles": [
           {
-            "id": "6a14d44232d797211587d067",
-            "userId": "6a14d44132d797211587d035",
+            "id": "6a18b8441baef6f0ecea5346",
+            "userId": "6a18b8431baef6f0ecea5314",
             "brand": "Toyota",
             "model": "Camry",
             "year": 2022,
@@ -6227,12 +6223,12 @@
             "vin": null,
             "isDefault": true,
             "isActive": true,
-            "createdAt": "2026-05-25T22:59:14.993Z",
-            "updatedAt": "2026-05-25T22:59:26.516Z"
+            "createdAt": "2026-05-28T21:48:52.347Z",
+            "updatedAt": "2026-05-28T21:48:55.475Z"
           },
           {
-            "id": "6a14d44e32d797211587d35d",
-            "userId": "6a14d44132d797211587d035",
+            "id": "6a18b8471baef6f0ecea5648",
+            "userId": "6a18b8431baef6f0ecea5314",
             "brand": "Kia",
             "model": "Rio",
             "year": 2020,
@@ -6241,8 +6237,8 @@
             "vin": "1HGBH41JXMN109186",
             "isDefault": false,
             "isActive": true,
-            "createdAt": "2026-05-25T22:59:26.390Z",
-            "updatedAt": "2026-05-25T22:59:26.390Z"
+            "createdAt": "2026-05-28T21:48:55.418Z",
+            "updatedAt": "2026-05-28T21:48:55.418Z"
           }
         ],
         "pagination": {
@@ -6252,7 +6248,7 @@
           "pages": 1
         }
       },
-      "timestamp": "2026-05-25T22:59:26.933Z"
+      "timestamp": "2026-05-28T21:48:55.625Z"
     }
   },
   {
@@ -6268,7 +6264,7 @@
       "statusCode": 404,
       "message": "Reminder not found",
       "errors": null,
-      "timestamp": "2026-05-25T22:59:26.968Z",
+      "timestamp": "2026-05-28T21:48:55.670Z",
       "path": "/api/v1/vehicles/reminders/60b8d295f1d293001f3e4c99"
     }
   },
@@ -6291,7 +6287,7 @@
           "pages": 0
         }
       },
-      "timestamp": "2026-05-25T22:59:27.008Z"
+      "timestamp": "2026-05-28T21:48:55.703Z"
     }
   },
   {
@@ -6308,7 +6304,7 @@
         "success": true,
         "message": "Deposit successful"
       },
-      "timestamp": "2026-05-25T22:59:27.076Z"
+      "timestamp": "2026-05-28T21:48:55.735Z"
     }
   },
   {
@@ -6324,18 +6320,18 @@
       "data": {
         "success": true,
         "data": {
-          "ownerId": "6a14d44132d797211587d035",
+          "ownerId": "6a18b8431baef6f0ecea5314",
           "ownerType": "user",
           "balance": 100,
           "pendingBalance": 0,
           "loyaltyPoints": 0,
           "currency": "SAR",
           "isActive": true,
-          "id": "6a14d44f32d797211587d39c",
+          "id": "6a18b8471baef6f0ecea5687",
           "metadata": {}
         }
       },
-      "timestamp": "2026-05-25T22:59:27.102Z"
+      "timestamp": "2026-05-28T21:48:55.752Z"
     }
   },
   {
@@ -6352,16 +6348,16 @@
         "success": true,
         "data": [
           {
-            "transactionNumber": "TXN-1779749967065-7170",
-            "walletId": "6a14d44f32d797211587d39c",
-            "ownerId": "6a14d44132d797211587d035",
+            "transactionNumber": "TXN-1780004935727-2344",
+            "walletId": "6a18b8471baef6f0ecea5687",
+            "ownerId": "6a18b8431baef6f0ecea5314",
             "ownerType": "user",
             "type": "credit",
             "amount": 100,
             "balanceBefore": 0,
             "balanceAfter": 100,
             "description": "Wallet top-up via cash",
-            "id": "6a14d44f32d797211587d3a1",
+            "id": "6a18b8471baef6f0ecea568c",
             "referenceType": "topup",
             "paymentMethod": "cash",
             "paymentId": "sample_paymentId",
@@ -6371,7 +6367,7 @@
         ],
         "total": 1
       },
-      "timestamp": "2026-05-25T22:59:27.126Z"
+      "timestamp": "2026-05-28T21:48:55.767Z"
     }
   },
   {
@@ -6387,15 +6383,16 @@
       "data": {
         "logs": [
           {
-            "_id": "6a14d44732d797211587d2b0",
-            "admin": "6a14d4366eff5ea22c705022",
+            "_id": "6a18b8461baef6f0ecea558f",
+            "admin": "6a18b84203a01d3f1798954c",
             "adminEmail": "admin@carhero.com",
+            "adminName": "Super Admin",
             "action": "provider.approve",
             "entityType": "provider",
-            "entityId": "6a14d44132d797211587d045",
-            "summary": "provider.approve on provider:6a14d44132d797211587d045",
+            "entityId": "6a18b8431baef6f0ecea5324",
+            "summary": "provider.approve on provider:6a18b8431baef6f0ecea5324",
             "after": {
-              "id": "6a14d44132d797211587d045",
+              "id": "6a18b8431baef6f0ecea5324",
               "phone": "+963992223333",
               "businessName": "Admin Patched Provider",
               "role": "provider",
@@ -6423,16 +6420,16 @@
               "images": [],
               "address": null,
               "services": [
-                "6a14d4366eff5ea22c70502c"
+                "6a18b84203a01d3f1798956c"
               ],
               "workingHours": [],
               "documents": [],
               "bankAccount": null,
               "rejectionReason": null,
               "city": "Aleppo",
-              "lastOnlineAt": "2026-05-25T22:59:15.161Z",
-              "createdAt": "2026-05-25T22:59:13.999Z",
-              "updatedAt": "2026-05-25T22:59:19.619Z",
+              "lastOnlineAt": "2026-05-28T21:48:52.443Z",
+              "createdAt": "2026-05-28T21:48:51.878Z",
+              "updatedAt": "2026-05-28T21:48:54.562Z",
               "businessType": null,
               "category": null,
               "accountStatus": "pending",
@@ -6456,14 +6453,15 @@
               "tags": [],
               "isPhoneVerified": false
             },
-            "createdAt": "2026-05-25T22:59:19.629Z",
-            "updatedAt": "2026-05-25T22:59:19.629Z",
+            "createdAt": "2026-05-28T21:48:54.566Z",
+            "updatedAt": "2026-05-28T21:48:54.566Z",
             "__v": 0
           },
           {
-            "_id": "6a14d44632d797211587d214",
-            "admin": "6a14d4366eff5ea22c705022",
+            "_id": "6a18b8461baef6f0ecea54f3",
+            "admin": "6a18b84203a01d3f1798954c",
             "adminEmail": "admin@carhero.com",
+            "adminName": "Super Admin",
             "action": "wallet.adjust",
             "entityType": "wallet",
             "entityId": "60b8d295f1d293001f3e4c8a",
@@ -6476,20 +6474,21 @@
               "amount": 100,
               "description": "Postman test"
             },
-            "createdAt": "2026-05-25T22:59:18.301Z",
-            "updatedAt": "2026-05-25T22:59:18.301Z",
+            "createdAt": "2026-05-28T21:48:54.001Z",
+            "updatedAt": "2026-05-28T21:48:54.001Z",
             "__v": 0
           },
           {
-            "_id": "6a14d44532d797211587d1e2",
-            "admin": "6a14d4366eff5ea22c705022",
+            "_id": "6a18b8451baef6f0ecea54c1",
+            "admin": "6a18b84203a01d3f1798954c",
             "adminEmail": "admin@carhero.com",
+            "adminName": "Super Admin",
             "action": "user.status_update",
             "entityType": "user",
-            "entityId": "6a14d44132d797211587d035",
-            "summary": "user.status_update on user:6a14d44132d797211587d035",
+            "entityId": "6a18b8431baef6f0ecea5314",
+            "summary": "user.status_update on user:6a18b8431baef6f0ecea5314",
             "after": {
-              "_id": "6a14d44132d797211587d035",
+              "_id": "6a18b8431baef6f0ecea5314",
               "fullName": "Audit Updated User",
               "phoneNumber": "+963991112222",
               "profileImage": null,
@@ -6501,7 +6500,7 @@
               "isActive": true,
               "isTermsAccepted": true,
               "isVerified": true,
-              "lastLoginAt": "2026-05-25T22:59:13.703Z",
+              "lastLoginAt": "2026-05-28T21:48:51.713Z",
               "vehicles": [],
               "preferences": {
                 "notifications": {
@@ -6510,29 +6509,30 @@
                   "email": false
                 },
                 "language": "ar",
-                "_id": "6a14d44132d797211587d036"
+                "_id": "6a18b8431baef6f0ecea5315"
               },
-              "createdAt": "2026-05-25T22:59:13.430Z",
-              "updatedAt": "2026-05-25T22:59:17.985Z",
+              "createdAt": "2026-05-28T21:48:51.553Z",
+              "updatedAt": "2026-05-28T21:48:53.826Z",
               "__v": 0
             },
             "metadata": {
               "isActive": true
             },
-            "createdAt": "2026-05-25T22:59:17.992Z",
-            "updatedAt": "2026-05-25T22:59:17.992Z",
+            "createdAt": "2026-05-28T21:48:53.830Z",
+            "updatedAt": "2026-05-28T21:48:53.830Z",
             "__v": 0
           },
           {
-            "_id": "6a14d44532d797211587d1dc",
-            "admin": "6a14d4366eff5ea22c705022",
+            "_id": "6a18b8451baef6f0ecea54bb",
+            "admin": "6a18b84203a01d3f1798954c",
             "adminEmail": "admin@carhero.com",
+            "adminName": "Super Admin",
             "action": "user.update",
             "entityType": "user",
-            "entityId": "6a14d44132d797211587d035",
-            "summary": "user.update on user:6a14d44132d797211587d035",
+            "entityId": "6a18b8431baef6f0ecea5314",
+            "summary": "user.update on user:6a18b8431baef6f0ecea5314",
             "after": {
-              "id": "6a14d44132d797211587d035",
+              "id": "6a18b8431baef6f0ecea5314",
               "fullName": "Audit Updated User",
               "phoneNumber": "+963991112222",
               "accountType": "customer",
@@ -6547,13 +6547,13 @@
                   "email": false
                 },
                 "language": "ar",
-                "_id": "6a14d44132d797211587d036"
+                "_id": "6a18b8431baef6f0ecea5315"
               },
               "isActive": true,
               "isVerified": true,
-              "lastLoginAt": "2026-05-25T22:59:13.703Z",
-              "createdAt": "2026-05-25T22:59:13.430Z",
-              "updatedAt": "2026-05-25T22:59:17.928Z"
+              "lastLoginAt": "2026-05-28T21:48:51.713Z",
+              "createdAt": "2026-05-28T21:48:51.553Z",
+              "updatedAt": "2026-05-28T21:48:53.806Z"
             },
             "metadata": {
               "fields": [
@@ -6561,20 +6561,21 @@
                 "updatedAt"
               ]
             },
-            "createdAt": "2026-05-25T22:59:17.943Z",
-            "updatedAt": "2026-05-25T22:59:17.943Z",
+            "createdAt": "2026-05-28T21:48:53.810Z",
+            "updatedAt": "2026-05-28T21:48:53.810Z",
             "__v": 0
           },
           {
-            "_id": "6a14d44532d797211587d1c2",
-            "admin": "6a14d4366eff5ea22c705022",
+            "_id": "6a18b8451baef6f0ecea54a1",
+            "admin": "6a18b84203a01d3f1798954c",
             "adminEmail": "admin@carhero.com",
+            "adminName": "Super Admin",
             "action": "subscription_plan.create",
             "entityType": "subscription_plan",
-            "entityId": "6a14d44532d797211587d1c0",
-            "summary": "subscription_plan.create on subscription_plan:6a14d44532d797211587d1c0",
+            "entityId": "6a18b8451baef6f0ecea549f",
+            "summary": "subscription_plan.create on subscription_plan:6a18b8451baef6f0ecea549f",
             "after": {
-              "id": "6a14d44532d797211587d1c0",
+              "id": "6a18b8451baef6f0ecea549f",
               "name": "Admin Audit Plan",
               "nameAr": "خطة اشتراك التدقيق",
               "price": 5000,
@@ -6589,23 +6590,24 @@
               "description": "Audit subscription plan",
               "descriptionAr": null,
               "metadata": {},
-              "createdAt": "2026-05-25T22:59:17.685Z",
-              "updatedAt": "2026-05-25T22:59:17.685Z"
+              "createdAt": "2026-05-28T21:48:53.710Z",
+              "updatedAt": "2026-05-28T21:48:53.710Z"
             },
-            "createdAt": "2026-05-25T22:59:17.692Z",
-            "updatedAt": "2026-05-25T22:59:17.692Z",
+            "createdAt": "2026-05-28T21:48:53.715Z",
+            "updatedAt": "2026-05-28T21:48:53.715Z",
             "__v": 0
           },
           {
-            "_id": "6a14d44532d797211587d1a3",
-            "admin": "6a14d4366eff5ea22c705022",
+            "_id": "6a18b8451baef6f0ecea5482",
+            "admin": "6a18b84203a01d3f1798954c",
             "adminEmail": "admin@carhero.com",
+            "adminName": "Super Admin",
             "action": "service.status_update",
             "entityType": "service",
-            "entityId": "6a14d4366eff5ea22c70502c",
-            "summary": "service.status_update on service:6a14d4366eff5ea22c70502c",
+            "entityId": "6a18b84203a01d3f1798956c",
+            "summary": "service.status_update on service:6a18b84203a01d3f1798956c",
             "after": {
-              "id": "6a14d4366eff5ea22c70502c",
+              "id": "6a18b84203a01d3f1798956c",
               "name": "Towing Service",
               "nameAr": "خدمة السحب",
               "category": "towing",
@@ -6623,26 +6625,27 @@
               "isSystemService": true,
               "options": [],
               "metadata": {},
-              "createdAt": "2026-05-25T22:59:02.703Z",
-              "updatedAt": "2026-05-25T22:59:17.485Z"
+              "createdAt": "2026-05-28T21:48:50.916Z",
+              "updatedAt": "2026-05-28T21:48:53.627Z"
             },
             "metadata": {
               "isActive": true
             },
-            "createdAt": "2026-05-25T22:59:17.493Z",
-            "updatedAt": "2026-05-25T22:59:17.493Z",
+            "createdAt": "2026-05-28T21:48:53.631Z",
+            "updatedAt": "2026-05-28T21:48:53.631Z",
             "__v": 0
           },
           {
-            "_id": "6a14d44532d797211587d19c",
-            "admin": "6a14d4366eff5ea22c705022",
+            "_id": "6a18b8451baef6f0ecea547b",
+            "admin": "6a18b84203a01d3f1798954c",
             "adminEmail": "admin@carhero.com",
+            "adminName": "Super Admin",
             "action": "service.update",
             "entityType": "service",
-            "entityId": "6a14d4366eff5ea22c70502c",
-            "summary": "service.update on service:6a14d4366eff5ea22c70502c",
+            "entityId": "6a18b84203a01d3f1798956c",
+            "summary": "service.update on service:6a18b84203a01d3f1798956c",
             "after": {
-              "id": "6a14d4366eff5ea22c70502c",
+              "id": "6a18b84203a01d3f1798956c",
               "name": "Towing Service",
               "nameAr": "خدمة السحب",
               "category": "towing",
@@ -6660,26 +6663,27 @@
               "isSystemService": true,
               "options": [],
               "metadata": {},
-              "createdAt": "2026-05-25T22:59:02.703Z",
-              "updatedAt": "2026-05-25T22:59:17.425Z"
+              "createdAt": "2026-05-28T21:48:50.916Z",
+              "updatedAt": "2026-05-28T21:48:53.603Z"
             },
             "metadata": {
               "fields": []
             },
-            "createdAt": "2026-05-25T22:59:17.437Z",
-            "updatedAt": "2026-05-25T22:59:17.437Z",
+            "createdAt": "2026-05-28T21:48:53.608Z",
+            "updatedAt": "2026-05-28T21:48:53.608Z",
             "__v": 0
           },
           {
-            "_id": "6a14d44532d797211587d18d",
-            "admin": "6a14d4366eff5ea22c705022",
+            "_id": "6a18b8451baef6f0ecea546c",
+            "admin": "6a18b84203a01d3f1798954c",
             "adminEmail": "admin@carhero.com",
+            "adminName": "Super Admin",
             "action": "service.create",
             "entityType": "service",
-            "entityId": "6a14d44532d797211587d18b",
-            "summary": "service.create on service:6a14d44532d797211587d18b",
+            "entityId": "6a18b8451baef6f0ecea546a",
+            "summary": "service.create on service:6a18b8451baef6f0ecea546a",
             "after": {
-              "id": "6a14d44532d797211587d18b",
+              "id": "6a18b8451baef6f0ecea546a",
               "name": "Audit Admin Service",
               "nameAr": "خدمة مدير التدقيق",
               "category": "roadside_assistance",
@@ -6697,23 +6701,24 @@
               "isSystemService": true,
               "options": [],
               "metadata": {},
-              "createdAt": "2026-05-25T22:59:17.300Z",
-              "updatedAt": "2026-05-25T22:59:17.300Z"
+              "createdAt": "2026-05-28T21:48:53.500Z",
+              "updatedAt": "2026-05-28T21:48:53.500Z"
             },
-            "createdAt": "2026-05-25T22:59:17.306Z",
-            "updatedAt": "2026-05-25T22:59:17.306Z",
+            "createdAt": "2026-05-28T21:48:53.516Z",
+            "updatedAt": "2026-05-28T21:48:53.516Z",
             "__v": 0
           },
           {
-            "_id": "6a14d44532d797211587d17b",
-            "admin": "6a14d4366eff5ea22c705022",
+            "_id": "6a18b8451baef6f0ecea545a",
+            "admin": "6a18b84203a01d3f1798954c",
             "adminEmail": "admin@carhero.com",
+            "adminName": "Super Admin",
             "action": "provider.status_update",
             "entityType": "provider",
-            "entityId": "6a14d44132d797211587d045",
-            "summary": "provider.status_update on provider:6a14d44132d797211587d045",
+            "entityId": "6a18b8431baef6f0ecea5324",
+            "summary": "provider.status_update on provider:6a18b8431baef6f0ecea5324",
             "after": {
-              "id": "6a14d44132d797211587d045",
+              "id": "6a18b8431baef6f0ecea5324",
               "phone": "+963992223333",
               "businessName": "Admin Patched Provider",
               "role": "provider",
@@ -6741,16 +6746,16 @@
               "images": [],
               "address": null,
               "services": [
-                "6a14d4366eff5ea22c70502c"
+                "6a18b84203a01d3f1798956c"
               ],
               "workingHours": [],
               "documents": [],
               "bankAccount": null,
               "rejectionReason": null,
               "city": "Aleppo",
-              "lastOnlineAt": "2026-05-25T22:59:15.161Z",
-              "createdAt": "2026-05-25T22:59:13.999Z",
-              "updatedAt": "2026-05-25T22:59:17.237Z",
+              "lastOnlineAt": "2026-05-28T21:48:52.443Z",
+              "createdAt": "2026-05-28T21:48:51.878Z",
+              "updatedAt": "2026-05-28T21:48:53.435Z",
               "businessType": null,
               "category": null,
               "accountStatus": "pending",
@@ -6777,20 +6782,21 @@
             "metadata": {
               "isActive": true
             },
-            "createdAt": "2026-05-25T22:59:17.243Z",
-            "updatedAt": "2026-05-25T22:59:17.243Z",
+            "createdAt": "2026-05-28T21:48:53.441Z",
+            "updatedAt": "2026-05-28T21:48:53.441Z",
             "__v": 0
           },
           {
-            "_id": "6a14d44532d797211587d171",
-            "admin": "6a14d4366eff5ea22c705022",
+            "_id": "6a18b8451baef6f0ecea5450",
+            "admin": "6a18b84203a01d3f1798954c",
             "adminEmail": "admin@carhero.com",
+            "adminName": "Super Admin",
             "action": "provider.update",
             "entityType": "provider",
-            "entityId": "6a14d44132d797211587d045",
-            "summary": "provider.update on provider:6a14d44132d797211587d045",
+            "entityId": "6a18b8431baef6f0ecea5324",
+            "summary": "provider.update on provider:6a18b8431baef6f0ecea5324",
             "after": {
-              "id": "6a14d44132d797211587d045",
+              "id": "6a18b8431baef6f0ecea5324",
               "phone": "+963992223333",
               "businessName": "Admin Patched Provider",
               "role": "provider",
@@ -6818,16 +6824,16 @@
               "images": [],
               "address": null,
               "services": [
-                "6a14d4366eff5ea22c70502c"
+                "6a18b84203a01d3f1798956c"
               ],
               "workingHours": [],
               "documents": [],
               "bankAccount": null,
               "rejectionReason": null,
               "city": "Aleppo",
-              "lastOnlineAt": "2026-05-25T22:59:15.161Z",
-              "createdAt": "2026-05-25T22:59:13.999Z",
-              "updatedAt": "2026-05-25T22:59:17.180Z",
+              "lastOnlineAt": "2026-05-28T21:48:52.443Z",
+              "createdAt": "2026-05-28T21:48:51.878Z",
+              "updatedAt": "2026-05-28T21:48:53.395Z",
               "businessType": null,
               "category": null,
               "accountStatus": "pending",
@@ -6868,20 +6874,21 @@
                 "bankAccount"
               ]
             },
-            "createdAt": "2026-05-25T22:59:17.187Z",
-            "updatedAt": "2026-05-25T22:59:17.187Z",
+            "createdAt": "2026-05-28T21:48:53.401Z",
+            "updatedAt": "2026-05-28T21:48:53.401Z",
             "__v": 0
           },
           {
-            "_id": "6a14d44532d797211587d162",
-            "admin": "6a14d4366eff5ea22c705022",
+            "_id": "6a18b8451baef6f0ecea5441",
+            "admin": "6a18b84203a01d3f1798954c",
             "adminEmail": "admin@carhero.com",
+            "adminName": "Super Admin",
             "action": "provider.create",
             "entityType": "provider",
-            "entityId": "6a14d44532d797211587d160",
-            "summary": "provider.create on provider:6a14d44532d797211587d160",
+            "entityId": "6a18b8451baef6f0ecea543f",
+            "summary": "provider.create on provider:6a18b8451baef6f0ecea543f",
             "after": {
-              "id": "6a14d44532d797211587d160",
+              "id": "6a18b8451baef6f0ecea543f",
               "phone": "+963911887766",
               "businessName": "Admin Test Provider",
               "role": "provider",
@@ -6913,8 +6920,8 @@
               "rejectionReason": null,
               "city": null,
               "lastOnlineAt": null,
-              "createdAt": "2026-05-25T22:59:17.083Z",
-              "updatedAt": "2026-05-25T22:59:17.083Z",
+              "createdAt": "2026-05-28T21:48:53.341Z",
+              "updatedAt": "2026-05-28T21:48:53.341Z",
               "businessType": null,
               "category": null,
               "accountStatus": "pending",
@@ -6938,18 +6945,19 @@
               "tags": [],
               "isPhoneVerified": false
             },
-            "createdAt": "2026-05-25T22:59:17.092Z",
-            "updatedAt": "2026-05-25T22:59:17.092Z",
+            "createdAt": "2026-05-28T21:48:53.346Z",
+            "updatedAt": "2026-05-28T21:48:53.346Z",
             "__v": 0
           },
           {
-            "_id": "6a14d44432d797211587d152",
-            "admin": "6a14d4366eff5ea22c705022",
+            "_id": "6a18b8451baef6f0ecea5431",
+            "admin": "6a18b84203a01d3f1798954c",
             "adminEmail": "admin@carhero.com",
+            "adminName": "Super Admin",
             "action": "membership.create",
             "entityType": "subscription_plan",
-            "entityId": "6a14d44432d797211587d150",
-            "summary": "membership.create on subscription_plan:6a14d44432d797211587d150",
+            "entityId": "6a18b8451baef6f0ecea542f",
+            "summary": "membership.create on subscription_plan:6a18b8451baef6f0ecea542f",
             "after": {
               "name": "Audit Plan",
               "nameAr": "خطة التدقيق",
@@ -6961,51 +6969,53 @@
               "isActive": true,
               "tier": "basic",
               "sortOrder": 0,
-              "_id": "6a14d44432d797211587d150",
-              "createdAt": "2026-05-25T22:59:16.945Z",
-              "updatedAt": "2026-05-25T22:59:16.945Z",
+              "_id": "6a18b8451baef6f0ecea542f",
+              "createdAt": "2026-05-28T21:48:53.284Z",
+              "updatedAt": "2026-05-28T21:48:53.284Z",
               "__v": 0
             },
-            "createdAt": "2026-05-25T22:59:16.956Z",
-            "updatedAt": "2026-05-25T22:59:16.956Z",
+            "createdAt": "2026-05-28T21:48:53.288Z",
+            "updatedAt": "2026-05-28T21:48:53.288Z",
             "__v": 0
           },
           {
-            "_id": "6a14d44432d797211587d122",
-            "admin": "6a14d4366eff5ea22c705022",
+            "_id": "6a18b8451baef6f0ecea5401",
+            "admin": "6a18b84203a01d3f1798954c",
             "adminEmail": "admin@carhero.com",
+            "adminName": "Super Admin",
             "action": "setting.maintenance_update",
             "entityType": "setting",
             "summary": "setting.maintenance_update on setting",
             "after": {
               "message": "Maintenance mode deactivated",
               "settings": {
-                "_id": "6a14d44432d797211587d11d",
+                "_id": "6a18b8451baef6f0ecea53fc",
                 "key": "app_config",
                 "maintenanceMode": false,
                 "group": "general",
                 "isPublic": true,
-                "createdAt": "2026-05-25T22:59:16.504Z",
-                "updatedAt": "2026-05-25T22:59:16.543Z",
+                "createdAt": "2026-05-28T21:48:53.072Z",
+                "updatedAt": "2026-05-28T21:48:53.088Z",
                 "__v": 0
               }
             },
-            "createdAt": "2026-05-25T22:59:16.553Z",
-            "updatedAt": "2026-05-25T22:59:16.553Z",
+            "createdAt": "2026-05-28T21:48:53.094Z",
+            "updatedAt": "2026-05-28T21:48:53.094Z",
             "__v": 0
           },
           {
-            "_id": "6a14d44432d797211587d118",
-            "admin": "6a14d4366eff5ea22c705022",
+            "_id": "6a18b8451baef6f0ecea53f7",
+            "admin": "6a18b84203a01d3f1798954c",
             "adminEmail": "admin@carhero.com",
+            "adminName": "Super Admin",
             "action": "service.update",
             "entityType": "service",
-            "entityId": "6a14d4366eff5ea22c70502c",
-            "summary": "service.update on service:6a14d4366eff5ea22c70502c",
+            "entityId": "6a18b84203a01d3f1798956c",
+            "summary": "service.update on service:6a18b84203a01d3f1798956c",
             "after": {
               "message": "Service updated successfully",
               "service": {
-                "_id": "6a14d4366eff5ea22c70502c",
+                "_id": "6a18b84203a01d3f1798956c",
                 "name": "Towing Service",
                 "nameAr": "خدمة السحب",
                 "description": "Professional vehicle towing service",
@@ -7019,26 +7029,27 @@
                 "isSystemService": true,
                 "sortOrder": 1,
                 "options": [],
-                "createdAt": "2026-05-25T22:59:02.703Z",
-                "updatedAt": "2026-05-25T22:59:16.456Z",
+                "createdAt": "2026-05-28T21:48:50.916Z",
+                "updatedAt": "2026-05-28T21:48:53.048Z",
                 "__v": 0
               }
             },
             "metadata": {
               "fields": []
             },
-            "createdAt": "2026-05-25T22:59:16.465Z",
-            "updatedAt": "2026-05-25T22:59:16.465Z",
+            "createdAt": "2026-05-28T21:48:53.053Z",
+            "updatedAt": "2026-05-28T21:48:53.053Z",
             "__v": 0
           },
           {
-            "_id": "6a14d44432d797211587d110",
-            "admin": "6a14d4366eff5ea22c705022",
+            "_id": "6a18b8451baef6f0ecea53ef",
+            "admin": "6a18b84203a01d3f1798954c",
             "adminEmail": "admin@carhero.com",
+            "adminName": "Super Admin",
             "action": "service.create",
             "entityType": "service",
-            "entityId": "6a14d44432d797211587d10e",
-            "summary": "service.create on service:6a14d44432d797211587d10e",
+            "entityId": "6a18b8451baef6f0ecea53ed",
+            "summary": "service.create on service:6a18b8451baef6f0ecea53ed",
             "after": {
               "name": "Audit Service",
               "nameAr": "خدمة التدقيق",
@@ -7052,27 +7063,28 @@
               "isSystemService": true,
               "sortOrder": 0,
               "options": [],
-              "_id": "6a14d44432d797211587d10e",
-              "createdAt": "2026-05-25T22:59:16.382Z",
-              "updatedAt": "2026-05-25T22:59:16.382Z",
+              "_id": "6a18b8451baef6f0ecea53ed",
+              "createdAt": "2026-05-28T21:48:53.013Z",
+              "updatedAt": "2026-05-28T21:48:53.013Z",
               "__v": 0
             },
-            "createdAt": "2026-05-25T22:59:16.392Z",
-            "updatedAt": "2026-05-25T22:59:16.392Z",
+            "createdAt": "2026-05-28T21:48:53.022Z",
+            "updatedAt": "2026-05-28T21:48:53.022Z",
             "__v": 0
           },
           {
-            "_id": "6a14d44432d797211587d104",
-            "admin": "6a14d4366eff5ea22c705022",
+            "_id": "6a18b8441baef6f0ecea53e3",
+            "admin": "6a18b84203a01d3f1798954c",
             "adminEmail": "admin@carhero.com",
+            "adminName": "Super Admin",
             "action": "provider.approve",
             "entityType": "provider",
-            "entityId": "6a14d44132d797211587d045",
-            "summary": "provider.approve on provider:6a14d44132d797211587d045",
+            "entityId": "6a18b8431baef6f0ecea5324",
+            "summary": "provider.approve on provider:6a18b8431baef6f0ecea5324",
             "after": {
               "message": "Provider approved and activated successfully",
               "provider": {
-                "_id": "6a14d44132d797211587d045",
+                "_id": "6a18b8431baef6f0ecea5324",
                 "phone": "+963992223333",
                 "businessName": "Super Workshop Tech",
                 "ownerName": "Super Workshop Tech",
@@ -7095,7 +7107,7 @@
                   "towing"
                 ],
                 "services": [
-                  "6a14d4366eff5ea22c70502c"
+                  "6a18b84203a01d3f1798956c"
                 ],
                 "requestedServices": [],
                 "services_list": [],
@@ -7115,28 +7127,29 @@
                 "shopPhotos": [],
                 "commissionRate": 10,
                 "workingHours": [],
-                "createdAt": "2026-05-25T22:59:13.999Z",
-                "updatedAt": "2026-05-25T22:59:16.240Z",
+                "createdAt": "2026-05-28T21:48:51.878Z",
+                "updatedAt": "2026-05-28T21:48:52.949Z",
                 "__v": 0,
-                "lastOnlineAt": "2026-05-25T22:59:15.161Z"
+                "lastOnlineAt": "2026-05-28T21:48:52.443Z"
               }
             },
-            "createdAt": "2026-05-25T22:59:16.266Z",
-            "updatedAt": "2026-05-25T22:59:16.266Z",
+            "createdAt": "2026-05-28T21:48:52.963Z",
+            "updatedAt": "2026-05-28T21:48:52.963Z",
             "__v": 0
           },
           {
-            "_id": "6a14d44432d797211587d0fb",
-            "admin": "6a14d4366eff5ea22c705022",
+            "_id": "6a18b8441baef6f0ecea53da",
+            "admin": "6a18b84203a01d3f1798954c",
             "adminEmail": "admin@carhero.com",
+            "adminName": "Super Admin",
             "action": "provider.update",
             "entityType": "provider",
-            "entityId": "6a14d44132d797211587d045",
-            "summary": "provider.update on provider:6a14d44132d797211587d045",
+            "entityId": "6a18b8431baef6f0ecea5324",
+            "summary": "provider.update on provider:6a18b8431baef6f0ecea5324",
             "after": {
               "message": "Provider data updated successfully",
               "provider": {
-                "_id": "6a14d44132d797211587d045",
+                "_id": "6a18b8431baef6f0ecea5324",
                 "phone": "+963992223333",
                 "businessName": "Super Workshop Tech",
                 "ownerName": "Super Workshop Tech",
@@ -7159,7 +7172,7 @@
                   "towing"
                 ],
                 "services": [
-                  "6a14d4366eff5ea22c70502c"
+                  "6a18b84203a01d3f1798956c"
                 ],
                 "requestedServices": [],
                 "services_list": [],
@@ -7179,27 +7192,28 @@
                 "shopPhotos": [],
                 "commissionRate": 10,
                 "workingHours": [],
-                "createdAt": "2026-05-25T22:59:13.999Z",
-                "updatedAt": "2026-05-25T22:59:16.211Z",
+                "createdAt": "2026-05-28T21:48:51.878Z",
+                "updatedAt": "2026-05-28T21:48:52.932Z",
                 "__v": 0,
-                "lastOnlineAt": "2026-05-25T22:59:15.161Z"
+                "lastOnlineAt": "2026-05-28T21:48:52.443Z"
               }
             },
             "metadata": {
               "fields": []
             },
-            "createdAt": "2026-05-25T22:59:16.218Z",
-            "updatedAt": "2026-05-25T22:59:16.218Z",
+            "createdAt": "2026-05-28T21:48:52.937Z",
+            "updatedAt": "2026-05-28T21:48:52.937Z",
             "__v": 0
           },
           {
-            "_id": "6a14d44432d797211587d0e4",
-            "admin": "6a14d4366eff5ea22c705022",
+            "_id": "6a18b8441baef6f0ecea53c3",
+            "admin": "6a18b84203a01d3f1798954c",
             "adminEmail": "admin@carhero.com",
+            "adminName": "Super Admin",
             "action": "subscription_plan.create",
             "entityType": "subscription_plan",
-            "entityId": "6a14d44432d797211587d0e2",
-            "summary": "subscription_plan.create on subscription_plan:6a14d44432d797211587d0e2",
+            "entityId": "6a18b8441baef6f0ecea53c1",
+            "summary": "subscription_plan.create on subscription_plan:6a18b8441baef6f0ecea53c1",
             "after": {
               "name": "sample_name",
               "nameAr": "sample_nameAr",
@@ -7212,51 +7226,53 @@
               "isActive": true,
               "tier": "basic",
               "sortOrder": 1,
-              "_id": "6a14d44432d797211587d0e2",
-              "createdAt": "2026-05-25T22:59:16.051Z",
-              "updatedAt": "2026-05-25T22:59:16.051Z",
+              "_id": "6a18b8441baef6f0ecea53c1",
+              "createdAt": "2026-05-28T21:48:52.840Z",
+              "updatedAt": "2026-05-28T21:48:52.840Z",
               "__v": 0
             },
-            "createdAt": "2026-05-25T22:59:16.060Z",
-            "updatedAt": "2026-05-25T22:59:16.060Z",
+            "createdAt": "2026-05-28T21:48:52.847Z",
+            "updatedAt": "2026-05-28T21:48:52.847Z",
             "__v": 0
           },
           {
-            "_id": "6a14d44332d797211587d0d6",
-            "admin": "6a14d4366eff5ea22c705022",
+            "_id": "6a18b8441baef6f0ecea53b5",
+            "admin": "6a18b84203a01d3f1798954c",
             "adminEmail": "admin@carhero.com",
+            "adminName": "Super Admin",
             "action": "admin.create",
             "entityType": "admin",
-            "entityId": "6a14d44332d797211587d0d4",
-            "summary": "admin.create on admin:6a14d44332d797211587d0d4",
+            "entityId": "6a18b8441baef6f0ecea53b3",
+            "summary": "admin.create on admin:6a18b8441baef6f0ecea53b3",
             "after": {
               "name": "Audit Admin",
-              "email": "admin_audit_1779749955711@carhero.com",
-              "password": "$2b$10$E.l2o6/dttjSJhASFo8VcOsy6Ik0Br8bdCU40xjrqHrZY9I.ZuGGS",
+              "email": "admin_audit_1780004932701@carhero.com",
+              "password": "$2b$10$qn1JAwLlXDrKIH.h7VFht.zGS/U1kEZAFjNnNll2U2EdH5tGQrJBO",
               "role": "admin",
               "permissions": [],
               "isActive": true,
-              "_id": "6a14d44332d797211587d0d4",
-              "createdAt": "2026-05-25T22:59:15.901Z",
-              "updatedAt": "2026-05-25T22:59:15.901Z",
+              "_id": "6a18b8441baef6f0ecea53b3",
+              "createdAt": "2026-05-28T21:48:52.770Z",
+              "updatedAt": "2026-05-28T21:48:52.770Z",
               "__v": 0
             },
-            "createdAt": "2026-05-25T22:59:15.910Z",
-            "updatedAt": "2026-05-25T22:59:15.910Z",
+            "createdAt": "2026-05-28T21:48:52.773Z",
+            "updatedAt": "2026-05-28T21:48:52.773Z",
             "__v": 0
           },
           {
-            "_id": "6a14d44232d797211587d05b",
-            "admin": "6a14d4366eff5ea22c705022",
+            "_id": "6a18b8441baef6f0ecea533a",
+            "admin": "6a18b84203a01d3f1798954c",
             "adminEmail": "admin@carhero.com",
+            "adminName": "Super Admin",
             "action": "provider.approve",
             "entityType": "provider",
-            "entityId": "6a14d44132d797211587d045",
-            "summary": "provider.approve on provider:6a14d44132d797211587d045",
+            "entityId": "6a18b8431baef6f0ecea5324",
+            "summary": "provider.approve on provider:6a18b8431baef6f0ecea5324",
             "after": {
               "message": "Provider approved and activated successfully",
               "provider": {
-                "_id": "6a14d44132d797211587d045",
+                "_id": "6a18b8431baef6f0ecea5324",
                 "phone": "+963992223333",
                 "businessName": "Super Workshop Tech",
                 "ownerName": "Super Workshop Tech",
@@ -7295,13 +7311,13 @@
                 "shopPhotos": [],
                 "commissionRate": 10,
                 "workingHours": [],
-                "createdAt": "2026-05-25T22:59:13.999Z",
-                "updatedAt": "2026-05-25T22:59:14.537Z",
+                "createdAt": "2026-05-28T21:48:51.878Z",
+                "updatedAt": "2026-05-28T21:48:52.143Z",
                 "__v": 0
               }
             },
-            "createdAt": "2026-05-25T22:59:14.603Z",
-            "updatedAt": "2026-05-25T22:59:14.603Z",
+            "createdAt": "2026-05-28T21:48:52.173Z",
+            "updatedAt": "2026-05-28T21:48:52.173Z",
             "__v": 0
           }
         ],
@@ -7310,7 +7326,7 @@
         "limit": 20,
         "pages": 1
       },
-      "timestamp": "2026-05-25T22:59:27.156Z"
+      "timestamp": "2026-05-28T21:48:55.783Z"
     }
   },
   {
@@ -7330,7 +7346,7 @@
         "limit": 20,
         "pages": 0
       },
-      "timestamp": "2026-05-25T22:59:27.187Z"
+      "timestamp": "2026-05-28T21:48:55.796Z"
     }
   },
   {
@@ -7338,13 +7354,13 @@
     "name": "Get order status history",
     "folder": "orders - status histories",
     "method": "GET",
-    "url": "http://localhost:3001/api/v1/orders/6a14d44332d797211587d080/status-history",
+    "url": "http://localhost:3001/api/v1/orders/6a18b8441baef6f0ecea535f/status-history",
     "status": "Passed",
     "code": 200,
     "response": {
       "success": true,
       "data": [],
-      "timestamp": "2026-05-25T22:59:27.220Z"
+      "timestamp": "2026-05-28T21:48:55.812Z"
     }
   },
   {
@@ -7360,109 +7376,109 @@
       "data": {
         "histories": [
           {
-            "_id": "6a14d44732d797211587d29d",
+            "_id": "6a18b8461baef6f0ecea557c",
             "entityType": "order",
-            "entityId": "6a14d44732d797211587d29b",
-            "orderNumber": "CH-1779749959436-394",
+            "entityId": "6a18b8461baef6f0ecea557a",
+            "orderNumber": "CH-1780004934478-95",
             "toStatus": "pending",
-            "changedBy": "6a14d44132d797211587d042",
+            "changedBy": "6a18b8431baef6f0ecea5321",
             "changedByRole": "user",
             "changedByType": "user",
             "reason": "Scheduled booking created",
             "metadata": {
               "isScheduled": true,
-              "serviceId": "6a14d4366eff5ea22c70502c"
+              "serviceId": "6a18b84203a01d3f1798956c"
             },
-            "createdAt": "2026-05-25T22:59:19.452Z",
-            "updatedAt": "2026-05-25T22:59:19.452Z",
+            "createdAt": "2026-05-28T21:48:54.483Z",
+            "updatedAt": "2026-05-28T21:48:54.483Z",
             "__v": 0
           },
           {
-            "_id": "6a14d44632d797211587d262",
+            "_id": "6a18b8461baef6f0ecea5541",
             "entityType": "order",
-            "entityId": "6a14d44632d797211587d260",
-            "orderNumber": "CH-1779749958977-420",
+            "entityId": "6a18b8461baef6f0ecea553f",
+            "orderNumber": "CH-1780004934269-36",
             "toStatus": "pending",
-            "changedBy": "6a14d44132d797211587d035",
+            "changedBy": "6a18b8431baef6f0ecea5314",
             "changedByRole": "user",
             "changedByType": "user",
             "reason": "Order created",
             "metadata": {
               "isScheduled": false,
-              "serviceId": "6a14d4366eff5ea22c70502c"
+              "serviceId": "6a18b84203a01d3f1798956c"
             },
-            "createdAt": "2026-05-25T22:59:18.991Z",
-            "updatedAt": "2026-05-25T22:59:18.991Z",
+            "createdAt": "2026-05-28T21:48:54.275Z",
+            "updatedAt": "2026-05-28T21:48:54.275Z",
             "__v": 0
           },
           {
-            "_id": "6a14d44332d797211587d0a6",
+            "_id": "6a18b8441baef6f0ecea5385",
             "entityType": "order",
-            "entityId": "6a14d44332d797211587d080",
-            "orderNumber": "CH-1779749955200-308",
+            "entityId": "6a18b8441baef6f0ecea535f",
+            "orderNumber": "CH-1780004932471-321",
             "fromStatus": "in_progress",
             "toStatus": "completed",
-            "changedBy": "6a14d44132d797211587d042",
+            "changedBy": "6a18b8431baef6f0ecea5321",
             "changedByRole": "provider",
             "changedByType": "provider",
             "metadata": {
               "isScheduled": false
             },
-            "createdAt": "2026-05-25T22:59:15.358Z",
-            "updatedAt": "2026-05-25T22:59:15.358Z",
+            "createdAt": "2026-05-28T21:48:52.569Z",
+            "updatedAt": "2026-05-28T21:48:52.569Z",
             "__v": 0
           },
           {
-            "_id": "6a14d44332d797211587d099",
+            "_id": "6a18b8441baef6f0ecea5378",
             "entityType": "order",
-            "entityId": "6a14d44332d797211587d080",
-            "orderNumber": "CH-1779749955200-308",
+            "entityId": "6a18b8441baef6f0ecea535f",
+            "orderNumber": "CH-1780004932471-321",
             "fromStatus": "accepted",
             "toStatus": "in_progress",
-            "changedBy": "6a14d44132d797211587d042",
+            "changedBy": "6a18b8431baef6f0ecea5321",
             "changedByRole": "provider",
             "changedByType": "provider",
             "metadata": {
               "isScheduled": false
             },
-            "createdAt": "2026-05-25T22:59:15.306Z",
-            "updatedAt": "2026-05-25T22:59:15.306Z",
+            "createdAt": "2026-05-28T21:48:52.537Z",
+            "updatedAt": "2026-05-28T21:48:52.537Z",
             "__v": 0
           },
           {
-            "_id": "6a14d44332d797211587d08c",
+            "_id": "6a18b8441baef6f0ecea536b",
             "entityType": "order",
-            "entityId": "6a14d44332d797211587d080",
-            "orderNumber": "CH-1779749955200-308",
+            "entityId": "6a18b8441baef6f0ecea535f",
+            "orderNumber": "CH-1780004932471-321",
             "fromStatus": "pending",
             "toStatus": "accepted",
-            "changedBy": "6a14d44132d797211587d042",
+            "changedBy": "6a18b8431baef6f0ecea5321",
             "changedByRole": "provider",
             "changedByType": "provider",
             "metadata": {
               "isScheduled": false
             },
-            "createdAt": "2026-05-25T22:59:15.262Z",
-            "updatedAt": "2026-05-25T22:59:15.262Z",
+            "createdAt": "2026-05-28T21:48:52.504Z",
+            "updatedAt": "2026-05-28T21:48:52.504Z",
             "__v": 0
           },
           {
-            "_id": "6a14d44332d797211587d082",
+            "_id": "6a18b8441baef6f0ecea5361",
             "entityType": "order",
-            "entityId": "6a14d44332d797211587d080",
-            "orderNumber": "CH-1779749955200-308",
+            "entityId": "6a18b8441baef6f0ecea535f",
+            "orderNumber": "CH-1780004932471-321",
             "toStatus": "pending",
-            "changedBy": "6a14d44132d797211587d035",
+            "changedBy": "6a18b8431baef6f0ecea5314",
             "changedByRole": "user",
             "changedByType": "user",
             "reason": "Order created",
             "metadata": {
               "isScheduled": false,
-              "serviceId": "6a14d4366eff5ea22c70502c",
-              "providerId": "6a14d44132d797211587d045"
+              "serviceId": "6a18b84203a01d3f1798956c",
+              "providerId": "6a18b8431baef6f0ecea5324"
             },
-            "createdAt": "2026-05-25T22:59:15.212Z",
-            "updatedAt": "2026-05-25T22:59:15.212Z",
+            "createdAt": "2026-05-28T21:48:52.478Z",
+            "updatedAt": "2026-05-28T21:48:52.478Z",
             "__v": 0
           }
         ],
@@ -7471,7 +7487,7 @@
         "limit": 20,
         "pages": 1
       },
-      "timestamp": "2026-05-25T22:59:27.250Z"
+      "timestamp": "2026-05-28T21:48:55.827Z"
     }
   }
 ]
