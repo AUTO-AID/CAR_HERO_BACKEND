@@ -17,19 +17,24 @@ function decodeJwt(token) {
   }
 }
 
-// Load Postman files
-const collectionPath = path.resolve(__dirname, '../postman/car_hero_backend.postman_collection.json');
-const envPath = path.resolve(__dirname, '../postman/car_hero_backend.postman_environment.json');
-
-const collection = JSON.parse(fs.readFileSync(collectionPath, 'utf8'));
-const envFile = JSON.parse(fs.readFileSync(envPath, 'utf8'));
+// Load the direct product collections. There is intentionally no global collection.
+const collectionsDir = path.resolve(__dirname, '../postman/collections');
+const productDirs = fs.readdirSync(collectionsDir, { withFileTypes: true })
+  .filter(item => item.isDirectory())
+  .map(item => path.join(collectionsDir, item.name));
+const collections = productDirs.map(productDir => {
+  const file = fs.readdirSync(productDir).find(name => name.endsWith('.postman_collection.json'));
+  return JSON.parse(fs.readFileSync(path.join(productDir, file), 'utf8'));
+});
+const envFiles = productDirs.map(productDir => {
+  const file = fs.readdirSync(productDir).find(name => name.endsWith('.postman_environment.json'));
+  return JSON.parse(fs.readFileSync(path.join(productDir, file), 'utf8'));
+});
 
 // Initialize environment variables from Postman Environment
 const env = {};
-envFile.values.forEach(item => {
-  if (item.enabled) {
-    env[item.key] = item.value;
-  }
+envFiles.flatMap(file => file.values || []).forEach(item => {
+  if (item.enabled && env[item.key] === undefined) env[item.key] = item.value;
 });
 
 // Ensure base_url points to local NestJS
@@ -93,7 +98,19 @@ function extractRequests(items, folderPath = []) {
     }
   });
 }
-extractRequests(collection.item);
+const uniqueRequests = new Set();
+collections.forEach(collection => {
+  const before = allRequests.length;
+  extractRequests(collection.item);
+  const added = allRequests.splice(before);
+  added.forEach(item => {
+    const key = `${item.request.method} ${item.request.url.raw}`;
+    if (!uniqueRequests.has(key)) {
+      uniqueRequests.add(key);
+      allRequests.push(item);
+    }
+  });
+});
 
 console.log(`Loaded ${allRequests.length} requests from Postman Collection.`);
 

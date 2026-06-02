@@ -1,6 +1,6 @@
 # Postman Workspace Synchronization
 
-Use a shared Postman Workspace so frontend teams receive API updates without importing JSON files again.
+The Postman Workspace mirrors the direct product collections under `postman/collections/`.
 
 ## One-Time Setup
 
@@ -22,15 +22,7 @@ $env:POSTMAN_WORKSPACE_ID = "..."
 npm run postman:publish
 ```
 
-## Daily Workflow
-
-1. Backend changes an endpoint.
-2. Update the canonical Postman source when the route contract changes.
-3. Commit and push to `main`.
-4. GitHub Actions generates, validates, and publishes the Workspace collections and environments.
-5. Frontend teams see the updates in Postman automatically.
-
-## Collections Shared With Teams
+## Published Collections
 
 ```text
 Car Hero - Customer App API
@@ -40,7 +32,16 @@ Car Hero - Public Website API
 Car Hero - AI API
 ```
 
-Keep `Car Hero - Backend Master API` for backend maintainers. `Car Hero - Shared API` is a reference for reusable requests; product collections already include the shared requests they need.
+The publisher removes the obsolete `Car Hero - Backend Master API` and `Car Hero - Shared API` collections and their environments when found.
+
+## Daily Workflow
+
+1. Backend changes an endpoint.
+2. Add or update the request directly in each relevant folder under `postman/collections/`.
+3. Run `npm run postman:validate`.
+4. Commit and push to `main`.
+5. GitHub Actions validates and publishes the direct Workspace collections and environments.
+6. Frontend teams see the updates in Postman automatically.
 
 ## Permissions
 

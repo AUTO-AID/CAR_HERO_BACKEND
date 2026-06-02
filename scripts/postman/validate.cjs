@@ -1,15 +1,7 @@
 const fs = require('fs');
 const path = require('path');
-const config = require('./config.cjs');
-const {
-  collectVariables,
-  flatten,
-  readJson,
-  requestKey,
-  safeFileName,
-} = require('./lib.cjs');
 
-const products = ['master', 'app', 'provider-dashboard', 'admin-dashboard', 'website', 'ai', 'shared'];
+const collectionsDir = path.resolve(__dirname, '../../postman/collections');
 let failed = false;
 
 function error(message) {
@@ -17,73 +9,94 @@ function error(message) {
   console.error(`[ERROR] ${message}`);
 }
 
-function collectionFile(product) {
-  const base = safeFileName(product);
-  return path.join(config.outputDir, product, `${base}.postman_collection.json`);
-}
-
-function environmentFile(product) {
-  const base = safeFileName(product);
-  return path.join(config.outputDir, product, `${base}.local.postman_environment.json`);
-}
-
-function assertUniqueRequests(product, collection) {
-  const seen = new Map();
-  for (const entry of flatten(collection.item)) {
-    const count = (seen.get(entry.key) || 0) + 1;
-    seen.set(entry.key, count);
-  }
-  for (const [key, count] of seen.entries()) {
-    const intentionalAiExamples = key === 'POST /ai/recommend-provider';
-    if (count > 1 && !intentionalAiExamples) error(`${product} contains ${count} copies of ${key}`);
+function readJson(file) {
+  try {
+    return JSON.parse(fs.readFileSync(file, 'utf8'));
+  } catch (cause) {
+    error(`${file} is not valid JSON: ${cause.message}`);
+    return null;
   }
 }
 
-function assertEnvironment(product, collection, environment) {
-  const available = new Set((environment.values || []).map((item) => item.key));
-  for (const variable of collectVariables(collection)) {
-    if (!available.has(variable)) error(`${product} environment is missing {{${variable}}}`);
-  }
+function flatten(items) {
+  return (items || []).flatMap((item) => [
+    ...(item.request ? [item] : []),
+    ...flatten(item.item),
+  ]);
 }
 
-function keys(collection) {
-  return new Set(flatten(collection.item).map(({ item }) => requestKey(item)));
+function requestPath(item) {
+  const url = item.request?.url;
+  if (Array.isArray(url?.path)) return `/${url.path.join('/')}`;
+  return (typeof url === 'string' ? url : url?.raw || '')
+    .replace(/^{{base_url}}/, '')
+    .replace(/^https?:\/\/[^/]+(?:\/api\/v1)?/, '')
+    .split('?')[0];
+}
+
+function requestKey(item) {
+  return `${item.request?.method || 'GET'} ${requestPath(item)
+    .replace(/{{[^}]+}}/g, ':id')
+    .replace(/:[A-Za-z][A-Za-z0-9_]*/g, ':id')}`;
+}
+
+function collectVariables(value, result = new Set()) {
+  if (typeof value === 'string') {
+    for (const match of value.matchAll(/{{([^}]+)}}/g)) result.add(match[1]);
+  } else if (Array.isArray(value)) {
+    value.forEach((item) => collectVariables(item, result));
+  } else if (value && typeof value === 'object') {
+    Object.values(value).forEach((item) => collectVariables(item, result));
+  }
+  return result;
+}
+
+function matchingFile(files, suffix, product) {
+  const matches = files.filter((file) => file.endsWith(suffix));
+  if (matches.length !== 1) {
+    error(`${product} must contain exactly one ${suffix} file`);
+    return null;
+  }
+  return matches[0];
 }
 
 function main() {
-  if (!fs.existsSync(config.outputDir)) {
-    error('Generated collections are missing. Run npm run postman:generate first.');
-  }
+  const products = fs.readdirSync(collectionsDir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .sort();
 
-  const collections = {};
+  if (!products.length) error('No product collections found.');
+
   for (const product of products) {
-    const collectionPath = collectionFile(product);
-    const envPath = environmentFile(product);
-    if (!fs.existsSync(collectionPath) || !fs.existsSync(envPath)) {
-      error(`${product} generated collection or environment is missing`);
-      continue;
-    }
-    collections[product] = readJson(collectionPath);
-    const environment = readJson(envPath);
-    assertUniqueRequests(product, collections[product]);
-    assertEnvironment(product, collections[product], environment);
-  }
+    const productDir = path.join(collectionsDir, product);
+    const files = fs.readdirSync(productDir);
+    const collectionFile = matchingFile(files, '.postman_collection.json', product);
+    const environmentFile = matchingFile(files, '.postman_environment.json', product);
+    if (!collectionFile || !environmentFile) continue;
 
-  if (collections.master) {
-    const masterKeys = keys(collections.master);
-    const assignedKeys = new Set();
-    for (const product of ['app', 'provider-dashboard', 'admin-dashboard', 'website', 'ai']) {
-      if (!collections[product]) continue;
-      keys(collections[product]).forEach((key) => assignedKeys.add(key));
+    const collection = readJson(path.join(productDir, collectionFile));
+    const environment = readJson(path.join(productDir, environmentFile));
+    if (!collection || !environment) continue;
+
+    const requests = flatten(collection.item);
+    const availableVariables = new Set((environment.values || []).map((item) => item.key));
+    for (const variable of collectVariables(collection)) {
+      if (!availableVariables.has(variable)) error(`${product} environment is missing {{${variable}}}`);
     }
-    for (const key of masterKeys) {
-      if (!assignedKeys.has(key)) error(`No product collection owns ${key}`);
+
+    const seen = new Map();
+    for (const request of requests) seen.set(requestKey(request), (seen.get(requestKey(request)) || 0) + 1);
+    for (const [key, count] of seen.entries()) {
+      const intentionalAiExamples = key === 'POST /ai/recommend-provider';
+      if (count > 1 && !intentionalAiExamples) error(`${product} contains ${count} copies of ${key}`);
     }
-    console.log(`Master coverage: ${assignedKeys.size}/${masterKeys.size} unique endpoints assigned`);
+
+    console.log(`${product}: ${requests.length} requests, ${availableVariables.size} environment variables`);
   }
 
   if (failed) process.exit(1);
-  console.log('Postman generated collections are valid.');
+  console.log('Direct Postman product collections are valid.');
 }
 
 main();

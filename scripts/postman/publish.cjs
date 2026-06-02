@@ -1,18 +1,35 @@
 const fs = require('fs');
 const path = require('path');
-const config = require('./config.cjs');
-const { readJson, safeFileName } = require('./lib.cjs');
 
 const apiKey = process.env.POSTMAN_API_KEY;
 const workspaceId = process.env.POSTMAN_WORKSPACE_ID;
-const products = (process.env.POSTMAN_PRODUCTS || 'master,app,provider-dashboard,admin-dashboard,website,ai,shared')
-  .split(',')
-  .map((value) => value.trim())
-  .filter(Boolean);
+const collectionsDir = path.resolve(__dirname, '../../postman/collections');
+const selectedProducts = process.env.POSTMAN_PRODUCTS
+  ? new Set(process.env.POSTMAN_PRODUCTS.split(',').map((value) => value.trim()).filter(Boolean))
+  : null;
+
+const legacyCollectionNames = [
+  'Car Hero - Backend Master API',
+  'Car Hero - Shared API',
+];
+const legacyEnvironmentNames = [
+  'Car Hero - master - Local',
+  'Car Hero - shared - Local',
+];
 
 if (!apiKey || !workspaceId) {
   console.error('Set POSTMAN_API_KEY and POSTMAN_WORKSPACE_ID before publishing.');
   process.exit(1);
+}
+
+function readJson(file) {
+  return JSON.parse(fs.readFileSync(file, 'utf8'));
+}
+
+function onlyFile(files, suffix, product) {
+  const matches = files.filter((file) => file.endsWith(suffix));
+  if (matches.length !== 1) throw new Error(`${product} must contain exactly one ${suffix} file`);
+  return matches[0];
 }
 
 async function request(method, endpoint, body) {
@@ -29,32 +46,44 @@ async function request(method, endpoint, body) {
   return payload;
 }
 
+async function deleteLegacy(items, names, endpoint) {
+  for (const name of names) {
+    const match = items.find((item) => item.name === name);
+    if (!match) continue;
+    await request('DELETE', `/${endpoint}/${match.uid}`);
+    console.log(`Deleted legacy ${endpoint.slice(0, -1)}: ${name}`);
+  }
+}
+
 async function main() {
-  const existing = await request('GET', `/collections?workspace=${encodeURIComponent(workspaceId)}`);
-  const collections = existing.collections || [];
-  const existingEnvironments = await request('GET', `/environments?workspace=${encodeURIComponent(workspaceId)}`);
-  const environments = existingEnvironments.environments || [];
+  const existingCollections = (await request('GET', `/collections?workspace=${encodeURIComponent(workspaceId)}`)).collections || [];
+  const existingEnvironments = (await request('GET', `/environments?workspace=${encodeURIComponent(workspaceId)}`)).environments || [];
+
+  await deleteLegacy(existingCollections, legacyCollectionNames, 'collections');
+  await deleteLegacy(existingEnvironments, legacyEnvironmentNames, 'environments');
+
+  const products = fs.readdirSync(collectionsDir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .filter((product) => !selectedProducts || selectedProducts.has(product))
+    .sort();
 
   for (const product of products) {
-    const base = safeFileName(product);
-    const collectionFile = path.join(config.outputDir, product, `${base}.postman_collection.json`);
-    const environmentFile = path.join(config.outputDir, product, `${base}.local.postman_environment.json`);
-    if (!fs.existsSync(collectionFile) || !fs.existsSync(environmentFile)) {
-      throw new Error(`Missing generated files for ${product}. Run npm run postman:generate.`);
-    }
-    const collection = readJson(collectionFile);
-    const match = collections.find((item) => item.name === collection.info.name);
+    const productDir = path.join(collectionsDir, product);
+    const files = fs.readdirSync(productDir);
+    const collection = readJson(path.join(productDir, onlyFile(files, '.postman_collection.json', product)));
+    const environment = readJson(path.join(productDir, onlyFile(files, '.postman_environment.json', product)));
 
-    if (match) {
-      await request('PUT', `/collections/${match.uid}`, { collection });
+    const collectionMatch = existingCollections.find((item) => item.name === collection.info.name);
+    if (collectionMatch) {
+      await request('PUT', `/collections/${collectionMatch.uid}`, { collection });
       console.log(`Updated: ${collection.info.name}`);
     } else {
       await request('POST', `/collections?workspace=${encodeURIComponent(workspaceId)}`, { collection });
       console.log(`Created: ${collection.info.name}`);
     }
 
-    const environment = readJson(environmentFile);
-    const environmentMatch = environments.find((item) => item.name === environment.name);
+    const environmentMatch = existingEnvironments.find((item) => item.name === environment.name);
     if (environmentMatch) {
       await request('PUT', `/environments/${environmentMatch.uid}`, { environment });
       console.log(`Updated environment: ${environment.name}`);

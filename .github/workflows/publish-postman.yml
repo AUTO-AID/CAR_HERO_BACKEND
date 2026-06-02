@@ -22,10 +22,8 @@ jobs:
         with:
           node-version: "22"
 
-      - name: Generate and validate collections
-        run: |
-          npm run postman:generate
-          npm run postman:validate
+      - name: Validate collections
+        run: npm run postman:validate
 
       - name: Publish to Postman Workspace
         env:
