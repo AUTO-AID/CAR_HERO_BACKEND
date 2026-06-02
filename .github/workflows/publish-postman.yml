@@ -28,9 +28,13 @@ jobs:
           npm run postman:validate
 
       - name: Publish to Postman Workspace
-        if: ${{ secrets.POSTMAN_API_KEY != '' && secrets.POSTMAN_WORKSPACE_ID != '' }}
         env:
           POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
           POSTMAN_WORKSPACE_ID: ${{ secrets.POSTMAN_WORKSPACE_ID }}
-        run: node scripts/postman/publish.cjs
+        run: |
+          if [ -z "$POSTMAN_API_KEY" ] || [ -z "$POSTMAN_WORKSPACE_ID" ]; then
+            echo "Postman secrets are missing"
+            exit 1
+          fi
 
+          node scripts/postman/publish.cjs
