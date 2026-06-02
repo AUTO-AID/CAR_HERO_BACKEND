@@ -36,6 +36,7 @@ import { GatewayModule } from './modules/gateway/gateway.module';
 import { ProfileModule } from './modules/profile/profile.module';
 import { WhatsAppModule } from './modules/whatsapp/whatsapp.module';
 import { AuditModule } from './modules/audit/audit.module';
+import { CustomerExperienceModule } from './modules/customer-experience/customer-experience.module';
 
 @Module({
   imports: [
@@ -77,6 +78,7 @@ import { AuditModule } from './modules/audit/audit.module';
     AiRecommendationModule,
     GatewayModule,
     ProfileModule,
+    CustomerExperienceModule,
   ],
   controllers: [AppController],
   providers: [AppService],

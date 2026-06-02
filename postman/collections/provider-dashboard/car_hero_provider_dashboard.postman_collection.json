@@ -30,7 +30,7 @@
       "name": "chats - chat",
       "item": [
         {
-          "name": "GET /v1/chat/:chatId/messages",
+          "name": "GET /chat/:chatId/messages",
           "request": {
             "method": "GET",
             "header": [
@@ -40,12 +40,11 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/v1/chat/{{chat_id}}/messages",
+              "raw": "{{base_url}}/chat/{{chat_id}}/messages",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
-                "v1",
                 "chat",
                 "{{chat_id}}",
                 "messages"
@@ -68,7 +67,7 @@
           ]
         },
         {
-          "name": "GET /v1/chat/conversations",
+          "name": "GET /chat/conversations",
           "request": {
             "method": "GET",
             "header": [
@@ -78,12 +77,11 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/v1/chat/conversations",
+              "raw": "{{base_url}}/chat/conversations",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
-                "v1",
                 "chat",
                 "conversations"
               ],
@@ -105,7 +103,7 @@
           ]
         },
         {
-          "name": "POST /v1/chat/conversations",
+          "name": "POST /chat/conversations",
           "request": {
             "method": "POST",
             "header": [
@@ -119,12 +117,11 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/v1/chat/conversations",
+              "raw": "{{base_url}}/chat/conversations",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
-                "v1",
                 "chat",
                 "conversations"
               ],
@@ -155,7 +152,7 @@
           ]
         },
         {
-          "name": "POST /v1/chat/upload",
+          "name": "POST /chat/upload",
           "request": {
             "method": "POST",
             "header": [
@@ -169,12 +166,11 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/v1/chat/upload",
+              "raw": "{{base_url}}/chat/upload",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
-                "v1",
                 "chat",
                 "upload"
               ],
@@ -1684,7 +1680,7 @@
       "name": "providers - wallet",
       "item": [
         {
-          "name": "GET /v1/provider/wallet/me",
+          "name": "GET /provider/wallet/me",
           "request": {
             "method": "GET",
             "header": [
@@ -1694,12 +1690,11 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/v1/provider/wallet/me",
+              "raw": "{{base_url}}/provider/wallet/me",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
-                "v1",
                 "provider",
                 "wallet",
                 "me"
@@ -1722,7 +1717,7 @@
           ]
         },
         {
-          "name": "POST /v1/provider/wallet/payout",
+          "name": "POST /provider/wallet/payout",
           "request": {
             "method": "POST",
             "header": [
@@ -1736,12 +1731,11 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/v1/provider/wallet/payout",
+              "raw": "{{base_url}}/provider/wallet/payout",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
-                "v1",
                 "provider",
                 "wallet",
                 "payout"
@@ -1773,7 +1767,7 @@
           ]
         },
         {
-          "name": "GET /v1/provider/wallet/transactions",
+          "name": "GET /provider/wallet/transactions",
           "request": {
             "method": "GET",
             "header": [
@@ -1783,12 +1777,11 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/v1/provider/wallet/transactions",
+              "raw": "{{base_url}}/provider/wallet/transactions",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
-                "v1",
                 "provider",
                 "wallet",
                 "transactions"
@@ -1811,7 +1804,7 @@
           ]
         },
         {
-          "name": "POST /v1/provider/wallet/withdraw",
+          "name": "POST /provider/wallet/withdraw",
           "request": {
             "method": "POST",
             "header": [
@@ -1825,12 +1818,11 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/v1/provider/wallet/withdraw",
+              "raw": "{{base_url}}/provider/wallet/withdraw",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
-                "v1",
                 "provider",
                 "wallet",
                 "withdraw"

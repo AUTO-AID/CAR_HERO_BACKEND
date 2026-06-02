@@ -3191,7 +3191,7 @@
       "name": "admins - wallet",
       "item": [
         {
-          "name": "GET /v1/admin/wallet/:ownerId",
+          "name": "GET /admin/wallet/:ownerId",
           "request": {
             "method": "GET",
             "header": [
@@ -3201,12 +3201,11 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/v1/admin/wallet/{{owner_id}}",
+              "raw": "{{base_url}}/admin/wallet/{{owner_id}}",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
-                "v1",
                 "admin",
                 "wallet",
                 "{{owner_id}}"
@@ -3236,7 +3235,7 @@
           ]
         },
         {
-          "name": "POST /v1/admin/wallet/:ownerId/adjust",
+          "name": "POST /admin/wallet/:ownerId/adjust",
           "request": {
             "method": "POST",
             "header": [
@@ -3250,12 +3249,11 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/v1/admin/wallet/{{owner_id}}/adjust",
+              "raw": "{{base_url}}/admin/wallet/{{owner_id}}/adjust",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
-                "v1",
                 "admin",
                 "wallet",
                 "{{owner_id}}",
@@ -3288,7 +3286,7 @@
           ]
         },
         {
-          "name": "GET /v1/admin/wallet/:ownerId/transactions",
+          "name": "GET /admin/wallet/:ownerId/transactions",
           "request": {
             "method": "GET",
             "header": [
@@ -3298,12 +3296,11 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/v1/admin/wallet/{{owner_id}}/transactions",
+              "raw": "{{base_url}}/admin/wallet/{{owner_id}}/transactions",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
-                "v1",
                 "admin",
                 "wallet",
                 "{{owner_id}}",
@@ -3327,7 +3324,7 @@
           ]
         },
         {
-          "name": "PATCH /v1/admin/wallet/payouts/:id",
+          "name": "PATCH /admin/wallet/payouts/:id",
           "request": {
             "method": "PATCH",
             "header": [
@@ -3341,12 +3338,11 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/v1/admin/wallet/payouts/{{payout_id}}",
+              "raw": "{{base_url}}/admin/wallet/payouts/{{payout_id}}",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
-                "v1",
                 "admin",
                 "wallet",
                 "payouts",
@@ -3379,7 +3375,7 @@
           ]
         },
         {
-          "name": "GET /v1/admin/wallet/platform",
+          "name": "GET /admin/wallet/platform",
           "request": {
             "method": "GET",
             "header": [
@@ -3389,12 +3385,11 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/v1/admin/wallet/platform",
+              "raw": "{{base_url}}/admin/wallet/platform",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
-                "v1",
                 "admin",
                 "wallet",
                 "platform"
@@ -3417,7 +3412,7 @@
           ]
         },
         {
-          "name": "GET /v1/admin/wallet/platform/transactions",
+          "name": "GET /admin/wallet/platform/transactions",
           "request": {
             "method": "GET",
             "header": [
@@ -3427,12 +3422,11 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/v1/admin/wallet/platform/transactions",
+              "raw": "{{base_url}}/admin/wallet/platform/transactions",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
-                "v1",
                 "admin",
                 "wallet",
                 "platform",
@@ -3456,7 +3450,7 @@
           ]
         },
         {
-          "name": "GET /v1/admin/wallet/stats",
+          "name": "GET /admin/wallet/stats",
           "request": {
             "method": "GET",
             "header": [
@@ -3466,12 +3460,11 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/v1/admin/wallet/stats",
+              "raw": "{{base_url}}/admin/wallet/stats",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
-                "v1",
                 "admin",
                 "wallet",
                 "stats"
@@ -3494,7 +3487,7 @@
           ]
         },
         {
-          "name": "GET /v1/admin/wallet/transactions/all",
+          "name": "GET /admin/wallet/transactions/all",
           "request": {
             "method": "GET",
             "header": [
@@ -3504,12 +3497,11 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/v1/admin/wallet/transactions/all",
+              "raw": "{{base_url}}/admin/wallet/transactions/all",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
-                "v1",
                 "admin",
                 "wallet",
                 "transactions",
@@ -4229,6 +4221,131 @@
             }
           ],
           "response": []
+        }
+      ]
+    },
+    {
+      "name": "offers - admin",
+      "item": [
+        {
+          "name": "GET /admin/offers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/offers",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "offers"
+              ]
+            },
+            "description": "List all customer-facing offers for administration, including inactive records."
+          }
+        },
+        {
+          "name": "POST /admin/offers",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/offers",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "offers"
+              ]
+            },
+            "description": "Create a customer-facing promotional offer.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"WELCOME20\",\n  \"title\": \"Welcome discount\",\n  \"description\": \"Training offer for customer app\",\n  \"type\": \"percentage\",\n  \"value\": 20,\n  \"isActive\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "PATCH /admin/offers/{{offer_id}}",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/offers/{{offer_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "offers",
+                "{{offer_id}}"
+              ]
+            },
+            "description": "Update an offer.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated welcome discount\",\n  \"value\": 15\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE /admin/offers/{{offer_id}}",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/offers/{{offer_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "offers",
+                "{{offer_id}}"
+              ]
+            },
+            "description": "Deactivate an offer."
+          }
         }
       ]
     }

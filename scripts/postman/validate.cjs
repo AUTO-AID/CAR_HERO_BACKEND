@@ -81,12 +81,21 @@ function main() {
 
     const requests = flatten(collection.item);
     const availableVariables = new Set((environment.values || []).map((item) => item.key));
+    const baseUrl = (environment.values || []).find((item) => item.key === 'base_url')?.value || '';
     for (const variable of collectVariables(collection)) {
       if (!availableVariables.has(variable)) error(`${product} environment is missing {{${variable}}}`);
     }
 
     const seen = new Map();
     for (const request of requests) seen.set(requestKey(request), (seen.get(requestKey(request)) || 0) + 1);
+    if (/\/api\/v1\/?$/.test(baseUrl)) {
+      for (const request of requests) {
+        const raw = typeof request.request?.url === 'string' ? request.request.url : request.request?.url?.raw || '';
+        if (raw.startsWith('{{base_url}}/v1/')) {
+          error(`${product} contains duplicated API version segment: ${request.request?.method || 'GET'} ${raw}`);
+        }
+      }
+    }
     for (const [key, count] of seen.entries()) {
       const intentionalAiExamples = key === 'POST /ai/recommend-provider';
       if (count > 1 && !intentionalAiExamples) error(`${product} contains ${count} copies of ${key}`);

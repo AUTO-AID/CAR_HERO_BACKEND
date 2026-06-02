@@ -19,6 +19,7 @@ import { ProcessPayoutUseCase } from './application/use-cases/process-payout.use
 import { GetAdminTransactionLogsUseCase } from './application/use-cases/get-admin-transaction-logs.use-case';
 import { GetFinancialSummaryUseCase } from './application/use-cases/get-financial-summary.use-case';
 import { GetProviderFinancialSummaryUseCase } from './application/use-cases/get-provider-financial-summary.use-case';
+import { RedeemLoyaltyPointsUseCase } from './application/use-cases/redeem-loyalty-points.use-case';
 import { Setting, SettingSchema } from '../admin/infrastructure/persistence/mongoose/schemas/setting.schema';
 
 @Module({
@@ -49,6 +50,7 @@ import { Setting, SettingSchema } from '../admin/infrastructure/persistence/mong
     GetAdminTransactionLogsUseCase,
     GetFinancialSummaryUseCase,
     GetProviderFinancialSummaryUseCase,
+    RedeemLoyaltyPointsUseCase,
   ],
   exports: [
     'IWalletRepository',

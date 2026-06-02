@@ -7,7 +7,8 @@ import { RolesGuard } from '../../../../core/guards/roles.guard';
 import { Roles } from '../../../../core/decorators/roles.decorator';
 import { Role } from '../../../../core/enums/roles.enum';
 import { CurrentUser } from '../../../../core/decorators/current-user.decorator';
-import { DepositDto } from '../../application/dto/wallet.dto';
+import { DepositDto, RedeemPointsDto } from '../../application/dto/wallet.dto';
+import { RedeemLoyaltyPointsUseCase } from '../../application/use-cases/redeem-loyalty-points.use-case';
 
 @Controller('wallet')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -17,6 +18,7 @@ export class UserWalletController {
     private readonly getBalance: GetBalanceUseCase,
     private readonly depositUseCase: DepositUseCase,
     private readonly historyUseCase: TransactionHistoryUseCase,
+    private readonly redeemPointsUseCase: RedeemLoyaltyPointsUseCase,
   ) {}
 
   @Get('me')
@@ -39,5 +41,10 @@ export class UserWalletController {
   ) {
     const result = await this.historyUseCase.execute(userId, 'user', page || 1, limit || 10);
     return { success: true, ...result };
+  }
+
+  @Post('redeem-points')
+  async redeemPoints(@CurrentUser('id') userId: string, @Body() dto: RedeemPointsDto) {
+    return { success: true, data: await this.redeemPointsUseCase.execute(userId, dto) };
   }
 }

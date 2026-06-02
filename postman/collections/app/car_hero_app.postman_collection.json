@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "Car Hero - Customer App API",
-    "description": "Customer mobile application endpoints, including provider live tracking.",
+    "description": "Clean customer mobile application API: authentication, catalog, orders, live tracking, chat, wallet, vehicles, subscriptions, notifications, and customer self-service workflows.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
@@ -30,7 +30,7 @@
       "name": "chats - chat",
       "item": [
         {
-          "name": "GET /v1/chat/:chatId/messages",
+          "name": "GET /chat/:chatId/messages",
           "request": {
             "method": "GET",
             "header": [
@@ -40,12 +40,11 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/v1/chat/{{chat_id}}/messages",
+              "raw": "{{base_url}}/chat/{{chat_id}}/messages",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
-                "v1",
                 "chat",
                 "{{chat_id}}",
                 "messages"
@@ -68,7 +67,7 @@
           ]
         },
         {
-          "name": "GET /v1/chat/conversations",
+          "name": "GET /chat/conversations",
           "request": {
             "method": "GET",
             "header": [
@@ -78,12 +77,11 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/v1/chat/conversations",
+              "raw": "{{base_url}}/chat/conversations",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
-                "v1",
                 "chat",
                 "conversations"
               ],
@@ -105,7 +103,7 @@
           ]
         },
         {
-          "name": "POST /v1/chat/conversations",
+          "name": "POST /chat/conversations",
           "request": {
             "method": "POST",
             "header": [
@@ -119,12 +117,11 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/v1/chat/conversations",
+              "raw": "{{base_url}}/chat/conversations",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
-                "v1",
                 "chat",
                 "conversations"
               ],
@@ -155,7 +152,7 @@
           ]
         },
         {
-          "name": "POST /v1/chat/upload",
+          "name": "POST /chat/upload",
           "request": {
             "method": "POST",
             "header": [
@@ -169,12 +166,11 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/v1/chat/upload",
+              "raw": "{{base_url}}/chat/upload",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
-                "v1",
                 "chat",
                 "upload"
               ],
@@ -487,42 +483,6 @@
           ]
         },
         {
-          "name": "DELETE /orders/:id",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/orders/{{order_id}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "orders",
-                "{{order_id}}"
-              ],
-              "query": []
-            },
-            "description": "Delete an order permanently\n\nModule: orders\nController: OrdersController.deleteOrder\nAuth: JWT\nRelated collections: orders\nSource: src/modules/orders/presentation/controllers/orders.controller.ts:188"
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
-                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
-                ]
-              }
-            }
-          ]
-        },
-        {
           "name": "GET /orders/:id",
           "request": {
             "method": "GET",
@@ -710,56 +670,6 @@
           ]
         },
         {
-          "name": "PATCH /orders/:id/location",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/orders/{{order_id}}/location",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "orders",
-                "{{order_id}}",
-                "location"
-              ],
-              "query": []
-            },
-            "description": "Update provider live location\n\nModule: orders\nController: OrdersController.updateLocation\nAuth: JWT\nRelated collections: orders\nSource: src/modules/orders/presentation/controllers/orders.controller.ts:140",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"coordinates\": [\n    36.2765,\n    33.5138\n  ],\n  \"accuracy\": 8,\n  \"heading\": 145,\n  \"speed\": 12.5\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
-                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
-                ]
-              }
-            }
-          ]
-        },
-        {
           "name": "POST /orders/:id/payment/verify",
           "request": {
             "method": "POST",
@@ -846,178 +756,6 @@
                 }
               }
             }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
-                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "PATCH /orders/:id/status",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/orders/{{order_id}}/status",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "orders",
-                "{{order_id}}",
-                "status"
-              ],
-              "query": []
-            },
-            "description": "Update order status\n\nModule: orders\nController: OrdersController.updateStatus\nAuth: JWT\nRelated collections: orders\nSource: src/modules/orders/presentation/controllers/orders.controller.ts:116",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"status\": \"active\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
-                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "GET /orders/report",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/orders/report",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "orders",
-                "report"
-              ],
-              "query": []
-            },
-            "description": "Export orders report\n\nModule: orders\nController: OrdersController.exportReport\nAuth: JWT\nRelated collections: orders\nSource: src/modules/orders/presentation/controllers/orders.controller.ts:88"
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
-                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "GET /orders/search",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/orders/search",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "orders",
-                "search"
-              ],
-              "query": [
-                {
-                  "key": "query",
-                  "value": "{{query}}",
-                  "disabled": false,
-                  "description": "Required query parameter"
-                }
-              ]
-            },
-            "description": "Search orders by various fields\n\nModule: orders\nController: OrdersController.searchOrders\nAuth: JWT\nRelated collections: orders\nSource: src/modules/orders/presentation/controllers/orders.controller.ts:79"
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
-                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "GET /orders/stats",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/orders/stats",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "orders",
-                "stats"
-              ],
-              "query": [
-                {
-                  "key": "period",
-                  "value": "{{period}}",
-                  "disabled": true,
-                  "description": "Optional query parameter"
-                }
-              ]
-            },
-            "description": "Get order statistics\n\nModule: orders\nController: OrdersController.getStats\nAuth: JWT\nRelated collections: orders\nSource: src/modules/orders/presentation/controllers/orders.controller.ts:100"
           },
           "event": [
             {
@@ -1130,44 +868,6 @@
       "name": "providers",
       "item": [
         {
-          "name": "GET /providers",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
-            ],
-            "auth": {
-              "type": "noauth"
-            },
-            "url": {
-              "raw": "{{base_url}}/providers",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "providers"
-              ],
-              "query": []
-            },
-            "description": "List of providers\n\nModule: providers\nController: ProvidersController.findAll\nAuth: Public\nRelated collections: providers\nSource: src/modules/providers/presentation/controllers/providers.controller.ts:68"
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
-                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
-                ]
-              }
-            }
-          ]
-        },
-        {
           "name": "GET /providers/:id",
           "request": {
             "method": "GET",
@@ -1277,87 +977,6 @@
               ]
             },
             "description": "Top rated providers\n\nModule: providers\nController: ProvidersController.topRated\nAuth: Public\nRelated collections: providers\nSource: src/modules/providers/presentation/controllers/providers.controller.ts:84"
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
-                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "POST /providers/apply",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/providers/apply",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "providers",
-                "apply"
-              ],
-              "query": []
-            },
-            "description": "Submit registration application as a new service provider.\n\nModule: providers\nFile: modules/providers/presentation/controllers/providers.controller.ts\nAuth: Bearer JWT"
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
-                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "GET /providers/public/governorates",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/providers/public/governorates",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "providers",
-                "public",
-                "governorates"
-              ],
-              "query": []
-            },
-            "description": "Get governorates list for public view.\n\nModule: providers\nFile: modules/providers/presentation/controllers/providers.controller.ts\nAuth: Bearer JWT"
           },
           "event": [
             {
@@ -1492,56 +1111,6 @@
               "query": []
             },
             "description": "Delete a review\n\nModule: reviews\nController: ReviewsController.deleteReview\nAuth: JWT\nRelated collections: reviews\nSource: src/modules/reviews/presentation/controllers/reviews.controller.ts:50"
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
-                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "PATCH /reviews/:id/respond",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/reviews/{{review_id}}/respond",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "reviews",
-                "{{review_id}}",
-                "respond"
-              ],
-              "query": []
-            },
-            "description": "Provider response to a review\n\nModule: reviews\nController: ReviewsController.respondToReview\nAuth: JWT\nRelated collections: reviews\nSource: src/modules/reviews/presentation/controllers/reviews.controller.ts:38",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"rating\": 5,\n  \"comment\": \"Great service\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
           },
           "event": [
             {
@@ -2132,49 +1701,6 @@
                 }
               }
             }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
-                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
-                ]
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "system - app",
-      "item": [
-        {
-          "name": "GET /",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
-            ],
-            "auth": {
-              "type": "noauth"
-            },
-            "url": {
-              "raw": "{{base_url}}/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                ""
-              ],
-              "query": []
-            },
-            "description": "GetHello\n\nModule: app\nController: AppController.getHello\nAuth: Public\nRelated collections: system\nSource: src/app.controller.ts:8"
           },
           "event": [
             {
@@ -3161,7 +2687,7 @@
           ]
         },
         {
-          "name": "GET /vehicles/:id/maintenance",
+          "name": "GET /vehicles/:vehicleId/maintenance",
           "request": {
             "method": "GET",
             "header": [
@@ -3171,13 +2697,13 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/vehicles/{{maintenance_record_id}}/maintenance",
+              "raw": "{{base_url}}/vehicles/{{vehicle_id}}/maintenance",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "vehicles",
-                "{{maintenance_record_id}}",
+                "{{vehicle_id}}",
                 "maintenance"
               ],
               "query": [
@@ -3211,7 +2737,7 @@
           ]
         },
         {
-          "name": "POST /vehicles/:id/maintenance",
+          "name": "POST /vehicles/:vehicleId/maintenance",
           "request": {
             "method": "POST",
             "header": [
@@ -3225,13 +2751,13 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/vehicles/{{maintenance_record_id}}/maintenance",
+              "raw": "{{base_url}}/vehicles/{{vehicle_id}}/maintenance",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "vehicles",
-                "{{maintenance_record_id}}",
+                "{{vehicle_id}}",
                 "maintenance"
               ],
               "query": []
@@ -3261,7 +2787,7 @@
           ]
         },
         {
-          "name": "GET /vehicles/:id/reminders",
+          "name": "GET /vehicles/:vehicleId/reminders",
           "request": {
             "method": "GET",
             "header": [
@@ -3271,13 +2797,13 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/vehicles/{{vehicle_reminder_id}}/reminders",
+              "raw": "{{base_url}}/vehicles/{{vehicle_id}}/reminders",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "vehicles",
-                "{{vehicle_reminder_id}}",
+                "{{vehicle_id}}",
                 "reminders"
               ],
               "query": [
@@ -3311,7 +2837,7 @@
           ]
         },
         {
-          "name": "POST /vehicles/:id/reminders",
+          "name": "POST /vehicles/:vehicleId/reminders",
           "request": {
             "method": "POST",
             "header": [
@@ -3325,13 +2851,13 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/vehicles/{{vehicle_reminder_id}}/reminders",
+              "raw": "{{base_url}}/vehicles/{{vehicle_id}}/reminders",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "vehicles",
-                "{{vehicle_reminder_id}}",
+                "{{vehicle_id}}",
                 "reminders"
               ],
               "query": []
@@ -3644,7 +3170,7 @@
       "name": "wallets - wallet",
       "item": [
         {
-          "name": "POST /v1/wallet/deposit",
+          "name": "POST /wallet/deposit",
           "request": {
             "method": "POST",
             "header": [
@@ -3658,12 +3184,11 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/v1/wallet/deposit",
+              "raw": "{{base_url}}/wallet/deposit",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
-                "v1",
                 "wallet",
                 "deposit"
               ],
@@ -3694,7 +3219,7 @@
           ]
         },
         {
-          "name": "GET /v1/wallet/me",
+          "name": "GET /wallet/me",
           "request": {
             "method": "GET",
             "header": [
@@ -3704,12 +3229,11 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/v1/wallet/me",
+              "raw": "{{base_url}}/wallet/me",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
-                "v1",
                 "wallet",
                 "me"
               ],
@@ -3731,7 +3255,7 @@
           ]
         },
         {
-          "name": "GET /v1/wallet/transactions",
+          "name": "GET /wallet/transactions",
           "request": {
             "method": "GET",
             "header": [
@@ -3741,12 +3265,11 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/v1/wallet/transactions",
+              "raw": "{{base_url}}/wallet/transactions",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
-                "v1",
                 "wallet",
                 "transactions"
               ],
@@ -3766,6 +3289,42 @@
               }
             }
           ]
+        },
+        {
+          "name": "POST /wallet/redeem-points",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/wallet/redeem-points",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "wallet",
+                "redeem-points"
+              ]
+            },
+            "description": "Atomically redeem loyalty points and record the redemption transaction.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"points\": 100,\n  \"orderId\": \"{{order_id}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
         }
       ]
     },
@@ -3924,6 +3483,562 @@
             }
           ],
           "response": []
+        }
+      ]
+    },
+    {
+      "name": "customer - addresses",
+      "item": [
+        {
+          "name": "GET /customer/addresses",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/customer/addresses",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "customer",
+                "addresses"
+              ]
+            },
+            "description": "List saved addresses for the authenticated customer."
+          }
+        },
+        {
+          "name": "POST /customer/addresses",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/customer/addresses",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "customer",
+                "addresses"
+              ]
+            },
+            "description": "Create a saved customer address.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"label\": \"Home\",\n  \"addressLine\": \"Damascus - Mashrou Dummar\",\n  \"note\": \"Building 4\",\n  \"coordinates\": {\n    \"latitude\": 33.5138,\n    \"longitude\": 36.2765\n  },\n  \"isDefault\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "PATCH /customer/addresses/{{address_id}}",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/customer/addresses/{{address_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "customer",
+                "addresses",
+                "{{address_id}}"
+              ]
+            },
+            "description": "Update an owned saved address.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"label\": \"Updated home\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "PATCH /customer/addresses/{{address_id}}/set-default",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/customer/addresses/{{address_id}}/set-default",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "customer",
+                "addresses",
+                "{{address_id}}",
+                "set-default"
+              ]
+            },
+            "description": "Set an owned address as default."
+          }
+        },
+        {
+          "name": "DELETE /customer/addresses/{{address_id}}",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/customer/addresses/{{address_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "customer",
+                "addresses",
+                "{{address_id}}"
+              ]
+            },
+            "description": "Delete an owned saved address."
+          }
+        }
+      ]
+    },
+    {
+      "name": "customer - payment methods",
+      "item": [
+        {
+          "name": "GET /customer/payment-methods",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/customer/payment-methods",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "customer",
+                "payment-methods"
+              ]
+            },
+            "description": "List tokenized payment methods for the authenticated customer."
+          }
+        },
+        {
+          "name": "POST /customer/payment-methods",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/customer/payment-methods",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "customer",
+                "payment-methods"
+              ]
+            },
+            "description": "Create a tokenized payment method. Never send a full card number or CVV.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"card\",\n  \"displayName\": \"Visa ending in 1234\",\n  \"last4\": \"1234\",\n  \"brand\": \"visa\",\n  \"providerToken\": \"tok_test_visa_1234\",\n  \"isDefault\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "PATCH /customer/payment-methods/{{payment_method_id}}",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/customer/payment-methods/{{payment_method_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "customer",
+                "payment-methods",
+                "{{payment_method_id}}"
+              ]
+            },
+            "description": "Update an owned tokenized payment method.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"displayName\": \"Primary Visa\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "PATCH /customer/payment-methods/{{payment_method_id}}/set-default",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/customer/payment-methods/{{payment_method_id}}/set-default",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "customer",
+                "payment-methods",
+                "{{payment_method_id}}",
+                "set-default"
+              ]
+            },
+            "description": "Set an owned payment method as default."
+          }
+        },
+        {
+          "name": "DELETE /customer/payment-methods/{{payment_method_id}}",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/customer/payment-methods/{{payment_method_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "customer",
+                "payment-methods",
+                "{{payment_method_id}}"
+              ]
+            },
+            "description": "Delete an owned non-cash payment method."
+          }
+        }
+      ]
+    },
+    {
+      "name": "customer - offers",
+      "item": [
+        {
+          "name": "GET /customer/offers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/customer/offers",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "customer",
+                "offers"
+              ]
+            },
+            "description": "List active offers currently available to the customer."
+          }
+        },
+        {
+          "name": "POST /customer/offers/{{offer_id}}/apply",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/customer/offers/{{offer_id}}/apply",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "customer",
+                "offers",
+                "{{offer_id}}",
+                "apply"
+              ]
+            },
+            "description": "Reserve or apply an offer for the authenticated customer.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{order_id}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "customer - wash plans",
+      "item": [
+        {
+          "name": "GET /customer/wash-plans",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/customer/wash-plans",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "customer",
+                "wash-plans"
+              ]
+            },
+            "description": "List recurring wash plans for the authenticated customer."
+          }
+        },
+        {
+          "name": "POST /customer/wash-plans",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/customer/wash-plans",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "customer",
+                "wash-plans"
+              ]
+            },
+            "description": "Create a recurring wash plan.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vehicleId\": \"{{vehicle_id}}\",\n  \"addressId\": \"{{address_id}}\",\n  \"visitsPerMonth\": 2,\n  \"washType\": \"full\",\n  \"preferredTimeSlot\": \"evening\",\n  \"reminderEnabled\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "PATCH /customer/wash-plans/{{wash_plan_id}}",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/customer/wash-plans/{{wash_plan_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "customer",
+                "wash-plans",
+                "{{wash_plan_id}}"
+              ]
+            },
+            "description": "Update an owned recurring wash plan.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"visitsPerMonth\": 4,\n  \"reminderEnabled\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE /customer/wash-plans/{{wash_plan_id}}",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/customer/wash-plans/{{wash_plan_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "customer",
+                "wash-plans",
+                "{{wash_plan_id}}"
+              ]
+            },
+            "description": "Delete an owned recurring wash plan."
+          }
+        }
+      ]
+    },
+    {
+      "name": "customer - devices",
+      "item": [
+        {
+          "name": "POST /customer/devices",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/customer/devices",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "customer",
+                "devices"
+              ]
+            },
+            "description": "Register or refresh an FCM token for push notifications.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fcmToken\": \"{{device_token}}\",\n  \"platform\": \"android\",\n  \"deviceName\": \"Customer test phone\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE /customer/devices/{{device_token}}",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/customer/devices/{{device_token}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "customer",
+                "devices",
+                "{{device_token}}"
+              ]
+            },
+            "description": "Deactivate a registered push-notification device token."
+          }
         }
       ]
     }

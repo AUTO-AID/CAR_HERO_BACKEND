@@ -1,4 +1,4 @@
-import { IsNumber, IsPositive, IsString, IsOptional, IsEnum } from 'class-validator';
+import { IsNumber, IsPositive, IsString, IsOptional } from 'class-validator';
 
 export class DepositDto {
   @IsNumber()
@@ -25,4 +25,14 @@ export class WithdrawDto {
   @IsString()
   @IsOptional()
   bankName?: string;
+}
+
+export class RedeemPointsDto {
+  @IsNumber()
+  @IsPositive()
+  points: number;
+
+  @IsString()
+  @IsOptional()
+  orderId?: string;
 }
