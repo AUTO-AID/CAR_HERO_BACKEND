@@ -112,6 +112,50 @@ export class VehiclesController {
     return this.searchVehiclesUseCase.execute(req.user._id, query, Number(page) || 1, Number(limit) || 10);
   }
 
+  // ==================== Maintenance Records ====================
+
+  /**
+   * PATCH /api/v1/vehicles/maintenance/:id
+   * Update a maintenance record
+   */
+  @Patch('maintenance/:id')
+  @ApiOperation({ summary: 'Update a maintenance record' })
+  @ApiResponse({ status: 200, description: 'Maintenance record updated successfully' })
+  @ApiResponse({ status: 403, description: 'Access denied' })
+  @ApiResponse({ status: 404, description: 'Record not found' })
+  async updateMaintenanceRecord(
+    @Param('id') recordId: string,
+    @Body() dto: UpdateMaintenanceRecordDto,
+    @Req() req: any,
+  ) {
+    try {
+      require('fs').appendFileSync('e:/all_project/CarHero/CAR_HERO_BACKEND/scripts/hit.log', 'HIT updateMaintenanceRecord\n');
+      return await this.updateMaintenanceRecordUseCase.execute(recordId, dto, req.user._id);
+    } catch (e) {
+      require('fs').appendFileSync('e:/all_project/CarHero/CAR_HERO_BACKEND/scripts/controller-error.log', e.stack + '\n');
+      throw e;
+    }
+  }
+
+  /**
+   * DELETE /api/v1/vehicles/maintenance/:id
+   * Delete a maintenance record
+   */
+  @Delete('maintenance/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete a maintenance record' })
+  @ApiResponse({ status: 204, description: 'Maintenance record deleted successfully' })
+  @ApiResponse({ status: 403, description: 'Access denied' })
+  @ApiResponse({ status: 404, description: 'Record not found' })
+  async deleteMaintenanceRecord(
+    @Param('id') recordId: string,
+    @Req() req: any,
+  ) {
+    return this.deleteMaintenanceRecordUseCase.execute(recordId, req.user._id);
+  }
+
+  // ==================== Vehicle Operations ====================
+
   /**
    * GET /api/v1/vehicles/:id
    * Get details of a specific vehicle
@@ -215,39 +259,7 @@ export class VehiclesController {
     );
   }
 
-  /**
-   * PATCH /api/v1/vehicles/maintenance/:id
-   * Update a maintenance record
-   */
-  @Patch('maintenance/:id')
-  @ApiOperation({ summary: 'Update a maintenance record' })
-  @ApiResponse({ status: 200, description: 'Maintenance record updated successfully' })
-  @ApiResponse({ status: 403, description: 'Access denied' })
-  @ApiResponse({ status: 404, description: 'Record not found' })
-  async updateMaintenanceRecord(
-    @Param('id') recordId: string,
-    @Body() dto: UpdateMaintenanceRecordDto,
-    @Req() req: any,
-  ) {
-    return this.updateMaintenanceRecordUseCase.execute(recordId, dto, req.user._id);
-  }
-
-  /**
-   * DELETE /api/v1/vehicles/maintenance/:id
-   * Delete a maintenance record
-   */
-  @Delete('maintenance/:id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Delete a maintenance record' })
-  @ApiResponse({ status: 204, description: 'Maintenance record deleted successfully' })
-  @ApiResponse({ status: 403, description: 'Access denied' })
-  @ApiResponse({ status: 404, description: 'Record not found' })
-  async deleteMaintenanceRecord(
-    @Param('id') recordId: string,
-    @Req() req: any,
-  ) {
-    return this.deleteMaintenanceRecordUseCase.execute(recordId, req.user._id);
-  }
+  // maintenance records moved up
 
   // ==================== Vehicle Reminders ====================
 

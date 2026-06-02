@@ -1,0 +1,196 @@
+﻿ΓòöΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòù
+Γòæ     CAR HERO - CUSTOMER APP API - COMPREHENSIVE TEST SUITE (96 EP)      Γòæ
+Γòæ     Target: http://localhost:3001/api/v1                              Γòæ
+ΓòÜΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓò¥
+
+≡ƒôï Loaded IDs from DB:
+   phone: +963991112222
+   password: Ahmed@123
+   providerId: 6a14d44132d797211587d045
+   serviceId: 69d0143f71d19d79ba65bae6
+   vehicleId: 6a187dfa6bd8d56ca3a3d84c
+   orderId: 6a14d44332d797211587d080
+   orderCompletedId: 6a14d44332d797211587d080
+   chatId: 6a187e036bd8d56ca3a3dd2e
+   notificationId: 6a187e066bd8d56ca3a3e274
+   reviewId: 6a1600f0ac9db27a51653364
+   subPlanId: 6a187def6bd8d56ca3a3cd02
+   addressId: 6a1f5c190a90538c2f0b8bf9
+   paymentMethodId: 6a1f5c190a90538c2f0b8c08
+   offerId: 6a1f5c190a90538c2f0b8c15
+   washPlanId: 6a1f5c190a90538c2f0b8c1f
+   deviceToken: fmc_android_cust0_samsung_s24_ultra_tok_001
+   maintenanceRecordId: 6a187dfc6bd8d56ca3a3da0e
+   reminderId: 6a187e026bd8d56ca3a3dc66
+
+
+ΓöüΓöüΓöü PHASE 1: AUTH (11 endpoints) ΓöüΓöüΓöü
+Γ£à #01 [POST  ] /auth/login                                             200    144ms  PASS
+   ≡ƒöæ Token obtained: YES (eyJhbGciOiJIUzI1NiIs...)
+Γ£à #02 [GET   ] /auth/me                                                200     10ms  PASS
+Γ£à #03 [POST  ] /auth/refresh-token                                     200    134ms  PASS
+Γ£à #04 [POST  ] /auth/register                                          409      9ms  PASS
+Γ£à #05 [POST  ] /auth/resend-otp                                        404      7ms  PASS
+Γ£à #06 [POST  ] /auth/verify-otp                                        404      8ms  PASS
+Γ£à #07 [POST  ] /auth/forgot-password                                   200      9ms  PASS
+Γ£à #08 [POST  ] /auth/reset-password                                    200     66ms  PASS
+Γ£à #09 [POST  ] /auth/restore/request-otp                               404      6ms  PASS
+Γ£à #10 [POST  ] /auth/restore/confirm                                   404      5ms  PASS
+Γ£à #11 [GET   ] /auth/whatsapp/status                                   200      2ms  PASS
+
+ΓöüΓöüΓöü PHASE 2: USERS (4 endpoints) ΓöüΓöüΓöü
+Γ£à #12 [GET   ] /users/me                                               200     10ms  PASS
+Γ£à #13 [PATCH ] /users/me                                               200     16ms  PASS
+Γ£à #14 [GET   ] /users/me/stats                                         200     12ms  PASS
+Γ£à #15 [DELETE] /users/me                                               SKIP      0ms  PASS
+
+ΓöüΓöüΓöü PHASE 3: SERVICES (5 endpoints) ΓöüΓöüΓöü
+Γ£à #16 [GET   ] /services                                               200      7ms  PASS
+Γ£à #17 [GET   ] /services/categories                                    200      5ms  PASS
+Γ£à #18 [GET   ] /services/emergency                                     200      6ms  PASS
+Γ£à #19 [GET   ] /services/search?query=wash                             200      4ms  PASS
+Γ£à #20 [GET   ] /services/69d0143f71d19d79ba65bae6                      200      3ms  PASS
+
+ΓöüΓöüΓöü PHASE 4: PROVIDERS (4 endpoints) ΓöüΓöüΓöü
+Γ£à #21 [GET   ] /providers/6a14d44132d797211587d045                     200      9ms  PASS
+Γ£à #22 [GET   ] /providers/nearby?longitude=36.2765&latitude=33.5138&maxDistanceKm=10 200     12ms  PASS
+Γ£à #23 [GET   ] /providers/top-rated                                    200     15ms  PASS
+Γ£à #24 [GET   ] /reviews/provider/6a14d44132d797211587d045              401      3ms  PASS
+
+ΓöüΓöüΓöü PHASE 5: VEHICLES (14 endpoints) ΓöüΓöüΓöü
+Γ£à #25 [POST  ] /vehicles                                               201     18ms  PASS
+Γ£à #26 [GET   ] /vehicles/my                                            200      8ms  PASS
+Γ£à #27 [GET   ] /vehicles/6a1f5d60a6489b89ff63c5a0                      200     10ms  PASS
+Γ£à #28 [PATCH ] /vehicles/6a1f5d60a6489b89ff63c5a0                      200     16ms  PASS
+Γ£à #29 [PATCH ] /vehicles/6a1f5d60a6489b89ff63c5a0/set-default          200     17ms  PASS
+Γ£à #30 [GET   ] /vehicles/search?q=Toyota                               200      9ms  PASS
+Γ£à #31 [POST  ] /vehicles/6a1f5d60a6489b89ff63c5a0/maintenance          201     15ms  PASS
+Γ£à #32 [GET   ] /vehicles/6a1f5d60a6489b89ff63c5a0/maintenance          200     14ms  PASS
+Γ¥î #33 [PATCH ] /vehicles/maintenance/6a1f5d60a6489b89ff63c5c0          500     16ms  Expected 200/401/403/404 got 500: Internal server error
+Γ¥î #34 [DELETE] /vehicles/maintenance/6a1f5d60a6489b89ff63c5c0          500     15ms  Expected 200/401/403/404 got 500: Internal server error
+Γ£à #35 [POST  ] /vehicles/6a1f5d60a6489b89ff63c5a0/reminders            201     17ms  PASS
+Γ£à #36 [GET   ] /vehicles/6a1f5d60a6489b89ff63c5a0/reminders            200     16ms  PASS
+Γ£à #37 [DELETE] /vehicles/reminders/6a1f5d60a6489b89ff63c5db            204     13ms  PASS
+Γ£à #38 [DELETE] /vehicles/6a1f5d60a6489b89ff63c5a0                      204     20ms  PASS
+
+ΓöüΓöüΓöü PHASE 6: ADDRESSES (5 endpoints) ΓöüΓöüΓöü
+Γ£à #39 [POST  ] /customer/addresses                                     201     16ms  PASS
+Γ£à #40 [GET   ] /customer/addresses                                     200     11ms  PASS
+Γ£à #41 [PATCH ] /customer/addresses/6a1f5d60a6489b89ff63c5f9            200     15ms  PASS
+Γ£à #42 [PATCH ] /customer/addresses/6a1f5d60a6489b89ff63c5f9/set-default 200     17ms  PASS
+Γ£à #43 [DELETE] /customer/addresses/6a1f5d60a6489b89ff63c5f9            204     14ms  PASS
+
+ΓöüΓöüΓöü PHASE 7: PAYMENT METHODS (5 endpoints) ΓöüΓöüΓöü
+Γ£à #44 [POST  ] /customer/payment-methods                               201     14ms  PASS
+Γ£à #45 [GET   ] /customer/payment-methods                               200     11ms  PASS
+Γ£à #46 [PATCH ] /customer/payment-methods/6a1f5d60a6489b89ff63c612      200     13ms  PASS
+Γ£à #47 [PATCH ] /customer/payment-methods/6a1f5d60a6489b89ff63c612/set-default 200     15ms  PASS
+Γ£à #48 [DELETE] /customer/payment-methods/6a1f5d60a6489b89ff63c612      204     15ms  PASS
+
+ΓöüΓöüΓöü PHASE 8: ORDERS (10 endpoints) ΓöüΓöüΓöü
+Γ£à #49 [POST  ] /orders                                                 404     13ms  PASS
+Γ£à #50 [GET   ] /orders                                                 200     39ms  PASS
+Γ£à #51 [GET   ] /orders/6a14d44332d797211587d080                        200      9ms  PASS
+Γ£à #52 [GET   ] /orders/6a14d44332d797211587d080/status-transitions     200      8ms  PASS
+Γ£à #53 [GET   ] /orders/6a14d44332d797211587d080/tracking               200      8ms  PASS
+Γ£à #54 [PATCH ] /orders/6a14d44332d797211587d080                        400     17ms  PASS
+Γ£à #55 [POST  ] /orders/6a14d44332d797211587d080/payment/verify         400     16ms  PASS
+Γ¥î #56 [POST  ] /orders/6a14d44332d797211587d080/customer-confirm-completion 201     44ms  Expected 200/400/401/403/404/409/422 got 201
+Γ£à #57 [POST  ] /orders/6a14d44332d797211587d080/review                 400     19ms  PASS
+Γ£à #58 [POST  ] /orders/6a14d44332d797211587d080/cancel                 400     14ms  PASS
+
+ΓöüΓöüΓöü PHASE 9: BOOKINGS (3 endpoints) ΓöüΓöüΓöü
+Γ£à #59 [POST  ] /bookings                                               404     13ms  PASS
+Γ£à #60 [GET   ] /bookings                                               200     14ms  PASS
+ΓÜá∩╕Å #61 [GET   ] /bookings/6a14d44332d797211587d080                      400     16ms  Expected 200/401/403/404 got 400: This order is not a scheduled booking
+
+ΓöüΓöüΓöü PHASE 10: CHAT (4 endpoints) ΓöüΓöüΓöü
+Γ£à #62 [POST  ] /chat/conversations                                     201     16ms  PASS
+Γ£à #63 [GET   ] /chat/conversations                                     200     12ms  PASS
+Γ£à #64 [GET   ] /chat/6a187e036bd8d56ca3a3dd2e/messages                 200     13ms  PASS
+Γ£à #65 [POST  ] /chat/upload                                            400      9ms  PASS
+
+ΓöüΓöüΓöü PHASE 11: NOTIFICATIONS (4 endpoints) ΓöüΓöüΓöü
+Γ£à #66 [GET   ] /notifications                                          200     12ms  PASS
+Γ£à #67 [GET   ] /notifications/unread-count                             200     12ms  PASS
+Γ£à #68 [PATCH ] /notifications/6a187e066bd8d56ca3a3e274/read            200      9ms  PASS
+Γ£à #69 [PATCH ] /notifications/read-all                                 200     12ms  PASS
+
+ΓöüΓöüΓöü PHASE 12: REVIEWS (2 endpoints) ΓöüΓöüΓöü
+Γ£à #70 [POST  ] /reviews                                                400     19ms  PASS
+Γ£à #71 [DELETE] /reviews/6a1600f0ac9db27a51653364                       403     11ms  PASS
+
+ΓöüΓöüΓöü PHASE 13: SUBSCRIPTIONS (8 endpoints) ΓöüΓöüΓöü
+Γ£à #72 [GET   ] /subscriptions/plans                                    200      5ms  PASS
+Γ£à #73 [GET   ] /subscriptions/plans/6a187def6bd8d56ca3a3cd02           200      5ms  PASS
+Γ£à #74 [POST  ] /subscriptions/subscribe                                201     16ms  PASS
+Γ£à #75 [GET   ] /subscriptions/status                                   200     11ms  PASS
+Γ£à #76 [GET   ] /subscriptions/history                                  200     10ms  PASS
+Γ£à #77 [POST  ] /subscriptions/renew                                    400     10ms  PASS
+Γ£à #78 [POST  ] /subscriptions/upgrade                                  400     10ms  PASS
+Γ£à #79 [POST  ] /subscriptions/cancel                                   400     13ms  PASS
+
+ΓöüΓöüΓöü PHASE 14: WALLET (4 endpoints) ΓöüΓöüΓöü
+Γ£à #80 [GET   ] /wallet/me                                              200     11ms  PASS
+Γ£à #81 [POST  ] /wallet/deposit                                         201     25ms  PASS
+Γ£à #82 [GET   ] /wallet/transactions                                    200     22ms  PASS
+Γ£à #83 [POST  ] /wallet/redeem-points                                   400     25ms  PASS
+
+ΓöüΓöüΓöü PHASE 15: CUSTOMER FEATURES (9 endpoints) ΓöüΓöüΓöü
+Γ£à #84 [GET   ] /customer/offers                                        200     13ms  PASS
+Γ£à #85 [POST  ] /customer/offers/6a1f5c190a90538c2f0b8c15/apply         400     16ms  PASS
+Γ£à #86 [POST  ] /customer/wash-plans                                    404     14ms  PASS
+Γ£à #87 [GET   ] /customer/wash-plans                                    200      9ms  PASS
+Γ£à #88 [PATCH ] /customer/wash-plans/6a1f5c190a90538c2f0b8c1f           404     10ms  PASS
+Γ£à #89 [POST  ] /customer/wash-plans/6a1f5c190a90538c2f0b8c1f/generate-booking 404     11ms  PASS
+Γ£à #90 [DELETE] /customer/wash-plans/6a1f5c190a90538c2f0b8c1f           404     14ms  PASS
+Γ£à #91 [POST  ] /customer/devices                                       201     16ms  PASS
+Γ£à #92 [DELETE] /customer/devices/test_fcm_token_api_run_1780440417060  204     15ms  PASS
+
+ΓöüΓöüΓöü PHASE 16: AI RECOMMENDATION (3 endpoints) ΓöüΓöüΓöü
+Γ£à #93 [POST  ] /ai/recommend-provider                                  200     31ms  PASS
+Γ£à #94 [POST  ] /ai/recommend-provider                                  200     32ms  PASS
+Γ£à #95 [POST  ] /ai/recommend-provider                                  200      9ms  PASS
+
+ΓöüΓöüΓöü FINAL: LOGOUT ΓöüΓöüΓöü
+Γ£à #96 [POST  ] /auth/logout                                            200     15ms  PASS
+
+ΓòöΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòù
+Γòæ                         TEST RESULTS SUMMARY                            Γòæ
+ΓòáΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòú
+Γòæ  Total Tests:   96                                                       Γòæ
+Γòæ  Γ£à Passed:     92                                                       Γòæ
+Γòæ  ΓÜá∩╕Å  Warned:      1  (4xx client errors - may be expected)                 Γòæ
+Γòæ  Γ¥î Failed:      3  (5xx server errors / connection errors)               Γòæ
+Γòæ  Pass Rate:   96%                                                       Γòæ
+ΓòÜΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓò¥
+
+  Module Breakdown:
+  Module                 Total  Pass  Fail    Rate
+  ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+  auth                      12    12     0    100%
+  users                      4     4     0    100%
+  services                   5     5     0    100%
+  providers                  4     4     0    100%
+  vehicles                  14    12     2     86%
+  addresses                  5     5     0    100%
+  payment_methods            5     5     0    100%
+  orders                    10     9     1     90%
+  bookings                   3     2     1     67%
+  chat                       4     4     0    100%
+  notifications              4     4     0    100%
+  reviews                    2     2     0    100%
+  subscriptions              8     8     0    100%
+  wallet                     4     4     0    100%
+  offers                     2     2     0    100%
+  wash_plans                 5     5     0    100%
+  devices                    2     2     0    100%
+  ai                         3     3     0    100%
+
+  Γ¥î Failed/Warning Tests:
+    #33 [PATCH] /vehicles/maintenance/6a1f5d60a6489b89ff63c5c0 ΓåÆ 500 Expected 200/401/403/404 got 500: Internal server error
+    #34 [DELETE] /vehicles/maintenance/6a1f5d60a6489b89ff63c5c0 ΓåÆ 500 Expected 200/401/403/404 got 500: Internal server error
+    #56 [POST] /orders/6a14d44332d797211587d080/customer-confirm-completion ΓåÆ 201 Expected 200/400/401/403/404/409/422 got 201
+    #61 [GET] /bookings/6a14d44332d797211587d080 ΓåÆ 400 Expected 200/401/403/404 got 400: This order is not a scheduled booking
+
+≡ƒÅü Testing complete!

@@ -26,6 +26,7 @@ export class UpdateMaintenanceRecordUseCase {
     dto: UpdateMaintenanceRecordDto,
     userId: string,
   ): Promise<MaintenanceRecordEntity> {
+    try {
     // Find record
     const record = await this.maintenanceRepository.findById(recordId);
     if (!record) {
@@ -50,16 +51,33 @@ export class UpdateMaintenanceRecordUseCase {
     await this.invalidateVehicleCache(record.vehicleId);
 
     return updatedRecord;
+    } catch (e) {
+      require('fs').appendFileSync('scripts/maintenance-error.log', e.stack + '\n');
+      throw e;
+    }
   }
 
   private async invalidateVehicleCache(vehicleId: string): Promise<void> {
-    const keys = await (this.cacheManager as any).stores?.[0]?.keys();
-    if (keys) {
-      for (const key of keys) {
-        if (key.startsWith(`maintenance_vehicle_${vehicleId}`)) {
-          await this.cacheManager.del(key);
+    try {
+      let keys: string[] = [];
+      const store = (this.cacheManager as any)?.store;
+      const stores = (this.cacheManager as any)?.stores;
+      
+      if (store && typeof store.keys === 'function') {
+        keys = await store.keys();
+      } else if (stores && stores.length > 0 && typeof stores[0].keys === 'function') {
+        keys = await stores[0].keys();
+      }
+
+      if (keys && keys.length > 0) {
+        for (const key of keys) {
+          if (key.startsWith(`maintenance_vehicle_${vehicleId}`)) {
+            await this.cacheManager.del(key);
+          }
         }
       }
+    } catch (error) {
+      console.warn(`[Cache Warning] Failed to invalidate cache for vehicle ${vehicleId}:`, error.message);
     }
   }
 }
