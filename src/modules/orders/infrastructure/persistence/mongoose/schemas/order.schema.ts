@@ -128,6 +128,12 @@ export class Order {
   completedAt?: Date;
 
   @Prop()
+  completionRequestedAt?: Date;
+
+  @Prop()
+  customerConfirmedAt?: Date;
+
+  @Prop()
   cancelledAt?: Date;
 
   @Prop()

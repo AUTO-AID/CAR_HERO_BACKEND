@@ -5,6 +5,7 @@ import { Role } from '../../../../core/enums/roles.enum';
 import { ProviderStatus, ServiceCategory } from '../../../../core/enums/status.enum';
 import { JwtAuthGuard } from '../../../../core/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../../core/guards/roles.guard';
+import { PermissionsGuard } from '../../../../core/guards/permissions.guard';
 import { ParseObjectIdPipe } from '../../../../core/pipes/parse-objectid.pipe';
 import { ApproveProviderUseCase } from '../../application/use-cases/approve-provider.use-case';
 import { FindNearbyProvidersUseCase } from '../../application/use-cases/find-nearby-providers.use-case';
@@ -17,6 +18,9 @@ import { UpdateProviderLocationUseCase } from '../../application/use-cases/updat
 import { UpdateProviderStatusUseCase } from '../../application/use-cases/update-provider-status.use-case';
 import { UpdateProviderUseCase } from '../../application/use-cases/update-provider.use-case';
 import { ProvidersController } from './providers.controller';
+import { GetProviderDashboardUseCase } from '../../application/use-cases/get-provider-dashboard.use-case';
+import { AuditLogService } from '../../../audit/application/services/audit-log.service';
+import { IProviderRepository } from '../../domain/repositories/provider.repository.interface';
 
 describe('ProvidersController HTTP endpoints', () => {
   let app: INestApplication;
@@ -41,6 +45,12 @@ describe('ProvidersController HTTP endpoints', () => {
     },
     stats: { execute: jest.fn().mockResolvedValue({ total: 1 }) },
     topRated: { execute: jest.fn().mockResolvedValue([]) },
+    dashboard: { execute: jest.fn().mockResolvedValue({}) },
+    audit: { record: jest.fn().mockResolvedValue(undefined) },
+    repository: {
+      delete: jest.fn().mockResolvedValue(undefined),
+      findByPhone: jest.fn().mockResolvedValue({ id: providerId }),
+    },
   };
 
   beforeAll(async () => {
@@ -58,16 +68,21 @@ describe('ProvidersController HTTP endpoints', () => {
         { provide: ManageProvidersUseCase, useValue: useCases.manage },
         { provide: GetProviderStatsUseCase, useValue: useCases.stats },
         { provide: GetTopRatedProvidersUseCase, useValue: useCases.topRated },
+        { provide: GetProviderDashboardUseCase, useValue: useCases.dashboard },
+        { provide: AuditLogService, useValue: useCases.audit },
+        { provide: IProviderRepository, useValue: useCases.repository },
       ],
     })
       .overrideGuard(JwtAuthGuard)
       .useValue({
         canActivate: (context) => {
-          context.switchToHttp().getRequest().user = { id: providerId, role: Role.ADMIN };
+          context.switchToHttp().getRequest().user = { id: providerId, phone: '+963999999999', role: Role.ADMIN };
           return true;
         },
       })
       .overrideGuard(RolesGuard)
+      .useValue({ canActivate: () => true })
+      .overrideGuard(PermissionsGuard)
       .useValue({ canActivate: () => true })
       .compile();
 

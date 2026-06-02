@@ -4,7 +4,7 @@ Direct source collection for the customer mobile application. Edit this collecti
 
 - API: `http://localhost:3001/api/v1`
 - WebSocket: `http://localhost:3001/ws`
-- Requests: 94
+- Requests: 96
 
 This collection intentionally contains only customer-mobile workflows. Provider-dashboard actions and admin-only reports stay in their own collections.
 
@@ -20,6 +20,24 @@ emit: leave:order                { orderId }
 ```
 
 Use `GET /orders/:id/tracking` as the initial snapshot and reconnect fallback.
+
+## Customer Order Completion
+
+After the provider moves an active order to `awaiting_customer_confirmation`, the customer confirms the completed service with:
+
+```text
+POST /orders/:id/customer-confirm-completion
+```
+
+Provider earnings are released only after this confirmation.
+
+## Recurring Wash Plans
+
+Wash plans store their next booking date and generate due bookings automatically. For an explicit customer-triggered booking:
+
+```text
+POST /customer/wash-plans/:id/generate-booking
+```
 
 ## Chat WebSocket
 

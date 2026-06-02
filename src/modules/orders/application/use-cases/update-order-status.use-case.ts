@@ -29,10 +29,13 @@ export class UpdateOrderStatusUseCase {
     }
 
     // Ownership Verification
-    const isProvider = 
-      order.providerId?.toString() === currentUser.providerId?.toString() || 
-      order.providerId?.toString() === currentUser._id?.toString();
-    const isAdmin = currentUser.role === 'admin';
+    const currentUserId = currentUser?._id?.toString();
+    const currentProviderId = currentUser?.providerId?.toString();
+    const isProvider =
+      !!order.providerId &&
+      ((!!currentProviderId && order.providerId.toString() === currentProviderId) ||
+      (!!currentUserId && order.providerId.toString() === currentUserId));
+    const isAdmin = currentUser?.role === 'admin';
 
     if (!isProvider && !isAdmin) {
       throw new ForbiddenException('You do not have permission to update status for this order');
@@ -46,6 +49,7 @@ export class UpdateOrderStatusUseCase {
     // Update specific timestamps
     if (status === OrderStatus.ACCEPTED || status === OrderStatus.PROVIDER_ASSIGNED) updateData.acceptedAt = new Date();
     if (status === OrderStatus.COMPLETED) updateData.completedAt = new Date();
+    if (status === OrderStatus.AWAITING_CUSTOMER_CONFIRMATION) updateData.completionRequestedAt = new Date();
     if (status === OrderStatus.CANCELLED || status === OrderStatus.REJECTED) updateData.cancelledAt = new Date();
     if (status === OrderStatus.IN_PROGRESS) updateData.startedAt = new Date();
 

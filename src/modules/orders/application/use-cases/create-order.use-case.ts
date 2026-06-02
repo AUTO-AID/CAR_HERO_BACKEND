@@ -51,7 +51,7 @@ export class CreateOrderUseCase {
     // 2. Prepare Order Data
     const orderData: Partial<OrderEntity> = {
       orderNumber: OrderEntity.generateOrderNumber(),
-      userId: dto.userId,
+      userId: dto.userId!,
       serviceId: dto.serviceId,
       providerId: dto.providerId,
       vehicleId: dto.vehicleId,
@@ -79,7 +79,7 @@ export class CreateOrderUseCase {
       entityId: order.id,
       orderNumber: order.orderNumber,
       toStatus: OrderStatus.PENDING,
-      changedBy: dto.userId,
+      changedBy: dto.userId!,
       changedByRole: 'user',
       changedByType: 'user',
       reason: order.isScheduled ? 'Scheduled booking created' : 'Order created',

@@ -5,6 +5,7 @@ import { IOrderRepository } from '../../domain/repositories/order.repository.int
 import { OrderStatus } from '../../../../core/enums/status.enum';
 import { NotFoundException } from '@nestjs/common';
 import { StatusHistoryService } from '../../../status-history/application/services/status-history.service';
+import { SchedulingAvailabilityService } from '../services/scheduling-availability.service';
 
 describe('AssignProviderUseCase', () => {
   let useCase: AssignProviderUseCase;
@@ -29,6 +30,10 @@ describe('AssignProviderUseCase', () => {
         { provide: IOrderRepository, useValue: mockRepo },
         { provide: EventEmitter2, useValue: mockEventEmitter },
         { provide: StatusHistoryService, useValue: mockStatusHistoryService },
+        {
+          provide: SchedulingAvailabilityService,
+          useValue: { assertOffersService: jest.fn(), assertAvailable: jest.fn() },
+        },
       ],
     }).compile();
 

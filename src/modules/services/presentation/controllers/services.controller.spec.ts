@@ -5,6 +5,7 @@ import { GetServiceStatsUseCase } from '../../application/use-cases/get-service-
 import { GetServicesUseCase } from '../../application/use-cases/get-services.use-case';
 import { ManageServicesUseCase } from '../../application/use-cases/manage-services.use-case';
 import { ServicesController } from './services.controller';
+import { AuditLogService } from '../../../audit/application/services/audit-log.service';
 
 describe('ServicesController', () => {
   let controller: ServicesController;
@@ -36,6 +37,7 @@ describe('ServicesController', () => {
         { provide: GetServiceByIdUseCase, useValue: useCases.getById },
         { provide: ManageServicesUseCase, useValue: useCases.manage },
         { provide: GetServiceStatsUseCase, useValue: useCases.stats },
+        { provide: AuditLogService, useValue: { record: jest.fn() } },
       ],
     }).compile();
 

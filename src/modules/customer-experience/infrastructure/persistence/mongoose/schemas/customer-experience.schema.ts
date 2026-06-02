@@ -138,10 +138,20 @@ export class WashPlan {
 
   @Prop({ default: true, index: true })
   isActive: boolean;
+
+  @Prop({ index: true })
+  nextBookingAt?: Date;
+
+  @Prop()
+  lastBookingAt?: Date;
+
+  @Prop({ type: Types.ObjectId, ref: 'Order' })
+  lastOrderId?: Types.ObjectId;
 }
 export type WashPlanDocument = WashPlan & Document;
 export const WashPlanSchema = SchemaFactory.createForClass(WashPlan);
 WashPlanSchema.index({ userId: 1, vehicleId: 1 });
+WashPlanSchema.index({ isActive: 1, nextBookingAt: 1 });
 
 @Schema({ timestamps: true, collection: 'user_devices', toJSON: jsonOptions })
 export class UserDevice {

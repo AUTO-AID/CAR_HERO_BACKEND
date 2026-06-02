@@ -131,3 +131,7 @@ TransactionSchema.index({ wallet: 1, createdAt: -1 });
 TransactionSchema.index({ ownerId: 1, ownerType: 1, createdAt: -1 });
 TransactionSchema.index({ type: 1 });
 TransactionSchema.index({ referenceId: 1 });
+TransactionSchema.index(
+  { ownerId: 1, referenceType: 1, referenceId: 1, type: 1 },
+  { unique: true, partialFilterExpression: { referenceType: 'order', type: TransactionType.LOYALTY_POINTS } },
+);

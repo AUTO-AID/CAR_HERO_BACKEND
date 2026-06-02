@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsOptional } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { PaymentMethod } from '../../../../core/enums/status.enum';
 
 export class VerifyPaymentDto {
   @ApiProperty({ example: 'pay_ABC123xyz', description: 'Transaction ID from payment gateway' })
@@ -7,8 +8,7 @@ export class VerifyPaymentDto {
   @IsNotEmpty()
   paymentId: string;
 
-  @ApiProperty({ example: 'stripe', description: 'Payment method used' })
-  @IsString()
-  @IsOptional()
-  paymentMethod?: string;
+  @ApiProperty({ enum: PaymentMethod, example: PaymentMethod.CARD, description: 'Payment method used' })
+  @IsEnum(PaymentMethod)
+  paymentMethod: PaymentMethod;
 }

@@ -18,6 +18,7 @@ describe('CustomerExperienceController', () => {
     createWashPlan: jest.fn(),
     updateWashPlan: jest.fn(),
     deleteWashPlan: jest.fn(),
+    generateWashPlanBooking: jest.fn(),
     registerDevice: jest.fn(),
     unregisterDevice: jest.fn(),
   };

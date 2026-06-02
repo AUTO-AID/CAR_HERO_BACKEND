@@ -45,7 +45,7 @@ describe('Chat Module: Security & Integration Audit', () => {
         ChatService,
         { provide: getModelToken(Chat.name), useValue: mockChatModel },
         { provide: getModelToken(Message.name), useValue: mockMessageModel },
-        { provide: Symbol.for('IOrderRepository'), useValue: mockOrderRepo },
+        { provide: IOrderRepository, useValue: mockOrderRepo },
         { provide: NotificationsService, useValue: mockNotificationsService },
       ],
     }).compile();

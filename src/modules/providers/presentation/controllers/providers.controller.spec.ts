@@ -11,11 +11,14 @@ import { ManageProvidersUseCase } from '../../application/use-cases/manage-provi
 import { UpdateProviderLocationUseCase } from '../../application/use-cases/update-provider-location.use-case';
 import { UpdateProviderStatusUseCase } from '../../application/use-cases/update-provider-status.use-case';
 import { UpdateProviderUseCase } from '../../application/use-cases/update-provider.use-case';
+import { GetProviderDashboardUseCase } from '../../application/use-cases/get-provider-dashboard.use-case';
+import { AuditLogService } from '../../../audit/application/services/audit-log.service';
+import { IProviderRepository } from '../../domain/repositories/provider.repository.interface';
 import { ProvidersController } from './providers.controller';
 
 describe('ProvidersController', () => {
   let controller: ProvidersController;
-  const user = { id: 'provider-id', role: Role.PROVIDER };
+  const user = { id: 'provider-id', phone: '+963999999999', role: Role.PROVIDER };
 
   const useCases = {
     list: { execute: jest.fn() },
@@ -36,6 +39,9 @@ describe('ProvidersController', () => {
     },
     stats: { execute: jest.fn() },
     topRated: { execute: jest.fn() },
+    dashboard: { execute: jest.fn() },
+    audit: { record: jest.fn() },
+    repository: { delete: jest.fn(), findByPhone: jest.fn().mockResolvedValue({ id: 'provider-id' }) },
   };
 
   beforeEach(async () => {
@@ -53,6 +59,9 @@ describe('ProvidersController', () => {
         { provide: ManageProvidersUseCase, useValue: useCases.manage },
         { provide: GetProviderStatsUseCase, useValue: useCases.stats },
         { provide: GetTopRatedProvidersUseCase, useValue: useCases.topRated },
+        { provide: GetProviderDashboardUseCase, useValue: useCases.dashboard },
+        { provide: AuditLogService, useValue: useCases.audit },
+        { provide: IProviderRepository, useValue: useCases.repository },
       ],
     }).compile();
 

@@ -5,11 +5,13 @@ import { Role } from '../../../../core/enums/roles.enum';
 import { ServiceCategory } from '../../../../core/enums/status.enum';
 import { JwtAuthGuard } from '../../../../core/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../../core/guards/roles.guard';
+import { PermissionsGuard } from '../../../../core/guards/permissions.guard';
 import { GetServiceByIdUseCase } from '../../application/use-cases/get-service-by-id.use-case';
 import { GetServiceStatsUseCase } from '../../application/use-cases/get-service-stats.use-case';
 import { GetServicesUseCase } from '../../application/use-cases/get-services.use-case';
 import { ManageServicesUseCase } from '../../application/use-cases/manage-services.use-case';
 import { ServicesController } from './services.controller';
+import { AuditLogService } from '../../../audit/application/services/audit-log.service';
 
 describe('ServicesController HTTP endpoints', () => {
   let app: INestApplication;
@@ -40,6 +42,7 @@ describe('ServicesController HTTP endpoints', () => {
         { provide: GetServiceByIdUseCase, useValue: useCases.getById },
         { provide: ManageServicesUseCase, useValue: useCases.manage },
         { provide: GetServiceStatsUseCase, useValue: useCases.stats },
+        { provide: AuditLogService, useValue: { record: jest.fn().mockResolvedValue(undefined) } },
       ],
     })
       .overrideGuard(JwtAuthGuard)
@@ -50,6 +53,8 @@ describe('ServicesController HTTP endpoints', () => {
         },
       })
       .overrideGuard(RolesGuard)
+      .useValue({ canActivate: () => true })
+      .overrideGuard(PermissionsGuard)
       .useValue({ canActivate: () => true })
       .compile();
 

@@ -5,6 +5,9 @@ import { IOrderRepository } from '../../domain/repositories/order.repository.int
 import { OrderStatus, PaymentStatus } from '../../../../core/enums/status.enum';
 import { Service } from '../../../../modules/services/infrastructure/persistence/mongoose/schemas/service.schema';
 import { NotificationsService } from '../../../notifications/application/services/notifications.service';
+import { Provider } from '../../../providers/infrastructure/persistence/mongoose/schemas/provider.schema';
+import { StatusHistoryService } from '../../../status-history/application/services/status-history.service';
+import { SchedulingAvailabilityService } from '../services/scheduling-availability.service';
 
 describe('CreateOrderUseCase', () => {
   let useCase: CreateOrderUseCase;
@@ -35,8 +38,20 @@ describe('CreateOrderUseCase', () => {
           useValue: mockServiceModel,
         },
         {
+          provide: getModelToken(Provider.name),
+          useValue: { findById: jest.fn() },
+        },
+        {
           provide: NotificationsService,
           useValue: mockNotificationsService,
+        },
+        {
+          provide: StatusHistoryService,
+          useValue: { record: jest.fn() },
+        },
+        {
+          provide: SchedulingAvailabilityService,
+          useValue: { assertAvailable: jest.fn() },
         },
       ],
     }).compile();

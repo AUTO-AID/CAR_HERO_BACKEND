@@ -19,6 +19,10 @@ import {
 } from './infrastructure/persistence/mongoose/schemas/customer-experience.schema';
 import { CustomerExperienceController } from './presentation/controllers/customer-experience.controller';
 import { AdminOffersController } from './presentation/controllers/admin-offers.controller';
+import { Order, OrderSchema } from '../orders/infrastructure/persistence/mongoose/schemas/order.schema';
+import { Service, ServiceSchema } from '../services/infrastructure/persistence/mongoose/schemas/service.schema';
+import { NotificationsModule } from '../notifications/notifications.module';
+import { CustomerExperienceCronService } from './application/services/customer-experience-cron.service';
 
 @Module({
   imports: [
@@ -31,9 +35,12 @@ import { AdminOffersController } from './presentation/controllers/admin-offers.c
       { name: UserDevice.name, schema: UserDeviceSchema },
       { name: User.name, schema: UserSchema },
       { name: Vehicle.name, schema: VehicleSchema },
+      { name: Order.name, schema: OrderSchema },
+      { name: Service.name, schema: ServiceSchema },
     ]),
+    NotificationsModule,
   ],
   controllers: [CustomerExperienceController, AdminOffersController],
-  providers: [CustomerExperienceService],
+  providers: [CustomerExperienceService, CustomerExperienceCronService],
 })
 export class CustomerExperienceModule {}

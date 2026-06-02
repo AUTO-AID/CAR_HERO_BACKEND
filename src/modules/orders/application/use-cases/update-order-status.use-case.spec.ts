@@ -76,11 +76,11 @@ describe('UpdateOrderStatusUseCase', () => {
       userId: 'user-id'
     };
     mockOrderRepository.findById.mockResolvedValue(mockOrder);
-    mockOrderRepository.update.mockResolvedValue({ ...mockOrder, status: OrderStatus.COMPLETED });
+    mockOrderRepository.update.mockResolvedValue({ ...mockOrder, status: OrderStatus.AWAITING_CUSTOMER_CONFIRMATION });
 
-    const result = await useCase.execute('id', OrderStatus.COMPLETED, { _id: 'provider-id', role: 'provider' });
+    const result = await useCase.execute('id', OrderStatus.AWAITING_CUSTOMER_CONFIRMATION, { _id: 'provider-id', role: 'provider' });
 
-    expect(result.status).toBe(OrderStatus.COMPLETED);
+    expect(result.status).toBe(OrderStatus.AWAITING_CUSTOMER_CONFIRMATION);
     expect(mockOrderRepository.update).toHaveBeenCalled();
     expect(mockCacheManager.del).toHaveBeenCalledWith('order_id');
     expect(mockEventEmitter.emit).toHaveBeenCalled();

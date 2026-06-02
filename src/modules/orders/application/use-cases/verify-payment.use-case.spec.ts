@@ -35,19 +35,19 @@ describe('VerifyPaymentUseCase', () => {
   });
 
   it('should throw BadRequestException if order is already PAID', async () => {
-    mockRepo.findById.mockResolvedValue({ id: 'id', paymentStatus: PaymentStatus.COMPLETED });
-    await expect(useCase.execute('id', { paymentId: 'p1' }))
+    mockRepo.findById.mockResolvedValue({ id: 'id', userId: 'user-id', paymentStatus: PaymentStatus.COMPLETED });
+    await expect(useCase.execute('id', { paymentId: 'p1', paymentMethod: 'card' }, { _id: 'user-id', role: 'user' }))
       .rejects.toThrow(BadRequestException);
   });
 
   it('should successfully update payment status and clear cache', async () => {
-    mockRepo.findById.mockResolvedValue({ id: 'id', paymentStatus: PaymentStatus.PENDING });
+    mockRepo.findById.mockResolvedValue({ id: 'id', userId: 'user-id', paymentStatus: PaymentStatus.PENDING });
     mockRepo.updatePaymentDetails.mockResolvedValue({ id: 'id', paymentStatus: PaymentStatus.COMPLETED });
 
-    const result = await useCase.execute('id', { paymentId: 'txn_123' });
+    const result = await useCase.execute('id', { paymentId: 'txn_123', paymentMethod: 'card' }, { _id: 'user-id', role: 'user' });
 
     expect(result.paymentStatus).toBe(PaymentStatus.COMPLETED);
-    expect(mockRepo.updatePaymentDetails).toHaveBeenCalledWith('id', 'txn_123', undefined);
+    expect(mockRepo.updatePaymentDetails).toHaveBeenCalledWith('id', 'txn_123', 'card');
     expect(mockCacheManager.del).toHaveBeenCalledWith('order_id');
   });
 });

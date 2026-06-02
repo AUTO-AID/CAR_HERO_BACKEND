@@ -60,6 +60,64 @@ function matchingFile(files, suffix, product) {
   return matches[0];
 }
 
+function requireAppContract(requests, availableVariables) {
+  const requiredVariables = [
+    'base_url', 'ws_url', 'access_token', 'phone_number', 'otp_code',
+    'refresh_token', 'participant_id', 'payment_id', 'provider_id', 'service_id',
+    'vehicle_id', 'order_id', 'address_id', 'payment_method_id', 'offer_id',
+    'wash_plan_id', 'device_token', 'longitude', 'latitude', 'max_distance_km',
+  ];
+  for (const variable of requiredVariables) {
+    if (!availableVariables.has(variable)) error(`app environment is missing required {{${variable}}}`);
+  }
+
+  const byKey = new Map(requests.map((request) => [requestKey(request), request]));
+  const requiredEndpoints = [
+    'POST /orders/:id/customer-confirm-completion',
+    'POST /customer/wash-plans/:id/generate-booking',
+    'POST /orders/:id/payment/verify',
+    'POST /wallet/redeem-points',
+    'POST /customer/offers/:id/apply',
+    'GET /providers/nearby',
+  ];
+  for (const endpoint of requiredEndpoints) {
+    if (!byKey.has(endpoint)) error(`app collection is missing required endpoint: ${endpoint}`);
+  }
+
+  const nearbyUrl = byKey.get('GET /providers/nearby')?.request?.url?.raw || '';
+  for (const variable of ['longitude', 'latitude', 'max_distance_km']) {
+    if (!nearbyUrl.includes(`{{${variable}}}`)) {
+      error(`app GET /providers/nearby must use {{${variable}}}`);
+    }
+  }
+
+  const requiredBodyKeys = {
+    'POST /auth/register': ['fullName', 'phoneNumber', 'password', 'accountType', 'isTermsAccepted'],
+    'POST /auth/reset-password': ['phoneNumber', 'otpCode', 'newPassword'],
+    'POST /orders/:id/payment/verify': ['paymentId', 'paymentMethod'],
+    'POST /wallet/redeem-points': ['points', 'orderId'],
+    'POST /customer/offers/:id/apply': ['orderId'],
+    'POST /customer/wash-plans': ['vehicleId', 'addressId', 'visitsPerMonth', 'washType', 'preferredTimeSlot', 'reminderEnabled'],
+  };
+  for (const [endpoint, expectedKeys] of Object.entries(requiredBodyKeys)) {
+    const request = byKey.get(endpoint);
+    if (!request) {
+      error(`app collection is missing body contract endpoint: ${endpoint}`);
+      continue;
+    }
+    try {
+      const body = JSON.parse(request.request?.body?.raw || '{}');
+      const actualKeys = Object.keys(body).sort();
+      const wantedKeys = [...expectedKeys].sort();
+      if (JSON.stringify(actualKeys) !== JSON.stringify(wantedKeys)) {
+        error(`app ${endpoint} body keys must be exactly: ${wantedKeys.join(', ')}`);
+      }
+    } catch {
+      error(`app ${endpoint} must contain a valid JSON body example`);
+    }
+  }
+}
+
 function main() {
   const products = fs.readdirSync(collectionsDir, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
@@ -100,6 +158,7 @@ function main() {
       const intentionalAiExamples = key === 'POST /ai/recommend-provider';
       if (count > 1 && !intentionalAiExamples) error(`${product} contains ${count} copies of ${key}`);
     }
+    if (product === 'app') requireAppContract(requests, availableVariables);
 
     console.log(`${product}: ${requests.length} requests, ${availableVariables.size} environment variables`);
   }

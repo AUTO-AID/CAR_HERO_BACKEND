@@ -29,6 +29,7 @@ import { StatusHistoryModule } from '../status-history/status-history.module';
 import { Provider, ProviderSchema } from '../providers/infrastructure/persistence/mongoose/schemas/provider.schema';
 import { SchedulingAvailabilityService } from './application/services/scheduling-availability.service';
 import { GetOrderTrackingUseCase } from './application/use-cases/get-order-tracking.use-case';
+import { ConfirmOrderCompletionUseCase } from './application/use-cases/confirm-order-completion.use-case';
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { GetOrderTrackingUseCase } from './application/use-cases/get-order-track
     OrdersCronService,
     SchedulingAvailabilityService,
     GetOrderTrackingUseCase,
+    ConfirmOrderCompletionUseCase,
     {
       provide: IOrderRepository,
       useClass: MongooseOrderRepository,

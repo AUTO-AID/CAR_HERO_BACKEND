@@ -40,6 +40,10 @@ const transitions: Record<OrderStatus, OrderStatus[]> = {
     OrderStatus.CANCELLED,
   ],
   [OrderStatus.IN_PROGRESS]: [
+    OrderStatus.AWAITING_CUSTOMER_CONFIRMATION,
+    OrderStatus.COMPLETED,
+  ],
+  [OrderStatus.AWAITING_CUSTOMER_CONFIRMATION]: [
     OrderStatus.COMPLETED,
   ],
   [OrderStatus.COMPLETED]: [],
@@ -52,7 +56,7 @@ const providerAllowedTargets = new Set<OrderStatus>([
   OrderStatus.PROVIDER_EN_ROUTE,
   OrderStatus.PROVIDER_ARRIVED,
   OrderStatus.IN_PROGRESS,
-  OrderStatus.COMPLETED,
+  OrderStatus.AWAITING_CUSTOMER_CONFIRMATION,
   OrderStatus.CANCELLED,
 ]);
 

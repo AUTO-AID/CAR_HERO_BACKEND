@@ -8,10 +8,10 @@ class LocationDto {
 }
 
 export class CreateOrderDto {
-  @ApiProperty({ example: '60b8d295f1d293001f3e4c8a', description: 'ID of the user making the order' })
+  @ApiPropertyOptional({ example: '60b8d295f1d293001f3e4c8a', description: 'Injected from JWT for customer requests' })
   @IsString()
-  @IsNotEmpty()
-  userId: string;
+  @IsOptional()
+  userId?: string;
 
   @ApiProperty({ example: '60b8d295f1d293001f3e4c8b', description: 'ID of the service requested' })
   @IsString()

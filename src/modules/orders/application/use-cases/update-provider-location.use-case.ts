@@ -30,10 +30,13 @@ export class UpdateProviderLocationUseCase {
     }
 
     // Ownership Verification
-    const isAssignedProvider = 
-      order.providerId?.toString() === currentUser.providerId?.toString() ||
-      order.providerId?.toString() === currentUser._id?.toString();
-    const isAdmin = currentUser.role === 'admin';
+    const currentUserId = currentUser?._id?.toString();
+    const currentProviderId = currentUser?.providerId?.toString();
+    const isAssignedProvider =
+      !!order.providerId &&
+      ((!!currentProviderId && order.providerId.toString() === currentProviderId) ||
+      (!!currentUserId && order.providerId.toString() === currentUserId));
+    const isAdmin = currentUser?.role === 'admin';
 
     if (!isAssignedProvider && !isAdmin) {
       throw new ForbiddenException('You are not authorized to update location for this order');

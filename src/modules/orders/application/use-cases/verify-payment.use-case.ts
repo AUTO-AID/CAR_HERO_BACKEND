@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
 import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
@@ -20,11 +20,14 @@ export class VerifyPaymentUseCase {
     private readonly walletRepository: IWalletRepository,
   ) {}
 
-  async execute(id: string, dto: VerifyPaymentDto): Promise<OrderEntity> {
+  async execute(id: string, dto: VerifyPaymentDto, currentUser: any): Promise<OrderEntity> {
     const order = await this.orderRepository.findById(id);
     if (!order) {
       throw new NotFoundException('Order not found');
     }
+    const isOwner = !!order.userId && !!currentUser?._id && order.userId.toString() === currentUser._id.toString();
+    const isAdmin = currentUser?.role === 'admin';
+    if (!isOwner && !isAdmin) throw new ForbiddenException('You do not have permission to verify payment for this order');
 
     // Business Rule: Check if payment is already confirmed
     if (order.paymentStatus === PaymentStatus.COMPLETED) {

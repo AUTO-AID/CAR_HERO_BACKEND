@@ -24,6 +24,7 @@ import { JwtAuthGuard } from '../../../../core/guards/jwt-auth.guard';
 import { OrderStatus } from '../../../../core/enums/status.enum';
 import { OrderStateMachine } from '../../domain/services/order-state-machine';
 import { GetOrderTrackingUseCase } from '../../application/use-cases/get-order-tracking.use-case';
+import { ConfirmOrderCompletionUseCase } from '../../application/use-cases/confirm-order-completion.use-case';
 
 @ApiTags('Orders')
 @Controller()
@@ -45,6 +46,7 @@ export class OrdersController {
     private readonly verifyPaymentUseCase: VerifyPaymentUseCase,
     private readonly cancelOrderUseCase: CancelOrderUseCase,
     private readonly getOrderTrackingUseCase: GetOrderTrackingUseCase,
+    private readonly confirmOrderCompletionUseCase: ConfirmOrderCompletionUseCase,
   ) {}
 
   @Post('orders')
@@ -244,7 +246,7 @@ export class OrdersController {
     @Body() dto: { scheduleTime?: string; notes?: string; location?: any },
     @Req() req: any
   ) {
-    return this.updateOrderUseCase.execute(id, dto);
+    return this.updateOrderUseCase.execute(id, dto, req.user);
   }
 
   @Patch('orders/:id/location')
@@ -268,7 +270,7 @@ export class OrdersController {
     @Body() verifyPaymentDto: VerifyPaymentDto,
     @Req() req: any
   ) {
-    return this.verifyPaymentUseCase.execute(id, verifyPaymentDto);
+    return this.verifyPaymentUseCase.execute(id, verifyPaymentDto, req.user);
   }
 
   @Post('orders/:id/cancel')
@@ -281,6 +283,14 @@ export class OrdersController {
     @Req() req: any
   ) {
     return this.cancelOrderUseCase.execute(id, cancelOrderDto, req.user);
+  }
+
+  @Post('orders/:id/customer-confirm-completion')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Confirm completed service as the customer and release provider earnings' })
+  async confirmCompletion(@Param('id') id: string, @Req() req: any) {
+    return this.confirmOrderCompletionUseCase.execute(id, req.user);
   }
 
   @Post('orders/:id/review')
@@ -300,7 +310,7 @@ export class OrdersController {
   @ApiBearerAuth('JWT-auth')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete an order permanently' })
-  async deleteOrder(@Param('id') id: string) {
-    return this.deleteOrderUseCase.execute(id);
+  async deleteOrder(@Param('id') id: string, @Req() req: any) {
+    return this.deleteOrderUseCase.execute(id, req.user);
   }
 }

@@ -10,6 +10,7 @@ import { GetSubscriptionHistoryUseCase } from '../../application/use-cases/get-s
 import { ManageSubscriptionPlansUseCase } from '../../application/use-cases/manage-subscription-plans.use-case';
 import { ListSubscriptionsUseCase } from '../../application/use-cases/list-subscriptions.use-case';
 import { GetSubscriptionStatsUseCase } from '../../application/use-cases/get-subscription-stats.use-case';
+import { AuditLogService } from '../../../audit/application/services/audit-log.service';
 
 describe('SubscriptionsController', () => {
   let controller: SubscriptionsController;
@@ -43,6 +44,7 @@ describe('SubscriptionsController', () => {
         { provide: ManageSubscriptionPlansUseCase, useValue: useCases.manage },
         { provide: ListSubscriptionsUseCase, useValue: useCases.list },
         { provide: GetSubscriptionStatsUseCase, useValue: useCases.stats },
+        { provide: AuditLogService, useValue: { record: jest.fn() } },
       ],
     }).compile();
 

@@ -130,7 +130,7 @@
             "description": "StartConversation\n\nModule: chat\nController: ChatController.startConversation\nAuth: JWT\nRelated collections: chats, messages\nSource: src/modules/chat/presentation/controllers/chat.controller.ts:26",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"participantId\": \"sample_participantId\",\n  \"orderId\": \"{{order_id}}\"\n}",
+              "raw": "{\n  \"participantId\": \"{{participant_id}}\",\n  \"orderId\": \"{{order_id}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -159,10 +159,6 @@
               {
                 "key": "Accept",
                 "value": "application/json"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
               }
             ],
             "url": {
@@ -178,13 +174,14 @@
             },
             "description": "DiskStorage\n\nModule: chat\nController: ChatController.diskStorage\nAuth: JWT\nRelated collections: chats, messages\nSource: src/modules/chat/presentation/controllers/chat.controller.ts:49",
             "body": {
-              "mode": "raw",
-              "raw": "{}",
-              "options": {
-                "raw": {
-                  "language": "json"
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
                 }
-              }
+              ]
             }
           },
           "event": [
@@ -461,7 +458,7 @@
             "description": "Create a new service order\n\nModule: orders\nController: OrdersController.createOrder\nAuth: JWT\nRelated collections: orders\nSource: src/modules/orders/presentation/controllers/orders.controller.ts:47",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"userId\": \"60b8d295f1d293001f3e4c8a\",\n  \"serviceId\": \"60b8d295f1d293001f3e4c8b\",\n  \"providerId\": \"60b8d295f1d293001f3e4c8c\",\n  \"vehicleId\": \"60b8d295f1d293001f3e4c8d\",\n  \"scheduleTime\": \"2026-05-01T10:00:00Z\",\n  \"location\": {\n    \"coordinates\": [\n      36.2765,\n      33.5138\n    ]\n  },\n  \"notes\": \"Please bring a spare tire\"\n}",
+              "raw": "{\n  \"serviceId\": \"{{service_id}}\",\n  \"providerId\": \"{{provider_id}}\",\n  \"vehicleId\": \"{{vehicle_id}}\",\n  \"location\": {\n    \"coordinates\": [\n      36.2765,\n      33.5138\n    ]\n  },\n  \"notes\": \"Please bring a spare tire\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -598,7 +595,7 @@
             "description": "Update order details\n\nModule: orders\nController: OrdersController.updateOrder\nAuth: JWT\nRelated collections: orders\nSource: src/modules/orders/presentation/controllers/orders.controller.ts:128",
             "body": {
               "mode": "raw",
-              "raw": "{}",
+              "raw": "{\n  \"notes\": \"Updated customer note\",\n  \"location\": {\n    \"coordinates\": [\n      36.2765,\n      33.5138\n    ]\n  }\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -699,7 +696,7 @@
             "description": "Verify and confirm payment for an order\n\nModule: orders\nController: OrdersController.verifyPayment\nAuth: JWT\nRelated collections: orders\nSource: src/modules/orders/presentation/controllers/orders.controller.ts:152",
             "body": {
               "mode": "raw",
-              "raw": "{}",
+              "raw": "{\n  \"paymentId\": \"{{payment_id}}\",\n  \"paymentMethod\": \"card\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -755,6 +752,42 @@
                   "language": "json"
                 }
               }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /orders/:id/customer-confirm-completion",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/{{order_id}}/customer-confirm-completion",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "{{order_id}}",
+                "customer-confirm-completion"
+              ],
+              "query": []
             }
           },
           "event": [
@@ -920,7 +953,7 @@
               "type": "noauth"
             },
             "url": {
-              "raw": "{{base_url}}/providers/nearby",
+              "raw": "{{base_url}}/providers/nearby?longitude={{longitude}}&latitude={{latitude}}&maxDistanceKm={{max_distance_km}}",
               "host": [
                 "{{base_url}}"
               ],
@@ -928,7 +961,20 @@
                 "providers",
                 "nearby"
               ],
-              "query": []
+              "query": [
+                {
+                  "key": "longitude",
+                  "value": "{{longitude}}"
+                },
+                {
+                  "key": "latitude",
+                  "value": "{{latitude}}"
+                },
+                {
+                  "key": "maxDistanceKm",
+                  "value": "{{max_distance_km}}"
+                }
+              ]
             },
             "description": "List of nearby providers\n\nModule: providers\nController: ProvidersController.findNearby\nAuth: Public\nRelated collections: providers\nSource: src/modules/providers/presentation/controllers/providers.controller.ts:76"
           },
@@ -1068,7 +1114,7 @@
             "description": "Create a new review for an order\n\nModule: reviews\nController: ReviewsController.createReview\nAuth: JWT\nRelated collections: reviews\nSource: src/modules/reviews/presentation/controllers/reviews.controller.ts:20",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"orderId\": \"60d5ecb8b392d66514703902\",\n  \"rating\": 5,\n  \"comment\": \"Excellent service!\",\n  \"serviceQuality\": 5,\n  \"punctuality\": 5,\n  \"professionalism\": 5,\n  \"valueForMoney\": 5,\n  \"images\": []\n}",
+              "raw": "{\n  \"orderId\": \"{{order_id}}\",\n  \"rating\": 5,\n  \"comment\": \"Excellent service!\",\n  \"serviceQuality\": 5,\n  \"punctuality\": 5,\n  \"professionalism\": 5,\n  \"valueForMoney\": 5,\n  \"images\": []\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1820,7 +1866,7 @@
             "description": "User profile updated successfully\n\nModule: users\nController: UsersController.updateProfile\nAuth: JWT\nRelated collections: users\nSource: src/modules/users/presentation/controllers/users.controller.ts:39",
             "body": {
               "mode": "raw",
-              "raw": "{}",
+              "raw": "{\n  \"fullName\": \"Ahmad Mohammad Ali\",\n  \"preferences\": {\n    \"language\": \"ar\",\n    \"notifications\": {\n      \"push\": true,\n      \"sms\": true,\n      \"email\": false\n    }\n  }\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1914,7 +1960,7 @@
             "description": "Request OTP to reset password\n\nModule: auth\nController: AuthController.forgotPassword\nAuth: Public\nRelated collections: users, pending_registrations, logouts\nSource: src/modules/auth/presentation/controllers/auth.controller.ts:127",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"phoneNumber\": \"+963991234567\"\n}",
+              "raw": "{\n  \"phoneNumber\": \"{{phone_number}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1966,7 +2012,7 @@
             "description": "Login with phone number and password\n\nModule: auth\nController: AuthController.login\nAuth: Public\nRelated collections: users, pending_registrations, logouts\nSource: src/modules/auth/presentation/controllers/auth.controller.ts:99",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"phoneNumber\": \"+963991234567\",\n  \"password\": \"Ahmed@123\"\n}",
+              "raw": "{\n  \"phoneNumber\": \"{{phone_number}}\",\n  \"password\": \"Ahmed@123\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2112,7 +2158,7 @@
             "description": "Get new access token using refresh token\n\nModule: auth\nController: AuthController.refreshToken\nAuth: Public\nRelated collections: users, pending_registrations, logouts\nSource: src/modules/auth/presentation/controllers/auth.controller.ts:113",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n}",
+              "raw": "{\n  \"refreshToken\": \"{{refresh_token}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2173,7 +2219,7 @@
             "description": "Create a new user account and send OTP via WhatsApp\n\nModule: auth\nController: AuthController.register\nAuth: Public\nRelated collections: users, pending_registrations, logouts\nSource: src/modules/auth/presentation/controllers/auth.controller.ts:57",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"example\": true,\n  \"message\": 1\n}",
+              "raw": "{\n  \"fullName\": \"Ahmad Mohammad Ali\",\n  \"phoneNumber\": \"{{phone_number}}\",\n  \"password\": \"Ahmed@123\",\n  \"accountType\": \"customer\",\n  \"isTermsAccepted\": true\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2277,7 +2323,7 @@
             "description": "Reset password using OTP code\n\nModule: auth\nController: AuthController.resetPassword\nAuth: Public\nRelated collections: users, pending_registrations, logouts\nSource: src/modules/auth/presentation/controllers/auth.controller.ts:141",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"phoneNumber\": \"+963991234567\",\n  \"otpCode\": \"123456\",\n  \"message\": \"NewPassword@123\",\n  \"example\": \"sample_example\"\n}",
+              "raw": "{\n  \"phoneNumber\": \"{{phone_number}}\",\n  \"otpCode\": \"{{otp_code}}\",\n  \"newPassword\": \"NewPassword@123\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2435,7 +2481,7 @@
             "description": "Verify OTP and activate account\n\nModule: auth\nController: AuthController.verifyOtp\nAuth: Public\nRelated collections: users, pending_registrations, logouts\nSource: src/modules/auth/presentation/controllers/auth.controller.ts:71",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"phoneNumber\": \"+963991234567\",\n  \"otpCode\": \"123456\"\n}",
+              "raw": "{\n  \"phoneNumber\": \"{{phone_number}}\",\n  \"otpCode\": \"{{otp_code}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2765,7 +2811,7 @@
             "description": "Maintenance record created successfully\n\nModule: vehicles\nController: VehiclesController.createMaintenanceRecord\nAuth: JWT\nRelated collections: vehicles, maintenancerecords\nSource: src/modules/vehicles/presentation/controllers/vehicles.controller.ts:179",
             "body": {
               "mode": "raw",
-              "raw": "{}",
+              "raw": "{\n  \"serviceType\": \"oil_change\",\n  \"description\": \"Engine oil and filter replaced\",\n  \"date\": \"2026-06-01T10:30:00.000Z\",\n  \"mileage\": 50000,\n  \"cost\": 250,\n  \"provider\": \"Car Hero Center\",\n  \"location\": \"Damascus\",\n  \"invoiceNumber\": \"INV-2026-001\",\n  \"parts\": [\n    \"oil_filter\",\n    \"engine_oil\"\n  ],\n  \"notes\": \"Next service after 5000 km\",\n  \"attachments\": []\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2865,7 +2911,7 @@
             "description": "Reminder created successfully\n\nModule: vehicles\nController: VehiclesController.createReminder\nAuth: JWT\nRelated collections: vehicles, vehiclereminders\nSource: src/modules/vehicles/presentation/controllers/vehicles.controller.ts:258",
             "body": {
               "mode": "raw",
-              "raw": "{}",
+              "raw": "{\n  \"type\": \"oil_change\",\n  \"title\": \"Engine oil change\",\n  \"description\": \"Every 5000 km\",\n  \"reminderDate\": \"2026-07-01T10:00:00.000Z\",\n  \"mileageThreshold\": 55000,\n  \"currentMileage\": 50000,\n  \"frequency\": \"custom_km\",\n  \"isRecurring\": true,\n  \"notes\": \"Use synthetic oil\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3002,7 +3048,7 @@
             "description": "Maintenance record updated successfully\n\nModule: vehicles\nController: VehiclesController.updateMaintenanceRecord\nAuth: JWT\nRelated collections: vehicles, maintenancerecords\nSource: src/modules/vehicles/presentation/controllers/vehicles.controller.ts:222",
             "body": {
               "mode": "raw",
-              "raw": "{}",
+              "raw": "{\n  \"notes\": \"Invoice checked\",\n  \"cost\": 250\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3197,7 +3243,7 @@
             "description": "Deposit\n\nModule: wallet\nController: UserWalletController.deposit\nAuth: JWT\nRelated collections: wallets, transactions\nSource: src/modules/wallet/presentation/controllers/user-wallet.controller.ts:28",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"amount\": 100,\n  \"paymentMethod\": \"cash\",\n  \"paymentId\": \"sample_paymentId\"\n}",
+              "raw": "{\n  \"amount\": 100,\n  \"paymentMethod\": \"card\",\n  \"paymentId\": \"{{payment_id}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3974,6 +4020,43 @@
             },
             "description": "Delete an owned recurring wash plan."
           }
+        },
+        {
+          "name": "POST /customer/wash-plans/:id/generate-booking",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/customer/wash-plans/{{wash_plan_id}}/generate-booking",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "customer",
+                "wash-plans",
+                "{{wash_plan_id}}",
+                "generate-booking"
+              ],
+              "query": []
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
         }
       ]
     },

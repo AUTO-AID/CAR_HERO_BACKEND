@@ -33,13 +33,17 @@ export class CancelOrderUseCase {
     }
 
     // Ownership Verification
-    const isOwner = order.userId?.toString() === currentUser._id?.toString();
+    const currentUserId = currentUser?._id?.toString();
+    const currentProviderId = currentUser?.providerId?.toString();
+    const isOwner = !!order.userId && !!currentUserId && order.userId.toString() === currentUserId;
     const isProvider =
-      order.providerId?.toString() === currentUser.providerId?.toString() ||
-      order.providerId?.toString() === currentUser._id?.toString();
-    const isAdmin = currentUser.role === 'admin';
+      !!order.providerId &&
+      ((!!currentProviderId && order.providerId.toString() === currentProviderId) ||
+      (!!currentUserId && order.providerId.toString() === currentUserId));
+    const isAdmin = currentUser?.role === 'admin';
+    const isSystem = currentUser?.role === 'system';
 
-    if (!isOwner && !isProvider && !isAdmin) {
+    if (!isOwner && !isProvider && !isAdmin && !isSystem) {
       throw new ForbiddenException('You do not have permission to cancel this order');
     }
 

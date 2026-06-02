@@ -69,4 +69,23 @@ describe('CancelOrderUseCase', () => {
     expect(mockRepo.cancelOrder).toHaveBeenCalled();
     expect(mockCacheManager.del).toHaveBeenCalledWith('order_id');
   });
+
+  it('should allow the internal system actor to auto-cancel an expired order', async () => {
+    const mockOrder = {
+      id: 'id',
+      userId: 'user-id',
+      status: OrderStatus.PENDING,
+      orderNumber: 'CH-X',
+    };
+    mockRepo.findById.mockResolvedValue(mockOrder);
+    mockRepo.cancelOrder.mockResolvedValue({ ...mockOrder, status: OrderStatus.CANCELLED });
+
+    await useCase.execute(
+      'id',
+      { reason: 'expired', cancelledBy: 'system' },
+      { _id: 'system', role: 'system' },
+    );
+
+    expect(mockRepo.cancelOrder).toHaveBeenCalledWith('id', 'expired', 'system');
+  });
 });

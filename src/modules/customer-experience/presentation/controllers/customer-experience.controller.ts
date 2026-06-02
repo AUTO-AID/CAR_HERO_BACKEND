@@ -40,6 +40,7 @@ export class CustomerExperienceController {
   @Post('wash-plans') createWashPlan(@CurrentUser('id') userId: string, @Body() dto: CreateWashPlanDto) { return this.service.createWashPlan(userId, dto); }
   @Patch('wash-plans/:id') updateWashPlan(@CurrentUser('id') userId: string, @Param('id') id: string, @Body() dto: UpdateWashPlanDto) { return this.service.updateWashPlan(userId, id, dto); }
   @Delete('wash-plans/:id') @HttpCode(HttpStatus.NO_CONTENT) deleteWashPlan(@CurrentUser('id') userId: string, @Param('id') id: string) { return this.service.deleteWashPlan(userId, id); }
+  @Post('wash-plans/:id/generate-booking') generateWashPlanBooking(@CurrentUser('id') userId: string, @Param('id') id: string) { return this.service.generateWashPlanBooking(userId, id); }
 
   @Post('devices') @ApiOperation({ summary: 'Register or refresh a device push token' })
   registerDevice(@CurrentUser('id') userId: string, @Body() dto: RegisterDeviceDto) { return this.service.registerDevice(userId, dto); }

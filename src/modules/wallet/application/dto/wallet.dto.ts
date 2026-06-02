@@ -1,4 +1,4 @@
-import { IsNumber, IsPositive, IsString, IsOptional } from 'class-validator';
+import { IsMongoId, IsNumber, IsPositive, IsString, IsOptional } from 'class-validator';
 
 export class DepositDto {
   @IsNumber()
@@ -33,6 +33,7 @@ export class RedeemPointsDto {
   points: number;
 
   @IsString()
+  @IsMongoId()
   @IsOptional()
   orderId?: string;
 }

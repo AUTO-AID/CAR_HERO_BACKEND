@@ -33,11 +33,14 @@ export class GetOrderByIdUseCase {
     }
 
     // Ownership Verification (always check even if cached)
-    const isOwner = order.userId?.toString() === currentUser._id?.toString();
+    const currentUserId = currentUser?._id?.toString();
+    const currentProviderId = currentUser?.providerId?.toString();
+    const isOwner = !!order.userId && !!currentUserId && order.userId.toString() === currentUserId;
     const isProvider = 
-      order.providerId?.toString() === currentUser.providerId?.toString() ||
-      order.providerId?.toString() === currentUser._id?.toString();
-    const isAdmin = currentUser.role === 'admin';
+      !!order.providerId &&
+      ((!!currentProviderId && order.providerId.toString() === currentProviderId) ||
+      (!!currentUserId && order.providerId.toString() === currentUserId));
+    const isAdmin = currentUser?.role === 'admin';
 
     if (!isOwner && !isProvider && !isAdmin) {
       throw new ForbiddenException('You do not have permission to view this order');

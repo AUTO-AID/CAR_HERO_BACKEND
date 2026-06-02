@@ -9,6 +9,7 @@ export enum OrderStatus {
   PROVIDER_EN_ROUTE = 'provider_en_route',
   PROVIDER_ARRIVED = 'provider_arrived',
   IN_PROGRESS = 'in_progress',
+  AWAITING_CUSTOMER_CONFIRMATION = 'awaiting_customer_confirmation',
   COMPLETED = 'completed',
   CANCELLED = 'cancelled',
   REJECTED = 'rejected',

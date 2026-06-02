@@ -2,9 +2,10 @@ import { BadRequestException } from '@nestjs/common';
 import { RedeemLoyaltyPointsUseCase } from './redeem-loyalty-points.use-case';
 
 describe('RedeemLoyaltyPointsUseCase', () => {
-  const wallets = { findOneAndUpdate: jest.fn() };
+  const wallets = { findOneAndUpdate: jest.fn(), updateOne: jest.fn() };
   const transactions = { create: jest.fn() };
-  const useCase = new RedeemLoyaltyPointsUseCase(wallets as any, transactions as any);
+  const orders = { findOne: jest.fn(), findOneAndUpdate: jest.fn(), updateOne: jest.fn() };
+  const useCase = new RedeemLoyaltyPointsUseCase(wallets as any, transactions as any, orders as any);
 
   beforeEach(() => jest.clearAllMocks());
 
@@ -38,5 +39,27 @@ describe('RedeemLoyaltyPointsUseCase', () => {
       useCase.execute('507f1f77bcf86cd799439011', { points: 1000 }),
     ).rejects.toBeInstanceOf(BadRequestException);
     expect(transactions.create).not.toHaveBeenCalled();
+  });
+
+  it('applies the redeemed points discount to an owned unpaid order', async () => {
+    orders.findOne.mockReturnValue({ exec: jest.fn().mockResolvedValue({ _id: 'order-1', payableAmount: 20 }) });
+    orders.findOneAndUpdate.mockReturnValue({ exec: jest.fn().mockResolvedValue({ _id: 'order-1', payableAmount: 15 }) });
+    orders.updateOne.mockReturnValue({ exec: jest.fn().mockResolvedValue({}) });
+    wallets.findOneAndUpdate.mockReturnValue({
+      exec: jest.fn().mockResolvedValue({ _id: 'wallet-1', ownerId: '507f1f77bcf86cd799439011', balance: 50, loyaltyPoints: 900 }),
+    });
+    transactions.create.mockResolvedValue({ _id: 'transaction-1' });
+
+    const result = await useCase.execute('507f1f77bcf86cd799439011', {
+      points: 100,
+      orderId: '507f191e810c19729de860ea',
+    });
+
+    expect(orders.findOneAndUpdate).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ $inc: { discountAmount: 5, payableAmount: -5 } }),
+      { new: true },
+    );
+    expect(result).toMatchObject({ discountAmount: 5, payableAmount: 15 });
   });
 });

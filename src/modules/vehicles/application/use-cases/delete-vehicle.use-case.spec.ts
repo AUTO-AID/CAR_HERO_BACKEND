@@ -57,6 +57,7 @@ describe('DeleteVehicleUseCase', () => {
 
   describe('execute', () => {
     it('should throw ForbiddenException if user does not own vehicle', async () => {
+      vehicleRepository.findById.mockResolvedValue(mockVehicle);
       vehicleRepository.belongsToUser.mockResolvedValue(false);
 
       await expect(useCase.execute('v1', 'user1')).rejects.toThrow(

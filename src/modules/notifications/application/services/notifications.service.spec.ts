@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getModelToken } from '@nestjs/mongoose';
+import { getConnectionToken, getModelToken } from '@nestjs/mongoose';
 import { NotificationsService } from './notifications.service';
 import { Notification } from '../../../../modules/notifications/infrastructure/persistence/mongoose/schemas/notification.schema';
 import { NotificationsGateway } from '../../presentation/gateways/notifications.gateway';
@@ -31,6 +31,7 @@ describe('NotificationsService (Unit Audit)', () => {
         NotificationsService,
         { provide: getModelToken(Notification.name), useValue: mockNotificationModel },
         { provide: NotificationsGateway, useValue: mockGateway },
+        { provide: getConnectionToken(), useValue: {} },
       ],
     }).compile();
 

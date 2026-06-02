@@ -87,6 +87,8 @@ export class MongooseOrderRepository implements IOrderRepository {
     (entity as any).acceptedAt = anyDoc.acceptedAt;
     (entity as any).startedAt = anyDoc.startedAt;
     (entity as any).completedAt = anyDoc.completedAt;
+    (entity as any).completionRequestedAt = anyDoc.completionRequestedAt;
+    (entity as any).customerConfirmedAt = anyDoc.customerConfirmedAt;
     (entity as any).cancelledAt = anyDoc.cancelledAt;
     (entity as any).cancellationReason = anyDoc.cancellationReason;
     (entity as any).cancelledBy = anyDoc.cancelledBy;
@@ -427,7 +429,7 @@ export class MongooseOrderRepository implements IOrderRepository {
       { 
         $set: { 
           paymentId,
-          paymentMethod: paymentMethod || 'online',
+          paymentMethod: paymentMethod || 'card',
           paymentStatus: PaymentStatus.COMPLETED
         } 
       },

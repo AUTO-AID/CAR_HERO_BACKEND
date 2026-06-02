@@ -21,6 +21,7 @@ import { GetFinancialSummaryUseCase } from './application/use-cases/get-financia
 import { GetProviderFinancialSummaryUseCase } from './application/use-cases/get-provider-financial-summary.use-case';
 import { RedeemLoyaltyPointsUseCase } from './application/use-cases/redeem-loyalty-points.use-case';
 import { Setting, SettingSchema } from '../admin/infrastructure/persistence/mongoose/schemas/setting.schema';
+import { Order, OrderSchema } from '../orders/infrastructure/persistence/mongoose/schemas/order.schema';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { Setting, SettingSchema } from '../admin/infrastructure/persistence/mong
       { name: Wallet.name, schema: WalletSchema },
       { name: Transaction.name, schema: TransactionSchema },
       { name: Setting.name, schema: SettingSchema },
+      { name: Order.name, schema: OrderSchema },
     ]),
   ],
   controllers: [

@@ -14,6 +14,8 @@ import { ListSubscriptionsUseCase } from '../../application/use-cases/list-subsc
 import { GetSubscriptionStatsUseCase } from '../../application/use-cases/get-subscription-stats.use-case';
 import { JwtAuthGuard } from '../../../../core/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../../core/guards/roles.guard';
+import { PermissionsGuard } from '../../../../core/guards/permissions.guard';
+import { AuditLogService } from '../../../audit/application/services/audit-log.service';
 
 describe('SubscriptionsController HTTP endpoints', () => {
   let app: INestApplication;
@@ -48,6 +50,7 @@ describe('SubscriptionsController HTTP endpoints', () => {
         { provide: ManageSubscriptionPlansUseCase, useValue: useCases.manage },
         { provide: ListSubscriptionsUseCase, useValue: useCases.list },
         { provide: GetSubscriptionStatsUseCase, useValue: useCases.stats },
+        { provide: AuditLogService, useValue: { record: jest.fn().mockResolvedValue(undefined) } },
       ],
     })
       .overrideGuard(JwtAuthGuard)
@@ -58,6 +61,8 @@ describe('SubscriptionsController HTTP endpoints', () => {
         },
       })
       .overrideGuard(RolesGuard)
+      .useValue({ canActivate: () => true })
+      .overrideGuard(PermissionsGuard)
       .useValue({ canActivate: () => true })
       .compile();
 
