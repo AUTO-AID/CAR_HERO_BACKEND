@@ -1,11 +1,63 @@
 # Car Hero Backend Postman Setup
 
-This folder contains a complete Postman Collection that can be **imported** into Postman, plus an environment file.
+This folder contains the canonical Postman sources and generated product-specific collections.
+
+## Recommended Workflow
+
+- Keep `car_hero_backend.postman_collection.json` as the canonical backend source.
+- Keep `ai_recommendations.postman_collection.json` as the canonical AI examples source.
+- Generate smaller collections for each team with `npm run postman:generate`.
+- Validate coverage and environment variables with `npm run postman:validate`.
+- Publish generated collections to a shared Postman Workspace with `npm run postman:publish`.
+
+The publish command updates a Workspace collection and its environment when their names already exist and creates them otherwise. Teams use the synchronized Workspace collections during daily work, so they do not need to import a new JSON file after every API change.
+
+## Generated Layout
+
+```text
+postman/generated/
+  master/
+  app/
+  provider-dashboard/
+  admin-dashboard/
+  website/
+  ai/
+  shared/
+  manifest.json
+```
+
+- `master`: the complete backend and AI reference.
+- `app`: only customer mobile application requests.
+- `provider-dashboard`: only provider operations requests.
+- `admin-dashboard`: administrative requests and AI analytics.
+- `website`: public website requests.
+- `ai`: AI recommendation and analytics requests.
+- `shared`: requests consumed by more than one client. Product collections remain self-contained.
+
+## Commands
+
+```text
+npm run postman:generate
+npm run postman:validate
+npm run postman:publish
+```
+
+Before publishing, set:
+
+```text
+POSTMAN_API_KEY=...
+POSTMAN_WORKSPACE_ID=...
+```
+
+Use `.env.postman.example` as a reference. Do not commit API keys.
+
+For automatic publishing after merges to `main`, add `POSTMAN_API_KEY` and `POSTMAN_WORKSPACE_ID` as GitHub repository secrets. The included workflow publishes changes whenever Postman sources or generator scripts change.
 
 ## Files
 
-- `car_hero_backend.postman_collection.json`: complete API collection generated from NestJS controllers.
+- `car_hero_backend.postman_collection.json`: canonical backend API collection generated from NestJS controllers.
 - `car_hero_backend.postman_environment.json`: environment variables for local testing.
+- `ai_recommendations.postman_collection.json`: canonical AI examples collection.
 
 ## How to use
 

@@ -1,0 +1,4236 @@
+{
+  "info": {
+    "name": "Car Hero - Admin Dashboard API",
+    "description": "Administrative dashboard endpoints and AI analytics administration.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.request.headers.upsert({ key: 'Accept', value: 'application/json' });"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "admins - admin",
+      "item": [
+        {
+          "name": "DELETE /admin/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/{{admin_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "{{admin_id}}"
+              ],
+              "query": []
+            },
+            "description": "Delete an admin account\n\nModule: admin\nController: AdminController.deleteAdmin\nAuth: JWT (any active admin)\nRelated collections: admins\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:427"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /admin/:id/permissions",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/{{admin_id}}/permissions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "{{admin_id}}",
+                "permissions"
+              ],
+              "query": []
+            },
+            "description": "Update admin permissions\n\nModule: admin\nController: AdminController.updateAdminPermissions\nAuth: JWT (any active admin)\nRelated collections: admins\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:403",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /admin/:id/status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/{{admin_id}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "{{admin_id}}",
+                "status"
+              ],
+              "query": []
+            },
+            "description": "Toggle admin active status\n\nModule: admin\nController: AdminController.toggleAdminStatus\nAuth: JWT (any active admin)\nRelated collections: admins\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:415",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"active\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /admin/create",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/create",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "create"
+              ],
+              "query": []
+            },
+            "description": "Create a new admin account\n\nModule: admin\nController: AdminController.createAdmin\nAuth: JWT (any active admin)\nRelated collections: admins\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:394",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/list",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/list",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "list"
+              ],
+              "query": []
+            },
+            "description": "List all administrative accounts\n\nModule: admin\nController: AdminController.listAdmins\nAuth: JWT (any active admin)\nRelated collections: admins\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:385"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /admin/login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "login"
+              ],
+              "query": []
+            },
+            "description": "Login successful\n\nModule: admin\nController: AdminController.login\nAuth: Public\nRelated collections: admins\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:23",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{admin_email}}\",\n  \"password\": \"{{admin_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });",
+                  "",
+                  "const json = (() => { try { return pm.response.json(); } catch (e) { return {}; } })();",
+                  "const accessToken = json.accessToken || json.access_token || json.token || json?.data?.accessToken || json?.data?.access_token || json?.tokens?.accessToken || json?.data?.tokens?.accessToken;",
+                  "const refreshToken = json.refreshToken || json.refresh_token || json?.data?.refreshToken || json?.data?.refresh_token || json?.tokens?.refreshToken || json?.data?.tokens?.refreshToken;",
+                  "const userId = json.user?._id || json.user?.id || json?.data?.user?._id || json?.data?.user?.id || json.admin?._id || json.admin?.id || json?.data?.admin?._id || json?.data?.admin?.id;",
+                  "if (accessToken) pm.environment.set('access_token', accessToken);",
+                  "if (refreshToken) pm.environment.set('refresh_token', refreshToken);",
+                  "if (userId) pm.environment.set('user_id', userId);",
+                  ""
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /admin/logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/logout",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "logout"
+              ],
+              "query": []
+            },
+            "description": "Admin logout\n\nModule: admin\nController: AdminController.logout\nAuth: JWT (any active admin)\nRelated collections: admins, logouts\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:40",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/me",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "me"
+              ],
+              "query": []
+            },
+            "description": "Get current admin profile\n\nModule: admin\nController: AdminController.getProfile\nAuth: JWT (any active admin)\nRelated collections: admins\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:49"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/subscription-plans",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/subscription-plans",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "subscription-plans"
+              ]
+            },
+            "description": "Get all membership plans\n\nModule: admin\nController: AdminController.getAllMembershipPlans\nAuth: JWT (any active admin)\nRelated collections: admins, subscription_plans, user_subscriptions\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:306"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /admin/subscription-plans",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/subscription-plans",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "subscription-plans"
+              ]
+            },
+            "description": "Create new membership plan\n\nModule: admin\nController: AdminController.createMembershipPlan\nAuth: JWT (any active admin)\nRelated collections: admins, subscription_plans, user_subscriptions\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:315",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"sample_name\",\n  \"nameAr\": \"sample_nameAr\",\n  \"description\": \"sample_description\",\n  \"descriptionAr\": \"sample_descriptionAr\",\n  \"price\": 100,\n  \"durationDays\": 1,\n  \"currency\": \"sample_currency\",\n  \"benefits\": [],\n  \"serviceDiscount\": 1,\n  \"emergencyDiscount\": 1,\n  \"freeEmergencyServices\": 1,\n  \"freeTowingKm\": 1,\n  \"prioritySupport\": true,\n  \"loyaltyPointsMultiplier\": 1,\n  \"isActive\": true,\n  \"isFeatured\": true,\n  \"sortOrder\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE /admin/subscription-plans/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/subscription-plans/{{subscription_plan_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "subscription-plans",
+                "{{id}}"
+              ]
+            },
+            "description": "Delete membership plan\n\nModule: admin\nController: AdminController.deleteMembershipPlan\nAuth: JWT (any active admin)\nRelated collections: admins, subscription_plans, user_subscriptions\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:336"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /admin/subscription-plans/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/subscription-plans/{{subscription_plan_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "subscription-plans",
+                "{{id}}"
+              ]
+            },
+            "description": "Update membership plan\n\nModule: admin\nController: AdminController.updateMembershipPlan\nAuth: JWT (any active admin)\nRelated collections: admins, subscription_plans, user_subscriptions\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:324",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/subscriptions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/subscriptions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "subscriptions"
+              ]
+            },
+            "description": "Get all subscribed users\n\nModule: admin\nController: AdminController.getMembershipSubscribers\nAuth: JWT (any active admin)\nRelated collections: admins, subscription_plans, user_subscriptions\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:345"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/providers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/providers",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "providers"
+              ],
+              "query": []
+            },
+            "description": "Get all providers\n\nModule: admin\nController: AdminController.getAllProviders\nAuth: JWT (any active admin)\nRelated collections: admins, providers\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:118"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/providers/:id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/providers/{{provider_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "providers",
+                "{{provider_id}}"
+              ],
+              "query": []
+            },
+            "description": "Get provider by ID\n\nModule: admin\nController: AdminController.getProviderById\nAuth: JWT (any active admin)\nRelated collections: admins, providers\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:131"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /admin/providers/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/providers/{{provider_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "providers",
+                "{{provider_id}}"
+              ],
+              "query": []
+            },
+            "description": "Update provider data\n\nModule: admin\nController: AdminController.updateProvider\nAuth: JWT (any active admin)\nRelated collections: admins, providers\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:161",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /admin/providers/:id/approve",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/providers/{{provider_id}}/approve",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "providers",
+                "{{provider_id}}",
+                "approve"
+              ],
+              "query": []
+            },
+            "description": "Approve provider registration\n\nModule: admin\nController: AdminController.approveProvider\nAuth: JWT (any active admin)\nRelated collections: admins, providers\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:140",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /admin/providers/:id/reject",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/providers/{{provider_id}}/reject",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "providers",
+                "{{provider_id}}",
+                "reject"
+              ],
+              "query": []
+            },
+            "description": "Reject provider registration\n\nModule: admin\nController: AdminController.rejectProvider\nAuth: JWT (any active admin)\nRelated collections: admins, providers\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:149",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /admin/refresh-token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/refresh-token",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "refresh-token"
+              ],
+              "query": []
+            },
+            "description": "Refresh admin tokens\n\nModule: admin\nController: AdminController.refreshToken\nAuth: Public\nRelated collections: admins\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:33",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refresh_token}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });",
+                  "",
+                  "const json = (() => { try { return pm.response.json(); } catch (e) { return {}; } })();",
+                  "const accessToken = json.accessToken || json.access_token || json.token || json?.data?.accessToken || json?.data?.access_token || json?.tokens?.accessToken || json?.data?.tokens?.accessToken;",
+                  "const refreshToken = json.refreshToken || json.refresh_token || json?.data?.refreshToken || json?.data?.refresh_token || json?.tokens?.refreshToken || json?.data?.tokens?.refreshToken;",
+                  "const userId = json.user?._id || json.user?.id || json?.data?.user?._id || json?.data?.user?.id || json.admin?._id || json.admin?.id || json?.data?.admin?._id || json?.data?.admin?.id;",
+                  "if (accessToken) pm.environment.set('access_token', accessToken);",
+                  "if (refreshToken) pm.environment.set('refresh_token', refreshToken);",
+                  "if (userId) pm.environment.set('user_id', userId);",
+                  ""
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/services",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/services",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "services"
+              ],
+              "query": []
+            },
+            "description": "Get all system services\n\nModule: admin\nController: AdminController.getAllServices\nAuth: JWT (any active admin)\nRelated collections: admins, services\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:177"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /admin/services",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/services",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "services"
+              ],
+              "query": []
+            },
+            "description": "Create new system service\n\nModule: admin\nController: AdminController.createService\nAuth: JWT (any active admin)\nRelated collections: admins, services\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:186",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE /admin/services/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/services/{{service_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "services",
+                "{{service_id}}"
+              ],
+              "query": []
+            },
+            "description": "Delete system service\n\nModule: admin\nController: AdminController.deleteService\nAuth: JWT (any active admin)\nRelated collections: admins, services\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:207"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /admin/services/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/services/{{service_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "services",
+                "{{service_id}}"
+              ],
+              "query": []
+            },
+            "description": "Update system service\n\nModule: admin\nController: AdminController.updateService\nAuth: JWT (any active admin)\nRelated collections: admins, services\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:195",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/settings",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/settings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "settings"
+              ],
+              "query": []
+            },
+            "description": "Get application settings\n\nModule: admin\nController: AdminController.getSettings\nAuth: JWT (any active admin)\nRelated collections: admins, settings\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:361"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /admin/settings/maintenance",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/settings/maintenance",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "settings",
+                "maintenance"
+              ],
+              "query": []
+            },
+            "description": "Toggle maintenance mode\n\nModule: admin\nController: AdminController.updateMaintenanceMode\nAuth: JWT (any active admin)\nRelated collections: admins, maintenancerecords, settings\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:370",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/stats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "stats"
+              ],
+              "query": []
+            },
+            "description": "Get general platform statistics\n\nModule: admin\nController: AdminController.getGeneralStats\nAuth: JWT (any active admin)\nRelated collections: admins\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:266"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/stats/revenue",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/stats/revenue",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "stats",
+                "revenue"
+              ],
+              "query": []
+            },
+            "description": "Get monthly revenue statistics\n\nModule: admin\nController: AdminController.getMonthlyRevenue\nAuth: JWT (any active admin)\nRelated collections: admins\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:284"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/stats/top-services",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/stats/top-services",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "stats",
+                "top-services"
+              ],
+              "query": []
+            },
+            "description": "Get top requested services\n\nModule: admin\nController: AdminController.getTopServices\nAuth: JWT (any active admin)\nRelated collections: admins\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:293"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/stats/orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/stats/orders",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "stats",
+                "orders"
+              ]
+            },
+            "description": "Get order statistics by status\n\nModule: admin\nController: AdminController.getOrderStats\nAuth: JWT (any active admin)\nRelated collections: admins, orders\nSource: src/modules/admin/presentation/controllers/admin.controller.ts"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /admin/dashboard/summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/dashboard/summary",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "dashboard",
+                "summary"
+              ],
+              "query": []
+            },
+            "description": "Get dashboard summary statistics.\n\nModule: admin\nFile: modules/admin/presentation/controllers/admin.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/dashboard/providers-by-governorate",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/dashboard/providers-by-governorate",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "dashboard",
+                "providers-by-governorate"
+              ],
+              "query": []
+            },
+            "description": "Get providers count by governorate.\n\nModule: admin\nFile: modules/admin/presentation/controllers/admin.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/dashboard/providers-by-service",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/dashboard/providers-by-service",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "dashboard",
+                "providers-by-service"
+              ],
+              "query": []
+            },
+            "description": "Get providers count by service category.\n\nModule: admin\nFile: modules/admin/presentation/controllers/admin.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/dashboard/providers-growth",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/dashboard/providers-growth",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "dashboard",
+                "providers-growth"
+              ],
+              "query": []
+            },
+            "description": "Get provider registration growth over months.\n\nModule: admin\nFile: modules/admin/presentation/controllers/admin.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/dashboard/top-cities",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/dashboard/top-cities",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "dashboard",
+                "top-cities"
+              ],
+              "query": []
+            },
+            "description": "Get top active cities.\n\nModule: admin\nFile: modules/admin/presentation/controllers/admin.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/dashboard/map/syria-providers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/dashboard/map/syria-providers",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "dashboard",
+                "map",
+                "syria-providers"
+              ],
+              "query": []
+            },
+            "description": "Get location markers for providers on Syria map.\n\nModule: admin\nFile: modules/admin/presentation/controllers/admin.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/memberships",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/memberships",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "memberships"
+              ],
+              "query": []
+            },
+            "description": "Get all membership plans/packages.\n\nModule: admin\nFile: modules/admin/presentation/controllers/admin.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /admin/memberships",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/memberships",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "memberships"
+              ],
+              "query": []
+            },
+            "description": "Create a new membership package.\n\nModule: admin\nFile: modules/admin/presentation/controllers/admin.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /admin/memberships/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/memberships/{{id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "memberships",
+                "{{id}}"
+              ],
+              "query": []
+            },
+            "description": "Update a membership package by ID.\n\nModule: admin\nFile: modules/admin/presentation/controllers/admin.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE /admin/memberships/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/memberships/{{id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "memberships",
+                "{{id}}"
+              ],
+              "query": []
+            },
+            "description": "Delete a membership package by ID.\n\nModule: admin\nFile: modules/admin/presentation/controllers/admin.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/memberships/subscribers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/memberships/subscribers",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "memberships",
+                "subscribers"
+              ],
+              "query": []
+            },
+            "description": "Get members subscribers list.\n\nModule: admin\nFile: modules/admin/presentation/controllers/admin.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "admins - providers",
+      "item": [
+        {
+          "name": "POST /providers/admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/providers/admin",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "providers",
+                "admin"
+              ],
+              "query": []
+            },
+            "description": "Create provider (Admin only)\n\nModule: providers\nController: ProvidersController.create\nAuth: JWT (any active admin)\nRelated collections: admins, providers\nSource: src/modules/providers/presentation/controllers/providers.controller.ts:178",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{phone_number}}\",\n  \"businessName\": \"sample_businessName\",\n  \"ownerName\": \"sample_ownerName\",\n  \"email\": \"test@example.com\",\n  \"description\": \"sample_description\",\n  \"address\": \"sample_address\",\n  \"city\": \"sample_city\",\n  \"longitude\": 46.6753,\n  \"latitude\": 24.7136,\n  \"serviceCategories\": [],\n  \"services\": [],\n  \"workingHours\": \"sample_workingHours\",\n  \"open\": \"sample_open\",\n  \"close\": \"sample_close\",\n  \"isClosed\": true,\n  \"isActive\": true,\n  \"isApproved\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE /providers/admin/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/providers/admin/{{provider_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "providers",
+                "admin",
+                "{{provider_id}}"
+              ],
+              "query": []
+            },
+            "description": "Deactivate provider (Admin only)\n\nModule: providers\nController: ProvidersController.delete\nAuth: JWT (any active admin)\nRelated collections: admins, providers\nSource: src/modules/providers/presentation/controllers/providers.controller.ts:223"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /providers/admin/:id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/providers/admin/{{provider_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "providers",
+                "admin",
+                "{{provider_id}}"
+              ],
+              "query": []
+            },
+            "description": "Get provider by ID for admin\n\nModule: providers\nController: ProvidersController.adminFindOne\nAuth: JWT (any active admin)\nRelated collections: admins, providers\nSource: src/modules/providers/presentation/controllers/providers.controller.ts:187"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /providers/admin/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/providers/admin/{{provider_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "providers",
+                "admin",
+                "{{provider_id}}"
+              ],
+              "query": []
+            },
+            "description": "Update provider (Admin only)\n\nModule: providers\nController: ProvidersController.adminUpdate\nAuth: JWT (any active admin)\nRelated collections: admins, providers\nSource: src/modules/providers/presentation/controllers/providers.controller.ts:196",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"businessName\": \"sample_businessName\",\n  \"ownerName\": \"sample_ownerName\",\n  \"description\": \"sample_description\",\n  \"email\": \"test@example.com\",\n  \"logo\": \"sample_logo\",\n  \"images\": [],\n  \"address\": \"sample_address\",\n  \"city\": \"sample_city\",\n  \"serviceCategories\": [],\n  \"workingHours\": \"sample_workingHours\",\n  \"open\": \"sample_open\",\n  \"close\": \"sample_close\",\n  \"isClosed\": true,\n  \"services\": [],\n  \"documents\": [],\n  \"bankAccount\": {}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /providers/admin/:id/reject",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/providers/admin/{{provider_id}}/reject",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "providers",
+                "admin",
+                "{{provider_id}}",
+                "reject"
+              ],
+              "query": []
+            },
+            "description": "Reject provider registration (Admin only)\n\nModule: providers\nController: ProvidersController.reject\nAuth: JWT (any active admin)\nRelated collections: admins, providers\nSource: src/modules/providers/presentation/controllers/providers.controller.ts:214",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"sample_reason\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /providers/admin/:id/status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/providers/admin/{{provider_id}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "providers",
+                "admin",
+                "{{provider_id}}",
+                "status"
+              ],
+              "query": []
+            },
+            "description": "Activate/deactivate provider (Admin only)\n\nModule: providers\nController: ProvidersController.setActive\nAuth: JWT (any active admin)\nRelated collections: admins, providers\nSource: src/modules/providers/presentation/controllers/providers.controller.ts:205",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isActive\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /providers/admin/stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/providers/admin/stats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "providers",
+                "admin",
+                "stats"
+              ],
+              "query": []
+            },
+            "description": "Get provider statistics (Admin only)\n\nModule: providers\nController: ProvidersController.stats\nAuth: JWT (any active admin)\nRelated collections: admins, providers\nSource: src/modules/providers/presentation/controllers/providers.controller.ts:169"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "admins - services",
+      "item": [
+        {
+          "name": "POST /services/admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/services/admin",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "services",
+                "admin"
+              ],
+              "query": []
+            },
+            "description": "Admin: create service\n\nModule: services\nController: ServicesController.create\nAuth: Public\nRelated collections: admins, services\nSource: src/modules/services/presentation/controllers/services.controller.ts:86",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"sample_name\",\n  \"nameAr\": \"sample_nameAr\",\n  \"description\": \"sample_description\",\n  \"descriptionAr\": \"sample_descriptionAr\",\n  \"category\": \"sample_category\",\n  \"basePrice\": 100,\n  \"discountedPrice\": 100,\n  \"estimatedDuration\": 1,\n  \"icon\": \"sample_icon\",\n  \"image\": \"sample_image\",\n  \"isEmergency\": true,\n  \"isActive\": true,\n  \"isSystemService\": true,\n  \"sortOrder\": 1,\n  \"provider\": \"{{provider_id}}\",\n  \"options\": [],\n  \"metadata\": {}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE /services/admin/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/services/admin/{{service_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "services",
+                "admin",
+                "{{service_id}}"
+              ],
+              "query": []
+            },
+            "description": "Admin: deactivate service\n\nModule: services\nController: ServicesController.delete\nAuth: Public\nRelated collections: admins, services\nSource: src/modules/services/presentation/controllers/services.controller.ts:113"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /services/admin/:id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/services/admin/{{service_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "services",
+                "admin",
+                "{{service_id}}"
+              ],
+              "query": []
+            },
+            "description": "Admin: get service details by ID including inactive services\n\nModule: services\nController: ServicesController.adminFindOne\nAuth: Public\nRelated collections: admins, services\nSource: src/modules/services/presentation/controllers/services.controller.ts:77"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /services/admin/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/services/admin/{{service_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "services",
+                "admin",
+                "{{service_id}}"
+              ],
+              "query": []
+            },
+            "description": "Admin: update service\n\nModule: services\nController: ServicesController.update\nAuth: Public\nRelated collections: admins, services\nSource: src/modules/services/presentation/controllers/services.controller.ts:95",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /services/admin/:id/status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/services/admin/{{service_id}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "services",
+                "admin",
+                "{{service_id}}",
+                "status"
+              ],
+              "query": []
+            },
+            "description": "Admin: activate or deactivate service\n\nModule: services\nController: ServicesController.setStatus\nAuth: Public\nRelated collections: admins, services\nSource: src/modules/services/presentation/controllers/services.controller.ts:104",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isActive\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /services/admin/list",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/services/admin/list",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "services",
+                "admin",
+                "list"
+              ],
+              "query": []
+            },
+            "description": "Admin: list services with filters and pagination\n\nModule: services\nController: ServicesController.adminList\nAuth: Public\nRelated collections: admins, services\nSource: src/modules/services/presentation/controllers/services.controller.ts:59"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /services/admin/stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/services/admin/stats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "services",
+                "admin",
+                "stats"
+              ],
+              "query": []
+            },
+            "description": "Admin: get service catalog statistics\n\nModule: services\nController: ServicesController.adminStats\nAuth: Public\nRelated collections: admins, services\nSource: src/modules/services/presentation/controllers/services.controller.ts:68"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "admins - subscriptions",
+      "item": [
+        {
+          "name": "GET /subscriptions/admin/stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/subscriptions/admin/stats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "subscriptions",
+                "admin",
+                "stats"
+              ],
+              "query": []
+            },
+            "description": "Admin: get subscription statistics\n\nModule: subscriptions\nController: SubscriptionsController.getStats\nAuth: Public\nRelated collections: admins, subscription_plans, user_subscriptions\nSource: src/modules/subscriptions/presentation/controllers/subscriptions.controller.ts:135"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /subscriptions/admin/subscriptions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/subscriptions/admin/subscriptions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "subscriptions",
+                "admin",
+                "subscriptions"
+              ],
+              "query": []
+            },
+            "description": "Get subscriptions list for admin review.\n\nModule: subscriptions\nFile: modules/subscriptions/presentation/controllers/subscriptions.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /subscriptions/admin/plans",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/subscriptions/admin/plans",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "subscriptions",
+                "admin",
+                "plans"
+              ],
+              "query": []
+            },
+            "description": "Create a new subscription plan for providers.\n\nModule: subscriptions\nFile: modules/subscriptions/presentation/controllers/subscriptions.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /subscriptions/admin/plans/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/subscriptions/admin/plans/{{id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "subscriptions",
+                "admin",
+                "plans",
+                "{{id}}"
+              ],
+              "query": []
+            },
+            "description": "Update a subscription plan by ID.\n\nModule: subscriptions\nFile: modules/subscriptions/presentation/controllers/subscriptions.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE /subscriptions/admin/plans/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/subscriptions/admin/plans/{{id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "subscriptions",
+                "admin",
+                "plans",
+                "{{id}}"
+              ],
+              "query": []
+            },
+            "description": "Delete a subscription plan by ID.\n\nModule: subscriptions\nFile: modules/subscriptions/presentation/controllers/subscriptions.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "admins - users",
+      "item": [
+        {
+          "name": "GET /admin/users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "{{page}}",
+                  "disabled": true,
+                  "description": "Optional query parameter"
+                },
+                {
+                  "key": "limit",
+                  "value": "{{limit}}",
+                  "disabled": true,
+                  "description": "Optional query parameter"
+                }
+              ]
+            },
+            "description": "List of all users\n\nModule: users\nController: AdminUsersController.findAll\nAuth: JWT (any active admin)\nRelated collections: admins, users\nSource: src/modules/users/presentation/controllers/admin-users.controller.ts:37"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE /admin/users/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/users/{{user_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "users",
+                "{{user_id}}"
+              ],
+              "query": []
+            },
+            "description": "User deleted successfully\n\nModule: users\nController: AdminUsersController.delete\nAuth: JWT (any active admin)\nRelated collections: admins, users\nSource: src/modules/users/presentation/controllers/admin-users.controller.ts:64"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/users/:id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/users/{{user_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "users",
+                "{{user_id}}"
+              ],
+              "query": []
+            },
+            "description": "User details\n\nModule: users\nController: AdminUsersController.findById\nAuth: JWT (any active admin)\nRelated collections: admins, users\nSource: src/modules/users/presentation/controllers/admin-users.controller.ts:49"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /admin/users/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/users/{{user_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "users",
+                "{{user_id}}"
+              ],
+              "query": []
+            },
+            "description": "User updated successfully\n\nModule: users\nController: AdminUsersController.update\nAuth: JWT (any active admin)\nRelated collections: admins, users\nSource: src/modules/users/presentation/controllers/admin-users.controller.ts:57",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"sample_fullName\",\n  \"profileImage\": \"sample_profileImage\",\n  \"preferences\": \"sample_preferences\",\n  \"notifications\": true,\n  \"sms\": true,\n  \"email\": \"test@example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /admin/users/:id/status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/users/{{user_id}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "users",
+                "{{user_id}}",
+                "status"
+              ],
+              "query": []
+            },
+            "description": "Activate or deactivate a user account\n\nModule: admin\nController: AdminController.updateUserStatus\nAuth: JWT (any active admin)\nRelated collections: admins, users\nSource: src/modules/admin/presentation/controllers/admin.controller.ts:93",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isActive\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/users/search",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/users/search",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "users",
+                "search"
+              ],
+              "query": []
+            },
+            "description": "Search users in the platform.\n\nModule: users\nFile: modules/users/presentation/controllers/admin-users.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "admins - vehicles",
+      "item": [
+        {
+          "name": "GET /admin/vehicles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/vehicles",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "vehicles"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "{{page}}",
+                  "disabled": true,
+                  "description": "Optional query parameter"
+                },
+                {
+                  "key": "limit",
+                  "value": "{{limit}}",
+                  "disabled": true,
+                  "description": "Optional query parameter"
+                }
+              ]
+            },
+            "description": "Page number\n\nModule: vehicles\nController: AdminVehiclesController.getAllVehicles\nAuth: JWT (any active admin)\nRelated collections: admins, vehicles\nSource: src/modules/vehicles/presentation/controllers/admin-vehicles.controller.ts:48"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE /admin/vehicles/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/vehicles/{{vehicle_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "vehicles",
+                "{{vehicle_id}}"
+              ],
+              "query": []
+            },
+            "description": "Vehicle deleted successfully\n\nModule: vehicles\nController: AdminVehiclesController.deleteVehicle\nAuth: JWT (any active admin)\nRelated collections: admins, vehicles\nSource: src/modules/vehicles/presentation/controllers/admin-vehicles.controller.ts:129"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/vehicles/:id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/vehicles/{{vehicle_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "vehicles",
+                "{{vehicle_id}}"
+              ],
+              "query": []
+            },
+            "description": "Vehicle details\n\nModule: vehicles\nController: AdminVehiclesController.getVehicleById\nAuth: JWT (any active admin)\nRelated collections: admins, vehicles\nSource: src/modules/vehicles/presentation/controllers/admin-vehicles.controller.ts:116"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/vehicles/distribution",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/vehicles/distribution",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "vehicles",
+                "distribution"
+              ],
+              "query": []
+            },
+            "description": "Vehicle distribution with percentages\n\nModule: vehicles\nController: AdminVehiclesController.getDistribution\nAuth: JWT (any active admin)\nRelated collections: admins, vehicles\nSource: src/modules/vehicles/presentation/controllers/admin-vehicles.controller.ts:92"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/vehicles/stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/vehicles/stats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "vehicles",
+                "stats"
+              ],
+              "query": []
+            },
+            "description": "Vehicle statistics by brand\n\nModule: vehicles\nController: AdminVehiclesController.getVehicleStats\nAuth: JWT (any active admin)\nRelated collections: admins, vehicles\nSource: src/modules/vehicles/presentation/controllers/admin-vehicles.controller.ts:65"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/vehicles/top-models",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/vehicles/top-models",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "vehicles",
+                "top-models"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "{{limit}}",
+                  "disabled": true,
+                  "description": "Optional query parameter"
+                }
+              ]
+            },
+            "description": "Number of models to return\n\nModule: vehicles\nController: AdminVehiclesController.getTopModels\nAuth: JWT (any active admin)\nRelated collections: admins, vehicles\nSource: src/modules/vehicles/presentation/controllers/admin-vehicles.controller.ts:77"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/vehicles/user/:userId",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/vehicles/user/{{user_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "vehicles",
+                "user",
+                "{{user_id}}"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "{{page}}",
+                  "disabled": true,
+                  "description": "Optional query parameter"
+                },
+                {
+                  "key": "limit",
+                  "value": "{{limit}}",
+                  "disabled": true,
+                  "description": "Optional query parameter"
+                }
+              ]
+            },
+            "description": "Page number\n\nModule: vehicles\nController: AdminVehiclesController.getUserVehicles\nAuth: JWT (any active admin)\nRelated collections: admins, vehicles\nSource: src/modules/vehicles/presentation/controllers/admin-vehicles.controller.ts:143"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /admin/vehicles/year-stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/vehicles/year-stats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "vehicles",
+                "year-stats"
+              ],
+              "query": []
+            },
+            "description": "Vehicle statistics by manufacturing year\n\nModule: vehicles\nController: AdminVehiclesController.getYearStats\nAuth: JWT (any active admin)\nRelated collections: admins, vehicles\nSource: src/modules/vehicles/presentation/controllers/admin-vehicles.controller.ts:104"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "admins - wallet",
+      "item": [
+        {
+          "name": "GET /v1/admin/wallet/:ownerId",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/admin/wallet/{{owner_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "wallet",
+                "{{owner_id}}"
+              ],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "{{type}}",
+                  "disabled": true,
+                  "description": "Optional query parameter"
+                }
+              ]
+            },
+            "description": "GetWallet\n\nModule: wallet\nController: AdminWalletController.getWallet\nAuth: JWT (any active admin)\nRelated collections: admins, wallets, transactions\nSource: src/modules/wallet/presentation/controllers/admin-wallet.controller.ts:69"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /v1/admin/wallet/:ownerId/adjust",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/admin/wallet/{{owner_id}}/adjust",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "wallet",
+                "{{owner_id}}",
+                "adjust"
+              ],
+              "query": []
+            },
+            "description": "AdjustBalance\n\nModule: wallet\nController: AdminWalletController.adjustBalance\nAuth: JWT (any active admin)\nRelated collections: admins, wallets, transactions\nSource: src/modules/wallet/presentation/controllers/admin-wallet.controller.ts:86",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 100,\n  \"description\": \"Postman test\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /v1/admin/wallet/:ownerId/transactions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/admin/wallet/{{owner_id}}/transactions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "wallet",
+                "{{owner_id}}",
+                "transactions"
+              ],
+              "query": []
+            },
+            "description": "GetTransactions\n\nModule: wallet\nController: AdminWalletController.getTransactions\nAuth: JWT (any active admin)\nRelated collections: admins, wallets, transactions\nSource: src/modules/wallet/presentation/controllers/admin-wallet.controller.ts:75"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /v1/admin/wallet/payouts/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/admin/wallet/payouts/{{payout_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "wallet",
+                "payouts",
+                "{{payout_id}}"
+              ],
+              "query": []
+            },
+            "description": "HandlePayout\n\nModule: wallet\nController: AdminWalletController.handlePayout\nAuth: JWT (any active admin)\nRelated collections: admins, wallets, transactions\nSource: src/modules/wallet/presentation/controllers/admin-wallet.controller.ts:44",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 100,\n  \"bankAccount\": {}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /v1/admin/wallet/platform",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/admin/wallet/platform",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "wallet",
+                "platform"
+              ],
+              "query": []
+            },
+            "description": "GetPlatformWallet\n\nModule: wallet\nController: AdminWalletController.getPlatformWallet\nAuth: JWT (any active admin)\nRelated collections: admins, wallets, transactions\nSource: src/modules/wallet/presentation/controllers/admin-wallet.controller.ts:54"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /v1/admin/wallet/platform/transactions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/admin/wallet/platform/transactions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "wallet",
+                "platform",
+                "transactions"
+              ],
+              "query": []
+            },
+            "description": "GetPlatformTransactions\n\nModule: wallet\nController: AdminWalletController.getPlatformTransactions\nAuth: JWT (any active admin)\nRelated collections: admins, wallets, transactions\nSource: src/modules/wallet/presentation/controllers/admin-wallet.controller.ts:60"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /v1/admin/wallet/stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/admin/wallet/stats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "wallet",
+                "stats"
+              ],
+              "query": []
+            },
+            "description": "GetStats\n\nModule: wallet\nController: AdminWalletController.getStats\nAuth: JWT (any active admin)\nRelated collections: admins, wallets, transactions\nSource: src/modules/wallet/presentation/controllers/admin-wallet.controller.ts:28"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /v1/admin/wallet/transactions/all",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/admin/wallet/transactions/all",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "wallet",
+                "transactions",
+                "all"
+              ],
+              "query": []
+            },
+            "description": "GetAllTransactions\n\nModule: wallet\nController: AdminWalletController.getAllTransactions\nAuth: JWT (any active admin)\nRelated collections: admins, wallets, transactions\nSource: src/modules/wallet/presentation/controllers/admin-wallet.controller.ts:34"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "providers",
+      "item": [
+        {
+          "name": "POST /providers/:id/approve",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/providers/{{provider_id}}/approve",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "providers",
+                "{{provider_id}}",
+                "approve"
+              ],
+              "query": []
+            },
+            "description": "Provider approved\n\nModule: providers\nController: ProvidersController.approve\nAuth: JWT\nRelated collections: providers\nSource: src/modules/providers/presentation/controllers/providers.controller.ts:240",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "users - whatsapp",
+      "item": [
+        {
+          "name": "GET /whatsapp/login",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/whatsapp/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "whatsapp",
+                "login"
+              ],
+              "query": []
+            },
+            "description": "LoginPage\n\nModule: whatsapp\nController: WhatsAppController.loginPage\nAuth: JWT\nRelated collections: users, pending_registrations\nSource: src/modules/whatsapp/presentation/controllers/whatsapp.controller.ts:32"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });",
+                  "",
+                  "const json = (() => { try { return pm.response.json(); } catch (e) { return {}; } })();",
+                  "const accessToken = json.accessToken || json.access_token || json.token || json?.data?.accessToken || json?.data?.access_token || json?.tokens?.accessToken || json?.data?.tokens?.accessToken;",
+                  "const refreshToken = json.refreshToken || json.refresh_token || json?.data?.refreshToken || json?.data?.refresh_token || json?.tokens?.refreshToken || json?.data?.tokens?.refreshToken;",
+                  "const userId = json.user?._id || json.user?.id || json?.data?.user?._id || json?.data?.user?.id || json.admin?._id || json.admin?.id || json?.data?.admin?._id || json?.data?.admin?.id;",
+                  "if (accessToken) pm.environment.set('access_token', accessToken);",
+                  "if (refreshToken) pm.environment.set('refresh_token', refreshToken);",
+                  "if (userId) pm.environment.set('user_id', userId);",
+                  ""
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /whatsapp/qr",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/whatsapp/qr",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "whatsapp",
+                "qr"
+              ],
+              "query": []
+            },
+            "description": "Get QR Code for WhatsApp login\n\nModule: whatsapp\nController: WhatsAppController.getQRCode\nAuth: JWT\nRelated collections: users, pending_registrations\nSource: src/modules/whatsapp/presentation/controllers/whatsapp.controller.ts:78"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /whatsapp/restart",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/whatsapp/restart",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "whatsapp",
+                "restart"
+              ],
+              "query": []
+            },
+            "description": "Restart WhatsApp client\n\nModule: whatsapp\nController: WhatsAppController.restart\nAuth: JWT\nRelated collections: users, pending_registrations\nSource: src/modules/whatsapp/presentation/controllers/whatsapp.controller.ts:174",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /whatsapp/send-message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/whatsapp/send-message",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "whatsapp",
+                "send-message"
+              ],
+              "query": []
+            },
+            "description": "Send WhatsApp message (Protected)\n\nModule: whatsapp\nController: WhatsAppController.sendMessage\nAuth: JWT\nRelated collections: users, pending_registrations\nSource: src/modules/whatsapp/presentation/controllers/whatsapp.controller.ts:137",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phoneNumber\": \"{{phone_number}}\",\n  \"message\": \"Hello from Postman\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /whatsapp/status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/whatsapp/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "whatsapp",
+                "status"
+              ],
+              "query": []
+            },
+            "description": "Check WhatsApp connection status\n\nModule: whatsapp\nController: WhatsAppController.getStatus\nAuth: JWT\nRelated collections: users, pending_registrations\nSource: src/modules/whatsapp/presentation/controllers/whatsapp.controller.ts:114"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "admins - audit logs",
+      "item": [
+        {
+          "name": "List audit logs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/audit-logs",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "audit-logs"
+              ],
+              "query": [
+                {
+                  "key": "action",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "entityType",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "entityId",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "admin",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Lists sensitive admin actions written to audit_logs. Optional filters: action, entityType, entityId, admin, page, limit."
+          },
+          "response": []
+        },
+        {
+          "name": "List audit logs by entity",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/audit-logs/entity/{{entity_type}}/{{entity_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "audit-logs",
+                "entity",
+                "{{entity_type}}",
+                "{{entity_id}}"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Lists audit logs for one affected entity, for example provider approval history or service price edits."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "orders - status histories",
+      "item": [
+        {
+          "name": "Admin list status histories",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/status-histories",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "status-histories"
+              ],
+              "query": [
+                {
+                  "key": "entityType",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "entityId",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "toStatus",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "changedBy",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Admin paginated list of status_histories with filters by entity, target status, or actor."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "AI Admin Dashboard Analytics",
+      "item": [
+        {
+          "name": "GET /admin/ai-recommendations/summary",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/admin/ai-recommendations/summary",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "ai-recommendations",
+                "summary"
+              ]
+            },
+            "description": "Get overall statistics for AI recommendations, daily request trends, and average model confidence ratings."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Summary contains essential KPIs', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('totalRecommendations');",
+                  "    pm.expect(jsonData).to.have.property('successRate');",
+                  "    pm.expect(jsonData).to.have.property('averageConfidence');",
+                  "    pm.expect(jsonData.modelTypeDistribution).to.be.an('array');",
+                  "    pm.expect(jsonData.dailyTrend).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "GET /admin/ai-recommendations/top-providers",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/admin/ai-recommendations/top-providers?limit=5",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "ai-recommendations",
+                "top-providers"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "5"
+                }
+              ]
+            },
+            "description": "Get the most recommended service providers, ranked by frequency of recommendation."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Returns top providers list', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('topProviders');",
+                  "    pm.expect(jsonData.topProviders).to.be.an('array');",
+                  "    if (jsonData.topProviders.length > 0) {",
+                  "        pm.expect(jsonData.topProviders[0]).to.have.property('providerId');",
+                  "        pm.expect(jsonData.topProviders[0]).to.have.property('recommendationCount');",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "GET /admin/ai-recommendations/service-performance",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/admin/ai-recommendations/service-performance",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "ai-recommendations",
+                "service-performance"
+              ]
+            },
+            "description": "Get performance statistics grouped by service category (e.g. towing, tire, battery)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Returns service performance array', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('servicePerformance');",
+                  "    pm.expect(jsonData.servicePerformance).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "GET /admin/ai-recommendations/city-performance",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/admin/ai-recommendations/city-performance",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "ai-recommendations",
+                "city-performance"
+              ]
+            },
+            "description": "Get performance statistics grouped by city/governorate location."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Returns city performance array', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('cityPerformance');",
+                  "    pm.expect(jsonData.cityPerformance).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "POST /admin/ai-recommendations/retrain",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/admin/ai-recommendations/retrain",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "ai-recommendations",
+                "retrain"
+              ]
+            },
+            "description": "Manually trigger the Machine Learning recommendation model retraining pipeline and notify FastAPI to hot-reload."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 201 Created or 200 OK', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test('Retraining status is successful', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.eql(true);",
+                  "    pm.expect(jsonData).to.have.property('message');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    }
+  ]
+}

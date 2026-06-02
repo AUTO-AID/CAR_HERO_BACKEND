@@ -1,0 +1,2529 @@
+{
+  "info": {
+    "name": "Car Hero - Shared API",
+    "description": "Reusable endpoints consumed by more than one Car Hero client.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.request.headers.upsert({ key: 'Accept', value: 'application/json' });"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "shared endpoints",
+      "item": [
+        {
+          "name": "GET /v1/chat/:chatId/messages",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/chat/{{chat_id}}/messages",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "chat",
+                "{{chat_id}}",
+                "messages"
+              ],
+              "query": []
+            },
+            "description": "GetMessages\n\nModule: chat\nController: ChatController.getMessages\nAuth: JWT\nRelated collections: chats, messages\nSource: src/modules/chat/presentation/controllers/chat.controller.ts:38"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /v1/chat/conversations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/chat/conversations",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "chat",
+                "conversations"
+              ],
+              "query": []
+            },
+            "description": "GetMyConversations\n\nModule: chat\nController: ChatController.getMyConversations\nAuth: JWT\nRelated collections: chats, messages\nSource: src/modules/chat/presentation/controllers/chat.controller.ts:32"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /v1/chat/conversations",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/chat/conversations",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "chat",
+                "conversations"
+              ],
+              "query": []
+            },
+            "description": "StartConversation\n\nModule: chat\nController: ChatController.startConversation\nAuth: JWT\nRelated collections: chats, messages\nSource: src/modules/chat/presentation/controllers/chat.controller.ts:26",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"participantId\": \"sample_participantId\",\n  \"orderId\": \"{{order_id}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /v1/chat/upload",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/chat/upload",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "chat",
+                "upload"
+              ],
+              "query": []
+            },
+            "description": "DiskStorage\n\nModule: chat\nController: ChatController.diskStorage\nAuth: JWT\nRelated collections: chats, messages\nSource: src/modules/chat/presentation/controllers/chat.controller.ts:49",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /notifications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications"
+              ],
+              "query": []
+            },
+            "description": "Get user notifications\n\nModule: notifications\nController: NotificationsController.getNotifications\nAuth: JWT\nRelated collections: notifications\nSource: src/modules/notifications/presentation/controllers/notifications.controller.ts:25"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /notifications/:id/read",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications/{{notification_id}}/read",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications",
+                "{{notification_id}}",
+                "read"
+              ],
+              "query": []
+            },
+            "description": "Mark notification as read\n\nModule: notifications\nController: NotificationsController.markAsRead\nAuth: JWT\nRelated collections: notifications\nSource: src/modules/notifications/presentation/controllers/notifications.controller.ts:46",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /notifications/read-all",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications/read-all",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications",
+                "read-all"
+              ],
+              "query": []
+            },
+            "description": "Mark all notifications as read\n\nModule: notifications\nController: NotificationsController.markAllAsRead\nAuth: JWT\nRelated collections: notifications\nSource: src/modules/notifications/presentation/controllers/notifications.controller.ts:56",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /notifications/unread-count",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications/unread-count",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications",
+                "unread-count"
+              ],
+              "query": []
+            },
+            "description": "Get unread notifications count\n\nModule: notifications\nController: NotificationsController.getUnreadCount\nAuth: JWT\nRelated collections: notifications\nSource: src/modules/notifications/presentation/controllers/notifications.controller.ts:39"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "{{page}}",
+                  "disabled": true,
+                  "description": "Optional query parameter"
+                },
+                {
+                  "key": "limit",
+                  "value": "{{limit}}",
+                  "disabled": true,
+                  "description": "Optional query parameter"
+                },
+                {
+                  "key": "status",
+                  "value": "{{status}}",
+                  "disabled": true,
+                  "description": "Optional query parameter"
+                }
+              ]
+            },
+            "description": "Get all orders (Paginated)\n\nModule: orders\nController: OrdersController.getAllOrders\nAuth: JWT\nRelated collections: orders\nSource: src/modules/orders/presentation/controllers/orders.controller.ts:57"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /orders",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders"
+              ],
+              "query": []
+            },
+            "description": "Create a new service order\n\nModule: orders\nController: OrdersController.createOrder\nAuth: JWT\nRelated collections: orders\nSource: src/modules/orders/presentation/controllers/orders.controller.ts:47",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"60b8d295f1d293001f3e4c8a\",\n  \"serviceId\": \"60b8d295f1d293001f3e4c8b\",\n  \"providerId\": \"60b8d295f1d293001f3e4c8c\",\n  \"vehicleId\": \"60b8d295f1d293001f3e4c8d\",\n  \"scheduleTime\": \"2026-05-01T10:00:00Z\",\n  \"location\": {\n    \"coordinates\": [\n      36.2765,\n      33.5138\n    ]\n  },\n  \"notes\": \"Please bring a spare tire\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE /orders/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/{{order_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "{{order_id}}"
+              ],
+              "query": []
+            },
+            "description": "Delete an order permanently\n\nModule: orders\nController: OrdersController.deleteOrder\nAuth: JWT\nRelated collections: orders\nSource: src/modules/orders/presentation/controllers/orders.controller.ts:188"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /orders/:id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/{{order_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "{{order_id}}"
+              ],
+              "query": []
+            },
+            "description": "Get order details by ID\n\nModule: orders\nController: OrdersController.getOrderById\nAuth: JWT\nRelated collections: orders\nSource: src/modules/orders/presentation/controllers/orders.controller.ts:108"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /orders/:id/status-transitions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/{{order_id}}/status-transitions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "{{order_id}}",
+                "status-transitions"
+              ]
+            },
+            "description": "Returns current order status, allowed next statuses from the backend state machine, and terminal flag."
+          },
+          "response": []
+        },
+        {
+          "name": "GET /orders/:id/tracking",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/{{order_id}}/tracking",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "{{order_id}}",
+                "tracking"
+              ]
+            },
+            "description": "Get live provider tracking data for an order. Returns the latest provider position, destination, route trail, distance, ETA, freshness, and tracking availability. Auth: customer who owns the order, assigned provider, or admin."
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /orders/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/{{order_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "{{order_id}}"
+              ],
+              "query": []
+            },
+            "description": "Update order details\n\nModule: orders\nController: OrdersController.updateOrder\nAuth: JWT\nRelated collections: orders\nSource: src/modules/orders/presentation/controllers/orders.controller.ts:128",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /orders/:id/cancel",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/{{order_id}}/cancel",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "{{order_id}}",
+                "cancel"
+              ],
+              "query": []
+            },
+            "description": "Cancel an order with a reason\n\nModule: orders\nController: OrdersController.cancelOrder\nAuth: JWT\nRelated collections: orders\nSource: src/modules/orders/presentation/controllers/orders.controller.ts:164",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Changed my mind\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /orders/:id/location",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/{{order_id}}/location",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "{{order_id}}",
+                "location"
+              ],
+              "query": []
+            },
+            "description": "Update provider live location\n\nModule: orders\nController: OrdersController.updateLocation\nAuth: JWT\nRelated collections: orders\nSource: src/modules/orders/presentation/controllers/orders.controller.ts:140",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"coordinates\": [\n    36.2765,\n    33.5138\n  ],\n  \"accuracy\": 8,\n  \"heading\": 145,\n  \"speed\": 12.5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /orders/:id/payment/verify",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/{{order_id}}/payment/verify",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "{{order_id}}",
+                "payment",
+                "verify"
+              ],
+              "query": []
+            },
+            "description": "Verify and confirm payment for an order\n\nModule: orders\nController: OrdersController.verifyPayment\nAuth: JWT\nRelated collections: orders\nSource: src/modules/orders/presentation/controllers/orders.controller.ts:152",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /orders/:id/review",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/{{order_id}}/review",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "{{order_id}}",
+                "review"
+              ],
+              "query": []
+            },
+            "description": "Review and rate an order\n\nModule: orders\nController: OrdersController.reviewOrder\nAuth: JWT\nRelated collections: orders, reviews\nSource: src/modules/orders/presentation/controllers/orders.controller.ts:176",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 5,\n  \"comment\": \"Great service\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /orders/:id/status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/{{order_id}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "{{order_id}}",
+                "status"
+              ],
+              "query": []
+            },
+            "description": "Update order status\n\nModule: orders\nController: OrdersController.updateStatus\nAuth: JWT\nRelated collections: orders\nSource: src/modules/orders/presentation/controllers/orders.controller.ts:116",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"active\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /orders/report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/report",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "report"
+              ],
+              "query": []
+            },
+            "description": "Export orders report\n\nModule: orders\nController: OrdersController.exportReport\nAuth: JWT\nRelated collections: orders\nSource: src/modules/orders/presentation/controllers/orders.controller.ts:88"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /orders/search",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/search",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "query",
+                  "value": "{{query}}",
+                  "disabled": false,
+                  "description": "Required query parameter"
+                }
+              ]
+            },
+            "description": "Search orders by various fields\n\nModule: orders\nController: OrdersController.searchOrders\nAuth: JWT\nRelated collections: orders\nSource: src/modules/orders/presentation/controllers/orders.controller.ts:79"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /orders/stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/stats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "stats"
+              ],
+              "query": [
+                {
+                  "key": "period",
+                  "value": "{{period}}",
+                  "disabled": true,
+                  "description": "Optional query parameter"
+                }
+              ]
+            },
+            "description": "Get order statistics\n\nModule: orders\nController: OrdersController.getStats\nAuth: JWT\nRelated collections: orders\nSource: src/modules/orders/presentation/controllers/orders.controller.ts:100"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /bookings",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/bookings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "bookings"
+              ]
+            },
+            "description": "Create a scheduled booking. This is a scheduled order stored in orders with isScheduled=true and scheduledAt set.\n\nModule: orders\nController: OrdersController.createBooking\nAuth: JWT\nRelated collections: orders",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"serviceId\": \"{{service_id}}\",\n  \"providerId\": \"{{provider_id}}\",\n  \"vehicleId\": \"{{vehicle_id}}\",\n  \"scheduleTime\": \"2026-05-20T10:00:00.000Z\",\n  \"location\": {\n    \"coordinates\": [\n      36.2765,\n      33.5138\n    ]\n  },\n  \"notes\": \"Scheduled car wash appointment\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /bookings",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/bookings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "bookings"
+              ]
+            },
+            "description": "List scheduled bookings backed by the orders collection.\n\nModule: orders\nController: OrdersController.getAllBookings\nAuth: JWT\nRelated collections: orders"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /bookings/:id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/bookings/{{order_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "bookings",
+                "{{order_id}}"
+              ]
+            },
+            "description": "Get scheduled booking details by order id.\n\nModule: orders\nController: OrdersController.getBookingById\nAuth: JWT\nRelated collections: orders"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /providers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/providers",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "providers"
+              ],
+              "query": []
+            },
+            "description": "List of providers\n\nModule: providers\nController: ProvidersController.findAll\nAuth: Public\nRelated collections: providers\nSource: src/modules/providers/presentation/controllers/providers.controller.ts:68"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /providers/:id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/providers/{{provider_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "providers",
+                "{{provider_id}}"
+              ],
+              "query": []
+            },
+            "description": "Provider details\n\nModule: providers\nController: ProvidersController.findOne\nAuth: Public\nRelated collections: providers\nSource: src/modules/providers/presentation/controllers/providers.controller.ts:231"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /providers/nearby",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/providers/nearby",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "providers",
+                "nearby"
+              ],
+              "query": []
+            },
+            "description": "List of nearby providers\n\nModule: providers\nController: ProvidersController.findNearby\nAuth: Public\nRelated collections: providers\nSource: src/modules/providers/presentation/controllers/providers.controller.ts:76"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /providers/top-rated",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/providers/top-rated",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "providers",
+                "top-rated"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "{{limit}}",
+                  "disabled": true,
+                  "description": "Optional query parameter"
+                }
+              ]
+            },
+            "description": "Top rated providers\n\nModule: providers\nController: ProvidersController.topRated\nAuth: Public\nRelated collections: providers\nSource: src/modules/providers/presentation/controllers/providers.controller.ts:84"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /providers/apply",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/providers/apply",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "providers",
+                "apply"
+              ],
+              "query": []
+            },
+            "description": "Submit registration application as a new service provider.\n\nModule: providers\nFile: modules/providers/presentation/controllers/providers.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /providers/public/governorates",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/providers/public/governorates",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "providers",
+                "public",
+                "governorates"
+              ],
+              "query": []
+            },
+            "description": "Get governorates list for public view.\n\nModule: providers\nFile: modules/providers/presentation/controllers/providers.controller.ts\nAuth: Bearer JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /reviews/provider/:providerId",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/reviews/provider/{{provider_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reviews",
+                "provider",
+                "{{provider_id}}"
+              ],
+              "query": []
+            },
+            "description": "Get all reviews for a specific provider\n\nModule: reviews\nController: ReviewsController.getProviderReviews\nAuth: Public\nRelated collections: providers, reviews\nSource: src/modules/reviews/presentation/controllers/reviews.controller.ts:29"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /reviews",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reviews",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reviews"
+              ],
+              "query": []
+            },
+            "description": "Create a new review for an order\n\nModule: reviews\nController: ReviewsController.createReview\nAuth: JWT\nRelated collections: reviews\nSource: src/modules/reviews/presentation/controllers/reviews.controller.ts:20",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"60d5ecb8b392d66514703902\",\n  \"rating\": 5,\n  \"comment\": \"Excellent service!\",\n  \"serviceQuality\": 5,\n  \"punctuality\": 5,\n  \"professionalism\": 5,\n  \"valueForMoney\": 5,\n  \"images\": []\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE /reviews/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reviews/{{review_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reviews",
+                "{{review_id}}"
+              ],
+              "query": []
+            },
+            "description": "Delete a review\n\nModule: reviews\nController: ReviewsController.deleteReview\nAuth: JWT\nRelated collections: reviews\nSource: src/modules/reviews/presentation/controllers/reviews.controller.ts:50"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /reviews/:id/respond",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reviews/{{review_id}}/respond",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reviews",
+                "{{review_id}}",
+                "respond"
+              ],
+              "query": []
+            },
+            "description": "Provider response to a review\n\nModule: reviews\nController: ReviewsController.respondToReview\nAuth: JWT\nRelated collections: reviews\nSource: src/modules/reviews/presentation/controllers/reviews.controller.ts:38",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 5,\n  \"comment\": \"Great service\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /services",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/services",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "services"
+              ],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "{{category}}",
+                  "disabled": true,
+                  "description": "Optional query parameter"
+                }
+              ]
+            },
+            "description": "List of services\n\nModule: services\nController: ServicesController.findAll\nAuth: Public\nRelated collections: services\nSource: src/modules/services/presentation/controllers/services.controller.ts:28"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /services/:id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/services/{{service_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "services",
+                "{{service_id}}"
+              ],
+              "query": []
+            },
+            "description": "Get active service details by ID\n\nModule: services\nController: ServicesController.findOne\nAuth: Public\nRelated collections: services\nSource: src/modules/services/presentation/controllers/services.controller.ts:120"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /services/categories",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/services/categories",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "services",
+                "categories"
+              ],
+              "query": []
+            },
+            "description": "Get active service categories with counts\n\nModule: services\nController: ServicesController.categories\nAuth: Public\nRelated collections: services\nSource: src/modules/services/presentation/controllers/services.controller.ts:36"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /services/emergency",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/services/emergency",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "services",
+                "emergency"
+              ],
+              "query": []
+            },
+            "description": "Get all active emergency services\n\nModule: services\nController: ServicesController.emergency\nAuth: Public\nRelated collections: services\nSource: src/modules/services/presentation/controllers/services.controller.ts:43"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /services/search",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/services/search",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "services",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "query",
+                  "value": "{{query}}",
+                  "disabled": true,
+                  "description": "Optional query parameter"
+                }
+              ]
+            },
+            "description": "Search active services\n\nModule: services\nController: ServicesController.search\nAuth: Public\nRelated collections: services\nSource: src/modules/services/presentation/controllers/services.controller.ts:50"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                ""
+              ],
+              "query": []
+            },
+            "description": "GetHello\n\nModule: app\nController: AppController.getHello\nAuth: Public\nRelated collections: system\nSource: src/app.controller.ts:8"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /auth/forgot-password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/forgot-password",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "forgot-password"
+              ],
+              "query": []
+            },
+            "description": "Request OTP to reset password\n\nModule: auth\nController: AuthController.forgotPassword\nAuth: Public\nRelated collections: users, pending_registrations, logouts\nSource: src/modules/auth/presentation/controllers/auth.controller.ts:127",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phoneNumber\": \"+963991234567\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /auth/login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ],
+              "query": []
+            },
+            "description": "Login with phone number and password\n\nModule: auth\nController: AuthController.login\nAuth: Public\nRelated collections: users, pending_registrations, logouts\nSource: src/modules/auth/presentation/controllers/auth.controller.ts:99",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phoneNumber\": \"+963991234567\",\n  \"password\": \"Ahmed@123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });",
+                  "",
+                  "const json = (() => { try { return pm.response.json(); } catch (e) { return {}; } })();",
+                  "const accessToken = json.accessToken || json.access_token || json.token || json?.data?.accessToken || json?.data?.access_token || json?.tokens?.accessToken || json?.data?.tokens?.accessToken;",
+                  "const refreshToken = json.refreshToken || json.refresh_token || json?.data?.refreshToken || json?.data?.refresh_token || json?.tokens?.refreshToken || json?.data?.tokens?.refreshToken;",
+                  "const userId = json.user?._id || json.user?.id || json?.data?.user?._id || json?.data?.user?.id || json.admin?._id || json.admin?.id || json?.data?.admin?._id || json?.data?.admin?.id;",
+                  "if (accessToken) pm.environment.set('access_token', accessToken);",
+                  "if (refreshToken) pm.environment.set('refresh_token', refreshToken);",
+                  "if (userId) pm.environment.set('user_id', userId);",
+                  ""
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /auth/logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/logout",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ],
+              "query": []
+            },
+            "description": "Logout and invalidate refresh token\n\nModule: auth\nController: AuthController.logout\nAuth: JWT\nRelated collections: users, pending_registrations, logouts\nSource: src/modules/auth/presentation/controllers/auth.controller.ts:201",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /auth/me",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ],
+              "query": []
+            },
+            "description": "Get authenticated user information from JWT token\n\nModule: auth\nController: AuthController.getMe\nAuth: JWT\nRelated collections: users, pending_registrations, logouts\nSource: src/modules/auth/presentation/controllers/auth.controller.ts:186"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /auth/refresh-token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/refresh-token",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "refresh-token"
+              ],
+              "query": []
+            },
+            "description": "Get new access token using refresh token\n\nModule: auth\nController: AuthController.refreshToken\nAuth: Public\nRelated collections: users, pending_registrations, logouts\nSource: src/modules/auth/presentation/controllers/auth.controller.ts:113",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });",
+                  "",
+                  "const json = (() => { try { return pm.response.json(); } catch (e) { return {}; } })();",
+                  "const accessToken = json.accessToken || json.access_token || json.token || json?.data?.accessToken || json?.data?.access_token || json?.tokens?.accessToken || json?.data?.tokens?.accessToken;",
+                  "const refreshToken = json.refreshToken || json.refresh_token || json?.data?.refreshToken || json?.data?.refresh_token || json?.tokens?.refreshToken || json?.data?.tokens?.refreshToken;",
+                  "const userId = json.user?._id || json.user?.id || json?.data?.user?._id || json?.data?.user?.id || json.admin?._id || json.admin?.id || json?.data?.admin?._id || json?.data?.admin?.id;",
+                  "if (accessToken) pm.environment.set('access_token', accessToken);",
+                  "if (refreshToken) pm.environment.set('refresh_token', refreshToken);",
+                  "if (userId) pm.environment.set('user_id', userId);",
+                  ""
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /auth/register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ],
+              "query": []
+            },
+            "description": "Create a new user account and send OTP via WhatsApp\n\nModule: auth\nController: AuthController.register\nAuth: Public\nRelated collections: users, pending_registrations, logouts\nSource: src/modules/auth/presentation/controllers/auth.controller.ts:57",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"example\": true,\n  \"message\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /auth/resend-otp",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/resend-otp",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "resend-otp"
+              ],
+              "query": []
+            },
+            "description": "Resend OTP to phone number via WhatsApp\n\nModule: auth\nController: AuthController.resendOtp\nAuth: Public\nRelated collections: users, pending_registrations, logouts\nSource: src/modules/auth/presentation/controllers/auth.controller.ts:85",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phoneNumber\": \"{{phone_number}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /auth/reset-password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/reset-password",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "reset-password"
+              ],
+              "query": []
+            },
+            "description": "Reset password using OTP code\n\nModule: auth\nController: AuthController.resetPassword\nAuth: Public\nRelated collections: users, pending_registrations, logouts\nSource: src/modules/auth/presentation/controllers/auth.controller.ts:141",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phoneNumber\": \"+963991234567\",\n  \"otpCode\": \"123456\",\n  \"message\": \"NewPassword@123\",\n  \"example\": \"sample_example\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /auth/restore/confirm",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/restore/confirm",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "restore",
+                "confirm"
+              ],
+              "query": []
+            },
+            "description": "Verify OTP and restore deleted account\n\nModule: auth\nController: AuthController.confirmRestore\nAuth: Public\nRelated collections: users, pending_registrations, logouts\nSource: src/modules/auth/presentation/controllers/auth.controller.ts:169",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phoneNumber\": \"{{phone_number}}\",\n  \"otpCode\": \"{{otp_code}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /auth/restore/request-otp",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/restore/request-otp",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "restore",
+                "request-otp"
+              ],
+              "query": []
+            },
+            "description": "Send OTP to restore soft-deleted account\n\nModule: auth\nController: AuthController.requestRestoreOtp\nAuth: Public\nRelated collections: users, pending_registrations, logouts\nSource: src/modules/auth/presentation/controllers/auth.controller.ts:155",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phoneNumber\": \"{{phone_number}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /auth/verify-otp",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/verify-otp",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "verify-otp"
+              ],
+              "query": []
+            },
+            "description": "Verify OTP and activate account\n\nModule: auth\nController: AuthController.verifyOtp\nAuth: Public\nRelated collections: users, pending_registrations, logouts\nSource: src/modules/auth/presentation/controllers/auth.controller.ts:71",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phoneNumber\": \"+963991234567\",\n  \"otpCode\": \"123456\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });",
+                  "",
+                  "const json = (() => { try { return pm.response.json(); } catch (e) { return {}; } })();",
+                  "const accessToken = json.accessToken || json.access_token || json.token || json?.data?.accessToken || json?.data?.access_token || json?.tokens?.accessToken || json?.data?.tokens?.accessToken;",
+                  "const refreshToken = json.refreshToken || json.refresh_token || json?.data?.refreshToken || json?.data?.refresh_token || json?.tokens?.refreshToken || json?.data?.tokens?.refreshToken;",
+                  "const userId = json.user?._id || json.user?.id || json?.data?.user?._id || json?.data?.user?.id || json.admin?._id || json.admin?.id || json?.data?.admin?._id || json?.data?.admin?.id;",
+                  "if (accessToken) pm.environment.set('access_token', accessToken);",
+                  "if (refreshToken) pm.environment.set('refresh_token', refreshToken);",
+                  "if (userId) pm.environment.set('user_id', userId);",
+                  ""
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /auth/whatsapp/status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/whatsapp/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "whatsapp",
+                "status"
+              ],
+              "query": []
+            },
+            "description": "Check WhatsApp connection status\n\nModule: auth\nController: AuthController.checkWhatsAppStatus\nAuth: JWT\nRelated collections: users, pending_registrations, logouts\nSource: src/modules/auth/presentation/controllers/auth.controller.ts:40"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response status is not server error', function () { pm.expect(pm.response.code).to.be.below(500); });",
+                  "pm.test('Response time is acceptable', function () { pm.expect(pm.response.responseTime).to.be.below(10000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /ai/recommend-provider (Success Request)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"serviceCategory\": \"towing\",\n  \"city\": \"Damascus\",\n  \"location\": {\n    \"lat\": 33.5138,\n    \"lng\": 36.29128\n  },\n  \"urgencyLevel\": \"emergency\",\n  \"preferredTime\": \"2026-05-27T22:30:00Z\",\n  \"vehicleType\": \"Sedan\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/ai/recommend-provider",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "ai",
+                "recommend-provider"
+              ]
+            },
+            "description": "Request smart recommendations for towing service providers in Damascus using the active AI/Rule mode."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is valid AI recommendation structure', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('recommendationId');",
+                  "    pm.expect(jsonData).to.have.property('modelType');",
+                  "    pm.expect(jsonData).to.have.property('confidence');",
+                  "    pm.expect(jsonData.recommendations).to.be.an('array');",
+                  "    ",
+                  "    // Save recommendationId for downstream testing",
+                  "    if (jsonData.recommendationId) {",
+                  "        pm.collectionVariables.set('last_recommendation_id', jsonData.recommendationId);",
+                  "    }",
+                  "});",
+                  "",
+                  "pm.test('Scoring breakdown is present on recommendations', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.recommendations.length > 0) {",
+                  "        const firstRec = jsonData.recommendations[0];",
+                  "        pm.expect(firstRec).to.have.property('score');",
+                  "        pm.expect(firstRec).to.have.property('scoringBreakdown');",
+                  "        pm.expect(firstRec.scoringBreakdown).to.have.property('distance');",
+                  "        pm.expect(firstRec.scoringBreakdown).to.have.property('rating');",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Admin list status histories",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/status-histories",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "status-histories"
+              ],
+              "query": [
+                {
+                  "key": "entityType",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "entityId",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "toStatus",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "changedBy",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Admin paginated list of status_histories with filters by entity, target status, or actor."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

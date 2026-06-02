@@ -1,0 +1,36 @@
+name: Publish Postman collections
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "postman/**"
+      - "scripts/postman/**"
+      - "package.json"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Generate and validate collections
+        run: |
+          npm run postman:generate
+          npm run postman:validate
+
+      - name: Publish to Postman Workspace
+        if: ${{ secrets.POSTMAN_API_KEY != '' && secrets.POSTMAN_WORKSPACE_ID != '' }}
+        env:
+          POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
+          POSTMAN_WORKSPACE_ID: ${{ secrets.POSTMAN_WORKSPACE_ID }}
+        run: node scripts/postman/publish.cjs
+

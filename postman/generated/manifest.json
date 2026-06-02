@@ -1,0 +1,17 @@
+{
+  "generatedBy": "npm run postman:generate",
+  "sources": [
+    "car_hero_backend.postman_collection.json",
+    "ai_recommendations.postman_collection.json",
+    "car_hero_backend.postman_environment.json"
+  ],
+  "counts": {
+    "master": 198,
+    "app": 86,
+    "provider-dashboard": 65,
+    "admin-dashboard": 95,
+    "website": 20,
+    "ai": 8,
+    "shared": 56
+  }
+}
