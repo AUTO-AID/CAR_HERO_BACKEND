@@ -28,6 +28,7 @@ import { ReviewsModule } from '../reviews/reviews.module';
 import { StatusHistoryModule } from '../status-history/status-history.module';
 import { Provider, ProviderSchema } from '../providers/infrastructure/persistence/mongoose/schemas/provider.schema';
 import { SchedulingAvailabilityService } from './application/services/scheduling-availability.service';
+import { GetOrderTrackingUseCase } from './application/use-cases/get-order-tracking.use-case';
 
 @Module({
   imports: [
@@ -61,11 +62,18 @@ import { SchedulingAvailabilityService } from './application/services/scheduling
     OrderNotificationsListener,
     OrdersCronService,
     SchedulingAvailabilityService,
+    GetOrderTrackingUseCase,
     {
       provide: IOrderRepository,
       useClass: MongooseOrderRepository,
     },
   ],
-  exports: [IOrderRepository],
+  exports: [
+    IOrderRepository,
+    GetOrderByIdUseCase,
+    GetOrderTrackingUseCase,
+    UpdateOrderStatusUseCase,
+    UpdateProviderLocationUseCase,
+  ],
 })
 export class OrdersModule {}

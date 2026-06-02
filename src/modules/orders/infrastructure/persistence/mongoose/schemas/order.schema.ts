@@ -17,6 +17,24 @@ class GeoLocation {
   coordinates: number[]; // [longitude, latitude]
 }
 
+@Schema({ _id: false })
+class ProviderLocationPoint {
+  @Prop({ type: [Number], required: true })
+  coordinates: number[]; // [longitude, latitude]
+
+  @Prop({ required: true })
+  recordedAt: Date;
+
+  @Prop()
+  accuracy?: number;
+
+  @Prop()
+  heading?: number;
+
+  @Prop()
+  speed?: number;
+}
+
 @Schema({
   timestamps: true,
   toJSON: {
@@ -58,6 +76,16 @@ export class Order {
   // Location where service is needed
   @Prop({ type: GeoLocation, required: true })
   location: GeoLocation;
+
+  // Latest provider position and a bounded route trail for live tracking.
+  @Prop({ type: GeoLocation })
+  providerLocation?: GeoLocation;
+
+  @Prop()
+  providerLocationUpdatedAt?: Date;
+
+  @Prop({ type: [ProviderLocationPoint], default: [] })
+  providerLocationHistory: ProviderLocationPoint[];
 
   @Prop()
   address?: string;
@@ -127,4 +155,5 @@ OrderSchema.index({ user: 1 });
 OrderSchema.index({ provider: 1 });
 OrderSchema.index({ status: 1 });
 OrderSchema.index({ location: '2dsphere' });
+OrderSchema.index({ providerLocation: '2dsphere' });
 OrderSchema.index({ createdAt: -1 });

@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RegistrationStatus, ServiceCategory } from '../../../../core/enums/status.enum';
 import { IProviderRepository } from '../../domain/repositories/provider.repository.interface';
@@ -6,6 +6,9 @@ import { ManageProvidersUseCase } from './manage-providers.use-case';
 import { UpdateProviderLocationUseCase } from './update-provider-location.use-case';
 import { UpdateProviderStatusUseCase } from './update-provider-status.use-case';
 import { ProviderStatus } from '../../../../core/enums/status.enum';
+import { getModelToken } from '@nestjs/mongoose';
+import { Service } from '../../../services/infrastructure/persistence/mongoose/schemas/service.schema';
+import { Types } from 'mongoose';
 
 describe('Provider management use cases', () => {
   let manageUseCase: ManageProvidersUseCase;
@@ -19,6 +22,16 @@ describe('Provider management use cases', () => {
     businessName: 'Hero Garage',
     isActive: true,
     isApproved: true,
+  };
+  const serviceId = '60b8d295f1d293001f3e4c8b';
+  const serviceModel = {
+    find: jest.fn().mockReturnValue({
+      lean: jest.fn().mockReturnValue({
+        exec: jest.fn().mockResolvedValue([
+          { _id: new Types.ObjectId(serviceId), category: ServiceCategory.CAR_WASH, name: 'Car wash' },
+        ]),
+      }),
+    }),
   };
 
   beforeEach(async () => {
@@ -40,6 +53,7 @@ describe('Provider management use cases', () => {
             setActive: jest.fn(),
           },
         },
+        { provide: getModelToken(Service.name), useValue: serviceModel },
       ],
     }).compile();
 
@@ -69,15 +83,20 @@ describe('Provider management use cases', () => {
     }));
   });
 
-  it('prevents duplicate provider phone numbers', async () => {
+  it('updates an existing provider with the same phone number', async () => {
     repository.findByPhone.mockResolvedValue(provider);
+    repository.update.mockResolvedValue(provider);
 
-    await expect(manageUseCase.create({
+    await manageUseCase.create({
       phone: '+963999999999',
       businessName: 'Duplicate',
       longitude: 36.2,
       latitude: 33.5,
-    })).rejects.toThrow(ConflictException);
+    });
+
+    expect(repository.update).toHaveBeenCalledWith('provider-id', expect.objectContaining({
+      businessName: 'Duplicate',
+    }));
   });
 
   it('rejects invalid coordinates', async () => {
@@ -94,8 +113,11 @@ describe('Provider management use cases', () => {
     repository.findById.mockResolvedValue(provider);
     repository.update.mockResolvedValue(provider);
 
-    await manageUseCase.updateServices('provider-id', { services: ['service-id'], serviceCategories: [ServiceCategory.CAR_WASH] });
-    await manageUseCase.updateWorkingHours('provider-id', { workingHours: [{ day: 'sat', open: '09:00', close: '17:00' }] });
+    await manageUseCase.updateServices('provider-id', { services: [serviceId], serviceCategories: [ServiceCategory.CAR_WASH] });
+    await manageUseCase.updateWorkingHours('provider-id', {
+      workingHours: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+        .map((day) => ({ day, open: '09:00', close: '17:00', isClosed: false })),
+    });
     await manageUseCase.updateDocuments('provider-id', { documents: ['doc.pdf'] });
     await manageUseCase.updateBankAccount('provider-id', { bankAccount: { iban: 'SY123' } });
 

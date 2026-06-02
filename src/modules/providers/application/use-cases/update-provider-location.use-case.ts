@@ -9,7 +9,14 @@ export class UpdateProviderLocationUseCase {
   ) {}
 
   async execute(id: string, longitude: number, latitude: number) {
-    if (longitude < -180 || longitude > 180 || latitude < -90 || latitude > 90) {
+    if (
+      !Number.isFinite(longitude) ||
+      !Number.isFinite(latitude) ||
+      longitude < -180 ||
+      longitude > 180 ||
+      latitude < -90 ||
+      latitude > 90
+    ) {
       throw new BadRequestException('Invalid coordinates');
     }
     return this.providerRepository.updateLocation(id, longitude, latitude);

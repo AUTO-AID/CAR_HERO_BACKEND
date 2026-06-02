@@ -7,11 +7,15 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppGateway } from './presentation/app.gateway';
 import { WsJwtGuard } from '../../core/guards/ws-jwt.guard';
+import { OrdersModule } from '../orders/orders.module';
+import { ProvidersModule } from '../providers/providers.module';
 
 @Global()
 @Module({
   imports: [
     ConfigModule,
+    OrdersModule,
+    ProvidersModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({

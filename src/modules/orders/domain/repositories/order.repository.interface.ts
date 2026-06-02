@@ -1,5 +1,12 @@
 import { OrderEntity } from '../entities/order.entity';
 
+export interface ProviderTrackingUpdate {
+  coordinates: number[];
+  accuracy?: number;
+  heading?: number;
+  speed?: number;
+}
+
 export interface IOrderRepository {
   create(order: Partial<OrderEntity>): Promise<OrderEntity>;
   findById(id: string): Promise<OrderEntity | null>;
@@ -11,7 +18,7 @@ export interface IOrderRepository {
   getStats(period: string): Promise<any>;
   findByDateRange(from: Date, to: Date, status?: string): Promise<OrderEntity[]>;
   addReview(id: string, rating: number, comment?: string): Promise<OrderEntity>;
-  updateProviderLocation(id: string, coordinates: number[]): Promise<OrderEntity>;
+  updateProviderLocation(id: string, tracking: ProviderTrackingUpdate): Promise<OrderEntity>;
   updatePaymentDetails(id: string, paymentId: string, paymentMethod?: string): Promise<OrderEntity>;
   cancelOrder(id: string, reason: string, cancelledBy?: string): Promise<OrderEntity>;
   findExpiredPendingOrders(hours: number): Promise<OrderEntity[]>;

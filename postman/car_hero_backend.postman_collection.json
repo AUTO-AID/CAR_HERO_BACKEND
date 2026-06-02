@@ -4093,6 +4093,32 @@
           "response": []
         },
         {
+          "name": "GET /orders/:id/tracking",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/{{order_id}}/tracking",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "{{order_id}}",
+                "tracking"
+              ]
+            },
+            "description": "Get live provider tracking data for an order. Returns the latest provider position, destination, route trail, distance, ETA, freshness, and tracking availability. Auth: customer who owns the order, assigned provider, or admin."
+          },
+          "response": []
+        },
+        {
           "name": "PATCH /orders/:id",
           "request": {
             "method": "PATCH",
@@ -4220,7 +4246,7 @@
             "description": "Update provider live location\n\nModule: orders\nController: OrdersController.updateLocation\nAuth: JWT\nRelated collections: orders\nSource: src/modules/orders/presentation/controllers/orders.controller.ts:140",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"latitude\": 33.5138,\n  \"longitude\": 36.2765,\n  \"coordinates\": [\n    36.2765,\n    33.5138\n  ]\n}",
+              "raw": "{\n  \"coordinates\": [\n    36.2765,\n    33.5138\n  ],\n  \"accuracy\": 8,\n  \"heading\": 145,\n  \"speed\": 12.5\n}",
               "options": {
                 "raw": {
                   "language": "json"

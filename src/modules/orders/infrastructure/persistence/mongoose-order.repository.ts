@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
+import { IOrderRepository, ProviderTrackingUpdate } from '../../domain/repositories/order.repository.interface';
 import { OrderEntity } from '../../domain/entities/order.entity';
 import { Order, OrderDocument } from './mongoose/schemas/order.schema';
 import { OrderStatus, PaymentStatus } from '../../../../core/enums/status.enum';
@@ -48,6 +48,11 @@ export class MongooseOrderRepository implements IOrderRepository {
       doc.userNotes,
       (doc as any).createdAt,
       (doc as any).updatedAt,
+      anyDoc.providerLocation
+        ? { type: anyDoc.providerLocation.type, coordinates: anyDoc.providerLocation.coordinates }
+        : undefined,
+      anyDoc.providerLocationUpdatedAt,
+      anyDoc.providerLocationHistory || [],
     );
 
     (entity as any).user = {
@@ -59,6 +64,7 @@ export class MongooseOrderRepository implements IOrderRepository {
     };
     (entity as any).provider = providerDetails?._id
       ? {
+          id: providerDetails._id.toString(),
           businessName: providerDetails.businessName,
           ownerName: providerDetails.ownerName,
           phone: providerDetails.phone,
@@ -383,16 +389,31 @@ export class MongooseOrderRepository implements IOrderRepository {
     return this.mapToEntity(doc);
   }
 
-  async updateProviderLocation(id: string, coordinates: number[]): Promise<OrderEntity> {
+  async updateProviderLocation(id: string, tracking: ProviderTrackingUpdate): Promise<OrderEntity> {
+    const recordedAt = new Date();
+    const point = {
+      coordinates: tracking.coordinates,
+      recordedAt,
+      ...(tracking.accuracy === undefined ? {} : { accuracy: tracking.accuracy }),
+      ...(tracking.heading === undefined ? {} : { heading: tracking.heading }),
+      ...(tracking.speed === undefined ? {} : { speed: tracking.speed }),
+    };
     const doc = await this.orderModel.findByIdAndUpdate(
       id,
       { 
         $set: { 
           providerLocation: {
             type: 'Point',
-            coordinates: coordinates
-          }
-        } 
+            coordinates: tracking.coordinates
+          },
+          providerLocationUpdatedAt: recordedAt,
+        },
+        $push: {
+          providerLocationHistory: {
+            $each: [point],
+            $slice: -100,
+          },
+        },
       },
       { new: true }
     ).exec();

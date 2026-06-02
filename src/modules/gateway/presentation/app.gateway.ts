@@ -12,9 +12,17 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
+import { WsException } from '@nestjs/websockets';
 import { Logger, UseGuards } from '@nestjs/common';
+import { OnEvent } from '@nestjs/event-emitter';
 import { Server, Socket } from 'socket.io';
 import { WsJwtGuard } from '../../../core/guards/ws-jwt.guard';
+import { GetOrderByIdUseCase } from '../../orders/application/use-cases/get-order-by-id.use-case';
+import { UpdateProviderLocationUseCase as UpdateOrderProviderLocationUseCase } from '../../orders/application/use-cases/update-provider-location.use-case';
+import { UpdateOrderStatusUseCase } from '../../orders/application/use-cases/update-order-status.use-case';
+import { UpdateProviderLocationUseCase as UpdateProviderProfileLocationUseCase } from '../../providers/application/use-cases/update-provider-location.use-case';
+import { OrderEvents, OrderLocationUpdatedEvent } from '../../orders/domain/events/order.events';
+import { OrderStatus } from '../../../core/enums/status.enum';
 
 /**
  * Events emitted by the server
@@ -82,6 +90,13 @@ export class AppGateway
 
   private readonly logger = new Logger(AppGateway.name);
 
+  constructor(
+    private readonly getOrderByIdUseCase: GetOrderByIdUseCase,
+    private readonly updateOrderProviderLocationUseCase: UpdateOrderProviderLocationUseCase,
+    private readonly updateOrderStatusUseCase: UpdateOrderStatusUseCase,
+    private readonly updateProviderProfileLocationUseCase: UpdateProviderProfileLocationUseCase,
+  ) {}
+
   /**
    * Initialize gateway
    */
@@ -119,10 +134,12 @@ export class AppGateway
    * Join order room for real-time updates
    */
   @SubscribeMessage(ClientEvents.JOIN_ORDER)
-  handleJoinOrder(
+  @UseGuards(WsJwtGuard)
+  async handleJoinOrder(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { orderId: string },
   ) {
+    await this.getOrderByIdUseCase.execute(data.orderId, client.data.user);
     const room = `order:${data.orderId}`;
     client.join(room);
     this.logger.log(`Client ${client.id} joined room ${room}`);
@@ -133,6 +150,7 @@ export class AppGateway
    * Leave order room
    */
   @SubscribeMessage(ClientEvents.LEAVE_ORDER)
+  @UseGuards(WsJwtGuard)
   handleLeaveOrder(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { orderId: string },
@@ -175,14 +193,20 @@ export class AppGateway
    * Handle order status update
    */
   @SubscribeMessage(ClientEvents.UPDATE_ORDER_STATUS)
-  handleOrderStatusUpdate(
+  @UseGuards(WsJwtGuard)
+  async handleOrderStatusUpdate(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { orderId: string; status: string; note?: string },
   ) {
+    const order = await this.updateOrderStatusUseCase.execute(
+      data.orderId,
+      data.status as OrderStatus,
+      client.data.user,
+    );
     const room = `order:${data.orderId}`;
     this.server.to(room).emit(ServerEvents.ORDER_STATUS_UPDATED, {
       orderId: data.orderId,
-      status: data.status,
+      status: order.status,
       note: data.note,
       timestamp: new Date().toISOString(),
     });
@@ -193,20 +217,34 @@ export class AppGateway
    * Handle order location update
    */
   @SubscribeMessage(ClientEvents.UPDATE_ORDER_LOCATION)
-  handleOrderLocationUpdate(
+  @UseGuards(WsJwtGuard)
+  async handleOrderLocationUpdate(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: { orderId: string; latitude: number; longitude: number },
+    @MessageBody() data: {
+      orderId: string;
+      latitude: number;
+      longitude: number;
+      accuracy?: number;
+      heading?: number;
+      speed?: number;
+    },
   ) {
-    const room = `order:${data.orderId}`;
-    this.server.to(room).emit(ServerEvents.ORDER_LOCATION_UPDATED, {
-      orderId: data.orderId,
-      location: {
-        latitude: data.latitude,
-        longitude: data.longitude,
+    const order = await this.updateOrderProviderLocationUseCase.execute(
+      data.orderId,
+      {
+        coordinates: [data.longitude, data.latitude],
+        accuracy: data.accuracy,
+        heading: data.heading,
+        speed: data.speed,
       },
-      timestamp: new Date().toISOString(),
-    });
-    return { success: true };
+      client.data.user,
+    );
+    return {
+      success: true,
+      orderId: order.id,
+      providerLocation: order.providerLocation,
+      providerLocationUpdatedAt: order.providerLocationUpdatedAt,
+    };
   }
 
   /**
@@ -271,20 +309,49 @@ export class AppGateway
    * Handle provider location update
    */
   @SubscribeMessage(ClientEvents.UPDATE_PROVIDER_LOCATION)
-  handleProviderLocationUpdate(
+  @UseGuards(WsJwtGuard)
+  async handleProviderLocationUpdate(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { providerId: string; latitude: number; longitude: number },
   ) {
-    // Broadcast to all connected clients interested in this provider
-    this.server.emit(ServerEvents.PROVIDER_LOCATION_UPDATED, {
-      providerId: data.providerId,
+    const currentUser = client.data.user;
+    const providerId = currentUser.role === 'admin' ? data.providerId : currentUser.providerId;
+    if (!providerId || (currentUser.role !== 'admin' && providerId !== data.providerId)) {
+      throw new WsException('You are not authorized to update this provider location');
+    }
+    const provider = await this.updateProviderProfileLocationUseCase.execute(
+      providerId,
+      data.longitude,
+      data.latitude,
+    );
+    return {
+      success: true,
+      providerId,
       location: {
-        latitude: data.latitude,
-        longitude: data.longitude,
+        type: provider.location.type,
+        coordinates: provider.location.coordinates,
       },
       timestamp: new Date().toISOString(),
+    };
+  }
+
+  @OnEvent(OrderEvents.LOCATION_UPDATED)
+  handlePersistedOrderLocationUpdate(event: OrderLocationUpdatedEvent) {
+    const room = `order:${event.orderId}`;
+    this.server.to(room).emit(ServerEvents.ORDER_LOCATION_UPDATED, {
+      orderId: event.orderId,
+      providerId: event.providerId,
+      location: {
+        type: 'Point',
+        coordinates: event.coordinates,
+        longitude: event.coordinates[0],
+        latitude: event.coordinates[1],
+      },
+      accuracy: event.accuracy,
+      heading: event.heading,
+      speed: event.speed,
+      timestamp: event.recordedAt.toISOString(),
     });
-    return { success: true };
   }
 
   // ============ Helper methods for external use ============

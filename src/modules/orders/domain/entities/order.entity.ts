@@ -20,6 +20,15 @@ export class OrderEntity {
     public readonly userNotes?: string,
     public readonly createdAt?: Date,
     public readonly updatedAt?: Date,
+    public readonly providerLocation?: { type: string; coordinates: number[] },
+    public readonly providerLocationUpdatedAt?: Date,
+    public readonly providerLocationHistory?: Array<{
+      coordinates: number[];
+      recordedAt: Date;
+      accuracy?: number;
+      heading?: number;
+      speed?: number;
+    }>,
   ) {}
 
   /**

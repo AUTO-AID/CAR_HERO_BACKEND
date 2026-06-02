@@ -17,12 +17,13 @@ import { VerifyPaymentUseCase } from '../../application/use-cases/verify-payment
 import { CancelOrderUseCase } from '../../application/use-cases/cancel-order.use-case';
 import { CreateOrderDto } from '../../application/dto/create-order.dto';
 import { ReviewOrderDto } from '../../application/dto/review-order.dto';
-import { UpdateLocationDto } from '../../application/dto/update-location.dto';
+import { UpdateOrderTrackingLocationDto } from '../../application/dto/update-location.dto';
 import { VerifyPaymentDto } from '../../application/dto/verify-payment.dto';
 import { CancelOrderDto } from '../../application/dto/cancel-order.dto';
 import { JwtAuthGuard } from '../../../../core/guards/jwt-auth.guard';
 import { OrderStatus } from '../../../../core/enums/status.enum';
 import { OrderStateMachine } from '../../domain/services/order-state-machine';
+import { GetOrderTrackingUseCase } from '../../application/use-cases/get-order-tracking.use-case';
 
 @ApiTags('Orders')
 @Controller()
@@ -43,6 +44,7 @@ export class OrdersController {
     private readonly updateProviderLocationUseCase: UpdateProviderLocationUseCase,
     private readonly verifyPaymentUseCase: VerifyPaymentUseCase,
     private readonly cancelOrderUseCase: CancelOrderUseCase,
+    private readonly getOrderTrackingUseCase: GetOrderTrackingUseCase,
   ) {}
 
   @Post('orders')
@@ -213,6 +215,14 @@ export class OrdersController {
     return this.getOrderByIdUseCase.execute(id, req.user);
   }
 
+  @Get('orders/:id/tracking')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Get live provider tracking data for an order' })
+  async getOrderTracking(@Param('id') id: string, @Req() req: any) {
+    return this.getOrderTrackingUseCase.execute(id, req.user);
+  }
+
   @Patch('orders/:id/status')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
@@ -243,7 +253,7 @@ export class OrdersController {
   @ApiOperation({ summary: 'Update provider live location' })
   async updateLocation(
     @Param('id') id: string,
-    @Body() locationDto: UpdateLocationDto,
+    @Body() locationDto: UpdateOrderTrackingLocationDto,
     @Req() req: any
   ) {
     return this.updateProviderLocationUseCase.execute(id, locationDto, req.user);
