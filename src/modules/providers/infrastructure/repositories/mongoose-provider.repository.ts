@@ -31,8 +31,8 @@ export class MongooseProviderRepository implements IProviderRepository {
       doc.isApproved,
       doc.isActive,
       {
-        type: doc.location.type,
-        coordinates: doc.location.coordinates,
+        type: doc.location?.type || 'Point',
+        coordinates: doc.location?.coordinates || [0, 0],
       },
       doc.serviceCategories,
       doc.averageRating,

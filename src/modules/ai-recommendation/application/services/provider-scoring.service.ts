@@ -109,18 +109,32 @@ export class ProviderScoringService {
       urgencyAlignment: urgencyAlignmentScore,
     };
 
+    // Dynamic Weighting based on request context
+    let weights = { ...RECOMMENDATION_WEIGHTS };
+    if (urgencyLevel === 'emergency') {
+      weights.emergencySupport = 20; // Critical for emergencies
+      weights.urgencyAlignment = 10; // Must align
+      weights.workingHours = 5;      // Less important than 24/7 flag
+      weights.serviceMatch = 10;     // General support is often enough
+    } else {
+      weights.emergencySupport = 0;  // No free points for emergency capability on normal requests
+      // distribute the 10 points elsewhere
+      weights.rating += 5;
+      weights.completedOrders += 5;
+    }
+
     // Calculate Overall Weighted Score (Normalized to 0 - 100)
     let totalScore = 0;
-    totalScore += scoringBreakdown.distance * RECOMMENDATION_WEIGHTS.distance;
-    totalScore += scoringBreakdown.rating * RECOMMENDATION_WEIGHTS.rating;
-    totalScore += scoringBreakdown.serviceMatch * RECOMMENDATION_WEIGHTS.serviceMatch;
-    totalScore += scoringBreakdown.workingHours * RECOMMENDATION_WEIGHTS.workingHours;
-    totalScore += scoringBreakdown.emergencySupport * RECOMMENDATION_WEIGHTS.emergencySupport;
-    totalScore += scoringBreakdown.expectedResponseTime * RECOMMENDATION_WEIGHTS.expectedResponseTime;
-    totalScore += scoringBreakdown.completedOrders * RECOMMENDATION_WEIGHTS.completedOrders;
-    totalScore += scoringBreakdown.cancellationRate * RECOMMENDATION_WEIGHTS.cancellationRate;
-    totalScore += scoringBreakdown.cityMatch * RECOMMENDATION_WEIGHTS.cityMatch;
-    totalScore += scoringBreakdown.urgencyAlignment * RECOMMENDATION_WEIGHTS.urgencyAlignment;
+    totalScore += scoringBreakdown.distance * weights.distance;
+    totalScore += scoringBreakdown.rating * weights.rating;
+    totalScore += scoringBreakdown.serviceMatch * weights.serviceMatch;
+    totalScore += scoringBreakdown.workingHours * weights.workingHours;
+    totalScore += scoringBreakdown.emergencySupport * weights.emergencySupport;
+    totalScore += scoringBreakdown.expectedResponseTime * weights.expectedResponseTime;
+    totalScore += scoringBreakdown.completedOrders * weights.completedOrders;
+    totalScore += scoringBreakdown.cancellationRate * weights.cancellationRate;
+    totalScore += scoringBreakdown.cityMatch * weights.cityMatch;
+    totalScore += scoringBreakdown.urgencyAlignment * weights.urgencyAlignment;
 
     totalScore = parseFloat(Math.min(100, Math.max(0, totalScore)).toFixed(2));
 

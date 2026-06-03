@@ -106,6 +106,11 @@ export class CreateProviderDto {
   @MaxLength(100)
   city?: string;
 
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  governorate?: string;
+
   @ApiPropertyOptional({ type: [String] })
   @IsOptional()
   @IsArray()

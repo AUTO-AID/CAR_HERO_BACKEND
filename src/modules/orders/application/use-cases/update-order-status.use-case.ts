@@ -31,6 +31,10 @@ export class UpdateOrderStatusUseCase {
     // Ownership Verification
     const currentUserId = currentUser?._id?.toString();
     const currentProviderId = currentUser?.providerId?.toString();
+    console.log('[DEBUG] order.providerId =', order.providerId);
+    console.log('[DEBUG] currentUser.providerId =', currentProviderId);
+    console.log('[DEBUG] currentUser =', currentUser);
+    
     const isProvider =
       !!order.providerId &&
       ((!!currentProviderId && order.providerId.toString() === currentProviderId) ||
