@@ -45,6 +45,8 @@ import { CurrentUser } from '../../../../core/decorators/current-user.decorator'
 import { Public } from '../../../../core/decorators/public.decorator';
 import { Role } from '../../../../core/enums/roles.enum';
 import { ParseObjectIdPipe } from '../../../../core/pipes/parse-objectid.pipe';
+import { InjectConnection } from '@nestjs/mongoose';
+import { Connection } from 'mongoose';
 
 // Use Cases
 import { GetProvidersUseCase } from '../../application/use-cases/get-providers.use-case';
@@ -81,6 +83,8 @@ export class ProvidersController {
     private readonly auditLogService: AuditLogService,
     @Inject(IProviderRepository)
     private readonly providerRepository: IProviderRepository,
+    @InjectConnection()
+    private readonly connection: Connection,
   ) {}
 
   private getActorId(admin: any): string | undefined {
@@ -156,10 +160,55 @@ export class ProvidersController {
   @ApiOperation({ summary: 'Get active/approved providers count by governorate for public map' })
   @ApiResponse({ status: 200, description: 'Provider counts by governorate' })
   async getPublicGovernorates() {
-    const rawList = await this.providerRepository.getProvidersByGovernorate();
+    return this.providerRepository.getProvidersByGovernorate();
+  }
+
+  @Public()
+  @Get('public/statistics')
+  @ApiOperation({ summary: 'Get live public platform statistics' })
+  @ApiResponse({ status: 200, description: 'Live statistics calculated from the database' })
+  async getPublicStatistics() {
+    const users = this.connection.collection('users');
+    const providers = this.connection.collection('providers');
+    const orders = this.connection.collection('orders');
+    const providerFilter = { isApproved: true, isActive: true };
+
+    const [customers, approvedProviders, governorates, responseTime] = await Promise.all([
+      users.countDocuments({ accountType: 'customer', isActive: true }),
+      providers.countDocuments(providerFilter),
+      providers.distinct('governorate', providerFilter),
+      orders.aggregate([
+        { $match: { createdAt: { $type: 'date' }, acceptedAt: { $type: 'date' } } },
+        {
+          $project: {
+            minutes: {
+              $divide: [{ $subtract: ['$acceptedAt', '$createdAt'] }, 60_000],
+            },
+          },
+        },
+        { $match: { minutes: { $gte: 0, $lte: 1_440 } } },
+        { $group: { _id: null, averageMinutes: { $avg: '$minutes' } } },
+      ]).toArray(),
+    ]);
+
+    const coveredAreas = new Set(
+      governorates
+        .filter((name): name is string => typeof name === 'string' && name.trim().length > 0)
+        .map((name) => {
+          const normalized = name.trim().toLowerCase();
+          if (['damascus', 'rural damascus', 'rular damascus', 'دمشق', 'ريف دمشق'].includes(normalized)) {
+            return 'damascus';
+          }
+          if (normalized === 'القامشلي') return 'الحسكة';
+          return normalized;
+        }),
+    );
+
     return {
-      success: true,
-      data: rawList,
+      customers,
+      approvedProviders,
+      coveredAreas: coveredAreas.size,
+      averageResponseMinutes: Math.round(responseTime[0]?.averageMinutes || 0),
     };
   }
 

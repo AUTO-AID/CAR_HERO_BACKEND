@@ -43,6 +43,8 @@ async function bootstrap() {
   // Get configuration service
   const configService = app.get(ConfigService);
 
+
+
   // Get environment variables
   const port = configService.get<number>('app.port') || 3000;
   const nodeEnv = configService.get<string>('app.nodeEnv') || 'development';
@@ -50,7 +52,7 @@ async function bootstrap() {
 
   // Enable CORS
   app.enableCors({
-    origin: '*', // Configure appropriately for production
+    origin: true, // Reflects the request origin, required when credentials: true
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });

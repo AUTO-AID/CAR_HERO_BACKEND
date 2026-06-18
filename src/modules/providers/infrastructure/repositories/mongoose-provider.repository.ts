@@ -299,15 +299,45 @@ export class MongooseProviderRepository implements IProviderRepository {
     return this.providerModel.aggregate([
       {
         $match: {
-          isActive: true,
-          isApproved: true,
+          // Temporarily matching all providers for development/testing
+          // isActive: true,
+          // isApproved: true,
         }
       },
       {
+        $project: {
+          governorate: {
+            $trim: {
+              input: {
+                $ifNull: ['$governorate', { $ifNull: ['$city', 'Unknown'] }],
+              },
+            },
+          },
+        },
+      },
+      {
         $group: {
-          _id: { $cond: [ { $eq: ['$governorate', null] }, 'Unknown', '$governorate' ] },
-          count: { $sum: 1 }
-        }
+          _id: {
+            $cond: [
+              {
+                $in: [
+                  { $toLower: '$governorate' },
+                  [
+                    'damascus',
+                    'rural damascus',
+                    'rular damascus',
+                    'damascus countryside',
+                    'دمشق',
+                    'ريف دمشق',
+                  ],
+                ],
+              },
+              'Damascus',
+              '$governorate',
+            ],
+          },
+          count: { $sum: 1 },
+        },
       },
       { $sort: { count: -1 } }
     ]).exec();

@@ -8,6 +8,8 @@ import { OrderStatus, RegistrationStatus } from '../../../../core/enums/status.e
 
 @Injectable()
 export class AdminStatsService {
+  private excelSummaryCache: { expiresAt: number; value: any } | null = null;
+
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(Provider.name) private providerModel: Model<ProviderDocument>,
@@ -201,12 +203,17 @@ export class AdminStatsService {
   }
 
   async getExcelSummary() {
+    if (this.excelSummaryCache && this.excelSummaryCache.expiresAt > Date.now()) {
+      return this.excelSummaryCache.value;
+    }
+
     const providers = await this.providerModel.find({}, {
       phone: 1,
       category: 1,
       serviceCategories: 1,
       requestedServices: 1,
       city: 1,
+      governorate: 1,
       averageRating: 1,
       totalReviews: 1,
       totalOrders: 1,
@@ -241,6 +248,7 @@ export class AdminStatsService {
     let totalExperience = 0;
     let totalTechs = 0;
     let verified = 0;
+    let approved = 0;
 
     const cities = new Set<string>();
     const categories = new Set<string>();
@@ -254,13 +262,32 @@ export class AdminStatsService {
     let allDay24h = 0;
 
     const dayStatsMap: Record<string, { open: number; closed: number; totalHours: number }> = {
-      "الإثنين": { open: 0, closed: 0, totalHours: 0 },
-      "الثلاثاء": { open: 0, closed: 0, totalHours: 0 },
-      "الأربعاء": { open: 0, closed: 0, totalHours: 0 },
-      "الخميس": { open: 0, closed: 0, totalHours: 0 },
-      "الجمعة": { open: 0, closed: 0, totalHours: 0 },
-      "السبت": { open: 0, closed: 0, totalHours: 0 },
-      "الأحد": { open: 0, closed: 0, totalHours: 0 },
+      Sunday: { open: 0, closed: 0, totalHours: 0 },
+      Monday: { open: 0, closed: 0, totalHours: 0 },
+      Tuesday: { open: 0, closed: 0, totalHours: 0 },
+      Wednesday: { open: 0, closed: 0, totalHours: 0 },
+      Thursday: { open: 0, closed: 0, totalHours: 0 },
+      Friday: { open: 0, closed: 0, totalHours: 0 },
+      Saturday: { open: 0, closed: 0, totalHours: 0 },
+    };
+    const dayAliases: Record<string, string> = {
+      'الأحد': 'Sunday',
+      'الإثنين': 'Monday',
+      'الاثنين': 'Monday',
+      'الثلاثاء': 'Tuesday',
+      'الأربعاء': 'Wednesday',
+      'الخميس': 'Thursday',
+      'الجمعة': 'Friday',
+      'السبت': 'Saturday',
+    };
+    const dayLabels: Record<string, string> = {
+      Sunday: 'الأحد',
+      Monday: 'الإثنين',
+      Tuesday: 'الثلاثاء',
+      Wednesday: 'الأربعاء',
+      Thursday: 'الخميس',
+      Friday: 'الجمعة',
+      Saturday: 'السبت',
     };
 
     const emergencyByCategory: Record<string, { emergency: number; nonEmergency: number }> = {};
@@ -300,10 +327,12 @@ export class AdminStatsService {
 
       const isVer = p.isPhoneVerified || p.isApproved;
       if (isVer) verified++;
+      if (p.isApproved || p.registrationStatus === RegistrationStatus.APPROVED) approved++;
 
-      if (p.city) {
-        cities.add(p.city);
-        cityCounts[p.city] = (cityCounts[p.city] || 0) + 1;
+      const providerCity = p.city || p.governorate;
+      if (providerCity) {
+        cities.add(providerCity);
+        cityCounts[providerCity] = (cityCounts[providerCity] || 0) + 1;
       }
       const providerCategories = new Set<string>();
       if (p.category) providerCategories.add(p.category);
@@ -321,15 +350,15 @@ export class AdminStatsService {
       const whList = p.workingHours || [];
       let is24h = true;
       whList.forEach((wh: any) => {
-        const day = wh.day;
+        const day = dayAliases[wh.day] || wh.day;
         if (dayStatsMap[day]) {
           if (wh.isClosed) {
             dayStatsMap[day].closed++;
             is24h = false;
-            if (day === "الجمعة" || day === "Friday") fridayClosed++;
+            if (day === "Friday") fridayClosed++;
           } else {
             dayStatsMap[day].open++;
-            if (day === "الجمعة" || day === "Friday") fridayOpen++;
+            if (day === "Friday") fridayOpen++;
             const openTime = wh.open || "09:00";
             const closeTime = wh.close || "18:00";
             const [oH, oM] = openTime.split(':').map(Number);
@@ -411,7 +440,7 @@ export class AdminStatsService {
     }));
 
     const dayStats = Object.entries(dayStatsMap).map(([day, stat]) => ({
-      day,
+      day: dayLabels[day] || day,
       open: stat.open,
       closed: stat.closed,
       avg: stat.open > 0 ? Math.round((stat.totalHours / stat.open) * 10) / 10 : 0
@@ -473,7 +502,7 @@ export class AdminStatsService {
       insights.push({ priority: "TIP", color: "green", text: `مدينة "${cityData[0].name}" تضم نسبة ${cityData[0].pct}% من إجمالي المزودين - التوسع للمدن الأخرى مطلوب` });
     }
 
-    return {
+    const summary = {
       KPI_DATA: kpiData,
       SUMMARY: {
         totalProviders: total,
@@ -484,6 +513,8 @@ export class AdminStatsService {
         normalProviders: Math.max(total - emergency, 0),
         verifiedProviders: verified,
         unverifiedProviders: Math.max(total - verified, 0),
+        approvedProviders: approved,
+        unapprovedProviders: Math.max(total - approved, 0),
         citiesCount: cities.size,
         categoriesCount: categories.size,
         averageRating,
@@ -502,6 +533,13 @@ export class AdminStatsService {
       EMERGENCY_BY_CATEGORY: emergencyByCategoryList,
       INSIGHTS: insights
     };
+
+    this.excelSummaryCache = {
+      expiresAt: Date.now() + 15_000,
+      value: summary,
+    };
+
+    return summary;
   }
 
   async getProvidersByGovernorate() {

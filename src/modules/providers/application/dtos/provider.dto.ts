@@ -31,6 +31,23 @@ const toBoolean = ({ value }: { value: any }) => {
   return value === true || value === 'true';
 };
 
+export class ProviderWorkingHourDto {
+  @IsString()
+  day: string;
+
+  @IsString()
+  @Matches(/^([01]\d|2[0-3]):[0-5]\d$/)
+  open: string;
+
+  @IsString()
+  @Matches(/^([01]\d|2[0-3]):[0-5]\d$/)
+  close: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isClosed?: boolean;
+}
+
 export class CreateProviderDto {
   @ApiProperty()
   @IsString()
@@ -212,15 +229,12 @@ export class CreateProviderDto {
   @IsArray()
   shopPhotos?: Record<string, any>[];
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: [ProviderWorkingHourDto] })
   @IsOptional()
   @IsArray()
-  workingHours?: {
-    day: string;
-    open: string;
-    close: string;
-    isClosed?: boolean;
-  }[];
+  @ValidateNested({ each: true })
+  @Type(() => ProviderWorkingHourDto)
+  workingHours?: ProviderWorkingHourDto[];
 
   @ApiPropertyOptional({ default: true })
   @IsOptional()
