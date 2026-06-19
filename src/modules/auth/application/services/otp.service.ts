@@ -31,6 +31,15 @@ export class OtpService {
    */
   async generateAndSave(phoneNumber: string): Promise<void> {
     try {
+      const user = await this.userModel.findOne({ phoneNumber }).select('+otpExpiresAt');
+      if (user && user.otpExpiresAt) {
+        const timeRemainingMs = user.otpExpiresAt.getTime() - Date.now();
+        // Since OTP is valid for 5 mins, if time remaining > 3 mins, less than 2 mins have passed
+        if (timeRemainingMs > 3 * 60 * 1000) {
+          throw new InternalServerErrorException('Please wait 2 minutes before requesting a new code');
+        }
+      }
+
       // ⚠️ DEV MODE: WhatsApp check bypassed
       // if (!this.whatsAppService.isClientReady()) {
       //   throw new InternalServerErrorException(
@@ -106,6 +115,15 @@ export class OtpService {
    */
   async generateAndSaveForPending(phoneNumber: string): Promise<void> {
     try {
+      const pending = await this.pendingRegistrationModel.findOne({ phoneNumber }).select('+otpExpiresAt');
+      if (pending && pending.otpExpiresAt) {
+        const timeRemainingMs = pending.otpExpiresAt.getTime() - Date.now();
+        // Since OTP is valid for 5 mins, if time remaining > 3 mins, less than 2 mins have passed
+        if (timeRemainingMs > 3 * 60 * 1000) {
+          throw new InternalServerErrorException('Please wait 2 minutes before requesting a new code');
+        }
+      }
+
       // ⚠️ DEV MODE: WhatsApp check bypassed
       // if (!this.whatsAppService.isClientReady()) {
       //   throw new InternalServerErrorException(

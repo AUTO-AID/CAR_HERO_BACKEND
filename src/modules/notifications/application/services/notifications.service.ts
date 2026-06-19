@@ -1,6 +1,8 @@
 import { BadRequestException, Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+import { ConfigService } from '@nestjs/config';
 import { Connection, Model, Types } from 'mongoose';
+import * as admin from 'firebase-admin';
 import { Notification, NotificationDocument } from '../../infrastructure/persistence/mongoose/schemas/notification.schema';
 import { NotificationType } from '../../../../core/enums/status.enum';
 import { NotificationsGateway } from '../../presentation/gateways/notifications.gateway';
@@ -24,7 +26,31 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     private notificationModel: Model<NotificationDocument>,
     private readonly gateway: NotificationsGateway,
     @InjectConnection() private readonly connection: Connection,
-  ) {}
+    private configService: ConfigService,
+  ) {
+    if (!admin.apps.length) {
+      try {
+        const projectId = this.configService.get<string>('FIREBASE_PROJECT_ID');
+        const clientEmail = this.configService.get<string>('FIREBASE_CLIENT_EMAIL');
+        const privateKey = this.configService.get<string>('FIREBASE_PRIVATE_KEY');
+        
+        if (projectId && clientEmail && privateKey) {
+          admin.initializeApp({
+            credential: admin.credential.cert({
+              projectId,
+              clientEmail,
+              privateKey: privateKey.replace(/\\n/g, '\n'),
+            }),
+          });
+          this.logger.log('Firebase Admin initialized successfully');
+        } else {
+          this.logger.warn('Firebase Admin credentials missing. Push notifications will be disabled.');
+        }
+      } catch (error) {
+        this.logger.error(`Failed to initialize Firebase Admin: ${error.message}`);
+      }
+    }
+  }
 
   onModuleInit() {
     this.scheduleTimer = setInterval(() => void this.dispatchScheduledNotifications(), 60_000);
@@ -49,7 +75,28 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     });
 
     // Real-time delivery via WebSocket
-    if (recipient.pushEnabled) this.gateway.sendToUser(recipient._id.toString(), notification);
+    if (recipient.pushEnabled) {
+      this.gateway.sendToUser(recipient._id.toString(), notification);
+      
+      // Firebase Cloud Messaging Delivery
+      if (recipient.fcmToken && admin.apps.length > 0) {
+        try {
+          await admin.messaging().send({
+            token: recipient.fcmToken,
+            notification: {
+              title: dto.title,
+              body: dto.body,
+            },
+            data: {
+              type: dto.type,
+              ...dto.data,
+            },
+          });
+        } catch (error) {
+          this.logger.error(`FCM Delivery Failed for user ${recipient._id}: ${error.message}`);
+        }
+      }
+    }
 
     // Update unread count for user
     const unreadCount = await this.getUnreadCount(recipient._id.toString());
@@ -139,8 +186,45 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
       sentAt: isScheduled ? undefined : now,
       data: { source: 'admin_broadcast' },
     }));
-    if (docs.length) await this.notificationModel.insertMany(docs);
-    if (!isScheduled) recipients.filter((recipient) => recipient.pushEnabled).forEach((recipient) => this.gateway.sendToUser(recipient._id.toString(), { campaignId, title: dto.title, body: dto.body, type: dto.type }));
+    if (docs.length) {
+      setImmediate(async () => {
+        const chunkSize = 1000;
+        for (let i = 0; i < docs.length; i += chunkSize) {
+          const chunk = docs.slice(i, i + chunkSize);
+          await this.notificationModel.insertMany(chunk);
+          await new Promise(resolve => setTimeout(resolve, 50));
+        }
+      });
+    }
+
+    if (!isScheduled) {
+      setImmediate(async () => {
+        const pushRecipients = recipients.filter((recipient) => recipient.pushEnabled);
+        for (let i = 0; i < pushRecipients.length; i += 500) {
+          const chunk = pushRecipients.slice(i, i + 500);
+          
+          const fcmTokens = chunk.map(r => r.fcmToken).filter(Boolean) as string[];
+          if (fcmTokens.length > 0 && admin.apps.length > 0) {
+            try {
+              await admin.messaging().sendEachForMulticast({
+                tokens: fcmTokens,
+                notification: { title: dto.title, body: dto.body },
+                data: { type: dto.type, campaignId }
+              });
+            } catch (err) {
+              this.logger.error(`FCM Broadcast Error: ${err.message}`);
+            }
+          }
+
+          chunk.forEach((recipient) => {
+            this.gateway.sendToUser(recipient._id.toString(), { campaignId, title: dto.title, body: dto.body, type: dto.type });
+          });
+          
+          await new Promise(resolve => setTimeout(resolve, 50)); // Yield to event loop
+        }
+      });
+    }
+
     return { campaignId, audience: dto.audience, recipients: docs.length, deliveryStatus: isScheduled ? 'scheduled' : 'sent', scheduledAt };
   }
 
@@ -192,7 +276,7 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     const providers = this.connection.collection('providers');
     if (audience === 'providers') return this.getProviderRecipients();
     const userFilter = audience === 'premium' ? { isPremium: true, isActive: { $ne: false } } : { isActive: { $ne: false } };
-    const userRecipients = (await users.find(userFilter, { projection: { _id: 1, 'preferences.notifications.push': 1 } }).toArray()).map((item: any) => ({ _id: item._id, recipientType: 'user', pushEnabled: item.preferences?.notifications?.push !== false }));
+    const userRecipients = (await users.find(userFilter, { projection: { _id: 1, 'preferences.notifications.push': 1, fcmToken: 1 } }).toArray()).map((item: any) => ({ _id: item._id, recipientType: 'user', pushEnabled: item.preferences?.notifications?.push !== false, fcmToken: item.fcmToken }));
     if (audience !== 'all') return userRecipients;
     const providerRecipients = await this.getProviderRecipients();
     return [...userRecipients, ...providerRecipients];
@@ -206,20 +290,28 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     const phones = providers.map((item) => item.phone).filter(Boolean);
     const users = await this.connection.collection('users').find(
       { phoneNumber: { $in: phones }, accountType: 'provider', isActive: { $ne: false } },
-      { projection: { _id: 1, 'preferences.notifications.push': 1 } },
+      { projection: { _id: 1, 'preferences.notifications.push': 1, fcmToken: 1 } },
     ).toArray();
-    return users.map((item: any) => ({
-      _id: item._id,
-      recipientType: 'provider',
-      pushEnabled: item.preferences?.notifications?.push !== false,
-    }));
+    return users.map((item: any) => {
+      const providerInfo = providers.find(p => p.phone === item.phoneNumber);
+      return {
+        _id: item._id,
+        recipientType: 'provider',
+        pushEnabled: item.preferences?.notifications?.push !== false,
+        fcmToken: item.fcmToken || providerInfo?.fcmToken,
+      };
+    });
   }
 
   private async resolveRecipient(recipientId: string, recipientType: string) {
     const users = this.connection.collection('users');
     if (recipientType !== 'provider') {
       const user = await users.findOne({ _id: new Types.ObjectId(recipientId) });
-      return { _id: new Types.ObjectId(recipientId), pushEnabled: user?.preferences?.notifications?.push !== false };
+      return { 
+        _id: new Types.ObjectId(recipientId), 
+        pushEnabled: user?.preferences?.notifications?.push !== false,
+        fcmToken: user?.fcmToken 
+      };
     }
     const providers = this.connection.collection('providers');
     const provider = await providers.findOne({ _id: new Types.ObjectId(recipientId) });
@@ -229,6 +321,7 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     return {
       _id: user?._id || new Types.ObjectId(recipientId),
       pushEnabled: user?.preferences?.notifications?.push !== false,
+      fcmToken: user?.fcmToken || provider?.fcmToken
     };
   }
 

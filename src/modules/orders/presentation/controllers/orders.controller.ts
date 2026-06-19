@@ -25,6 +25,7 @@ import { OrderStatus } from '../../../../core/enums/status.enum';
 import { OrderStateMachine } from '../../domain/services/order-state-machine';
 import { GetOrderTrackingUseCase } from '../../application/use-cases/get-order-tracking.use-case';
 import { ConfirmOrderCompletionUseCase } from '../../application/use-cases/confirm-order-completion.use-case';
+import { StatusHistoryService } from '../../../status-history/application/services/status-history.service';
 
 @ApiTags('Orders')
 @Controller()
@@ -47,6 +48,7 @@ export class OrdersController {
     private readonly cancelOrderUseCase: CancelOrderUseCase,
     private readonly getOrderTrackingUseCase: GetOrderTrackingUseCase,
     private readonly confirmOrderCompletionUseCase: ConfirmOrderCompletionUseCase,
+    private readonly statusHistoryService: StatusHistoryService,
   ) {}
 
   @Post('orders')
@@ -215,6 +217,15 @@ export class OrdersController {
   @ApiOperation({ summary: 'Get order details by ID' })
   async getOrderById(@Param('id') id: string, @Req() req: any) {
     return this.getOrderByIdUseCase.execute(id, req.user);
+  }
+
+  @Get('orders/:id/status-history')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Get status history for an order' })
+  async getOrderStatusHistory(@Param('id') id: string, @Req() req: any) {
+    await this.getOrderByIdUseCase.execute(id, req.user);
+    return this.statusHistoryService.findForOrder(id);
   }
 
   @Get('orders/:id/tracking')

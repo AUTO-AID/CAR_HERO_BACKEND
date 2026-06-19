@@ -1,6 +1,9 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { ISubscriptionRepository } from '../../domain/repositories/subscription.repository.interface';
 
+import { IWalletRepository } from '../../wallet/domain/repositories/wallet.repository.interface';
+import { Transaction, TransactionType } from '../../wallet/domain/entities/transaction.entity';
+
 export interface UpgradeSubscriptionCommand {
   userId: string;
   planId: string;
@@ -14,6 +17,8 @@ export class UpgradeSubscriptionUseCase {
   constructor(
     @Inject(ISubscriptionRepository)
     private readonly subscriptionRepository: ISubscriptionRepository,
+    @Inject(IWalletRepository)
+    private readonly walletRepository: IWalletRepository,
   ) {}
 
   async execute(dto: UpgradeSubscriptionCommand) {
@@ -28,6 +33,39 @@ export class UpgradeSubscriptionUseCase {
     const plan = await this.subscriptionRepository.findPlanById(dto.planId);
     if (!plan || !plan.isActive) {
       throw new BadRequestException('Invalid or inactive subscription plan');
+    }
+
+    if (plan.price > 0) {
+      // 💰 Ensure user pays for the new upgraded plan!
+      await this.walletRepository.executeTransaction(dto.userId, 'user', async (wallet, session) => {
+        if (!wallet.hasSufficientBalance(plan.price)) {
+          throw new BadRequestException('Insufficient wallet balance to upgrade to this plan');
+        }
+
+        const balanceBefore = wallet.balance;
+        wallet.withdraw(plan.price);
+        const balanceAfter = wallet.balance;
+
+        const transaction = new Transaction(
+          Transaction.generateTransactionNumber(),
+          wallet.id!,
+          wallet.ownerId,
+          wallet.ownerType,
+          TransactionType.SUBSCRIPTION_FEE,
+          plan.price,
+          balanceBefore,
+          balanceAfter,
+          `Payment for subscription upgrade to plan: ${plan.name}`,
+          undefined,
+          'subscription_plan',
+          plan.id,
+          undefined,
+          undefined,
+          'completed'
+        );
+
+        return { wallet, transaction };
+      });
     }
 
     await this.subscriptionRepository.updateUserSubscription(current.id, {

@@ -50,14 +50,11 @@ export class DeleteVehicleUseCase {
     await this.invalidateUserCache(userId, vehicleId);
   }
 
-  /**
-   * Set another vehicle as default when current default is deleted
-   */
   private async setDefaultAnotherVehicle(userId: string, excludeVehicleId: string): Promise<void> {
     const { vehicles } = await this.vehicleRepository.findByUserId(userId);
     const otherVehicle = vehicles.find(v => v.id !== excludeVehicleId);
     if (otherVehicle) {
-      await this.vehicleRepository.update(otherVehicle.id, { isDefault: true });
+      await this.vehicleRepository.setAsDefault(userId, otherVehicle.id);
     }
   }
 
@@ -65,13 +62,25 @@ export class DeleteVehicleUseCase {
    * Invalidate cached data
    */
   private async invalidateUserCache(userId: string, vehicleId: string): Promise<void> {
-    const keys = [
-      `vehicle_${vehicleId}`,
-      `vehicles_user_${userId}`,
-      `vehicles_user_${userId}_default`,
-    ];
-    for (const key of keys) {
-      await this.cacheManager.del(key);
+    await this.cacheManager.del(`vehicle_${vehicleId}`);
+    await this.cacheManager.del(`vehicles_user_${userId}`);
+    await this.cacheManager.del(`vehicles_user_${userId}_default`);
+    
+    // Clear paginated and search caches
+    const store = this.cacheManager.store as any;
+    if (typeof store.keys === 'function') {
+      try {
+        const allKeys = await store.keys();
+        const keysToDelete = allKeys.filter(k => 
+          k.includes(`vehicles_user_${userId}`) || 
+          k.includes(`vehicles_search_user_${userId}`)
+        );
+        for (const key of keysToDelete) {
+          await this.cacheManager.del(key);
+        }
+      } catch (e) {
+        // Ignore errors if store doesn't support keys()
+      }
     }
   }
 }

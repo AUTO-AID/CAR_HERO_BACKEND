@@ -67,8 +67,8 @@ export class ChatController {
   async uploadFile(@UploadedFile() file: Express.Multer.File) {
     if (!file) throw new BadRequestException('File is required');
     
-    // In a real app, you might return a full URL based on the server address
-    const fileUrl = `/uploads/chat/${file.filename}`;
+    const baseUrl = process.env.APP_URL || process.env.API_URL || 'http://localhost:3001';
+    const fileUrl = `${baseUrl}/uploads/chat/${file.filename}`;
     return { success: true, fileUrl };
   }
 }

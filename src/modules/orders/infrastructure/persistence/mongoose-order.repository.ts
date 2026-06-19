@@ -53,6 +53,7 @@ export class MongooseOrderRepository implements IOrderRepository {
         : undefined,
       anyDoc.providerLocationUpdatedAt,
       anyDoc.providerLocationHistory || [],
+      doc.metadata,
     );
 
     (entity as any).user = {

@@ -57,6 +57,7 @@ const providerAllowedTargets = new Set<OrderStatus>([
   OrderStatus.PROVIDER_ARRIVED,
   OrderStatus.IN_PROGRESS,
   OrderStatus.AWAITING_CUSTOMER_CONFIRMATION,
+  OrderStatus.COMPLETED,
   OrderStatus.CANCELLED,
 ]);
 

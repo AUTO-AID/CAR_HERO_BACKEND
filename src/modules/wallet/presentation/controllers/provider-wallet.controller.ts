@@ -36,7 +36,7 @@ export class ProviderWalletController {
 
   @Post('withdraw')
   async withdraw(@CurrentUser('providerId') providerId: string, @Body() dto: WithdrawDto) {
-    await this.withdrawUseCase.execute(providerId, dto);
+    await this.requestPayout.execute(providerId, dto);
     return { success: true, message: 'Withdrawal request submitted successfully' };
   }
 

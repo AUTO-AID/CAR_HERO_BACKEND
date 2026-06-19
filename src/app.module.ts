@@ -37,6 +37,7 @@ import { ProfileModule } from './modules/profile/profile.module';
 import { WhatsAppModule } from './modules/whatsapp/whatsapp.module';
 import { AuditModule } from './modules/audit/audit.module';
 import { CustomerExperienceModule } from './modules/customer-experience/customer-experience.module';
+import { PaymentsModule } from './modules/payments/payments.module';
 
 @Module({
   imports: [
@@ -79,6 +80,7 @@ import { CustomerExperienceModule } from './modules/customer-experience/customer
     GatewayModule,
     ProfileModule,
     CustomerExperienceModule,
+    PaymentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

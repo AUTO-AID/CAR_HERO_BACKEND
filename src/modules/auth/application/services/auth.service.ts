@@ -73,13 +73,16 @@ export class AuthService {
 
     const hashedPassword = await PasswordUtil.hash(password);
 
+    // Enforce accountType safety to prevent privilege escalation
+    const finalAccountType = accountType === 'provider' ? 'provider' : 'customer';
+
     await this.pendingRegistrationModel.findOneAndUpdate(
       { phoneNumber },
       {
         fullName,
         phoneNumber,
         password: hashedPassword,
-        accountType: accountType || 'customer',
+        accountType: finalAccountType,
         isTermsAccepted,
         expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes
       },

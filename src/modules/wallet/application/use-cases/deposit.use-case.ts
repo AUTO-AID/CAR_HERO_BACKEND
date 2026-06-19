@@ -14,29 +14,6 @@ export class DepositUseCase {
   ) {}
 
   async execute(userId: string, dto: DepositDto): Promise<void> {
-    await this.walletRepository.executeTransaction(userId, 'user', async (wallet, session) => {
-      const balanceBefore = wallet.balance;
-      wallet.deposit(dto.amount);
-      const balanceAfter = wallet.balance;
-
-      const transaction = new Transaction(
-        Transaction.generateTransactionNumber(),
-        wallet.id!,
-        userId,
-        'user',
-        TransactionType.CREDIT,
-        dto.amount,
-        balanceBefore,
-        balanceAfter,
-        `Wallet top-up via ${dto.paymentMethod || 'online'}`,
-        undefined,
-        'topup',
-        undefined,
-        dto.paymentMethod,
-        dto.paymentId
-      );
-
-      return { wallet, transaction };
-    });
+    throw new Error('Direct deposits are disabled for security reasons. Please use the /api/payments/initialize endpoint to generate a secure checkout URL via Cham Cash.');
   }
 }

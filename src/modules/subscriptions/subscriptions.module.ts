@@ -24,6 +24,8 @@ import { ListSubscriptionsUseCase } from './application/use-cases/list-subscript
 import { GetSubscriptionStatsUseCase } from './application/use-cases/get-subscription-stats.use-case';
 import { SubscriptionSeederService } from './infrastructure/persistence/mongoose/seeders/subscription-plan.seeder';
 
+import { WalletModule } from '../wallet/wallet.module';
+
 const UseCases = [
   GetSubscriptionPlansUseCase,
   SubscribeUserUseCase,
@@ -44,6 +46,7 @@ const UseCases = [
       { name: UserSubscription.name, schema: UserSubscriptionSchema },
       { name: User.name, schema: UserSchema },
     ]),
+    WalletModule,
   ],
   controllers: [SubscriptionsController],
   providers: [

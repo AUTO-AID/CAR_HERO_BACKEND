@@ -49,11 +49,11 @@ export class RegisterDto {
   @ApiProperty({
     example: 'customer',
     description: 'Account type',
-    enum: ['customer', 'provider', 'admin'],
+    enum: ['customer', 'provider'],
     default: 'customer',
   })
   @IsOptional()
-  @IsEnum(['customer', 'provider', 'admin'])
+  @IsEnum(['customer', 'provider'])
   accountType?: string;
 
   @ApiProperty({

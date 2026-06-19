@@ -12,11 +12,6 @@ import { Role } from '../../../../core/enums/roles.enum';
 export class StatusHistoryController {
   constructor(private readonly statusHistoryService: StatusHistoryService) {}
 
-  @Get('orders/:orderId/status-history')
-  @ApiOperation({ summary: 'Get status history for an order or scheduled booking' })
-  async findForOrder(@Param('orderId') orderId: string) {
-    return this.statusHistoryService.findForOrder(orderId);
-  }
 
   @Get('admin/status-histories')
   @UseGuards(RolesGuard)

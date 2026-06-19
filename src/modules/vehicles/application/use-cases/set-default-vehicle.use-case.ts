@@ -35,16 +35,8 @@ export class SetDefaultVehicleUseCase {
       return vehicle; // Already default, no action needed
     }
 
-    // Unset default for all other vehicles
-    const { vehicles } = await this.vehicleRepository.findByUserId(userId);
-    for (const v of vehicles) {
-      if (v.isDefault && v.id !== vehicleId) {
-        await this.vehicleRepository.update(v.id, { isDefault: false });
-      }
-    }
-
-    // Set this vehicle as default
-    const updatedVehicle = await this.vehicleRepository.update(vehicleId, { isDefault: true });
+    // Set this vehicle as default (Uses atomic transaction in repository)
+    const updatedVehicle = await this.vehicleRepository.setAsDefault(userId, vehicleId);
 
     // Invalidate cache
     await this.invalidateUserCache(userId);
@@ -56,12 +48,24 @@ export class SetDefaultVehicleUseCase {
    * Invalidate all cached vehicles for user
    */
   private async invalidateUserCache(userId: string): Promise<void> {
-    const keys = [
-      `vehicles_user_${userId}`,
-      `vehicles_user_${userId}_default`,
-    ];
-    for (const key of keys) {
-      await this.cacheManager.del(key);
+    await this.cacheManager.del(`vehicles_user_${userId}`);
+    await this.cacheManager.del(`vehicles_user_${userId}_default`);
+    
+    // Clear paginated and search caches
+    const store = (this.cacheManager as any).store;
+    if (typeof store?.keys === 'function') {
+      try {
+        const allKeys = await store.keys();
+        const keysToDelete = allKeys.filter(k => 
+          k.includes(`vehicles_user_${userId}`) || 
+          k.includes(`vehicles_search_user_${userId}`)
+        );
+        for (const key of keysToDelete) {
+          await this.cacheManager.del(key);
+        }
+      } catch (e) {
+        // Ignore errors if store doesn't support keys()
+      }
     }
   }
 }

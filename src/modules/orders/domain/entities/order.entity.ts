@@ -20,6 +20,10 @@ export class OrderEntity {
     public readonly userNotes?: string,
     public readonly createdAt?: Date,
     public readonly updatedAt?: Date,
+    public readonly totalAmount?: number,
+    public readonly discountAmount?: number,
+    public readonly payableAmount?: number,
+    public readonly metadata?: Record<string, any>,
     public readonly providerLocation?: { type: string; coordinates: number[] },
     public readonly providerLocationUpdatedAt?: Date,
     public readonly providerLocationHistory?: Array<{

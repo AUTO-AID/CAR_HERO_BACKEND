@@ -11,9 +11,6 @@ export class ProcessPayoutUseCase {
   ) {}
 
   async execute(transactionId: string, action: 'complete' | 'reject', adminNote?: string): Promise<void> {
-    // 1. Find the transaction
-    // Need a way to find transaction by ID in repository
-    // I will use a generic query logic or add a method
     const searchResult = await this.walletRepository.findAllTransactions({ _id: transactionId }, 0, 1);
     if (searchResult.total === 0) {
       throw new NotFoundException('Transaction not found');
@@ -28,7 +25,7 @@ export class ProcessPayoutUseCase {
     if (action === 'complete') {
         await this.walletRepository.updateTransactionStatus(transactionId, 'completed', { adminNote });
     } else if (action === 'reject') {
-        // Return funds to the owner
+        // Return funds to the owner and mark as failed atomically
         await this.walletRepository.executeTransaction(transaction.ownerId, transaction.ownerType, async (w, session) => {
             const balanceBefore = w.balance;
             w.deposit(transaction.amount); // Return the money
@@ -46,16 +43,17 @@ export class ProcessPayoutUseCase {
                 `Payout Rejected: ${adminNote || 'No reason provided'}`,
                 undefined,
                 'payout_reversal',
-                transaction.transactionNumber,
+                transaction.id, // Fixed: use ObjectId reference
                 undefined,
                 undefined,
                 'completed'
             );
 
+            // Update the original transaction status inside the same atomic session
+            await this.walletRepository.updateTransactionStatus(transactionId, 'failed', { adminNote }, session);
+
             return { wallet: w, transaction: reversalTx };
         });
-        
-        await this.walletRepository.updateTransactionStatus(transactionId, 'failed', { adminNote });
     }
   }
 }

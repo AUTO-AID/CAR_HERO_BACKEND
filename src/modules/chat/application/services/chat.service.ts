@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ForbiddenException, Inject } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, Inject, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Chat, ChatDocument, Message, MessageDocument } from '../../infrastructure/persistence/mongoose/schemas/chat.schema';
@@ -16,28 +16,33 @@ export class ChatService {
     private readonly notificationsService: NotificationsService,
   ) {}
 
-  async getOrCreateChat(userId: string, targetId: string, orderId?: string): Promise<ChatDocument> {
-    // SECURITY: Validate participant link to Order
-    if (orderId) {
-      const order = await this.orderRepository.findById(orderId);
-      if (!order) throw new NotFoundException('Order not found');
-      
-      const participantsOnOrder = [order.userId, order.providerId].filter(id => !!id);
-      if (!participantsOnOrder.includes(userId) || !participantsOnOrder.includes(targetId)) {
-        throw new ForbiddenException('Participants are not linked to this order');
-      }
+  async getOrCreateChat(userId: string, targetId: string, orderId: string): Promise<ChatDocument> {
+    if (!orderId) {
+      throw new BadRequestException('Order ID is required to start a chat');
+    }
+    if (userId === targetId) {
+      throw new BadRequestException('Cannot start a chat with yourself');
     }
 
-    // Look for existing 1-on-1 chat
+    // SECURITY: Validate participant link to Order
+    const order = await this.orderRepository.findById(orderId);
+    if (!order) throw new NotFoundException('Order not found');
+    
+    const participantsOnOrder = [order.userId, order.providerId].filter(id => !!id);
+    if (!participantsOnOrder.includes(userId) || !participantsOnOrder.includes(targetId)) {
+      throw new ForbiddenException('Participants are not linked to this order');
+    }
+
+    // Look for existing 1-on-1 chat for this specific order
     let chat = await this.chatModel.findOne({
       participants: { $all: [new Types.ObjectId(userId), new Types.ObjectId(targetId)] },
-      orderId: orderId ? new Types.ObjectId(orderId) : { $exists: false }
+      orderId: new Types.ObjectId(orderId)
     });
 
     if (!chat) {
       chat = new this.chatModel({
         participants: [new Types.ObjectId(userId), new Types.ObjectId(targetId)],
-        orderId: orderId ? new Types.ObjectId(orderId) : undefined,
+        orderId: new Types.ObjectId(orderId),
         unreadCounts: new Map(),
       });
       await chat.save();
@@ -55,8 +60,11 @@ export class ChatService {
       throw new ForbiddenException('Not a participant of this chat');
     }
 
-    const receiverId = chat.participants.find(p => p.toString() !== senderId);
-    if (!receiverId) throw new Error('Receiver not found in chat');
+    let receiverId = chat.participants.find(p => p.toString() !== senderId);
+    if (!receiverId) {
+      // In case a user chats with themselves (edge case prevented now, but safe fallback)
+      receiverId = new Types.ObjectId(senderId);
+    }
 
     const message = new this.messageModel({
       chatId: new Types.ObjectId(dto.chatId),
@@ -70,16 +78,21 @@ export class ChatService {
 
     const savedMessage = await message.save();
 
-    // Update Chat last message and unread counts
-    chat.lastMessage = dto.message;
-    chat.lastMessageAt = new Date();
-    chat.lastMessageBy = new Types.ObjectId(senderId);
+    // Update Chat last message and unread counts atomically to prevent race conditions
+    const receiverIdStr = receiverId.toString();
+    const updatePath = `unreadCounts.${receiverIdStr}`;
     
-    // Increment unread for receiver
-    const currentUnread = chat.unreadCounts.get(receiverId.toString()) || 0;
-    chat.unreadCounts.set(receiverId.toString(), currentUnread + 1);
-    
-    await chat.save();
+    await this.chatModel.updateOne(
+      { _id: new Types.ObjectId(dto.chatId) },
+      { 
+        $set: { 
+          lastMessage: dto.message, 
+          lastMessageAt: new Date(), 
+          lastMessageBy: new Types.ObjectId(senderId) 
+        },
+        $inc: { [updatePath]: 1 }
+      }
+    );
 
     // 📣 Notify receiver
     await this.notificationsService.createNotification({
@@ -137,9 +150,12 @@ export class ChatService {
     // SECURITY: Verify membership
     if (!chat.participants.map(p => p.toString()).includes(userId)) return;
 
-    // Reset unread count for this user
-    chat.unreadCounts.set(userId, 0);
-    await chat.save();
+    // Reset unread count for this user atomically
+    const updatePath = `unreadCounts.${userId}`;
+    await this.chatModel.updateOne(
+      { _id: new Types.ObjectId(chatId) },
+      { $set: { [updatePath]: 0 } }
+    );
 
     // Mark messages as read
     await this.messageModel.updateMany(

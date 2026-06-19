@@ -37,6 +37,8 @@ describe('UpdateOrderStatusUseCase', () => {
   };
 
   beforeEach(async () => {
+    jest.clearAllMocks();
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UpdateOrderStatusUseCase,
@@ -82,6 +84,30 @@ describe('UpdateOrderStatusUseCase', () => {
 
     expect(result.status).toBe(OrderStatus.AWAITING_CUSTOMER_CONFIRMATION);
     expect(mockOrderRepository.update).toHaveBeenCalled();
+    expect(mockCacheManager.del).toHaveBeenCalledWith('order_id');
+    expect(mockEventEmitter.emit).toHaveBeenCalled();
+  });
+
+  it('should allow a provider to complete an in-progress order and transfer earnings', async () => {
+    const mockOrder = {
+      id: 'id',
+      providerId: 'provider-id',
+      status: OrderStatus.IN_PROGRESS,
+      orderNumber: 'CH-002',
+      userId: 'user-id',
+      total: 75000,
+    };
+    mockOrderRepository.findById.mockResolvedValue(mockOrder);
+    mockOrderRepository.update.mockResolvedValue({ ...mockOrder, status: OrderStatus.COMPLETED });
+
+    const result = await useCase.execute('id', OrderStatus.COMPLETED, { _id: 'provider-id', role: 'provider' });
+
+    expect(result.status).toBe(OrderStatus.COMPLETED);
+    expect(mockOrderRepository.update).toHaveBeenCalledWith('id', expect.objectContaining({
+      status: OrderStatus.COMPLETED,
+      completedAt: expect.any(Date),
+    }));
+    expect(mockTransferEarnings.execute).toHaveBeenCalledWith('provider-id', 75000, 'id', 'order');
     expect(mockCacheManager.del).toHaveBeenCalledWith('order_id');
     expect(mockEventEmitter.emit).toHaveBeenCalled();
   });

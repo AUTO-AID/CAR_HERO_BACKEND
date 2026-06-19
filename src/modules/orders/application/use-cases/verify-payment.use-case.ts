@@ -34,10 +34,13 @@ export class VerifyPaymentUseCase {
       throw new BadRequestException('Order is already paid');
     }
 
+    if (dto.paymentMethod === 'cham_cash' || dto.paymentMethod === 'online') {
+      throw new BadRequestException('Online payments must be processed via the /api/payments/initialize endpoint. Direct verification is disabled.');
+    }
+
     // Future: Add real gateway verification logic here if needed
 
     const updatedOrder = await this.orderRepository.updatePaymentDetails(id, dto.paymentId, dto.paymentMethod);
-    
     // 💰 Transaction Record: Document the customer payment in the system
     if (updatedOrder.total > 0 && updatedOrder.userId) {
       await this.walletRepository.executeTransaction('platform_earnings', 'system', async (platformWallet, session) => {

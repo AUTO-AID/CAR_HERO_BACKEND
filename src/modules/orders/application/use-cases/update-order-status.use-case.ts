@@ -74,10 +74,10 @@ export class UpdateOrderStatusUseCase {
     });
 
     // 💰 Special Logic: Transfer earnings to provider on completion
-    if (status === OrderStatus.COMPLETED && updatedOrder.providerId && updatedOrder.total > 0) {
+    if (status === OrderStatus.COMPLETED && updatedOrder.providerId && (updatedOrder.totalAmount || updatedOrder.total) > 0) {
       await this.transferEarnings.execute(
         updatedOrder.providerId,
-        updatedOrder.total,
+        updatedOrder.totalAmount || updatedOrder.total,
         updatedOrder.id,
         'order'
       );

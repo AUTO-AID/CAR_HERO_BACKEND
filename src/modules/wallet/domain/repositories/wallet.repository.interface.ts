@@ -9,8 +9,7 @@ export interface IWalletRepository {
   createTransaction(transaction: Transaction, session?: any): Promise<Transaction>;
   findTransactionsByOwnerId(ownerId: string, ownerType: 'user' | 'provider' | 'system', skip: number, limit: number): Promise<{ data: Transaction[], total: number }>;
   findAllTransactions(filter: any, skip: number, limit: number): Promise<{ data: Transaction[], total: number }>;
-  updateTransactionStatus(id: string, status: string, metadata?: any): Promise<void>;
-  
+  updateTransactionStatus(id: string, status: string, metadata?: any, session?: any): Promise<void>;
   // Advanced Atomic operation
   executeTransaction(ownerId: string, ownerType: string, operation: (wallet: Wallet, session: any) => Promise<{wallet: Wallet, transaction: Transaction}>): Promise<void>;
   

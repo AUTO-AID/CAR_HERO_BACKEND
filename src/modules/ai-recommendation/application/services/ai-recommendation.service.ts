@@ -335,7 +335,7 @@ export class AiRecommendationService {
       }
     }
 
-    return this.providerModel.find(query).exec();
+    return this.providerModel.find(query).limit(100).exec();
   }
 
   /**
@@ -364,6 +364,6 @@ export class AiRecommendationService {
       }
     }
 
-    return this.providerModel.find(query).exec();
+    return this.providerModel.find(query).limit(50).exec();
   }
 }

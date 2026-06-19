@@ -59,9 +59,6 @@ export class Chat {
   @Prop({ type: [{ type: Types.ObjectId }], required: true })
   participants: Types.ObjectId[];
 
-  @Prop({ type: [Message], default: [] })
-  messages: Message[];
-
   @Prop({ default: true })
   isActive: boolean;
 

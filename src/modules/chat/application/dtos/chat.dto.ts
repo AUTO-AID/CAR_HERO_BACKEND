@@ -50,6 +50,6 @@ export class CreateChatDto {
   participantId: string;
 
   @IsMongoId()
-  @IsOptional()
-  orderId?: string;
+  @IsNotEmpty()
+  orderId: string;
 }

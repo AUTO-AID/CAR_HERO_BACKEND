@@ -23,7 +23,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   server: Server;
 
   private readonly logger = new Logger(ChatGateway.name);
-  private onlineUsers = new Map<string, string>(); // userId -> socketId
+  private onlineUsers = new Map<string, Set<string>>(); // userId -> Set of socketIds
 
   constructor(private readonly chatService: ChatService) {}
 
@@ -32,10 +32,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   handleDisconnect(client: Socket) {
-    for (const [userId, socketId] of this.onlineUsers.entries()) {
-      if (socketId === client.id) {
-        this.onlineUsers.delete(userId);
-        this.server.emit('user_offline', { userId });
+    for (const [userId, sockets] of this.onlineUsers.entries()) {
+      if (sockets.has(client.id)) {
+        sockets.delete(client.id);
+        if (sockets.size === 0) {
+          this.onlineUsers.delete(userId);
+          this.server.emit('user_offline', { userId });
+        }
         break;
       }
     }
@@ -58,7 +61,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     client.join(`chat:${data.chatId}`);
     
     // Register online status
-    this.onlineUsers.set(userId, client.id);
+    if (!this.onlineUsers.has(userId)) {
+      this.onlineUsers.set(userId, new Set<string>());
+    }
+    this.onlineUsers.get(userId).add(client.id);
     this.server.emit('user_online', { userId });
     
     return { success: true, roomId: `chat:${data.chatId}` };

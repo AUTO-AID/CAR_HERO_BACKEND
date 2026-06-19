@@ -266,12 +266,12 @@ export class MongooseWalletRepository implements IWalletRepository {
     return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 
-  async updateTransactionStatus(id: string, status: string, metadata?: any): Promise<void> {
+  async updateTransactionStatus(id: string, status: string, metadata?: any, session?: ClientSession): Promise<void> {
     const update: any = { status };
     if (metadata) {
       update.metadata = metadata;
     }
-    await this.transactionModel.findByIdAndUpdate(id, update).exec();
+    await this.transactionModel.findByIdAndUpdate(id, update, { session }).exec();
   }
 
   async executeTransaction(ownerId: string, ownerType: string, operation: (wallet: WalletEntity, session?: ClientSession) => Promise<{ wallet: WalletEntity; transaction: TransactionEntity; }>): Promise<void> {

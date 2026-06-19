@@ -5,6 +5,7 @@ import { GetProviderReviewsUseCase } from '../../application/use-cases/get-provi
 import { RespondToReviewUseCase } from '../../application/use-cases/respond-to-review.use-case';
 import { DeleteReviewUseCase } from '../../application/use-cases/delete-review.use-case';
 import { CreateReviewDto, ProviderResponseDto, ReviewQueryDto } from '../dtos/review.dto';
+import { RecalculateProviderRatingUseCase } from '../../../providers/application/use-cases/recalculate-provider-rating.use-case';
 import { JwtAuthGuard } from '../../../../core/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../../core/guards/roles.guard';
 import { Roles } from '../../../../core/decorators/roles.decorator';
@@ -21,6 +22,7 @@ export class ReviewsController {
     private readonly getProviderReviewsUseCase: GetProviderReviewsUseCase,
     private readonly respondToReviewUseCase: RespondToReviewUseCase,
     private readonly deleteReviewUseCase: DeleteReviewUseCase,
+    private readonly recalculateProviderRatingUseCase: RecalculateProviderRatingUseCase,
     @InjectModel(Review.name) private readonly reviewModel: Model<ReviewDocument>,
   ) {}
 
@@ -153,14 +155,40 @@ export class ReviewsController {
     const review = await this.reviewModel.findByIdAndUpdate(
       id,
       { $set: update },
-      { new: true },
+      { new: false }, // Get the old document to check provider ID
     ).exec();
 
     if (!review) {
       throw new NotFoundException('Review not found');
     }
 
-    return { success: true, data: review };
+    // If visibility changed, we must recalculate the provider's average rating
+    if (typeof body.isVisible === 'boolean' && review.isVisible !== body.isVisible) {
+      const stats = await this.reviewModel.aggregate([
+        { $match: { provider: review.provider, isVisible: true } },
+        {
+          $group: {
+            _id: '$provider',
+            averageRating: { $avg: '$rating' },
+            totalReviews: { $sum: 1 },
+          },
+        },
+      ]).exec();
+
+      let averageRating = 0;
+      let totalReviews = 0;
+
+      if (stats.length > 0) {
+        averageRating = Math.round(stats[0].averageRating * 10) / 10;
+        totalReviews = stats[0].totalReviews;
+      }
+
+      // Re-use Provider module's internal repository logic safely
+      await this.recalculateProviderRatingUseCase.execute(review.provider.toString(), averageRating, totalReviews);
+    }
+
+    const updatedReview = await this.reviewModel.findById(id).exec();
+    return { success: true, data: updatedReview };
   }
 
   private escapeRegex(value: string): string {

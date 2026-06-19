@@ -4124,6 +4124,128 @@
           }
         }
       ]
+    },
+    {
+      "name": "Payment Gateway (Cham Cash)",
+      "item": [
+        {
+          "name": "1. Initialize Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 5000,\n  \"purpose\": \"wallet_topup\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/payments/initialize",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "payments",
+                "initialize"
+              ]
+            },
+            "description": "Initialize a payment intent and get the checkout URL."
+          }
+        },
+        {
+          "name": "2. Mock Cham Cash Checkout UI (Browser)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/mock-cham-cash/checkout/{{referenceId}}?amount=5000",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "mock-cham-cash",
+                "checkout",
+                "{{referenceId}}"
+              ],
+              "query": [
+                {
+                  "key": "amount",
+                  "value": "5000"
+                }
+              ]
+            },
+            "description": "Open this in a browser to see the mock Cham Cash UI."
+          }
+        },
+        {
+          "name": "3. Mock Cham Cash Process",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"0933333333\",\n  \"pin\": \"1234\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/mock-cham-cash/process/{{referenceId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "mock-cham-cash",
+                "process",
+                "{{referenceId}}"
+              ]
+            },
+            "description": "Simulates submitting the form on the mock checkout page."
+          }
+        },
+        {
+          "name": "4. Webhook (Internal Testing)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-chamcash-signature",
+                "value": "paste_signature_here_if_testing_manually"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"referenceId\": \"{{referenceId}}\",\n  \"status\": \"success\",\n  \"transactionId\": \"CHAM-TXN-1234\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/payments/webhook/cham-cash",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "payments",
+                "webhook",
+                "cham-cash"
+              ]
+            },
+            "description": "This is usually called by the Cham Cash server, not by the client app."
+          }
+        }
+      ],
+      "description": "Secure payment gateway endpoints using mock Cham Cash"
     }
   ]
 }

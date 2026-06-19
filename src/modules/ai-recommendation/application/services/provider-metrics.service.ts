@@ -1,6 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
+import { OnEvent } from '@nestjs/event-emitter';
+import { OrderEvents } from '../../../orders/domain/events/order.events';
 import { ProviderMetrics, ProviderMetricsDocument } from '../../infrastructure/schemas/provider-metrics.schema';
 import { Order, OrderDocument } from '../../../orders/infrastructure/persistence/mongoose/schemas/order.schema';
 import { Review, ReviewDocument } from '../../../reviews/infrastructure/persistence/mongoose/schemas/review.schema';
@@ -20,6 +22,22 @@ export class ProviderMetricsService {
     @InjectModel(Service.name)
     private readonly serviceModel: Model<ServiceDocument>
   ) {}
+
+  @OnEvent(OrderEvents.STATUS_CHANGED)
+  async handleOrderStatusChanged(payload: { orderId: string; status: string; providerId?: string }) {
+    if (payload.providerId) {
+      this.logger.log(`Order status changed to ${payload.status}. Recalculating metrics for provider ${payload.providerId}`);
+      await this.recalculateProviderMetrics(payload.providerId);
+    }
+  }
+
+  @OnEvent('review.created')
+  async handleReviewCreated(payload: { providerId: string }) {
+    if (payload.providerId) {
+      this.logger.log(`New review created. Recalculating metrics for provider ${payload.providerId}`);
+      await this.recalculateProviderMetrics(payload.providerId);
+    }
+  }
 
   /**
    * Recalculate metrics for a single provider based on historical order/review data

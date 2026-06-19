@@ -1,5 +1,8 @@
 import { Inject, Injectable, BadRequestException } from '@nestjs/common';
 import { ISubscriptionRepository } from '../../domain/repositories/subscription.repository.interface';
+import { IWalletRepository } from '../../wallet/domain/repositories/wallet.repository.interface';
+import { Transaction } from '../../wallet/domain/entities/transaction.entity';
+import { TransactionType } from '../../wallet/domain/entities/transaction.entity';
 
 export interface SubscribeCommand {
   userId: string;
@@ -14,6 +17,8 @@ export class SubscribeUserUseCase {
   constructor(
     @Inject(ISubscriptionRepository)
     private readonly subscriptionRepository: ISubscriptionRepository,
+    @Inject(IWalletRepository)
+    private readonly walletRepository: IWalletRepository,
   ) {}
 
   async execute(dto: SubscribeCommand) {
@@ -25,6 +30,39 @@ export class SubscribeUserUseCase {
     const currentSub = await this.subscriptionRepository.findUserActiveSubscription(dto.userId);
     if (currentSub) {
       throw new BadRequestException('User already has an active subscription');
+    }
+
+    if (plan.price > 0) {
+      // 💰 Ensure user pays for the subscription!
+      await this.walletRepository.executeTransaction(dto.userId, 'user', async (wallet, session) => {
+        if (!wallet.hasSufficientBalance(plan.price)) {
+          throw new BadRequestException('Insufficient wallet balance to subscribe to this plan');
+        }
+
+        const balanceBefore = wallet.balance;
+        wallet.withdraw(plan.price);
+        const balanceAfter = wallet.balance;
+
+        const transaction = new Transaction(
+          Transaction.generateTransactionNumber(),
+          wallet.id!,
+          wallet.ownerId,
+          wallet.ownerType,
+          TransactionType.SUBSCRIPTION_FEE,
+          plan.price,
+          balanceBefore,
+          balanceAfter,
+          `Payment for subscription plan: ${plan.name}`,
+          undefined,
+          'subscription_plan',
+          plan.id,
+          undefined,
+          undefined,
+          'completed'
+        );
+
+        return { wallet, transaction };
+      });
     }
 
     const startDate = new Date();

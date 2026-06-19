@@ -39,19 +39,19 @@ export class CreateVehicleUseCase {
     // If this is the first vehicle, make it default automatically
     const isDefault = vehicleCount === 0 ? true : (dto.isDefault ?? false);
 
-    // If setting as default, unset other defaults first
-    if (isDefault) {
-      await this.unsetOtherDefaults(userId);
-    }
-
-    // Create vehicle
+    // Create vehicle (initially without default, we set it atomically after)
     const vehicleData: Partial<VehicleEntity> = {
       ...dto,
       userId,
-      isDefault,
+      isDefault: vehicleCount === 0 ? true : false,
     };
 
-    const vehicle = await this.vehicleRepository.create(vehicleData);
+    let vehicle = await this.vehicleRepository.create(vehicleData);
+
+    // If it should be default and it's not the first vehicle, use atomic method
+    if (isDefault && vehicleCount > 0) {
+      vehicle = await this.vehicleRepository.setAsDefault(userId, vehicle.id);
+    }
 
     // Invalidate cache
     await this.invalidateUserCache(userId);
@@ -60,27 +60,27 @@ export class CreateVehicleUseCase {
   }
 
   /**
-   * Unset default status for all user's vehicles
-   */
-  private async unsetOtherDefaults(userId: string): Promise<void> {
-    const { vehicles } = await this.vehicleRepository.findByUserId(userId);
-    for (const v of vehicles) {
-      if (v.isDefault) {
-        await this.vehicleRepository.update(v.id, { isDefault: false });
-      }
-    }
-  }
-
-  /**
    * Invalidate all cached vehicles for user
    */
   private async invalidateUserCache(userId: string): Promise<void> {
-    const keys = [
-      `vehicles_user_${userId}`,
-      `vehicles_user_${userId}_default`,
-    ];
-    for (const key of keys) {
-      await this.cacheManager.del(key);
+    await this.cacheManager.del(`vehicles_user_${userId}`);
+    await this.cacheManager.del(`vehicles_user_${userId}_default`);
+    
+    // Clear paginated and search caches
+    const store = this.cacheManager.store as any;
+    if (typeof store.keys === 'function') {
+      try {
+        const allKeys = await store.keys();
+        const keysToDelete = allKeys.filter(k => 
+          k.includes(`vehicles_user_${userId}`) || 
+          k.includes(`vehicles_search_user_${userId}`)
+        );
+        for (const key of keysToDelete) {
+          await this.cacheManager.del(key);
+        }
+      } catch (e) {
+        // Ignore errors if store doesn't support keys()
+      }
     }
   }
 }

@@ -93,11 +93,49 @@ export class CancelOrderUseCase {
           'completed'
         );
 
+        // Refund loyalty points if any were used
+        if (order.metadata?.pointsRedeemed) {
+          const pointsToRefund = Number(order.metadata.pointsRedeemed);
+          if (pointsToRefund > 0) {
+            wallet.loyaltyPoints = (wallet.loyaltyPoints || 0) + pointsToRefund;
+          }
+        }
+
         return { wallet, transaction };
       });
 
       // Update payment status to REFUNDED
       await this.orderRepository.update(id, { paymentStatus: PaymentStatus.REFUNDED });
+    } else if (order.metadata?.pointsRedeemed && order.userId) {
+      // Order wasn't paid yet, but points were redeemed during booking (deducted instantly)
+      await this.walletRepository.executeTransaction(order.userId, 'user', async (wallet, session) => {
+        const pointsToRefund = Number(order.metadata.pointsRedeemed);
+        if (pointsToRefund > 0) {
+          wallet.loyaltyPoints = (wallet.loyaltyPoints || 0) + pointsToRefund;
+        }
+        
+        // We still need to return a transaction to satisfy executeTransaction interface
+        const transaction = new Transaction(
+          Transaction.generateTransactionNumber(),
+          wallet.id!,
+          wallet.ownerId,
+          wallet.ownerType,
+          TransactionType.LOYALTY_POINTS,
+          0,
+          wallet.balance,
+          wallet.balance,
+          `Loyalty points refunded for cancelled order #${order.orderNumber}`,
+          undefined,
+          'order',
+          order.id,
+          undefined,
+          undefined,
+          'completed',
+          { pointsRefunded: pointsToRefund }
+        );
+
+        return { wallet, transaction };
+      });
     }
 
     // Invalidate Cache
