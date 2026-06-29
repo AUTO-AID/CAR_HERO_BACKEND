@@ -63,8 +63,9 @@ export class AuthService {
   // REGISTER
   // ===========================================
   async register(registerDto: RegisterDto): Promise<IOtpResponse> {
-    const { phoneNumber, password, fullName, accountType, isTermsAccepted } =
+    const { password, fullName, accountType, isTermsAccepted } =
       registerDto;
+    const phoneNumber = this.normalizeSyrianPhoneNumber(registerDto.phoneNumber);
 
     const existingUser = await this.userModel.findOne({ phoneNumber });
     if (existingUser) {
@@ -105,7 +106,8 @@ export class AuthService {
   // VERIFY OTP
   // ===========================================
   async verifyOtp(verifyOtpDto: VerifyOtpDto): Promise<IAuthResponse> {
-    const { phoneNumber, otpCode } = verifyOtpDto;
+    const { otpCode } = verifyOtpDto;
+    const phoneNumber = this.normalizeSyrianPhoneNumber(verifyOtpDto.phoneNumber);
 
     const pendingRegistration = await this.pendingRegistrationModel
       .findOne({ phoneNumber })
@@ -171,6 +173,8 @@ export class AuthService {
   // RESEND OTP
   // ===========================================
   async resendOtp(phoneNumber: string): Promise<IOtpResponse> {
+    phoneNumber = this.normalizeSyrianPhoneNumber(phoneNumber);
+
     const pendingRegistration = await this.pendingRegistrationModel.findOne({
       phoneNumber,
     });
@@ -190,7 +194,8 @@ export class AuthService {
   // LOGIN
   // ===========================================
   async login(loginDto: LoginDto): Promise<IAuthResponse> {
-    const { phoneNumber, password } = loginDto;
+    const { password } = loginDto;
+    const phoneNumber = this.normalizeSyrianPhoneNumber(loginDto.phoneNumber);
 
     const user = await this.userModel
       .findOne({ phoneNumber })
@@ -271,7 +276,9 @@ export class AuthService {
   async forgotPassword(
     forgotPasswordDto: ForgotPasswordDto,
   ): Promise<IOtpResponse> {
-    const { phoneNumber } = forgotPasswordDto;
+    const phoneNumber = this.normalizeSyrianPhoneNumber(
+      forgotPasswordDto.phoneNumber,
+    );
 
     const user = await this.userModel.findOne({ phoneNumber });
     if (!user) {
@@ -293,7 +300,10 @@ export class AuthService {
   async resetPassword(
     resetPasswordDto: ResetPasswordDto,
   ): Promise<{ message: string }> {
-    const { phoneNumber, otpCode, newPassword } = resetPasswordDto;
+    const { otpCode, newPassword } = resetPasswordDto;
+    const phoneNumber = this.normalizeSyrianPhoneNumber(
+      resetPasswordDto.phoneNumber,
+    );
 
     const user = await this.userModel
       .findOne({ phoneNumber })
@@ -352,6 +362,8 @@ export class AuthService {
   // REQUEST RESTORE OTP
   // ===========================================
   async requestRestoreOtp(phoneNumber: string): Promise<IOtpResponse> {
+    phoneNumber = this.normalizeSyrianPhoneNumber(phoneNumber);
+
     const user = await this.userModel
       .findOne({ phoneNumber })
       .select('+otpCode +otpExpiresAt +otpAttempts');
@@ -380,6 +392,8 @@ export class AuthService {
     phoneNumber: string,
     otpCode: string,
   ): Promise<IAuthResponse> {
+    phoneNumber = this.normalizeSyrianPhoneNumber(phoneNumber);
+
     const user = await this.userModel
       .findOne({ phoneNumber })
       .select('+otpCode +otpExpiresAt +otpAttempts');
@@ -449,6 +463,20 @@ export class AuthService {
     ) {
       throw new BadRequestException(ERROR_MESSAGES.OTP.EXPIRED);
     }
+  }
+
+  private normalizeSyrianPhoneNumber(phoneNumber: string): string {
+    const digits = String(phoneNumber || '').replace(/[^\d]/g, '');
+
+    if (/^09\d{8}$/.test(digits)) {
+      return `+963${digits.slice(1)}`;
+    }
+
+    if (/^9639\d{8}$/.test(digits)) {
+      return `+${digits}`;
+    }
+
+    return String(phoneNumber || '').trim();
   }
 
   // ===========================================
