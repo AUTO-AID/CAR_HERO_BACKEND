@@ -158,7 +158,13 @@ async sendMessage(phoneNumber: string, message: string): Promise<void> {
 
   try {
     const number = phoneNumber.replace(/[^0-9]/g, '');
-    const chatId = `${number}@c.us`;
+    const contactId = await this.client.getNumberId(number);
+
+    if (!contactId?._serialized) {
+      throw new Error('Phone number is not registered on WhatsApp');
+    }
+
+    const chatId = contactId._serialized;
 
     this.logger.log(`📤 Sending message to ${chatId}`);
 
@@ -170,6 +176,12 @@ async sendMessage(phoneNumber: string, message: string): Promise<void> {
     this.logger.log(`✅ Message sent successfully to ${chatId}`);
   } catch (error) {
     this.logger.error(`❌ Failed to send message to ${phoneNumber}`, error);
+    if (
+      error instanceof Error &&
+      error.message === 'Phone number is not registered on WhatsApp'
+    ) {
+      throw error;
+    }
     throw new Error('Failed to send WhatsApp message');
   }
 }
@@ -181,9 +193,8 @@ async sendMessage(phoneNumber: string, message: string): Promise<void> {
 
     try {
       const number = phoneNumber.replace(/[^0-9]/g, '');
-      const chatId = `${number}@c.us`;
-      
-      const isRegistered = await this.client.isRegisteredUser(chatId);
+      const contactId = await this.client.getNumberId(number);
+      const isRegistered = Boolean(contactId?._serialized);
       
       this.logger.log(`📱 Number ${phoneNumber} registered: ${isRegistered}`);
       

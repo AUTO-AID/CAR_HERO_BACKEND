@@ -1,5 +1,6 @@
 import {
   Injectable,
+  BadRequestException,
   HttpException,
   InternalServerErrorException,
   Logger,
@@ -98,6 +99,12 @@ export class OtpService {
       );
       if (error instanceof HttpException) {
         throw error;
+      }
+      if (
+        error instanceof Error &&
+        error.message === 'Phone number is not registered on WhatsApp'
+      ) {
+        throw new BadRequestException('Phone number is not registered on WhatsApp');
       }
 
       throw new InternalServerErrorException(
@@ -199,6 +206,12 @@ Do not share it with anyone.`;
       );
       if (error instanceof HttpException) {
         throw error;
+      }
+      if (
+        error instanceof Error &&
+        error.message === 'Phone number is not registered on WhatsApp'
+      ) {
+        throw new BadRequestException('Phone number is not registered on WhatsApp');
       }
 
       throw new InternalServerErrorException(
