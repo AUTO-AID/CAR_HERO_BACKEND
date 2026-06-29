@@ -74,6 +74,10 @@ export class AdminService {
     return this.adminProvidersService.getAllProviders(filters, page, limit);
   }
 
+  async getProvidersMap(filters?: ProviderListFilters) {
+    return this.adminProvidersService.getProvidersMap(filters);
+  }
+
   async getProviderById(id: string) {
     return this.adminProvidersService.getProviderById(id);
   }

@@ -20,6 +20,7 @@ describe('Chat Module: Security & Integration Audit', () => {
   mockChatModel.findOne = jest.fn();
   mockChatModel.findById = jest.fn();
   mockChatModel.find = jest.fn();
+  mockChatModel.updateOne = jest.fn();
   mockChatModel.updateMany = jest.fn();
 
   const mockMessageModel: any = jest.fn().mockImplementation((dto) => ({
@@ -55,6 +56,7 @@ describe('Chat Module: Security & Integration Audit', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
+    mockChatModel.updateOne.mockResolvedValue({ modifiedCount: 1 });
   });
 
   describe('SECURITY: Chat Creation & Participant Validation', () => {
@@ -128,8 +130,12 @@ describe('Chat Module: Security & Integration Audit', () => {
           type: MessageType.TEXT
         });
   
-        expect(mockChat.unreadCounts.get(receiverId.toString())).toBe(1);
-        expect(mockChat.save).toHaveBeenCalled();
+        expect(mockChatModel.updateOne).toHaveBeenCalledWith(
+          { _id: chatId },
+          expect.objectContaining({
+            $inc: { [`unreadCounts.${receiverId.toString()}`]: 1 },
+          }),
+        );
       });
   });
 

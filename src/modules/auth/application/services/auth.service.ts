@@ -159,7 +159,10 @@ export class AuthService {
           title: 'New Provider Registration',
           body: `A new provider "${pendingRegistration.fullName}" is waiting for approval.`,
           type: NotificationType.ALERT,
-          data: { phoneNumber: pendingRegistration.phoneNumber }
+          data: {
+            event: 'provider.registration.pending',
+            phoneNumber: pendingRegistration.phoneNumber,
+          }
         });
       }
     }

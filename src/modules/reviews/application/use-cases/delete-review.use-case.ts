@@ -17,14 +17,15 @@ export class DeleteReviewUseCase {
     }
 
     // Only the user who wrote the review (or Admin) can delete it
-    if (review.user.toString() !== currentUser._id.toString() && currentUser.role !== 'admin') {
+    const currentUserId = currentUser?._id?.toString() || currentUser?.userId?.toString() || currentUser?.id?.toString();
+    if (review.user.toString() !== currentUserId && currentUser.role !== 'admin') {
       throw new ForbiddenException('You do not have permission to delete this review');
     }
 
     const providerId = review.provider;
     const deleted = await this.reviewRepository.delete(reviewId);
 
-    if (deleted) {
+    if (deleted && providerId) {
       // Recalculate provider rating stats after deletion
       const stats = await this.reviewRepository.getAverageRating(providerId);
       await this.recalculateProviderRatingUseCase.execute(providerId, stats.averageRating, stats.totalReviews);

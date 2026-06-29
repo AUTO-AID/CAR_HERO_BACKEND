@@ -55,5 +55,10 @@ describe('AssignProviderUseCase', () => {
     expect(result.status).toBe(OrderStatus.ACCEPTED);
     expect(mockRepo.update).toHaveBeenCalled();
     expect(mockEventEmitter.emit).toHaveBeenCalledTimes(2); // STATUS_CHANGED and PROVIDER_ASSIGNED
+    expect(mockEventEmitter.emit).toHaveBeenCalledWith('order.provider_assigned', {
+      orderId: 'id',
+      providerId: 'prov-id',
+      orderNumber: 'CH-1',
+    });
   });
 });

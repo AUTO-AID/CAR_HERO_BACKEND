@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { PaymentPurpose, PaymentStatus } from '../../../domain/entities/payment-intent.entity';
+import type { PaymentPurpose, PaymentStatus } from '../../../../domain/entities/payment-intent.entity';
 
 @Schema({ timestamps: true, collection: 'payment_intents' })
 export class PaymentIntentDocument extends Document {

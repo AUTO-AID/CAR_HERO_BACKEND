@@ -66,7 +66,11 @@ export class AssignProviderUseCase {
       ),
     );
 
-    this.eventEmitter.emit(OrderEvents.PROVIDER_ASSIGNED, { orderId: id, providerId });
+    this.eventEmitter.emit(OrderEvents.PROVIDER_ASSIGNED, {
+      orderId: id,
+      providerId,
+      orderNumber: order.orderNumber,
+    });
 
     return updatedOrder;
   }

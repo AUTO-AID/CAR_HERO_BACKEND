@@ -107,9 +107,9 @@ export class CancelOrderUseCase {
       // Update payment status to REFUNDED
       await this.orderRepository.update(id, { paymentStatus: PaymentStatus.REFUNDED });
     } else if (order.metadata?.pointsRedeemed && order.userId) {
+      const pointsToRefund = Number(order.metadata.pointsRedeemed);
       // Order wasn't paid yet, but points were redeemed during booking (deducted instantly)
       await this.walletRepository.executeTransaction(order.userId, 'user', async (wallet, session) => {
-        const pointsToRefund = Number(order.metadata.pointsRedeemed);
         if (pointsToRefund > 0) {
           wallet.loyaltyPoints = (wallet.loyaltyPoints || 0) + pointsToRefund;
         }

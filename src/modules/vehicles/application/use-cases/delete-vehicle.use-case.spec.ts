@@ -35,6 +35,7 @@ describe('DeleteVehicleUseCase', () => {
             countByUserId: jest.fn(),
             findByUserId: jest.fn(),
             update: jest.fn(),
+            setAsDefault: jest.fn(),
           },
         },
         {
@@ -107,13 +108,12 @@ describe('DeleteVehicleUseCase', () => {
         vehicles: [defaultVehicle, otherVehicle],
         total: 2,
       });
+      vehicleRepository.setAsDefault.mockResolvedValue({ ...otherVehicle, isDefault: true });
       vehicleRepository.delete.mockResolvedValue(true);
 
       await useCase.execute('v1', 'user1');
 
-      expect(vehicleRepository.update).toHaveBeenCalledWith('v2', {
-        isDefault: true,
-      });
+      expect(vehicleRepository.setAsDefault).toHaveBeenCalledWith('user1', 'v2');
     });
   });
 });

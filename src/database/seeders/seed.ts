@@ -12,6 +12,7 @@ import { SubscriptionPlan } from '../../modules/subscriptions/infrastructure/per
 import { Service } from '../../modules/services/infrastructure/persistence/mongoose/schemas/service.schema';
 import { ServiceCategory } from '../../core/enums/status.enum';
 import { Role } from '../../core/enums/roles.enum';
+import { ADMIN_PERMISSIONS } from '../../core/constants';
 
 async function seed() {
   console.log('🌱 Starting database seeding...');
@@ -58,6 +59,7 @@ async function seedAdmin(app: any) {
   ];
 
   for (const adminData of admins) {
+    const desiredPermissions = adminData.email === 'admin@carhero.com' ? ['*'] : [...ADMIN_PERMISSIONS];
     const existingAdmin = await adminModel.findOne({ email: adminData.email }).exec();
 
     if (!existingAdmin) {
@@ -69,16 +71,31 @@ async function seedAdmin(app: any) {
         name: adminData.name,
         role: Role.ADMIN,
         isActive: true,
-        permissions: [],
+        permissions: desiredPermissions,
       });
 
-      console.log(`✅ Admin user created: ${adminData.email} / ${adminData.password}`);
+      console.log(`Admin user created: ${adminData.email}`);
+      continue;
+    }
+
+    const currentPermissions = existingAdmin.permissions || [];
+    const hasWildcard = currentPermissions.includes('*') || currentPermissions.includes('all');
+    const missingPermissions = desiredPermissions.filter(
+      (permission) => !currentPermissions.includes(permission),
+    );
+
+    if (!hasWildcard && missingPermissions.length > 0) {
+      const mergedPermissions = Array.from(new Set([...currentPermissions, ...missingPermissions]));
+      await adminModel.updateOne(
+        { _id: existingAdmin._id },
+        { $set: { permissions: mergedPermissions } },
+      );
+      console.log(`Admin permissions updated: ${adminData.email}`);
     } else {
-      console.log(`ℹ️ Admin user already exists: ${adminData.email}`);
+      console.log(`Admin user already exists: ${adminData.email}`);
     }
   }
 }
-
 async function seedSubscriptionPlans(app: any) {
   const planModel: Model<SubscriptionPlan> = app.get(getModelToken(SubscriptionPlan.name));
 

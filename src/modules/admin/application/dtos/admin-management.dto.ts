@@ -1,34 +1,7 @@
 import { ArrayUnique, IsArray, IsBoolean, IsEmail, IsIn, IsNotEmpty, IsOptional, IsString, Matches, MaxLength, MinLength } from 'class-validator';
+import { ADMIN_PERMISSIONS } from '../../../../core/constants';
 
-export const ADMIN_PERMISSIONS = [
-  '*',
-  'admin.profile',
-  'admins.read',
-  'admins.create',
-  'admins.update',
-  'admins.delete',
-  'analytics.read',
-  'audit.read',
-  'finance.read',
-  'providers.read',
-  'providers.approve',
-  'providers.reject',
-  'providers.update',
-  'services.read',
-  'services.create',
-  'services.update',
-  'services.delete',
-  'subscriptions.read',
-  'subscriptions.create',
-  'subscriptions.update',
-  'subscriptions.delete',
-  'settings.read',
-  'settings.update',
-  'users.read',
-  'users.update',
-  'users.delete',
-  'users.status',
-] as const;
+export { ADMIN_PERMISSIONS };
 
 const PASSWORD_PATTERN = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$/;
 

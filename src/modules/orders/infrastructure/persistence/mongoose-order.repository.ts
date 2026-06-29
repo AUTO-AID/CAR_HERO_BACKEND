@@ -14,6 +14,7 @@ export class MongooseOrderRepository implements IOrderRepository {
 
   private mapToEntity(doc: OrderDocument): OrderEntity {
     const anyDoc = doc as any;
+    const toIdString = (value: any) => value?._id?.toString?.() ?? value?.toString?.() ?? '';
     const serviceDetails = anyDoc.serviceDetails || anyDoc.service;
     const userDetails = anyDoc.userDetails || anyDoc.user;
     const providerDetails = anyDoc.providerDetails || anyDoc.provider;
@@ -32,13 +33,13 @@ export class MongooseOrderRepository implements IOrderRepository {
     const entity = new OrderEntity(
       anyDoc._id.toString(),
       doc.orderNumber,
-      anyDoc.user?._id?.toString?.() ?? doc.user.toString(),
-      anyDoc.service?._id?.toString?.() ?? doc.service.toString(),
+      toIdString(anyDoc.user ?? doc.user),
+      toIdString(anyDoc.service ?? doc.service),
       doc.status,
       total,
-      { type: doc.location.type, coordinates: doc.location.coordinates },
-      anyDoc.provider?._id?.toString?.() ?? doc.provider?.toString(),
-      anyDoc.vehicle?._id?.toString?.() ?? doc.vehicle?.toString(),
+      { type: doc.location?.type || 'Point', coordinates: doc.location?.coordinates || [0, 0] },
+      toIdString(anyDoc.provider ?? doc.provider) || undefined,
+      toIdString(anyDoc.vehicle ?? doc.vehicle) || undefined,
       anyDoc.serviceName ?? doc.metadata?.serviceName ?? serviceDetails?.nameAr ?? serviceDetails?.name,
       servicePrice,
       doc.scheduledAt,
@@ -48,12 +49,15 @@ export class MongooseOrderRepository implements IOrderRepository {
       doc.userNotes,
       (doc as any).createdAt,
       (doc as any).updatedAt,
+      anyDoc.totalAmount ?? total,
+      anyDoc.discountAmount ?? 0,
+      anyDoc.payableAmount ?? total,
+      doc.metadata,
       anyDoc.providerLocation
         ? { type: anyDoc.providerLocation.type, coordinates: anyDoc.providerLocation.coordinates }
         : undefined,
       anyDoc.providerLocationUpdatedAt,
       anyDoc.providerLocationHistory || [],
-      doc.metadata,
     );
 
     (entity as any).user = {

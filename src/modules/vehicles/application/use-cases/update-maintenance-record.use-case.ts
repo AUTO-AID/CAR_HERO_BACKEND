@@ -26,7 +26,6 @@ export class UpdateMaintenanceRecordUseCase {
     dto: UpdateMaintenanceRecordDto,
     userId: string,
   ): Promise<MaintenanceRecordEntity> {
-    try {
     // Find record
     const record = await this.maintenanceRepository.findById(recordId);
     if (!record) {
@@ -51,10 +50,6 @@ export class UpdateMaintenanceRecordUseCase {
     await this.invalidateVehicleCache(record.vehicleId);
 
     return updatedRecord;
-    } catch (e) {
-      require('fs').appendFileSync('scripts/maintenance-error.log', e.stack + '\n');
-      throw e;
-    }
   }
 
   private async invalidateVehicleCache(vehicleId: string): Promise<void> {

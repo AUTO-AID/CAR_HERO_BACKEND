@@ -3,7 +3,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
 import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
 import { OrderEntity } from '../../domain/entities/order.entity';
-import { PaymentStatus } from '../../../../core/enums/status.enum';
+import { PaymentMethod, PaymentStatus } from '../../../../core/enums/status.enum';
 import { VerifyPaymentDto } from '../dto/verify-payment.dto';
 import type { IWalletRepository } from '../../../../modules/wallet/domain/repositories/wallet.repository.interface';
 import { Transaction } from '../../../../modules/wallet/domain/entities/transaction.entity';
@@ -34,7 +34,7 @@ export class VerifyPaymentUseCase {
       throw new BadRequestException('Order is already paid');
     }
 
-    if (dto.paymentMethod === 'cham_cash' || dto.paymentMethod === 'online') {
+    if ([PaymentMethod.CHAM_CASH, PaymentMethod.ONLINE].includes(dto.paymentMethod)) {
       throw new BadRequestException('Online payments must be processed via the /api/payments/initialize endpoint. Direct verification is disabled.');
     }
 

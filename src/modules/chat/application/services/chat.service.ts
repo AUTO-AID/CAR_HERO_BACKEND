@@ -94,11 +94,11 @@ export class ChatService {
       }
     );
 
-    // 📣 Notify receiver
+    // Notify the receiver through the unified notification pipeline.
     await this.notificationsService.createNotification({
       recipientId: receiverId.toString(),
       recipientType: 'user', // Adjust if you have complex roles
-      title: 'New Message 💬',
+      title: 'New message',
       body: dto.message.length > 50 ? `${dto.message.substring(0, 50)}...` : dto.message,
       type: NotificationType.NEW_MESSAGE,
       data: { chatId: chat.id, senderId }

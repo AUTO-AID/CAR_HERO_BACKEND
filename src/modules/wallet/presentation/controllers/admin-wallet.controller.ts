@@ -6,13 +6,15 @@ import { GetFinancialSummaryUseCase } from '../../application/use-cases/get-fina
 import { ProcessPayoutUseCase } from '../../application/use-cases/process-payout.use-case';
 import { JwtAuthGuard } from '../../../../core/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../../core/guards/roles.guard';
+import { PermissionsGuard } from '../../../../core/guards/permissions.guard';
 import { Roles } from '../../../../core/decorators/roles.decorator';
+import { Permissions } from '../../../../core/decorators/permissions.decorator';
 import { Role } from '../../../../core/enums/roles.enum';
 import { CurrentUser } from '../../../../core/decorators/current-user.decorator';
 import { AuditLogService } from '../../../audit/application/services/audit-log.service';
 
 @Controller('admin/wallet')
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
 @Roles(Role.ADMIN)
 export class AdminWalletController {
   constructor(
@@ -33,12 +35,14 @@ export class AdminWalletController {
   }
 
   @Get('stats')
+  @Permissions('finance.read')
   async getStats() {
     const stats = await this.financialSummary.execute();
     return { success: true, data: stats };
   }
 
   @Get('transactions/all')
+  @Permissions('finance.read')
   async getAllTransactions(
     @Query('page') page: number,
     @Query('limit') limit: number,
@@ -49,6 +53,7 @@ export class AdminWalletController {
   }
 
   @Patch('payouts/:id')
+  @Permissions('finance.update')
   async handlePayout(
     @Param('id') id: string,
     @Body('action') action: 'complete' | 'reject',
@@ -72,12 +77,14 @@ export class AdminWalletController {
   }
 
   @Get('platform')
+  @Permissions('finance.read')
   async getPlatformWallet() {
     const wallet = await this.getBalance.execute(this.SYSTEM_OWNER_ID, 'system');
     return { success: true, data: wallet };
   }
 
   @Get('platform/transactions')
+  @Permissions('finance.read')
   async getPlatformTransactions(
     @Query('page') page: number,
     @Query('limit') limit: number,
@@ -87,12 +94,14 @@ export class AdminWalletController {
   }
 
   @Get(':ownerId')
+  @Permissions('finance.read')
   async getWallet(@Param('ownerId') ownerId: string, @Query('type') type: 'user' | 'provider' | 'system') {
     const wallet = await this.getBalance.execute(ownerId, type || 'user');
     return { success: true, data: wallet };
   }
 
   @Get(':ownerId/transactions')
+  @Permissions('finance.read')
   async getTransactions(
     @Param('ownerId') ownerId: string,
     @Query('type') type: 'user' | 'provider' | 'system',
@@ -104,6 +113,7 @@ export class AdminWalletController {
   }
 
   @Post(':ownerId/adjust')
+  @Permissions('finance.update')
   async adjustBalance(@Param('ownerId') ownerId: string, @Body() dto: any, @CurrentUser() admin: any) {
     // Logic for manual adjustment could be added here
     const result = { success: true, message: 'Balance adjusted successfully (Skeleton)' };

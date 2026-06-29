@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { getConnectionToken } from '@nestjs/mongoose';
 import { Role } from '../../../../core/enums/roles.enum';
 import { ProviderStatus, ServiceCategory } from '../../../../core/enums/status.enum';
 import { ApproveProviderUseCase } from '../../application/use-cases/approve-provider.use-case';
@@ -42,6 +43,7 @@ describe('ProvidersController', () => {
     dashboard: { execute: jest.fn() },
     audit: { record: jest.fn() },
     repository: { delete: jest.fn(), findByPhone: jest.fn().mockResolvedValue({ id: 'provider-id' }) },
+    connection: { collection: jest.fn() },
   };
 
   beforeEach(async () => {
@@ -62,6 +64,7 @@ describe('ProvidersController', () => {
         { provide: GetProviderDashboardUseCase, useValue: useCases.dashboard },
         { provide: AuditLogService, useValue: useCases.audit },
         { provide: IProviderRepository, useValue: useCases.repository },
+        { provide: getConnectionToken(), useValue: useCases.connection },
       ],
     }).compile();
 

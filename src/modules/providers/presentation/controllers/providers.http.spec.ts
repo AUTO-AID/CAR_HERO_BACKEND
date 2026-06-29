@@ -1,5 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { getConnectionToken } from '@nestjs/mongoose';
 import request from 'supertest';
 import { Role } from '../../../../core/enums/roles.enum';
 import { ProviderStatus, ServiceCategory } from '../../../../core/enums/status.enum';
@@ -51,6 +52,7 @@ describe('ProvidersController HTTP endpoints', () => {
       delete: jest.fn().mockResolvedValue(undefined),
       findByPhone: jest.fn().mockResolvedValue({ id: providerId }),
     },
+    connection: { collection: jest.fn() },
   };
 
   beforeAll(async () => {
@@ -71,6 +73,7 @@ describe('ProvidersController HTTP endpoints', () => {
         { provide: GetProviderDashboardUseCase, useValue: useCases.dashboard },
         { provide: AuditLogService, useValue: useCases.audit },
         { provide: IProviderRepository, useValue: useCases.repository },
+        { provide: getConnectionToken(), useValue: useCases.connection },
       ],
     })
       .overrideGuard(JwtAuthGuard)

@@ -9,7 +9,9 @@ import { RecalculateProviderRatingUseCase } from '../../../providers/application
 import { JwtAuthGuard } from '../../../../core/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../../core/guards/roles.guard';
 import { Roles } from '../../../../core/decorators/roles.decorator';
+import { Permissions } from '../../../../core/decorators/permissions.decorator';
 import { Role } from '../../../../core/enums/roles.enum';
+import { PermissionsGuard } from '../../../../core/guards/permissions.guard';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Review, ReviewDocument } from '../../infrastructure/persistence/mongoose/schemas/review.schema';
@@ -27,8 +29,9 @@ export class ReviewsController {
   ) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
   @Roles(Role.ADMIN)
+  @Permissions('reviews.read')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Get all reviews with filters for admin' })
   async getReviews(
@@ -91,8 +94,9 @@ export class ReviewsController {
   }
 
   @Get('stats')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
   @Roles(Role.ADMIN)
+  @Permissions('reviews.read')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Get review moderation and rating analytics' })
   async getReviewStats() {
@@ -140,8 +144,9 @@ export class ReviewsController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
   @Roles(Role.ADMIN)
+  @Permissions('reviews.update')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Update review moderation fields' })
   async updateReviewModeration(

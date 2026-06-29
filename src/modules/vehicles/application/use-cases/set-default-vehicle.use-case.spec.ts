@@ -33,6 +33,7 @@ describe('SetDefaultVehicleUseCase', () => {
             update: jest.fn(),
             belongsToUser: jest.fn(),
             findByUserId: jest.fn(),
+            setAsDefault: jest.fn(),
           },
         },
         {
@@ -90,16 +91,12 @@ describe('SetDefaultVehicleUseCase', () => {
         vehicles: [otherDefault, mockVehicle],
         total: 2,
       });
-      vehicleRepository.update.mockResolvedValue({ ...mockVehicle, isDefault: true });
+      vehicleRepository.setAsDefault.mockResolvedValue({ ...mockVehicle, isDefault: true });
 
       const result = await useCase.execute('v1', 'user1');
 
-      expect(vehicleRepository.update).toHaveBeenCalledWith('v2', {
-        isDefault: false,
-      });
-      expect(vehicleRepository.update).toHaveBeenCalledWith('v1', {
-        isDefault: true,
-      });
+      expect(vehicleRepository.update).not.toHaveBeenCalled();
+      expect(vehicleRepository.setAsDefault).toHaveBeenCalledWith('user1', 'v1');
       expect(result.isDefault).toBe(true);
     });
   });

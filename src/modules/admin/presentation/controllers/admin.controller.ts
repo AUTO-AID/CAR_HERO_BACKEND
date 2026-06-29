@@ -124,6 +124,38 @@ export class AdminController {
     );
   }
 
+  @Get('providers/map')
+  @Roles(Role.ADMIN)
+  @Permissions('providers.read')
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Get provider locations and operational metrics for interactive map' })
+  async getProvidersMap(
+    @Query('status') status: RegistrationStatus,
+    @Query('search') search?: string,
+    @Query('isActive') isActive?: string,
+    @Query('runtimeStatus') runtimeStatus?: string,
+    @Query('location') location?: string,
+    @Query('governorate') governorate?: string,
+    @Query('city') city?: string,
+    @Query('service') service?: string,
+    @Query('emergency') emergency?: string,
+    @Query('minRating') minRating?: string,
+  ) {
+    return this.adminService.getProvidersMap({
+      status,
+      search,
+      isActive: isActive === undefined ? undefined : isActive === 'true',
+      runtimeStatus,
+      location,
+      governorate,
+      city,
+      service,
+      emergency: emergency === undefined ? undefined : emergency === 'true',
+      minRating: minRating === undefined ? undefined : Number(minRating),
+    });
+  }
+
   @Get('providers/:id')
   @Roles(Role.ADMIN)
   @Permissions('providers.read')

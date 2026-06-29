@@ -1,8 +1,9 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { ISubscriptionRepository } from '../../domain/repositories/subscription.repository.interface';
 
-import { IWalletRepository } from '../../wallet/domain/repositories/wallet.repository.interface';
-import { Transaction, TransactionType } from '../../wallet/domain/entities/transaction.entity';
+import type { IWalletRepository } from '../../../wallet/domain/repositories/wallet.repository.interface';
+import { Transaction } from '../../../wallet/domain/entities/transaction.entity';
+import { TransactionType } from '../../../../core/enums/status.enum';
 
 export interface UpgradeSubscriptionCommand {
   userId: string;
@@ -17,7 +18,7 @@ export class UpgradeSubscriptionUseCase {
   constructor(
     @Inject(ISubscriptionRepository)
     private readonly subscriptionRepository: ISubscriptionRepository,
-    @Inject(IWalletRepository)
+    @Inject('IWalletRepository')
     private readonly walletRepository: IWalletRepository,
   ) {}
 

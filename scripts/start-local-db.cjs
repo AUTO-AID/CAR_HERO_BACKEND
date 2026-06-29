@@ -4,18 +4,19 @@ const path = require('path');
 
 async function main() {
   const port = parseInt(process.env.MONGO_MEMORY_PORT || '27017', 10);
+  const version = process.env.MONGO_MEMORY_VERSION || '8.2.6';
   const dbPath = path.resolve(
-    process.env.MONGO_MEMORY_DB_PATH || 'E:/all_project/CarHero/mongodb-data',
+    process.env.MONGO_MEMORY_DB_PATH || `E:/all_project/CarHero/mongodb-data-${version.split('.')[0]}`,
   );
   if (!fs.existsSync(dbPath)) {
     fs.mkdirSync(dbPath, { recursive: true });
   }
 
-  console.log(`Starting MongoMemoryServer with dbPath: ${dbPath}`);
+  console.log(`Starting MongoMemoryServer ${version} with dbPath: ${dbPath}`);
   
   const mongoServer = await MongoMemoryServer.create({
     binary: {
-      version: '6.0.16',
+      version,
     },
     instance: {
       port,

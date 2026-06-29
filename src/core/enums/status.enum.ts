@@ -33,6 +33,8 @@ export enum PaymentMethod {
   WALLET = 'wallet',
   CARD = 'card',
   POINTS = 'points',
+  CHAM_CASH = 'cham_cash',
+  ONLINE = 'online',
 }
 
 /**
@@ -81,6 +83,7 @@ export enum TransactionType {
   DEBIT = 'debit',
   REFUND = 'refund',
   LOYALTY_POINTS = 'loyalty_points',
+  SUBSCRIPTION_FEE = 'subscription_fee',
 }
 
 /**

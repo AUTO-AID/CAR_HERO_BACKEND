@@ -128,13 +128,7 @@ export class VehiclesController {
     @Body() dto: UpdateMaintenanceRecordDto,
     @Req() req: any,
   ) {
-    try {
-      require('fs').appendFileSync('e:/all_project/CarHero/CAR_HERO_BACKEND/scripts/hit.log', 'HIT updateMaintenanceRecord\n');
-      return await this.updateMaintenanceRecordUseCase.execute(recordId, dto, req.user._id);
-    } catch (e) {
-      require('fs').appendFileSync('e:/all_project/CarHero/CAR_HERO_BACKEND/scripts/controller-error.log', e.stack + '\n');
-      throw e;
-    }
+    return this.updateMaintenanceRecordUseCase.execute(recordId, dto, req.user._id);
   }
 
   /**

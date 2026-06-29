@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Param, Query, Body, Res, Logger } from '@nestjs/common';
-import { Response } from 'express';
+import type { Response } from 'express';
 import { PaymentIntentRepository } from '../../infrastructure/repositories/payment-intent.repository';
 import { ChamCashService } from '../../application/services/cham-cash.service';
 import axios from 'axios';

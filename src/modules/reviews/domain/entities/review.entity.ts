@@ -30,9 +30,6 @@ export class ReviewEntity {
     if (this.rating < 1 || this.rating > 5) {
       throw new Error('Rating must be between 1 and 5');
     }
-    if (!this.order) {
-      throw new Error('Review must be linked to an order');
-    }
   }
 
   static create(props: {

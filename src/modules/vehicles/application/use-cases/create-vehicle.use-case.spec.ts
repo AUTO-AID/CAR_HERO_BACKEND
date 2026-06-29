@@ -41,6 +41,7 @@ describe('CreateVehicleUseCase', () => {
             countByUserId: jest.fn(),
             findByUserId: jest.fn(),
             update: jest.fn(),
+            setAsDefault: jest.fn(),
           },
         },
         {
@@ -70,6 +71,7 @@ describe('CreateVehicleUseCase', () => {
     it('should create a vehicle successfully', async () => {
       vehicleRepository.countByUserId.mockResolvedValue(0);
       vehicleRepository.create.mockResolvedValue(mockVehicle as VehicleEntity);
+      vehicleRepository.setAsDefault.mockResolvedValue(mockVehicle as VehicleEntity);
 
       const result = await useCase.execute(createVehicleDto, 'user1');
 
@@ -138,9 +140,7 @@ describe('CreateVehicleUseCase', () => {
       const dtoWithDefault: CreateVehicleDto = { ...createVehicleDto, isDefault: true };
       await useCase.execute(dtoWithDefault, 'user1');
 
-      expect(vehicleRepository.update).toHaveBeenCalledWith('v0', {
-        isDefault: false,
-      });
+      expect(vehicleRepository.setAsDefault).toHaveBeenCalledWith('user1', 'v1');
     });
   });
 });

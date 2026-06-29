@@ -25,11 +25,21 @@ export class WsJwtGuard implements CanActivate {
       }
 
       const payload = await this.jwtService.verifyAsync(token, {
-        secret: this.configService.get<string>('jwt.secret'),
+        secret: this.configService.get<string>('jwt.secret') || this.configService.get<string>('JWT_SECRET'),
       });
 
-      // Attach user to client data
-      client.data.user = payload;
+      const userId = payload.userId || payload.id || payload._id || payload.sub;
+      if (!userId) {
+        throw new WsException('Invalid authentication token payload');
+      }
+
+      // Attach a normalized user shape so gateways can rely on one id field.
+      client.data.user = {
+        ...payload,
+        id: userId,
+        userId,
+        _id: userId,
+      };
 
       return true;
     } catch {

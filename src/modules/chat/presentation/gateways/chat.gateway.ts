@@ -27,6 +27,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   constructor(private readonly chatService: ChatService) {}
 
+  private roomFor(chatId: string) {
+    return `chat:${chatId}`;
+  }
+
+  private async assertMembership(chatId: string, userId: string) {
+    const isMember = await this.chatService.verifyMembership(chatId, userId);
+    if (!isMember) {
+      throw new WsException('Unauthorized: You are not a participant of this chat');
+    }
+  }
+
   async handleConnection(client: Socket) {
     this.logger.log(`Chat client connected: ${client.id}`);
   }
@@ -51,33 +62,34 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody() data: { chatId: string },
   ) {
     const userId = client.data.user.id;
-    
-    // SECURITY: Verify membership before joining room
-    const isMember = await this.chatService.verifyMembership(data.chatId, userId);
-    if (!isMember) {
-      throw new WsException('Unauthorized: You are not a participant of this chat');
-    }
+    await this.assertMembership(data.chatId, userId);
 
-    client.join(`chat:${data.chatId}`);
+    const roomId = this.roomFor(data.chatId);
+    client.join(roomId);
     
     // Register online status
     if (!this.onlineUsers.has(userId)) {
       this.onlineUsers.set(userId, new Set<string>());
     }
-    this.onlineUsers.get(userId).add(client.id);
+    const sockets = this.onlineUsers.get(userId);
+    sockets?.add(client.id);
     this.server.emit('user_online', { userId });
     
-    return { success: true, roomId: `chat:${data.chatId}` };
+    return { success: true, roomId };
   }
 
   @UseGuards(WsJwtGuard)
   @SubscribeMessage('leave_chat')
-  handleLeaveChat(
+  async handleLeaveChat(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { chatId: string },
   ) {
-    client.leave(`chat:${data.chatId}`);
-    return { success: true };
+    const userId = client.data.user.id;
+    await this.assertMembership(data.chatId, userId);
+
+    const roomId = this.roomFor(data.chatId);
+    client.leave(roomId);
+    return { success: true, roomId };
   }
 
   @UseGuards(WsJwtGuard)
@@ -90,7 +102,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // Security check is done inside saveMessage
     const message = await this.chatService.saveMessage(userId, dto);
     
-    const roomId = `chat:${dto.chatId}`;
+    const roomId = this.roomFor(dto.chatId);
     this.server.to(roomId).emit('new_message', message);
     
     return { success: true, messageId: (message as any)._id.toString() };
@@ -103,12 +115,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody() data: { chatId: string; isTyping: boolean },
   ) {
     const userId = client.data.user.id;
-    
-    // SECURITY: Optional: check membership for typing too
-    const isMember = await this.chatService.verifyMembership(data.chatId, userId);
-    if (!isMember) return;
+    await this.assertMembership(data.chatId, userId);
 
-    const roomId = `chat:${data.chatId}`;
+    const roomId = this.roomFor(data.chatId);
     client.to(roomId).emit('user_typing', {
       chatId: data.chatId,
       userId,
@@ -123,9 +132,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody() data: { chatId: string },
   ) {
     const userId = client.data.user.id;
+    await this.assertMembership(data.chatId, userId);
+
     await this.chatService.markAsRead(data.chatId, userId);
     
-    const roomId = `chat:${data.chatId}`;
+    const roomId = this.roomFor(data.chatId);
     this.server.to(roomId).emit('messages_marked_read', {
       chatId: data.chatId,
       userId,

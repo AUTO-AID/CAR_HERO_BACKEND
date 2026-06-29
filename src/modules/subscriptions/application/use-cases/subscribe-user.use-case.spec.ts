@@ -7,6 +7,7 @@ import { SubscriptionPlanEntity } from '../../domain/entities/subscription.entit
 describe('SubscribeUserUseCase', () => {
   let useCase: SubscribeUserUseCase;
   let repository: ISubscriptionRepository;
+  let walletRepository: { executeTransaction: jest.Mock };
 
   const mockPlan = new SubscriptionPlanEntity(
     'plan-id', 'Gold', 'ذهبي', 100, 30, [], [], true, 'gold', 1
@@ -25,11 +26,27 @@ describe('SubscribeUserUseCase', () => {
             syncUserPremiumState: jest.fn(),
           },
         },
+        {
+          provide: 'IWalletRepository',
+          useValue: {
+            executeTransaction: jest.fn(async (_ownerId, _ownerType, operation) =>
+              operation({
+                id: 'wallet-id',
+                ownerId: 'u1',
+                ownerType: 'user',
+                balance: 1000,
+                hasSufficientBalance: jest.fn().mockReturnValue(true),
+                withdraw: jest.fn(),
+              }, {}),
+            ),
+          },
+        },
       ],
     }).compile();
 
     useCase = module.get<SubscribeUserUseCase>(SubscribeUserUseCase);
     repository = module.get<ISubscriptionRepository>(ISubscriptionRepository);
+    walletRepository = module.get('IWalletRepository');
   });
 
   it('should throw if plan is not found', async () => {
@@ -57,6 +74,7 @@ describe('SubscribeUserUseCase', () => {
 
     const result = await useCase.execute({ userId: 'u1', planId: 'p1' });
     expect(result.status).toBe('active');
+    expect(walletRepository.executeTransaction).toHaveBeenCalledWith('u1', 'user', expect.any(Function));
     expect(repository.syncUserPremiumState).toHaveBeenCalledWith('u1', 'sub-id', expect.any(Date));
   });
 });

@@ -18,6 +18,8 @@ import { CurrentUser } from '../../../../core/decorators/current-user.decorator'
 import { ParseObjectIdPipe } from '../../../../core/pipes/parse-objectid.pipe';
 import { RolesGuard } from '../../../../core/guards/roles.guard';
 import { Roles } from '../../../../core/decorators/roles.decorator';
+import { Permissions } from '../../../../core/decorators/permissions.decorator';
+import { PermissionsGuard } from '../../../../core/guards/permissions.guard';
 import { Role } from '../../../../core/enums/roles.enum';
 import { NotificationType } from '../../../../core/enums/status.enum';
 
@@ -43,24 +45,27 @@ export class NotificationsController {
   }
 
   @Post('admin/broadcast')
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard, PermissionsGuard)
   @Roles(Role.ADMIN)
+  @Permissions('notifications.create')
   @ApiOperation({ summary: 'Create an immediate or scheduled notification campaign' })
   async createBroadcast(@Body() body: { audience: 'all' | 'users' | 'premium' | 'providers'; title: string; body: string; type: NotificationType; scheduledAt?: string }) {
     return { success: true, data: await this.notificationsService.createBroadcast(body) };
   }
 
   @Get('admin/history')
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard, PermissionsGuard)
   @Roles(Role.ADMIN)
+  @Permissions('notifications.read')
   @ApiOperation({ summary: 'Get paginated notification campaign history' })
   async getAdminHistory(@Query('page') page = 1, @Query('limit') limit = 10, @Query() filters: any = {}) {
     return { success: true, data: await this.notificationsService.getAdminHistory(page, limit, filters) };
   }
 
   @Get('admin/stats')
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard, PermissionsGuard)
   @Roles(Role.ADMIN)
+  @Permissions('notifications.read')
   @ApiOperation({ summary: 'Get notification delivery statistics' })
   async getAdminStats() {
     return { success: true, data: await this.notificationsService.getAdminStats() };

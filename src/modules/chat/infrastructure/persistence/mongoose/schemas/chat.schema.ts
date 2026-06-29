@@ -23,7 +23,7 @@ export class Message {
   @Prop({ required: true })
   message: string;
 
-  @Prop({ type: String, enum: ['text', 'image', 'location', 'voice'], default: 'text' })
+  @Prop({ type: String, enum: ['text', 'image', 'location', 'voice', 'file'], default: 'text' })
   type: string;
 
   @Prop({ type: Date, default: Date.now })

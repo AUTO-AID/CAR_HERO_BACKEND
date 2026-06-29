@@ -10,6 +10,7 @@ describe('Subscription lifecycle use cases', () => {
   let cancelUseCase: CancelSubscriptionUseCase;
   let renewUseCase: RenewSubscriptionUseCase;
   let upgradeUseCase: UpgradeSubscriptionUseCase;
+  let walletRepository: { executeTransaction: jest.Mock };
 
   const activeSub: any = {
     id: 'sub-id',
@@ -45,10 +46,26 @@ describe('Subscription lifecycle use cases', () => {
             syncUserPremiumState: jest.fn(),
           },
         },
+        {
+          provide: 'IWalletRepository',
+          useValue: {
+            executeTransaction: jest.fn(async (_ownerId, _ownerType, operation) =>
+              operation({
+                id: 'wallet-id',
+                ownerId: 'user-id',
+                ownerType: 'user',
+                balance: 1000,
+                hasSufficientBalance: jest.fn().mockReturnValue(true),
+                withdraw: jest.fn(),
+              }, {}),
+            ),
+          },
+        },
       ],
     }).compile();
 
     repository = module.get(ISubscriptionRepository);
+    walletRepository = module.get('IWalletRepository');
     cancelUseCase = module.get(CancelSubscriptionUseCase);
     renewUseCase = module.get(RenewSubscriptionUseCase);
     upgradeUseCase = module.get(UpgradeSubscriptionUseCase);
@@ -72,6 +89,7 @@ describe('Subscription lifecycle use cases', () => {
     const result = await renewUseCase.execute({ userId: 'user-id', paymentId: 'pay-1' });
 
     expect(result.endDate).toBeInstanceOf(Date);
+    expect(walletRepository.executeTransaction).toHaveBeenCalledWith('user-id', 'user', expect.any(Function));
     expect(repository.updateUserSubscription).toHaveBeenCalledWith('sub-id', expect.objectContaining({
       amountPaid: 250,
       lastPaymentId: 'pay-1',
@@ -86,6 +104,7 @@ describe('Subscription lifecycle use cases', () => {
     const result = await upgradeUseCase.execute({ userId: 'user-id', planId: 'new-plan' });
 
     expect(result.id).toBe('upgraded-sub');
+    expect(walletRepository.executeTransaction).toHaveBeenCalledWith('user-id', 'user', expect.any(Function));
     expect(repository.updateUserSubscription).toHaveBeenCalledWith('sub-id', expect.objectContaining({ status: 'cancelled' }));
     expect(repository.createUserSubscription).toHaveBeenCalledWith(expect.objectContaining({ plan: 'new-plan' }));
   });

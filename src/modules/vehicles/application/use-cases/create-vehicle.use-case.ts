@@ -67,8 +67,8 @@ export class CreateVehicleUseCase {
     await this.cacheManager.del(`vehicles_user_${userId}_default`);
     
     // Clear paginated and search caches
-    const store = this.cacheManager.store as any;
-    if (typeof store.keys === 'function') {
+    const store = (this.cacheManager as unknown as { store?: { keys?: () => Promise<string[]> } }).store;
+    if (store && typeof store.keys === 'function') {
       try {
         const allKeys = await store.keys();
         const keysToDelete = allKeys.filter(k => 

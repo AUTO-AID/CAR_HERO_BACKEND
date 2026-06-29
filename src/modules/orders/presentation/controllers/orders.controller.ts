@@ -242,10 +242,13 @@ export class OrdersController {
   @ApiOperation({ summary: 'Update order status' })
   async updateStatus(
     @Param('id') id: string,
-    @Body('status') status: OrderStatus,
+    @Body() body: { status: OrderStatus; reason?: string; cancelledBy?: string },
     @Req() req: any
   ) {
-    return this.updateOrderStatusUseCase.execute(id, status, req.user);
+    return this.updateOrderStatusUseCase.execute(id, body.status, req.user, {
+      reason: body.reason,
+      cancelledBy: body.cancelledBy,
+    });
   }
 
   @Patch('orders/:id')

@@ -1,6 +1,8 @@
 /**
  * WebSocket Gateway
- * Handles real-time events for orders, chat, and provider status
+ * Handles real-time events for orders and provider status.
+ * Chat events are handled only by ChatGateway to keep membership checks,
+ * persistence, unread counts, and notifications on one secure path.
  */
 import {
   WebSocketGateway,
@@ -34,12 +36,6 @@ export enum ServerEvents {
   ORDER_NEW = 'order:new',
   ORDER_ASSIGNED = 'order:assigned',
 
-  // Chat events
-  MESSAGE_NEW = 'message:new',
-  MESSAGE_READ = 'message:read',
-  TYPING_START = 'typing:start',
-  TYPING_STOP = 'typing:stop',
-
   // Provider events
   PROVIDER_ONLINE = 'provider:online',
   PROVIDER_OFFLINE = 'provider:offline',
@@ -57,18 +53,10 @@ export enum ClientEvents {
   // Room management
   JOIN_ORDER = 'join:order',
   LEAVE_ORDER = 'leave:order',
-  JOIN_CHAT = 'join:chat',
-  LEAVE_CHAT = 'leave:chat',
 
   // Order events
   UPDATE_ORDER_STATUS = 'update:order:status',
   UPDATE_ORDER_LOCATION = 'update:order:location',
-
-  // Chat events
-  SEND_MESSAGE = 'send:message',
-  MARK_READ = 'mark:read',
-  START_TYPING = 'start:typing',
-  STOP_TYPING = 'stop:typing',
 
   // Provider events
   UPDATE_PROVIDER_STATUS = 'update:provider:status',
@@ -162,34 +150,6 @@ export class AppGateway
   }
 
   /**
-   * Join chat room
-   */
-  @SubscribeMessage(ClientEvents.JOIN_CHAT)
-  handleJoinChat(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: { chatId: string },
-  ) {
-    const room = `chat:${data.chatId}`;
-    client.join(room);
-    this.logger.log(`Client ${client.id} joined chat ${room}`);
-    return { success: true, room };
-  }
-
-  /**
-   * Leave chat room
-   */
-  @SubscribeMessage(ClientEvents.LEAVE_CHAT)
-  handleLeaveChat(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: { chatId: string },
-  ) {
-    const room = `chat:${data.chatId}`;
-    client.leave(room);
-    this.logger.log(`Client ${client.id} left chat ${room}`);
-    return { success: true, room };
-  }
-
-  /**
    * Handle order status update
    */
   @SubscribeMessage(ClientEvents.UPDATE_ORDER_STATUS)
@@ -245,64 +205,6 @@ export class AppGateway
       providerLocation: order.providerLocation,
       providerLocationUpdatedAt: order.providerLocationUpdatedAt,
     };
-  }
-
-  /**
-   * Handle chat message
-   */
-  @SubscribeMessage(ClientEvents.SEND_MESSAGE)
-  handleSendMessage(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: {
-      chatId: string;
-      content: string;
-      type?: string;
-      senderId: string;
-      senderType: string;
-    },
-  ) {
-    const room = `chat:${data.chatId}`;
-    this.server.to(room).emit(ServerEvents.MESSAGE_NEW, {
-      chatId: data.chatId,
-      content: data.content,
-      type: data.type || 'text',
-      senderId: data.senderId,
-      senderType: data.senderType,
-      timestamp: new Date().toISOString(),
-    });
-    return { success: true };
-  }
-
-  /**
-   * Handle typing indicator
-   */
-  @SubscribeMessage(ClientEvents.START_TYPING)
-  handleStartTyping(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: { chatId: string; userId: string },
-  ) {
-    const room = `chat:${data.chatId}`;
-    client.to(room).emit(ServerEvents.TYPING_START, {
-      chatId: data.chatId,
-      userId: data.userId,
-    });
-    return { success: true };
-  }
-
-  /**
-   * Handle stop typing
-   */
-  @SubscribeMessage(ClientEvents.STOP_TYPING)
-  handleStopTyping(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: { chatId: string; userId: string },
-  ) {
-    const room = `chat:${data.chatId}`;
-    client.to(room).emit(ServerEvents.TYPING_STOP, {
-      chatId: data.chatId,
-      userId: data.userId,
-    });
-    return { success: true };
   }
 
   /**
@@ -375,17 +277,6 @@ export class AppGateway
   emitNewOrder(order: any) {
     this.server.emit(ServerEvents.ORDER_NEW, {
       order,
-      timestamp: new Date().toISOString(),
-    });
-  }
-
-  /**
-   * Emit new chat message
-   */
-  emitNewMessage(chatId: string, message: any) {
-    const room = `chat:${chatId}`;
-    this.server.to(room).emit(ServerEvents.MESSAGE_NEW, {
-      ...message,
       timestamp: new Date().toISOString(),
     });
   }

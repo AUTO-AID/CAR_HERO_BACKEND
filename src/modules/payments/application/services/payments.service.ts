@@ -1,9 +1,10 @@
 import { Injectable, Inject, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
-import { PaymentIntentRepository } from '../infrastructure/repositories/payment-intent.repository';
+import { PaymentIntentRepository } from '../../infrastructure/repositories/payment-intent.repository';
 import { ChamCashService } from './cham-cash.service';
-import { PaymentIntent } from '../domain/entities/payment-intent.entity';
-import { IWalletRepository } from '../../wallet/domain/repositories/wallet.repository.interface';
-import { Transaction, TransactionType } from '../../wallet/domain/entities/transaction.entity';
+import { PaymentIntent } from '../../domain/entities/payment-intent.entity';
+import type { IWalletRepository } from '../../../wallet/domain/repositories/wallet.repository.interface';
+import { Transaction } from '../../../wallet/domain/entities/transaction.entity';
+import { TransactionType } from '../../../../core/enums/status.enum';
 
 @Injectable()
 export class PaymentsService {

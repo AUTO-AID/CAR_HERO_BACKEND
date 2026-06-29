@@ -31,7 +31,11 @@ export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisco
   @UseGuards(WsJwtGuard)
   @SubscribeMessage('join_notifications')
   handleJoinNotifications(@ConnectedSocket() client: Socket) {
-    const userId = client.data?.user?.id;
+    const userId =
+      client.data?.user?.id ||
+      client.data?.user?.userId ||
+      client.data?.user?._id ||
+      client.data?.user?.sub;
     if (!userId) return { success: false };
     const room = `user_${userId}`;
     client.join(room);

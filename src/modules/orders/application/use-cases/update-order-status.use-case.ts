@@ -22,7 +22,12 @@ export class UpdateOrderStatusUseCase {
     private readonly statusHistoryService: StatusHistoryService,
   ) {}
 
-  async execute(id: string, status: OrderStatus, currentUser: any): Promise<OrderEntity> {
+  async execute(
+    id: string,
+    status: OrderStatus,
+    currentUser: any,
+    options: { reason?: string; cancelledBy?: string } = {},
+  ): Promise<OrderEntity> {
     const order = await this.orderRepository.findById(id);
     if (!order) {
       throw new NotFoundException('Order not found');
@@ -31,10 +36,7 @@ export class UpdateOrderStatusUseCase {
     // Ownership Verification
     const currentUserId = currentUser?._id?.toString();
     const currentProviderId = currentUser?.providerId?.toString();
-    console.log('[DEBUG] order.providerId =', order.providerId);
-    console.log('[DEBUG] currentUser.providerId =', currentProviderId);
-    console.log('[DEBUG] currentUser =', currentUser);
-    
+
     const isProvider =
       !!order.providerId &&
       ((!!currentProviderId && order.providerId.toString() === currentProviderId) ||
@@ -49,12 +51,17 @@ export class UpdateOrderStatusUseCase {
 
     const oldStatus = order.status;
     const updateData: any = { status };
+    const isTerminalCancellation = status === OrderStatus.CANCELLED || status === OrderStatus.REJECTED;
 
     // Update specific timestamps
     if (status === OrderStatus.ACCEPTED || status === OrderStatus.PROVIDER_ASSIGNED) updateData.acceptedAt = new Date();
     if (status === OrderStatus.COMPLETED) updateData.completedAt = new Date();
     if (status === OrderStatus.AWAITING_CUSTOMER_CONFIRMATION) updateData.completionRequestedAt = new Date();
-    if (status === OrderStatus.CANCELLED || status === OrderStatus.REJECTED) updateData.cancelledAt = new Date();
+    if (isTerminalCancellation) {
+      updateData.cancelledAt = new Date();
+      if (options.reason) updateData.cancellationReason = options.reason;
+      updateData.cancelledBy = options.cancelledBy || currentUser?.role || currentUser?.accountType;
+    }
     if (status === OrderStatus.IN_PROGRESS) updateData.startedAt = new Date();
 
     const updatedOrder = await this.orderRepository.update(id, updateData);
@@ -68,8 +75,10 @@ export class UpdateOrderStatusUseCase {
       changedBy: currentUser?._id || currentUser?.userId || currentUser?.id,
       changedByRole: currentUser?.role,
       changedByType: currentUser?.accountType || currentUser?.role,
+      reason: options.reason,
       metadata: {
         isScheduled: !!order.isScheduled,
+        cancelledBy: isTerminalCancellation ? updateData.cancelledBy : undefined,
       },
     });
 

@@ -83,6 +83,11 @@ describe('AiRecommendationService', () => {
     }
   ];
 
+  const providerQuery = (results: any[]) => ({
+    limit: jest.fn().mockReturnThis(),
+    exec: jest.fn().mockResolvedValue(results),
+  });
+
   beforeEach(async () => {
     // Define Mocks
     providerModelMock = {
@@ -92,9 +97,7 @@ describe('AiRecommendationService', () => {
           const ninStrings = query._id.$nin.map(id => id.toString());
           results = results.filter(p => !ninStrings.includes(p._id.toString()));
         }
-        return {
-          exec: jest.fn().mockResolvedValue(results),
-        };
+        return providerQuery(results);
       }),
     };
 
@@ -240,12 +243,8 @@ describe('AiRecommendationService', () => {
     it('should execute fallback query when primary category search yields no providers', async () => {
       // Primary category search returns empty, fallback query returns providers
       providerModelMock.find
-        .mockReturnValueOnce({
-          exec: jest.fn().mockResolvedValue([]), // primary query empty
-        })
-        .mockReturnValueOnce({
-          exec: jest.fn().mockResolvedValue([mockProviders[1]]), // fallback query returns one
-        });
+        .mockReturnValueOnce(providerQuery([])) // primary query empty
+        .mockReturnValueOnce(providerQuery([mockProviders[1]])); // fallback query returns one
 
       const dto: RecommendProviderDto = {
         serviceCategory: 'non_existent_category',
@@ -264,9 +263,7 @@ describe('AiRecommendationService', () => {
 
     it('should return failed status and empty recommendations list when no providers match at all', async () => {
       // Both primary search and fallback query return empty
-      providerModelMock.find.mockReturnValue({
-        exec: jest.fn().mockResolvedValue([]),
-      });
+      providerModelMock.find.mockReturnValue(providerQuery([]));
 
       const dto: RecommendProviderDto = {
         serviceCategory: 'any_category',
@@ -303,9 +300,7 @@ describe('AiRecommendationService', () => {
 
     it('should save a failed log entry to MongoDB on recommendation failure', async () => {
       // Setup both queries empty
-      providerModelMock.find.mockReturnValue({
-        exec: jest.fn().mockResolvedValue([]),
-      });
+      providerModelMock.find.mockReturnValue(providerQuery([]));
 
       const dto: RecommendProviderDto = {
         serviceCategory: 'towing',
