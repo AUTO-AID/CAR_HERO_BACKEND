@@ -14,7 +14,7 @@ export class ResetPasswordDto {
   @Matches(/^\+963\d{9}$/)
   phoneNumber: string;
 
-  @ApiProperty({ example: '123456' })
+  @ApiProperty({ example: '654321' })
   @IsString()
   @IsNotEmpty()
   @Length(6, 6)
@@ -25,7 +25,8 @@ export class ResetPasswordDto {
   @IsNotEmpty()
   @MinLength(6)
   @Matches(/^(?=.*[A-Z])(?=.*\d)/, {
-    message: 'Password must contain at least one uppercase letter and one number',
+    message:
+      'Password must contain at least one uppercase letter and one number',
   })
   newPassword: string;
 

@@ -1,11 +1,15 @@
 import {
   Injectable,
+  HttpException,
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User, UserDocument } from '../../../users/infrastructure/persistence/mongoose/schemas/user.schema';
+import {
+  User,
+  UserDocument,
+} from '../../../users/infrastructure/persistence/mongoose/schemas/user.schema';
 import {
   PendingRegistration,
   PendingRegistrationDocument,
@@ -31,27 +35,27 @@ export class OtpService {
    */
   async generateAndSave(phoneNumber: string): Promise<void> {
     try {
-      const user = await this.userModel.findOne({ phoneNumber }).select('+otpExpiresAt');
+      const user = await this.userModel
+        .findOne({ phoneNumber })
+        .select('+otpExpiresAt');
       if (user && user.otpExpiresAt) {
         const timeRemainingMs = user.otpExpiresAt.getTime() - Date.now();
         // Since OTP is valid for 5 mins, if time remaining > 3 mins, less than 2 mins have passed
         if (timeRemainingMs > 3 * 60 * 1000) {
-          throw new InternalServerErrorException('Please wait 2 minutes before requesting a new code');
+          throw new InternalServerErrorException(
+            'Please wait 2 minutes before requesting a new code',
+          );
         }
       }
 
-      // ⚠️ DEV MODE: WhatsApp check bypassed
-      // if (!this.whatsAppService.isClientReady()) {
-      //   throw new InternalServerErrorException(
-      //     'WhatsApp service is not ready. Please try again later.',
-      //   );
-      // }
+      if (!this.whatsAppService.isClientReady()) {
+        throw new InternalServerErrorException(
+          'WhatsApp service is not ready. Please try again later.',
+        );
+      }
 
-      // ⚠️ DEV MODE: Fixed OTP = 123456
-      const otpCode = '123456'; // OtpUtil.generate(6);
+      const otpCode = OtpUtil.generate(6);
       const otpExpiresAt = OtpUtil.getExpirationTime(5);
-
-      this.logger.log(`📝 [DEV] OTP for ${phoneNumber}: ${otpCode}`);
 
       // حفظ OTP في قاعدة البيانات
       const result = await this.userModel.updateOne(
@@ -69,16 +73,33 @@ export class OtpService {
         throw new InternalServerErrorException('User not found');
       }
 
-      // ⚠️ DEV MODE: WhatsApp sending disabled
-      // const message = this.buildOTPMessage(otpCode);
-      // await this.whatsAppService.sendMessage(phoneNumber, message);
+      const message = this.buildOTPMessage(otpCode);
+      try {
+        await this.whatsAppService.sendMessage(phoneNumber, message);
+      } catch (sendError) {
+        await this.userModel.updateOne(
+          { phoneNumber },
+          {
+            $set: {
+              otpCode: null,
+              otpExpiresAt: null,
+              otpAttempts: 0,
+            },
+          },
+        );
+        throw sendError;
+      }
 
-      this.logger.log(`✅ [DEV] OTP saved (not sent via WhatsApp): ${otpCode}`);
+      this.logger.log(`OTP sent successfully to ${phoneNumber}`);
     } catch (error) {
       this.logger.error(
         `❌ Failed to generate/send OTP for ${phoneNumber}`,
         error,
       );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
       throw new InternalServerErrorException(
         'Failed to send verification code. Please try again later.',
       );
@@ -89,14 +110,10 @@ export class OtpService {
    * بناء رسالة OTP
    */
   private buildOTPMessage(otpCode: string): string {
-    return `🚗 *CarHero* 🚗
+    return `CarHero verification code: *${otpCode}*
 
-✨ أهلاً بك ✨
-
-رمز التحقق الخاص بك هو: *${otpCode}*
-
-⏳ الرمز صالح لمدة 5 دقائق.
-🔒 لسلامتك، لا تشارك هذا الرمز مع أي شخص.`;
+This code is valid for 5 minutes.
+Do not share it with anyone.`;
   }
 
   /**
@@ -115,29 +132,27 @@ export class OtpService {
    */
   async generateAndSaveForPending(phoneNumber: string): Promise<void> {
     try {
-      const pending = await this.pendingRegistrationModel.findOne({ phoneNumber }).select('+otpExpiresAt');
+      const pending = await this.pendingRegistrationModel
+        .findOne({ phoneNumber })
+        .select('+otpExpiresAt');
       if (pending && pending.otpExpiresAt) {
         const timeRemainingMs = pending.otpExpiresAt.getTime() - Date.now();
         // Since OTP is valid for 5 mins, if time remaining > 3 mins, less than 2 mins have passed
         if (timeRemainingMs > 3 * 60 * 1000) {
-          throw new InternalServerErrorException('Please wait 2 minutes before requesting a new code');
+          throw new InternalServerErrorException(
+            'Please wait 2 minutes before requesting a new code',
+          );
         }
       }
 
-      // ⚠️ DEV MODE: WhatsApp check bypassed
-      // if (!this.whatsAppService.isClientReady()) {
-      //   throw new InternalServerErrorException(
-      //     'WhatsApp service is not ready. Please try again later.',
-      //   );
-      // }
+      if (!this.whatsAppService.isClientReady()) {
+        throw new InternalServerErrorException(
+          'WhatsApp service is not ready. Please try again later.',
+        );
+      }
 
-      // ⚠️ DEV MODE: Fixed OTP = 123456
-      const otpCode = '123456'; // OtpUtil.generate(6);
+      const otpCode = OtpUtil.generate(6);
       const otpExpiresAt = OtpUtil.getExpirationTime(5);
-
-      this.logger.log(
-        `📝 [DEV] OTP for pending registration ${phoneNumber}: ${otpCode}`,
-      );
 
       // حفظ OTP في PendingRegistration
       const result = await this.pendingRegistrationModel.updateOne(
@@ -157,16 +172,35 @@ export class OtpService {
         );
       }
 
-      // ⚠️ DEV MODE: WhatsApp sending disabled
-      // const message = this.buildOTPMessage(otpCode);
-      // await this.whatsAppService.sendMessage(phoneNumber, message);
+      const message = this.buildOTPMessage(otpCode);
+      try {
+        await this.whatsAppService.sendMessage(phoneNumber, message);
+      } catch (sendError) {
+        await this.pendingRegistrationModel.updateOne(
+          { phoneNumber },
+          {
+            $set: {
+              otpCode: null,
+              otpExpiresAt: null,
+              otpAttempts: 0,
+            },
+          },
+        );
+        throw sendError;
+      }
 
-      this.logger.log(`✅ [DEV] OTP saved (not sent via WhatsApp): ${otpCode}`);
+      this.logger.log(
+        `OTP sent successfully to pending registration ${phoneNumber}`,
+      );
     } catch (error) {
       this.logger.error(
         `❌ Failed to generate/send OTP for pending registration ${phoneNumber}`,
         error,
       );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
       throw new InternalServerErrorException(
         'Failed to send verification code. Please try again later.',
       );

@@ -8,11 +8,10 @@ export class VerifyOtpDto {
   @Matches(/^\+963\d{9}$/)
   phoneNumber: string;
 
-  @ApiProperty({ example: '123456', description: '6-digit OTP code' })
+  @ApiProperty({ example: '654321', description: '6-digit OTP code' })
   @IsString()
   @IsNotEmpty({ message: 'OTP code is required' })
   @Length(6, 6, { message: 'OTP code must be 6 digits' })
   @Matches(/^\d{6}$/, { message: 'OTP code must contain only numbers' })
   otpCode: string;
 }
-
