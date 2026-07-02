@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Provider, ProviderDocument } from '../../../../modules/providers/infrastructure/persistence/mongoose/schemas/provider.schema';
 import { User, UserDocument } from '../../../users/infrastructure/persistence/mongoose/schemas/user.schema';
+import { Order, OrderDocument } from '../../../orders/infrastructure/persistence/mongoose/schemas/order.schema';
 import { NotificationsService } from '../../../notifications/application/services/notifications.service';
 import { RegistrationStatus, NotificationType, OrderStatus } from '../../../../core/enums/status.enum';
 
@@ -33,6 +34,7 @@ export class AdminProvidersService {
   constructor(
     @InjectModel(Provider.name) private providerModel: Model<ProviderDocument>,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @InjectModel(Order.name) private orderModel: Model<OrderDocument>,
     private notificationsService: NotificationsService,
   ) {}
 
@@ -344,19 +346,6 @@ export class AdminProvidersService {
     const mapPipeline: any[] = [
       { $match: filteredMatch },
       {
-        $lookup: {
-          from: 'provider_metrics',
-          localField: '_id',
-          foreignField: 'provider',
-          as: 'metrics',
-        },
-      },
-      {
-        $addFields: {
-          metric: { $ifNull: [{ $arrayElemAt: ['$metrics', 0] }, {}] },
-        },
-      },
-      {
         $project: {
           _id: 1,
           businessName: 1,
@@ -379,21 +368,21 @@ export class AdminProvidersService {
           location: 1,
           lastOnlineAt: 1,
           createdAt: 1,
-          totalOrders: { $ifNull: ['$metric.totalOrders', { $ifNull: ['$totalOrders', 0] }] },
-          completedOrders: { $ifNull: ['$metric.completedOrders', 0] },
+          totalOrders: { $ifNull: ['$totalOrders', 0] },
+          completedOrders: { $ifNull: ['$completedOrders', 0] },
           activeOrders: { $ifNull: ['$activeOrders', 0] },
-          completedRevenue: { $ifNull: ['$metric.totalRevenue', { $ifNull: ['$completedRevenue', 0] }] },
-          completionRate: { $ifNull: ['$metric.completionRate', 0] },
-          cancellationRate: { $ifNull: ['$metric.cancellationRate', 0] },
-          averageResponseTime: { $ifNull: ['$metric.averageResponseTime', 0] },
-          last30DaysOrders: { $ifNull: ['$metric.last30DaysPerformance.totalOrders', 0] },
+          completedRevenue: { $ifNull: ['$completedRevenue', 0] },
+          completionRate: { $ifNull: ['$completionRate', 0] },
+          cancellationRate: { $ifNull: ['$cancellationRate', 0] },
+          averageResponseTime: { $ifNull: ['$averageResponseTime', 0] },
+          last30DaysOrders: { $ifNull: ['$last30DaysOrders', 0] },
           averageRating: {
             $round: [
-              { $ifNull: ['$metric.averageRating', { $ifNull: ['$averageRating', 0] }] },
+              { $ifNull: ['$averageRating', 0] },
               2,
             ],
           },
-          totalReviews: { $ifNull: ['$metric.totalReviews', { $ifNull: ['$totalReviews', 0] }] },
+          totalReviews: { $ifNull: ['$totalReviews', 0] },
         },
       },
       { $sort: { isApproved: -1, isActive: -1, totalOrders: -1, averageRating: -1, businessName: 1 } },
@@ -602,6 +591,112 @@ export class AdminProvidersService {
     return {
       message: 'Provider registration rejected',
       provider,
+    };
+  }
+
+  async getTopRequestedProviders(limit = 100) {
+    const safeLimit = Math.min(Math.max(Number(limit) || 100, 3), 100);
+    const completedStatuses = [
+      OrderStatus.COMPLETED,
+      OrderStatus.AWAITING_CUSTOMER_CONFIRMATION,
+    ];
+    const activeStatuses = [
+      OrderStatus.ACCEPTED,
+      OrderStatus.PROVIDER_ASSIGNED,
+      OrderStatus.PROVIDER_EN_ROUTE,
+      OrderStatus.PROVIDER_ARRIVED,
+      OrderStatus.IN_PROGRESS,
+    ];
+
+    const rows = await this.orderModel.aggregate([
+      { $match: { provider: { $ne: null } } },
+      {
+        $group: {
+          _id: '$provider',
+          totalOrders: { $sum: 1 },
+          completedOrders: {
+            $sum: { $cond: [{ $in: ['$status', completedStatuses] }, 1, 0] },
+          },
+          activeOrders: {
+            $sum: { $cond: [{ $in: ['$status', activeStatuses] }, 1, 0] },
+          },
+          cancelledOrders: {
+            $sum: { $cond: [{ $in: ['$status', [OrderStatus.CANCELLED, OrderStatus.REJECTED]] }, 1, 0] },
+          },
+          completedRevenue: {
+            $sum: {
+              $cond: [
+                { $in: ['$status', completedStatuses] },
+                { $ifNull: ['$payableAmount', { $ifNull: ['$totalAmount', 0] }] },
+                0,
+              ],
+            },
+          },
+          lastOrderAt: { $max: '$createdAt' },
+        },
+      },
+      {
+        $lookup: {
+          from: 'providers',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'provider',
+        },
+      },
+      { $unwind: '$provider' },
+      {
+        $project: {
+          _id: '$provider._id',
+          businessName: '$provider.businessName',
+          ownerName: '$provider.ownerName',
+          phone: '$provider.phone',
+          city: '$provider.city',
+          governorate: '$provider.governorate',
+          status: '$provider.status',
+          accountStatus: '$provider.accountStatus',
+          registrationStatus: '$provider.registrationStatus',
+          isActive: '$provider.isActive',
+          isApproved: '$provider.isApproved',
+          averageRating: { $ifNull: ['$provider.averageRating', 0] },
+          totalReviews: { $ifNull: ['$provider.totalReviews', 0] },
+          totalOrders: 1,
+          completedOrders: 1,
+          activeOrders: 1,
+          cancelledOrders: 1,
+          completedRevenue: 1,
+          lastOrderAt: 1,
+          completionRate: {
+            $cond: [
+              { $gt: ['$totalOrders', 0] },
+              { $round: [{ $multiply: [{ $divide: ['$completedOrders', '$totalOrders'] }, 100] }, 1] },
+              0,
+            ],
+          },
+        },
+      },
+      { $sort: { totalOrders: -1, completedOrders: -1, completedRevenue: -1, businessName: 1 } },
+      { $limit: safeLimit },
+    ]).exec();
+
+    const totalRequestedOrders = rows.reduce((sum, item) => sum + (item.totalOrders || 0), 0);
+    const topProviders = rows.map((item, index) => ({
+      ...item,
+      rank: index + 1,
+      demandShare:
+        totalRequestedOrders > 0
+          ? Number(((item.totalOrders / totalRequestedOrders) * 100).toFixed(1))
+          : 0,
+    }));
+
+    return {
+      top3: topProviders.slice(0, 3),
+      providers: topProviders,
+      summary: {
+        totalProviders: topProviders.length,
+        totalRequestedOrders,
+        topProviderOrders: topProviders[0]?.totalOrders ?? 0,
+        top3Orders: topProviders.slice(0, 3).reduce((sum, item) => sum + (item.totalOrders || 0), 0),
+      },
     };
   }
 

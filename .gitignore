@@ -7,4 +7,5 @@ coverage
 *.err.log
 session
 uploads
+.wwebjs_cache
 .codex-logs/

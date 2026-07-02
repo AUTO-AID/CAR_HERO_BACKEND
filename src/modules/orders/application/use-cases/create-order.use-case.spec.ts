@@ -13,6 +13,7 @@ describe('CreateOrderUseCase', () => {
   let useCase: CreateOrderUseCase;
   let repository: jest.Mocked<IOrderRepository>;
   let mockServiceModel: any;
+  let mockProviderModel: any;
 
   const mockOrderRepository = {
     create: jest.fn(),
@@ -22,8 +23,13 @@ describe('CreateOrderUseCase', () => {
     mockServiceModel = {
       findById: jest.fn(),
     };
+    mockProviderModel = {
+      findById: jest.fn(),
+      aggregate: jest.fn(),
+    };
     const mockNotificationsService = {
       sendOrderNotification: jest.fn(),
+      createNotification: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -39,7 +45,7 @@ describe('CreateOrderUseCase', () => {
         },
         {
           provide: getModelToken(Provider.name),
-          useValue: { findById: jest.fn() },
+          useValue: mockProviderModel,
         },
         {
           provide: NotificationsService,
@@ -63,14 +69,24 @@ describe('CreateOrderUseCase', () => {
   it('should successfully create an order', async () => {
     const dto = {
       user: 'user-id',
-      service: 'service-id',
+      service: '60b8d295f1d293001f3e4c8b',
       userId: 'user-id',
-      serviceId: 'service-id',
+      serviceId: '60b8d295f1d293001f3e4c8b',
       location: { coordinates: [10, 20] },
     };
 
-    const mockService = { _id: 'service-id', name: 'Car Wash', basePrice: 100 };
+    const mockService = { _id: '60b8d295f1d293001f3e4c8b', name: 'Car Wash', basePrice: 100 };
     mockServiceModel.findById.mockResolvedValue(mockService);
+    mockProviderModel.aggregate.mockReturnValue({
+      exec: jest.fn().mockResolvedValue([
+        {
+          _id: { toString: () => 'provider-id' },
+          services: ['60b8d295f1d293001f3e4c8b'],
+          serviceAvailability: {},
+          servicePrices: {},
+        },
+      ]),
+    });
 
     const mockCreatedOrder = {
       id: 'order-id',
@@ -86,5 +102,8 @@ describe('CreateOrderUseCase', () => {
 
     expect(result).toEqual(mockCreatedOrder);
     expect(mockServiceModel.findById).toHaveBeenCalled();
+    expect(mockOrderRepository.create).toHaveBeenCalledWith(
+      expect.objectContaining({ providerId: 'provider-id' }),
+    );
   });
 });

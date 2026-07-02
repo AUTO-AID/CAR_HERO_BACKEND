@@ -156,6 +156,16 @@ export class AdminController {
     });
   }
 
+  @Get('providers/top-requested')
+  @Roles(Role.ADMIN)
+  @Permissions('providers.read')
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Get top requested providers ranked by actual order count' })
+  async getTopRequestedProviders(@Query('limit') limit?: string) {
+    return this.adminService.getTopRequestedProviders(Number(limit) || 100);
+  }
+
   @Get('providers/:id')
   @Roles(Role.ADMIN)
   @Permissions('providers.read')
@@ -345,6 +355,129 @@ export class AdminController {
   @ApiOperation({ summary: 'Get users growth and loyalty analytics' })
   async getUsersAnalytics() {
     return this.adminService.getUsersAnalytics();
+  }
+
+  @Get('operations-intelligence/preview')
+  @Roles(Role.ADMIN)
+  @Permissions('analytics.read')
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Preview operational pressure, recruitment recommendations, and provider workload intelligence' })
+  async getOperationsIntelligencePreview(
+    @Query('days') days?: string,
+    @Query('previousDays') previousDays?: string,
+    @Query('limit') limit?: string,
+    @Query('city') city?: string,
+    @Query('serviceId') serviceId?: string,
+  ) {
+    return this.adminService.getOperationsIntelligencePreview({
+      days: Number(days) || undefined,
+      previousDays: Number(previousDays) || undefined,
+      limit: Number(limit) || undefined,
+      city,
+      serviceId,
+    });
+  }
+
+  @Post('operations-intelligence/scan')
+  @Roles(Role.ADMIN)
+  @Permissions('operations.manage')
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Run operational intelligence scan and persist recommendations and alerts' })
+  async runOperationsIntelligenceScan(
+    @Body() body: any,
+  ) {
+    return this.adminService.runOperationsIntelligenceScan({
+      days: Number(body?.days) || undefined,
+      previousDays: Number(body?.previousDays) || undefined,
+      limit: Number(body?.limit) || undefined,
+      city: body?.city,
+      serviceId: body?.serviceId,
+    });
+  }
+
+  @Get('operations-intelligence/recommendations')
+  @Roles(Role.ADMIN)
+  @Permissions('analytics.read')
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'List saved operational recommendations' })
+  async getOperationalRecommendations(@Query() query: any) {
+    return this.adminService.getOperationalRecommendations(query);
+  }
+
+  @Patch('operations-intelligence/recommendations/:id/status')
+  @Roles(Role.ADMIN)
+  @Permissions('operations.manage')
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Update operational recommendation status' })
+  async updateOperationalRecommendationStatus(
+    @Param('id') id: string,
+    @Body('status') status: string,
+    @Body('note') note: string,
+    @CurrentUser() admin: any,
+  ) {
+    return this.adminService.updateOperationalRecommendationStatus(id, status, note, admin);
+  }
+
+  @Post('operations-intelligence/recommendations/:id/notes')
+  @Roles(Role.ADMIN)
+  @Permissions('operations.manage')
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Add a note to an operational recommendation' })
+  async addOperationalRecommendationNote(
+    @Param('id') id: string,
+    @Body('note') note: string,
+    @CurrentUser() admin: any,
+  ) {
+    return this.adminService.addOperationalRecommendationNote(id, note, admin);
+  }
+
+  @Patch('operations-intelligence/recommendations/:id/assign')
+  @Roles(Role.ADMIN)
+  @Permissions('operations.manage')
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Assign an operational recommendation or update its follow-up due date' })
+  async assignOperationalRecommendation(
+    @Param('id') id: string,
+    @Body() body: any,
+    @CurrentUser() admin: any,
+  ) {
+    return this.adminService.assignOperationalRecommendation(id, body, admin);
+  }
+
+  @Get('operations-intelligence/alerts')
+  @Roles(Role.ADMIN)
+  @Permissions('analytics.read')
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'List operational intelligence alerts' })
+  async getOperationalAlerts(@Query() query: any) {
+    return this.adminService.getOperationalAlerts(query);
+  }
+
+  @Patch('operations-intelligence/alerts/:id/read')
+  @Roles(Role.ADMIN)
+  @Permissions('analytics.read')
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Mark operational alert as read' })
+  async markOperationalAlertRead(@Param('id') id: string) {
+    return this.adminService.markOperationalAlertRead(id);
+  }
+
+  @Patch('operations-intelligence/alerts/:id/resolve')
+  @Roles(Role.ADMIN)
+  @Permissions('operations.manage')
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Resolve operational alert' })
+  async resolveOperationalAlert(@Param('id') id: string) {
+    return this.adminService.resolveOperationalAlert(id);
   }
 
   // ===========================================

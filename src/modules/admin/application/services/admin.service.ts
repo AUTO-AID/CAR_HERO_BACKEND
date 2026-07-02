@@ -15,6 +15,8 @@ import { AdminSettingsService } from './admin-settings.service';
 import { CreateAdminDto } from '../dtos/admin-management.dto';
 import { AdminListFilters } from './admin-admins.service';
 import { UpdateAppSettingsDto, UpdateMaintenanceDto } from '../dtos/update-settings.dto';
+import { OperationsIntelligenceQuery, OperationsIntelligenceService } from '../../../operations-intelligence/application/services/operations-intelligence.service';
+import { OperationsIntelligenceManagementService } from '../../../operations-intelligence/application/services/operations-intelligence-management.service';
 
 @Injectable()
 export class AdminService {
@@ -27,6 +29,8 @@ export class AdminService {
     private readonly adminAdminsService: AdminAdminsService,
     private readonly adminMembershipsService: AdminMembershipsService,
     private readonly adminSettingsService: AdminSettingsService,
+    private readonly operationsIntelligenceService: OperationsIntelligenceService,
+    private readonly operationsIntelligenceManagementService: OperationsIntelligenceManagementService,
   ) {}
 
   // ===========================================
@@ -76,6 +80,10 @@ export class AdminService {
 
   async getProvidersMap(filters?: ProviderListFilters) {
     return this.adminProvidersService.getProvidersMap(filters);
+  }
+
+  async getTopRequestedProviders(limit = 100) {
+    return this.adminProvidersService.getTopRequestedProviders(limit);
   }
 
   async getProviderById(id: string) {
@@ -169,6 +177,42 @@ export class AdminService {
 
   async getUsersAnalytics() {
     return this.adminStatsService.getUsersAnalytics();
+  }
+
+  async getOperationsIntelligencePreview(query: OperationsIntelligenceQuery = {}) {
+    return this.operationsIntelligenceService.getPreview(query);
+  }
+
+  async runOperationsIntelligenceScan(query: OperationsIntelligenceQuery = {}) {
+    return this.operationsIntelligenceManagementService.runScan(query);
+  }
+
+  async getOperationalRecommendations(query: any = {}) {
+    return this.operationsIntelligenceManagementService.listRecommendations(query);
+  }
+
+  async updateOperationalRecommendationStatus(id: string, status: string, note?: string, admin?: any) {
+    return this.operationsIntelligenceManagementService.updateRecommendationStatus(id, status, note, admin);
+  }
+
+  async addOperationalRecommendationNote(id: string, note: string, admin?: any) {
+    return this.operationsIntelligenceManagementService.addRecommendationNote(id, note, admin);
+  }
+
+  async assignOperationalRecommendation(id: string, body: any = {}, admin?: any) {
+    return this.operationsIntelligenceManagementService.assignRecommendation(id, body, admin);
+  }
+
+  async getOperationalAlerts(query: any = {}) {
+    return this.operationsIntelligenceManagementService.listAlerts(query);
+  }
+
+  async markOperationalAlertRead(id: string) {
+    return this.operationsIntelligenceManagementService.markAlertRead(id);
+  }
+
+  async resolveOperationalAlert(id: string) {
+    return this.operationsIntelligenceManagementService.resolveAlert(id);
   }
 
   // ===========================================

@@ -20,6 +20,8 @@ import { AdminStatsService } from './application/services/admin-stats.service';
 import { AdminAdminsService } from './application/services/admin-admins.service';
 import { AdminMembershipsService } from './application/services/admin-memberships.service';
 import { AdminSettingsService } from './application/services/admin-settings.service';
+import { OperationsIntelligenceService } from '../operations-intelligence/application/services/operations-intelligence.service';
+import { OperationsIntelligenceManagementService } from '../operations-intelligence/application/services/operations-intelligence-management.service';
 import { UsersModule } from '../users/users.module';
 import { ProvidersModule } from '../providers/providers.module';
 import { ServicesModule } from '../services/services.module';
@@ -36,6 +38,8 @@ import { Service, ServiceSchema } from '../services/infrastructure/persistence/m
 import { Order, OrderSchema } from '../orders/infrastructure/persistence/mongoose/schemas/order.schema';
 import { SubscriptionPlan, SubscriptionPlanSchema } from '../subscriptions/infrastructure/persistence/mongoose/schemas/subscription-plan.schema';
 import { UserSubscription, UserSubscriptionSchema } from '../subscriptions/infrastructure/persistence/mongoose/schemas/user-subscription.schema';
+import { OperationalAlert, OperationalAlertSchema } from '../operations-intelligence/infrastructure/persistence/mongoose/schemas/operational-alert.schema';
+import { OperationalRecommendation, OperationalRecommendationSchema } from '../operations-intelligence/infrastructure/persistence/mongoose/schemas/operational-recommendation.schema';
 
 @Module({
   imports: [
@@ -48,6 +52,8 @@ import { UserSubscription, UserSubscriptionSchema } from '../subscriptions/infra
       { name: Order.name, schema: OrderSchema },
       { name: SubscriptionPlan.name, schema: SubscriptionPlanSchema },
       { name: UserSubscription.name, schema: UserSubscriptionSchema },
+      { name: OperationalAlert.name, schema: OperationalAlertSchema },
+      { name: OperationalRecommendation.name, schema: OperationalRecommendationSchema },
     ]),
     JwtModule,
     UsersModule,
@@ -68,6 +74,8 @@ import { UserSubscription, UserSubscriptionSchema } from '../subscriptions/infra
     AdminAdminsService,
     AdminMembershipsService,
     AdminSettingsService,
+    OperationsIntelligenceService,
+    OperationsIntelligenceManagementService,
     LoginUseCase,
     {
       provide: IAdminRepository,

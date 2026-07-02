@@ -53,8 +53,6 @@ export class AppController {
         admins: 'admin',
         audit_logs: 'admin',
         providers: 'providers',
-        provider_metrics: 'ai',
-        ai_recommendation_logs: 'ai',
         services: 'services',
         vehicles: 'vehicles',
         maintenancerecords: 'vehicles',

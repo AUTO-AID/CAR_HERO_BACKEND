@@ -1,13 +1,13 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
 import { CreateOrderDto } from '../dto/create-order.dto';
 import { OrderEntity } from '../../domain/entities/order.entity';
 import { OrderStatus } from '../../../../core/enums/status.enum';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Service, ServiceDocument } from '../../../../modules/services/infrastructure/persistence/mongoose/schemas/service.schema';
 import { NotificationsService } from '../../../notifications/application/services/notifications.service';
-import { NotificationType } from '../../../../core/enums/status.enum';
+import { NotificationType, ProviderStatus } from '../../../../core/enums/status.enum';
 import { StatusHistoryService } from '../../../status-history/application/services/status-history.service';
 import { SchedulingAvailabilityService } from '../services/scheduling-availability.service';
 import { Provider, ProviderDocument } from '../../../providers/infrastructure/persistence/mongoose/schemas/provider.schema';
@@ -32,8 +32,21 @@ export class CreateOrderUseCase {
     if (!service) {
       throw new NotFoundException('Service not found');
     }
-    const provider = dto.providerId ? await this.providerModel.findById(dto.providerId).lean().exec() : null;
+    const provider = dto.providerId
+      ? await this.providerModel.findById(dto.providerId).lean().exec()
+      : await this.findNearestAvailableProvider(
+          dto.serviceId,
+          dto.location.coordinates,
+          dto.scheduleTime,
+          service.estimatedDuration,
+        );
+
     if (dto.providerId && !provider) throw new NotFoundException('Provider not found');
+    if (!dto.providerId && !provider) {
+      throw new NotFoundException(
+        'No available provider found for this service near the requested location',
+      );
+    }
     if (provider) {
       const selectedServiceIds = (provider.services || []).map((serviceId) => serviceId.toString());
       if (!selectedServiceIds.includes(dto.serviceId) || provider.serviceAvailability?.[dto.serviceId] === false) {
@@ -53,7 +66,7 @@ export class CreateOrderUseCase {
       orderNumber: OrderEntity.generateOrderNumber(),
       userId: dto.userId!,
       serviceId: dto.serviceId,
-      providerId: dto.providerId,
+      providerId: provider?._id?.toString(),
       vehicleId: dto.vehicleId,
       status: OrderStatus.PENDING,
       serviceName: service.name,
@@ -103,5 +116,69 @@ export class CreateOrderUseCase {
     }
 
     return order;
+  }
+
+  private async findNearestAvailableProvider(
+    serviceId: string,
+    coordinates: number[],
+    scheduleTime?: string,
+    durationMinutes?: number,
+  ) {
+    if (!Types.ObjectId.isValid(serviceId)) {
+      throw new NotFoundException('Service not found');
+    }
+
+    const [longitude, latitude] = coordinates || [];
+    if (typeof longitude !== 'number' || typeof latitude !== 'number') {
+      throw new NotFoundException('Valid order location is required');
+    }
+
+    const serviceObjectId = new Types.ObjectId(serviceId);
+    const candidates = await this.providerModel
+      .aggregate([
+        {
+          $geoNear: {
+            near: {
+              type: 'Point',
+              coordinates: [longitude, latitude],
+            },
+            distanceField: 'distanceMeters',
+            spherical: true,
+            query: {
+              isApproved: true,
+              isActive: { $ne: false },
+              status: { $ne: ProviderStatus.BUSY },
+              services: serviceObjectId,
+              $or: [
+                { [`serviceAvailability.${serviceId}`]: { $exists: false } },
+                { [`serviceAvailability.${serviceId}`]: { $ne: false } },
+              ],
+            },
+          },
+        },
+        { $limit: 25 },
+      ])
+      .exec();
+
+    if (!scheduleTime) {
+      return candidates[0] || null;
+    }
+
+    for (const candidate of candidates) {
+      try {
+        await this.schedulingAvailabilityService.assertAvailable(
+          candidate._id.toString(),
+          new Date(scheduleTime),
+          durationMinutes || 60,
+        );
+        return candidate;
+      } catch (error) {
+        if (!(error instanceof ConflictException || error instanceof NotFoundException)) {
+          throw error;
+        }
+      }
+    }
+
+    return null;
   }
 }
