@@ -26,13 +26,20 @@ export class MongooseReviewRepository implements IReviewRepository {
 
   async findByProvider(providerId: string, pagination: { page: number; limit: number }): Promise<{ reviews: ReviewEntity[]; total: number }> {
     const skip = (pagination.page - 1) * pagination.limit;
+    // `provider` مخزّن كـ ObjectId، والمعرّف يصل نصّاً من المسار. الاعتماد على
+    // التحويل الضمني كان يُرجع صفر نتائج دائماً (لا تظهر أي مراجعة في التطبيق)،
+    // لذا نحوّله صراحةً. معرّف غير صالح → نتيجة فارغة بدل رمي استثناء.
+    if (!Types.ObjectId.isValid(providerId)) {
+      return { reviews: [], total: 0 };
+    }
+    const filter = { provider: new Types.ObjectId(providerId), isVisible: true };
     const [docs, total] = await Promise.all([
-      this.reviewModel.find({ provider: providerId, isVisible: true })
+      this.reviewModel.find(filter)
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(pagination.limit)
         .exec(),
-      this.reviewModel.countDocuments({ provider: providerId, isVisible: true }),
+      this.reviewModel.countDocuments(filter),
     ]);
 
     return {
@@ -43,13 +50,18 @@ export class MongooseReviewRepository implements IReviewRepository {
 
   async findByUser(userId: string, pagination: { page: number; limit: number }): Promise<{ reviews: ReviewEntity[]; total: number }> {
     const skip = (pagination.page - 1) * pagination.limit;
+    // نفس سبب findByProvider: `user` مخزّن كـ ObjectId ويصل نصّاً
+    if (!Types.ObjectId.isValid(userId)) {
+      return { reviews: [], total: 0 };
+    }
+    const filter = { user: new Types.ObjectId(userId) };
     const [docs, total] = await Promise.all([
-      this.reviewModel.find({ user: userId })
+      this.reviewModel.find(filter)
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(pagination.limit)
         .exec(),
-      this.reviewModel.countDocuments({ user: userId }),
+      this.reviewModel.countDocuments(filter),
     ]);
 
     return {
@@ -59,7 +71,9 @@ export class MongooseReviewRepository implements IReviewRepository {
   }
 
   async findByOrder(orderId: string): Promise<ReviewEntity | null> {
-    const doc = await this.reviewModel.findOne({ order: orderId }).exec();
+    // نفس سبب findByProvider: `order` مخزّن كـ ObjectId ويصل نصّاً
+    if (!Types.ObjectId.isValid(orderId)) return null;
+    const doc = await this.reviewModel.findOne({ order: new Types.ObjectId(orderId) }).exec();
     return doc ? ReviewMapper.toEntity(doc) : null;
   }
 

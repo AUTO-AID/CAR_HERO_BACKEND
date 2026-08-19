@@ -5,6 +5,7 @@ import { Provider, ProviderDocument } from '../../../../modules/providers/infras
 import { User, UserDocument } from '../../../users/infrastructure/persistence/mongoose/schemas/user.schema';
 import { Order, OrderDocument } from '../../../orders/infrastructure/persistence/mongoose/schemas/order.schema';
 import { NotificationsService } from '../../../notifications/application/services/notifications.service';
+import { notificationContent } from '../../../notifications/application/notification-content';
 import { RegistrationStatus, NotificationType, OrderStatus } from '../../../../core/enums/status.enum';
 
 export type ProviderListFilters = {
@@ -532,8 +533,7 @@ export class AdminProvidersService {
       await this.notificationsService.createNotification({
         recipientId: user._id.toString(),
         recipientType: 'provider',
-        title: 'Registration Approved! 🎉',
-        body: 'Welcome to CarHero! Your account is now active and you can start accepting orders.',
+        ...notificationContent.providerApproved(),
         type: NotificationType.INFO,
         data: {
           event: 'provider.registration.approved',
@@ -577,8 +577,7 @@ export class AdminProvidersService {
       await this.notificationsService.createNotification({
         recipientId: user._id.toString(),
         recipientType: 'provider',
-        title: 'Registration Update 🛑',
-        body: `Unfortunately, your registration was not approved. Reason: ${reason}`,
+        ...notificationContent.providerRejected(reason),
         type: NotificationType.ALERT,
         data: {
           event: 'provider.registration.rejected',

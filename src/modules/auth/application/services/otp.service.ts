@@ -49,7 +49,7 @@ export class OtpService {
         }
       }
 
-      if (!this.whatsAppService.isClientReady()) {
+      if (!this.whatsAppService.isClientReady() && !this.isDevOtpFallbackAllowed()) {
         throw new InternalServerErrorException(
           'WhatsApp service is not ready. Please try again later.',
         );
@@ -74,9 +74,8 @@ export class OtpService {
         throw new InternalServerErrorException('User not found');
       }
 
-      const message = this.buildOTPMessage(otpCode);
       try {
-        await this.whatsAppService.sendMessage(phoneNumber, message);
+        await this.dispatchOtp(phoneNumber, otpCode);
       } catch (sendError) {
         await this.userModel.updateOne(
           { phoneNumber },
@@ -111,6 +110,30 @@ export class OtpService {
         'Failed to send verification code. Please try again later.',
       );
     }
+  }
+
+  /**
+   * TEMPORARY (see config/dev-flags.ts): in development, when WhatsApp Web is
+   * not linked, the OTP is written to the server log instead of being sent, so
+   * flows that still generate an OTP remain testable. Production is unaffected.
+   */
+  private isDevOtpFallbackAllowed(): boolean {
+    return (
+      !this.whatsAppService.isClientReady() &&
+      (process.env.NODE_ENV || 'development') !== 'production'
+    );
+  }
+
+  private async dispatchOtp(phoneNumber: string, otpCode: string): Promise<void> {
+    if (this.whatsAppService.isClientReady()) {
+      const message = this.buildOTPMessage(otpCode);
+      await this.whatsAppService.sendMessage(phoneNumber, message);
+      return;
+    }
+    // بديل التطوير: طباعة الرمز في السجل بدل الإرسال عبر WhatsApp
+    this.logger.warn(
+      `⚠️  [DEV] WhatsApp not ready — OTP for ${phoneNumber} is: ${otpCode}`,
+    );
   }
 
   /**
@@ -152,7 +175,7 @@ Do not share it with anyone.`;
         }
       }
 
-      if (!this.whatsAppService.isClientReady()) {
+      if (!this.whatsAppService.isClientReady() && !this.isDevOtpFallbackAllowed()) {
         throw new InternalServerErrorException(
           'WhatsApp service is not ready. Please try again later.',
         );
@@ -179,9 +202,8 @@ Do not share it with anyone.`;
         );
       }
 
-      const message = this.buildOTPMessage(otpCode);
       try {
-        await this.whatsAppService.sendMessage(phoneNumber, message);
+        await this.dispatchOtp(phoneNumber, otpCode);
       } catch (sendError) {
         await this.pendingRegistrationModel.updateOne(
           { phoneNumber },

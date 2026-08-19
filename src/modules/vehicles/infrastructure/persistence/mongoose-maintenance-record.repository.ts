@@ -39,8 +39,12 @@ export class MongooseMaintenanceRecordRepository implements IMaintenanceRecordRe
 
   async create(record: Partial<MaintenanceRecordEntity>): Promise<MaintenanceRecordEntity> {
     const created = new this.recordModel({
-      vehicle: record.vehicleId,
-      user: record.userId,
+      // الصبّ الصريح ضروري: مخطّط السجلّ يعلن الحقل ObjectId لكن التمرير النصّي
+      // كان يُخزَّن نصّاً، بينما findByVehicleId تستعلم بـ ObjectId — فكان كل
+      // سجلّ صيانة يُنشأ ثم لا يظهر في «سجل الصيانة» أبداً.
+      // (مستودع التذكيرات يصبّ صراحةً منذ البداية، ولهذا كانت التذكيرات تظهر.)
+      vehicle: new Types.ObjectId(record.vehicleId),
+      user: new Types.ObjectId(record.userId),
       serviceType: record.serviceType,
       description: record.description || null,
       date: record.date || new Date(),

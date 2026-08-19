@@ -43,9 +43,22 @@ export class MongooseVehicleRepository implements IVehicleRepository {
     );
   }
 
+  /**
+   * `owner` مخطّطه ObjectId لكن المعرّف يصل نصّاً ولا يُحوَّل ضمنياً، فكان
+   * يُحفَظ كنصّ. قراءات المستخدم دفاعية ($in: [نصّ, ObjectId]) فبدت الأمور
+   * سليمة، لكن مسار الأدمن (findByUserIdAdmin) يطابق ObjectId فقط ولا يرى
+   * هذه المركبات. نوحّد النوع عند الكتابة.
+   */
+  private static toObjectId(value: unknown): Types.ObjectId | undefined {
+    if (!value) return undefined;
+    if (value instanceof Types.ObjectId) return value;
+    const asString = String(value);
+    return Types.ObjectId.isValid(asString) ? new Types.ObjectId(asString) : undefined;
+  }
+
   async create(vehicle: Partial<VehicleEntity>): Promise<VehicleEntity> {
     const created = new this.vehicleModel({
-      owner: vehicle.userId,
+      owner: MongooseVehicleRepository.toObjectId(vehicle.userId),
       brand: vehicle.brand,
       model: vehicle.model,
       year: vehicle.year,
@@ -136,13 +149,14 @@ export class MongooseVehicleRepository implements IVehicleRepository {
   }
 
   async setAsDefault(userId: string, vehicleId: string): Promise<VehicleEntity> {
+    const ownerCriteria = { $in: [userId, new Types.ObjectId(userId)] };
     const session = await this.vehicleModel.db.startSession();
     session.startTransaction();
 
     try {
       // Unset all defaults for this user
       await this.vehicleModel.updateMany(
-        { owner: new Types.ObjectId(userId), isDefault: true },
+        { owner: ownerCriteria, isDefault: true },
         { $set: { isDefault: false } },
         { session },
       );
@@ -161,10 +175,35 @@ export class MongooseVehicleRepository implements IVehicleRepository {
       return this.mapToEntity(doc);
     } catch (error) {
       await session.abortTransaction();
+      if ((error as any)?.code === 20 || (error as any)?.codeName === 'IllegalOperation') {
+        return this.setAsDefaultWithoutTransaction(userId, vehicleId);
+      }
       throw error;
     } finally {
       session.endSession();
     }
+  }
+
+  private async setAsDefaultWithoutTransaction(userId: string, vehicleId: string): Promise<VehicleEntity> {
+    const ownerCriteria = { $in: [userId, new Types.ObjectId(userId)] };
+    await this.vehicleModel.updateMany(
+      { owner: ownerCriteria, isDefault: true },
+      { $set: { isDefault: false } },
+    );
+
+    const doc = await this.vehicleModel
+      .findOneAndUpdate(
+        { _id: new Types.ObjectId(vehicleId), owner: ownerCriteria },
+        { $set: { isDefault: true } },
+        { new: true },
+      )
+      .exec();
+
+    if (!doc) {
+      throw new Error('Vehicle not found');
+    }
+
+    return this.mapToEntity(doc);
   }
 
   async countByUserId(userId: string): Promise<number> {

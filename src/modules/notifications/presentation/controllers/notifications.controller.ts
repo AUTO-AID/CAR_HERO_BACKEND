@@ -12,7 +12,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
-import { NotificationsService } from '../../application/services/notifications.service';
+import { NotificationsService, NotificationScope } from '../../application/services/notifications.service';
 import { JwtAuthGuard } from '../../../../core/guards/jwt-auth.guard';
 import { CurrentUser } from '../../../../core/decorators/current-user.decorator';
 import { ParseObjectIdPipe } from '../../../../core/pipes/parse-objectid.pipe';
@@ -30,18 +30,22 @@ import { NotificationType } from '../../../../core/enums/status.enum';
 export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
 
+  /**
+   * نطاق القراءة يشمل معرّف وثيقة المزوّد إن وُجد — إشعارات المزوّدين مخزّنة
+   * تاريخياً على ذلك المعرّف لا على معرّف المستخدم (jwt.strategy تُحضره أصلاً).
+   */
+  private scopeOf(user: any): NotificationScope {
+    return { userId: user?.id ?? user?._id, providerId: user?.providerId };
+  }
+
   @Get()
   @ApiOperation({ summary: 'Get user notifications' })
   async getNotifications(
-    @CurrentUser('id') userId: string,
+    @CurrentUser() user: any,
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 20,
   ) {
-    return this.notificationsService.getNotifications(
-      userId,
-      page,
-      limit,
-    );
+    return this.notificationsService.getNotifications(this.scopeOf(user), page, limit);
   }
 
   @Post('admin/broadcast')
@@ -71,27 +75,29 @@ export class NotificationsController {
     return { success: true, data: await this.notificationsService.getAdminStats() };
   }
 
+  // ملاحظة: هذه المسارات لا تُغلّف ردّها يدوياً بـ {success,...} — يتكفّل بذلك
+  // TransformInterceptor عالمياً، والتغليف المزدوج كان يُنتج {data:{success,count}}.
   @Get('unread-count')
   @ApiOperation({ summary: 'Get unread notifications count' })
-  async getUnreadCount(@CurrentUser('id') userId: string) {
-    const count = await this.notificationsService.getUnreadCount(userId);
-    return { success: true, count };
-  }
-
-  @Patch(':id/read')
-  @ApiOperation({ summary: 'Mark notification as read' })
-  async markAsRead(
-    @CurrentUser('id') userId: string,
-    @Param('id', ParseObjectIdPipe) id: string
-  ) {
-    const data = await this.notificationsService.markAsRead(id, userId);
-    return { success: true, data };
+  async getUnreadCount(@CurrentUser() user: any) {
+    const count = await this.notificationsService.getUnreadCount(this.scopeOf(user));
+    return { count };
   }
 
   @Patch('read-all')
   @ApiOperation({ summary: 'Mark all notifications as read' })
-  async markAllAsRead(@CurrentUser('id') userId: string) {
-    await this.notificationsService.markAllAsRead(userId);
-    return { success: true, message: 'All notifications marked as read' };
+  async markAllAsRead(@CurrentUser() user: any) {
+    await this.notificationsService.markAllAsRead(this.scopeOf(user));
+    return { message: 'All notifications marked as read' };
+  }
+
+  // يجب أن يبقى بعد 'read-all' حتى لا يبتلعه المسار ذو الوسيط
+  @Patch(':id/read')
+  @ApiOperation({ summary: 'Mark notification as read' })
+  async markAsRead(
+    @CurrentUser() user: any,
+    @Param('id', ParseObjectIdPipe) id: string
+  ) {
+    return this.notificationsService.markAsRead(id, this.scopeOf(user));
   }
 }

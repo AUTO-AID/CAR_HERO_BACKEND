@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { NotFoundException } from '@nestjs/common';
 import { getConnectionToken, getModelToken } from '@nestjs/mongoose';
 import { ConfigService } from '@nestjs/config';
 import { NotificationsService } from './notifications.service';
@@ -68,13 +69,58 @@ describe('NotificationsService (Unit Audit)', () => {
         exec: jest.fn().mockResolvedValue(5)
     });
 
-    const count = await service.getUnreadCount(userId);
+    const count = await service.getUnreadCount({ userId });
     expect(count).toBe(5);
     expect(mockNotificationModel.countDocuments).toHaveBeenCalledWith({
       recipientId: new Types.ObjectId(userId),
       isRead: false,
       deliveryStatus: { $ne: 'scheduled' },
     });
+  });
+
+  it('should read across both the user id and the linked provider id', async () => {
+    const userId = new Types.ObjectId().toString();
+    const providerId = new Types.ObjectId().toString();
+    mockNotificationModel.countDocuments.mockReturnValue({
+      exec: jest.fn().mockResolvedValue(3),
+    });
+
+    const count = await service.getUnreadCount({ userId, providerId });
+
+    expect(count).toBe(3);
+    expect(mockNotificationModel.countDocuments).toHaveBeenCalledWith({
+      recipientId: { $in: [new Types.ObjectId(userId), new Types.ObjectId(providerId)] },
+      isRead: false,
+      deliveryStatus: { $ne: 'scheduled' },
+    });
+  });
+
+  it('should throw NotFoundException when marking a notification that is not the caller\'s', async () => {
+    const userId = new Types.ObjectId().toString();
+    const notificationId = new Types.ObjectId().toString();
+    mockNotificationModel.findOneAndUpdate.mockReturnValue({
+      exec: jest.fn().mockResolvedValue(null),
+    });
+
+    await expect(service.markAsRead(notificationId, { userId })).rejects.toThrow(NotFoundException);
+  });
+
+  it('should clamp an out-of-range page instead of issuing a negative skip', async () => {
+    mockNotificationModel.find.mockReturnValue({
+      sort: jest.fn().mockReturnThis(),
+      skip: jest.fn().mockReturnThis(),
+      limit: jest.fn().mockReturnThis(),
+      lean: jest.fn().mockReturnThis(),
+      exec: jest.fn().mockResolvedValue([]),
+    });
+    mockNotificationModel.countDocuments.mockReturnValue({
+      exec: jest.fn().mockResolvedValue(0),
+    });
+
+    const result = await service.getNotifications({ userId: new Types.ObjectId().toString() }, 0, 20);
+
+    expect(result.page).toBe(1);
+    expect(result.pagination).toEqual({ page: 1, limit: 20, total: 0, pages: 1 });
   });
 
   it('should verify ownership when marking as read', async () => {
@@ -90,7 +136,7 @@ describe('NotificationsService (Unit Audit)', () => {
         exec: jest.fn().mockResolvedValue(0)
     });
 
-    await service.markAsRead(notificationId, userId);
+    await service.markAsRead(notificationId, { userId });
 
     expect(mockNotificationModel.findOneAndUpdate).toHaveBeenCalledWith(
       expect.objectContaining({ _id: new Types.ObjectId(notificationId), recipientId: new Types.ObjectId(userId) }),

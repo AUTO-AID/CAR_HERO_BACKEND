@@ -1,4 +1,4 @@
-import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
 import { CreateOrderDto } from '../dto/create-order.dto';
 import { OrderEntity } from '../../domain/entities/order.entity';
@@ -7,6 +7,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Service, ServiceDocument } from '../../../../modules/services/infrastructure/persistence/mongoose/schemas/service.schema';
 import { NotificationsService } from '../../../notifications/application/services/notifications.service';
+import { notificationContent } from '../../../notifications/application/notification-content';
 import { NotificationType, ProviderStatus } from '../../../../core/enums/status.enum';
 import { StatusHistoryService } from '../../../status-history/application/services/status-history.service';
 import { SchedulingAvailabilityService } from '../services/scheduling-availability.service';
@@ -14,6 +15,8 @@ import { Provider, ProviderDocument } from '../../../providers/infrastructure/pe
 
 @Injectable()
 export class CreateOrderUseCase {
+  private readonly logger = new Logger(CreateOrderUseCase.name);
+
   constructor(
     @Inject(IOrderRepository)
     private readonly orderRepository: IOrderRepository,
@@ -80,9 +83,14 @@ export class CreateOrderUseCase {
       scheduledAt: dto.scheduleTime ? new Date(dto.scheduleTime) : undefined,
       isScheduled: !!dto.scheduleTime,
     };
-    (orderData as any).metadata = dto.scheduleTime
-      ? { scheduledDurationMinutes: service.estimatedDuration }
-      : {};
+    // `serviceName` ليس حقلاً في مخطط الطلب، فيحذفه Mongoose بصمت عند الحفظ
+    // ويعود undefined في نص الإشعار ("for undefined"). نخزّنه ضمن metadata
+    // لأن mapToEntity يقرأه من هناك أصلاً كبديل.
+    const serviceName = service.nameAr ?? service.name;
+    (orderData as any).metadata = {
+      serviceName,
+      ...(dto.scheduleTime ? { scheduledDurationMinutes: service.estimatedDuration } : {}),
+    };
 
     // 3. Save Order
     const order = await this.orderRepository.create(orderData);
@@ -104,15 +112,21 @@ export class CreateOrderUseCase {
     });
 
     // 4. Send Notification to Provider (if assigned) or System
+    // الطلب محفوظ بالفعل عند هذه النقطة — فشل الإشعار يجب ألا يُفشل إنشاء الطلب.
     if (order.providerId) {
-      await this.notificationsService.createNotification({
-        recipientId: order.providerId,
-        recipientType: 'provider',
-        title: 'New Order Received 📦',
-        body: `You have a new order: ${order.orderNumber} for ${order.serviceName}`,
-        type: NotificationType.ORDER_CREATED,
-        data: { orderId: order.id, orderNumber: order.orderNumber }
-      });
+      try {
+        await this.notificationsService.createNotification({
+          recipientId: order.providerId,
+          recipientType: 'provider',
+          ...notificationContent.newOrderForProvider(order.orderNumber, order.serviceName ?? serviceName),
+          type: NotificationType.ORDER_CREATED,
+          data: { orderId: order.id, orderNumber: order.orderNumber },
+        });
+      } catch (error) {
+        this.logger.error(
+          `New-order notification failed for provider ${order.providerId} (order ${order.orderNumber}): ${error?.message ?? error}`,
+        );
+      }
     }
 
     return order;

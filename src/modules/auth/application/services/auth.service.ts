@@ -41,8 +41,10 @@ import { ERROR_MESSAGES, SUCCESS_MESSAGES } from '../../../../core/constants';
 import { OtpService } from './otp.service';
 import { Logout, LogoutDocument } from '../../infrastructure/persistence/mongoose/schemas/logout.schema';
 import { NotificationsService } from '../../../notifications/application/services/notifications.service';
+import { notificationContent } from '../../../notifications/application/notification-content';
 import { NotificationType } from '../../../../core/enums/status.enum';
 import { Admin, AdminDocument } from '../../../admin/infrastructure/persistence/mongoose/schemas/admin.schema';
+import { isOtpBypassed } from '../../../../config/dev-flags';
 
 @Injectable()
 export class AuthService {
@@ -62,7 +64,9 @@ export class AuthService {
   // ===========================================
   // REGISTER
   // ===========================================
-  async register(registerDto: RegisterDto): Promise<IOtpResponse> {
+  async register(
+    registerDto: RegisterDto,
+  ): Promise<IOtpResponse | IAuthResponse> {
     const { password, fullName, accountType, isTermsAccepted } =
       registerDto;
     const phoneNumber = this.normalizeSyrianPhoneNumber(registerDto.phoneNumber);
@@ -77,22 +81,119 @@ export class AuthService {
     // Enforce accountType safety to prevent privilege escalation
     const finalAccountType = accountType === 'provider' ? 'provider' : 'customer';
 
-    await this.pendingRegistrationModel.findOneAndUpdate(
-      { phoneNumber },
-      {
-        fullName,
-        phoneNumber,
-        password: hashedPassword,
-        accountType: finalAccountType,
-        isTermsAccepted,
-        expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes
-      },
-      { upsert: true, new: true },
-    );
+    const pendingRegistration =
+      await this.pendingRegistrationModel.findOneAndUpdate(
+        { phoneNumber },
+        {
+          fullName,
+          phoneNumber,
+          password: hashedPassword,
+          accountType: finalAccountType,
+          isTermsAccepted,
+          expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes
+        },
+        { upsert: true, new: true },
+      );
+
+    // TEMPORARY (see config/dev-flags.ts): skip OTP and create the account now.
+    // The OTP logic below is untouched and resumes the moment the flag is off.
+    if (isOtpBypassed()) {
+      // password في PendingRegistration معرّف بـ select:false، لذا نمرّره صراحةً
+      return this.completePendingRegistration(pendingRegistration, hashedPassword);
+    }
 
     await this.otpService.generateAndSaveForPending(phoneNumber);
 
     return this.otpService.createResponse(phoneNumber);
+  }
+
+  /**
+   * إنشاء المستخدم من طلب التسجيل المُعلّق وإصدار الجلسة.
+   * مشترك بين verifyOtp (بعد التحقّق) ووضع تخطّي OTP في التطوير.
+   */
+  private async completePendingRegistration(
+    pendingRegistration: PendingRegistrationDocument,
+    hashedPassword?: string,
+  ): Promise<IAuthResponse> {
+    const phoneNumber = pendingRegistration.phoneNumber;
+
+    const existingUser = await this.userModel.findOne({ phoneNumber });
+    if (existingUser) {
+      await this.pendingRegistrationModel.deleteOne({ phoneNumber });
+      throw new ConflictException(ERROR_MESSAGES.USER.ALREADY_EXISTS);
+    }
+
+    // The findOne check above is not atomic: two concurrent registrations for
+    // the same number can both pass it and race into create(). The unique index
+    // rejects the loser with E11000 — surface that as a clean 409 instead of a
+    // 500, so the client shows "already registered" rather than a server error.
+    let user: UserDocument;
+    try {
+      user = await this.userModel.create({
+        fullName: pendingRegistration.fullName,
+        phoneNumber: pendingRegistration.phoneNumber,
+        password: hashedPassword ?? pendingRegistration.password,
+        accountType: pendingRegistration.accountType,
+        isTermsAccepted: pendingRegistration.isTermsAccepted,
+        isVerified: true,
+        isActive: pendingRegistration.accountType === 'provider' ? false : true, // Providers start inactive
+        lastLoginAt: new Date(),
+      });
+    } catch (error) {
+      if ((error as { code?: number })?.code === 11000) {
+        throw new ConflictException(ERROR_MESSAGES.USER.ALREADY_EXISTS);
+      }
+      throw error;
+    }
+
+    // Automated Provider Registration
+    if (pendingRegistration.accountType === 'provider') {
+      await this.providerModel.create({
+        phone: pendingRegistration.phoneNumber,
+        businessName: pendingRegistration.fullName,
+        ownerName: pendingRegistration.fullName,
+        location: { type: 'Point', coordinates: [0, 0] },
+        registrationStatus: 'pending',
+        isApproved: false,
+        isActive: false,
+      });
+
+      // Notify Admin about new registration
+      const admin = await this.adminModel.findOne({ isActive: true });
+      if (admin) {
+        await this.notificationsService.createNotification({
+          recipientId: admin._id.toString(),
+          recipientType: 'admin',
+          ...notificationContent.providerRegistrationPending(pendingRegistration.fullName),
+          type: NotificationType.ALERT,
+          data: {
+            event: 'provider.registration.pending',
+            phoneNumber: pendingRegistration.phoneNumber,
+          },
+        });
+      }
+    }
+
+    await this.pendingRegistrationModel.deleteOne({ phoneNumber });
+
+    return this.createAuthResponse(user);
+  }
+
+  // ===========================================
+  // CURRENT USER PROFILE
+  // ===========================================
+  /**
+   * Returns the persisted user profile, not the JWT payload. The token only
+   * carries claims (userId/role/isPremium) and lacks fullName, profileImage,
+   * preferences, etc. — clients that cache this response would otherwise lose
+   * those fields on every session restore.
+   */
+  async getMe(userId: string): Promise<{ user: any }> {
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+    }
+    return { user: SanitizeUtil.user(user.toObject()) };
   }
 
   // ===========================================
@@ -121,55 +222,7 @@ export class AuthService {
 
     await this.validatePendingOtp(pendingRegistration, otpCode);
 
-    const existingUser = await this.userModel.findOne({ phoneNumber });
-    if (existingUser) {
-      await this.pendingRegistrationModel.deleteOne({ phoneNumber });
-      throw new ConflictException(ERROR_MESSAGES.USER.ALREADY_EXISTS);
-    }
-
-    const user = await this.userModel.create({
-      fullName: pendingRegistration.fullName,
-      phoneNumber: pendingRegistration.phoneNumber,
-      password: pendingRegistration.password,
-      accountType: pendingRegistration.accountType,
-      isTermsAccepted: pendingRegistration.isTermsAccepted,
-      isVerified: true,
-      isActive: pendingRegistration.accountType === 'provider' ? false : true, // Providers start inactive
-      lastLoginAt: new Date(),
-    });
-
-    // Automated Provider Registration
-    if (pendingRegistration.accountType === 'provider') {
-      await this.providerModel.create({
-        phone: pendingRegistration.phoneNumber,
-        businessName: pendingRegistration.fullName,
-        ownerName: pendingRegistration.fullName,
-        location: { type: 'Point', coordinates: [0, 0] },
-        registrationStatus: 'pending',
-        isApproved: false,
-        isActive: false,
-      });
-
-      // Notify Admin about new registration
-      const admin = await this.adminModel.findOne({ isActive: true });
-      if (admin) {
-        await this.notificationsService.createNotification({
-          recipientId: admin._id.toString(),
-          recipientType: 'admin',
-          title: 'New Provider Registration',
-          body: `A new provider "${pendingRegistration.fullName}" is waiting for approval.`,
-          type: NotificationType.ALERT,
-          data: {
-            event: 'provider.registration.pending',
-            phoneNumber: pendingRegistration.phoneNumber,
-          }
-        });
-      }
-    }
-
-    await this.pendingRegistrationModel.deleteOne({ phoneNumber });
-
-    return this.createAuthResponse(user);
+    return this.completePendingRegistration(pendingRegistration);
   }
 
   // ===========================================
@@ -288,6 +341,17 @@ export class AuthService {
       throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
     }
 
+    // TEMPORARY (see config/dev-flags.ts): no OTP is sent, and the client is
+    // told to skip the OTP screen. Restoring the flag restores this branch.
+    if (isOtpBypassed()) {
+      return {
+        message: SUCCESS_MESSAGES.AUTH.PASSWORD_RESET_REQUESTED,
+        phoneNumber,
+        expiresIn: 300,
+        otpBypassed: true,
+      };
+    }
+
     await this.otpService.generateAndSave(phoneNumber);
 
     return {
@@ -316,7 +380,12 @@ export class AuthService {
       throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
     }
 
-    await this.validateOtp(user, otpCode);
+    // TEMPORARY (see config/dev-flags.ts): the OTP challenge is skipped during
+    // development. validateOtp itself is untouched and runs again once the flag
+    // is off — this is the only line guarding it.
+    if (!isOtpBypassed()) {
+      await this.validateOtp(user, otpCode);
+    }
 
     user.password = await PasswordUtil.hash(newPassword);
     user.otpCode = null;

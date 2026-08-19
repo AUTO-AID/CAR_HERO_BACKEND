@@ -12,7 +12,10 @@ export default () => ({
 
   // MongoDB settings
   database: {
-    uri: process.env.MONGODB_URI || 'mongodb://localhost:27017/car_hero',
+    // لا قيمة احتياطية محلية هنا: كانت تعني أن غياب MONGODB_URI يُسقط
+    // النظام كله على قاعدة محلية بصمت. الغياب الآن يُوقف الإقلاع
+    // برسالة صريحة من assertGlobalDatabase في mongo.config.
+    uri: process.env.MONGODB_URI,
   },
 
   // JWT settings

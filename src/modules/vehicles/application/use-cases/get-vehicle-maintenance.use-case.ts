@@ -38,19 +38,16 @@ export class GetVehicleMaintenanceUseCase {
       throw new NotFoundException('Vehicle not found');
     }
 
-    const cacheKey = `maintenance_vehicle_${vehicleId}_page_${page}_limit_${limit}`;
-
-    // Try to get from cache
-    const cached = await this.cacheManager.get<{ records: MaintenanceRecordEntity[]; pagination: any }>(cacheKey);
-    if (cached) {
-      return cached;
-    }
-
-    // Fetch from database
+    // NOT cached on purpose — same defect that was fixed for the vehicles list:
+    // the read cached under `maintenance_vehicle_<id>_page_<n>_limit_<n>` while
+    // CreateMaintenanceRecordUseCase deleted only `maintenance_vehicle_<id>`, so a
+    // record the user just added stayed invisible for up to 10 minutes. The query
+    // is per-vehicle and tiny, so serving it from Mongo is cheaper than any
+    // correct invalidation scheme.
     const skip = (page - 1) * limit;
     const { records, total } = await this.maintenanceRepository.findByVehicleId(vehicleId, skip, limit);
 
-    const result = {
+    return {
       records,
       pagination: {
         total,
@@ -59,10 +56,5 @@ export class GetVehicleMaintenanceUseCase {
         pages: Math.ceil(total / limit),
       },
     };
-
-    // Save to cache (10 minutes)
-    await this.cacheManager.set(cacheKey, result, 600000);
-
-    return result;
   }
 }

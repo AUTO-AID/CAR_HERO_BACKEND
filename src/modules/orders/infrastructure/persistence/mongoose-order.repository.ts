@@ -102,13 +102,25 @@ export class MongooseOrderRepository implements IOrderRepository {
     return entity;
   }
 
+  /**
+   * المراجع تصل نصّاً من طبقة التطبيق بينما المخطّط يعرّفها ObjectId، والتحويل
+   * الضمني لا يحدث هنا — فكانت تُحفظ كنصوص ولا يطابقها أي استعلام لاحق
+   * (طلبات العميل تُنشأ بنجاح ثم لا تظهر في «طلباتي» إطلاقاً).
+   */
+  private static toObjectId(value: unknown): Types.ObjectId | undefined {
+    if (!value) return undefined;
+    if (value instanceof Types.ObjectId) return value;
+    const asString = String(value);
+    return Types.ObjectId.isValid(asString) ? new Types.ObjectId(asString) : undefined;
+  }
+
   async create(order: Partial<OrderEntity>): Promise<OrderEntity> {
     const created = new this.orderModel({
       ...order,
-      user: order.userId,
-      service: order.serviceId,
-      provider: order.providerId,
-      vehicle: order.vehicleId,
+      user: MongooseOrderRepository.toObjectId(order.userId),
+      service: MongooseOrderRepository.toObjectId(order.serviceId),
+      provider: MongooseOrderRepository.toObjectId(order.providerId),
+      vehicle: MongooseOrderRepository.toObjectId(order.vehicleId),
       totalAmount: order.total,
       payableAmount: order.total,
       location: order.userLocation,

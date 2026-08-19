@@ -31,7 +31,9 @@
     "db:demo-activity-cron": "node scripts/seed-local-demo-activity.cjs --watch",
     "db:clean-local-demo": "node scripts/clean-local-demo-data.cjs",
     "postman:validate": "node scripts/postman/validate.cjs",
-    "postman:publish": "npm run postman:validate && node scripts/postman/publish.cjs"
+    "postman:publish": "npm run postman:validate && node scripts/postman/publish.cjs",
+    "db:push-to-atlas": "powershell -ExecutionPolicy Bypass -File scripts/sync-local-to-atlas.ps1",
+    "db:verify-sync": "node scripts/verify-db-sync.cjs"
   },
   "dependencies": {
     "@nestjs/cache-manager": "^3.1.0",

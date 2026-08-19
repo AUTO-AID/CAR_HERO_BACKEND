@@ -35,6 +35,7 @@ import { Vehicle, VehicleDocument } from '../../../vehicles/infrastructure/persi
 import { Order, OrderDocument } from '../../../orders/infrastructure/persistence/mongoose/schemas/order.schema';
 import { Service, ServiceDocument } from '../../../services/infrastructure/persistence/mongoose/schemas/service.schema';
 import { NotificationsService } from '../../../notifications/application/services/notifications.service';
+import { notificationContent } from '../../../notifications/application/notification-content';
 import { OrderEntity } from '../../../orders/domain/entities/order.entity';
 
 @Injectable()
@@ -277,7 +278,10 @@ export class CustomerExperienceService {
   }
 
   private async assertOwnedVehicle(userId: string, vehicleId: string) {
-    const vehicle = await this.vehicles.exists({ _id: new Types.ObjectId(vehicleId), owner: new Types.ObjectId(userId) });
+    const vehicle = await this.vehicles.exists({
+      _id: new Types.ObjectId(vehicleId),
+      owner: { $in: [userId, new Types.ObjectId(userId)] },
+    });
     if (!vehicle) throw new NotFoundException('Vehicle not found');
   }
 
@@ -333,8 +337,7 @@ export class CustomerExperienceService {
       await this.notifications.createNotification({
         recipientId: plan.userId.toString(),
         recipientType: 'user',
-        title: 'Recurring car wash booked',
-        body: `Your next car wash booking is scheduled for ${scheduledAt.toISOString()}`,
+        ...notificationContent.recurringWashBooked(scheduledAt),
         type: NotificationType.REMINDER,
         data: { washPlanId: plan._id.toString(), orderId: order._id.toString(), scheduledAt },
       });

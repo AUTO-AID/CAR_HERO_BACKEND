@@ -1,14 +1,17 @@
-import { Injectable, NotFoundException, ForbiddenException, Inject, BadRequestException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, ForbiddenException, Inject, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Chat, ChatDocument, Message, MessageDocument } from '../../infrastructure/persistence/mongoose/schemas/chat.schema';
 import { MessageType, SendMessageDto } from '../dtos/chat.dto';
 import { IOrderRepository } from '../../../orders/domain/repositories/order.repository.interface';
 import { NotificationsService } from '../../../notifications/application/services/notifications.service';
+import { notificationContent } from '../../../notifications/application/notification-content';
 import { NotificationType } from '../../../../core/enums/status.enum';
 
 @Injectable()
 export class ChatService {
+  private readonly logger = new Logger(ChatService.name);
+
   constructor(
     @InjectModel(Chat.name) private readonly chatModel: Model<ChatDocument>,
     @InjectModel(Message.name) private readonly messageModel: Model<MessageDocument>,
@@ -95,14 +98,19 @@ export class ChatService {
     );
 
     // Notify the receiver through the unified notification pipeline.
-    await this.notificationsService.createNotification({
-      recipientId: receiverId.toString(),
-      recipientType: 'user', // Adjust if you have complex roles
-      title: 'New message',
-      body: dto.message.length > 50 ? `${dto.message.substring(0, 50)}...` : dto.message,
-      type: NotificationType.NEW_MESSAGE,
-      data: { chatId: chat.id, senderId }
-    });
+    // الرسالة محفوظة بالفعل — فشل الإشعار يجب ألا يُفشل الإرسال.
+    const preview = dto.message.length > 50 ? `${dto.message.substring(0, 50)}...` : dto.message;
+    try {
+      await this.notificationsService.createNotification({
+        recipientId: receiverId.toString(),
+        recipientType: 'user', // Adjust if you have complex roles
+        ...notificationContent.newChatMessage(preview),
+        type: NotificationType.NEW_MESSAGE,
+        data: { chatId: chat.id, senderId },
+      });
+    } catch (error) {
+      this.logger.error(`New-message notification failed for ${receiverId}: ${error?.message ?? error}`);
+    }
 
     return savedMessage;
   }

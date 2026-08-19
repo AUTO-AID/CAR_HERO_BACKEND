@@ -38,19 +38,14 @@ export class GetVehicleRemindersUseCase {
       throw new NotFoundException('Vehicle not found');
     }
 
-    const cacheKey = `reminders_vehicle_${vehicleId}_page_${page}_limit_${limit}`;
-
-    // Try to get from cache
-    const cached = await this.cacheManager.get<{ reminders: VehicleReminderEntity[]; pagination: any }>(cacheKey);
-    if (cached) {
-      return cached;
-    }
-
-    // Fetch from database
+    // NOT cached on purpose — see GetVehicleMaintenanceUseCase: the paginated read
+    // key was never invalidated by CreateVehicleReminderUseCase (it deletes only
+    // `reminders_vehicle_<id>`), so a reminder the user just created stayed
+    // invisible for up to 10 minutes.
     const skip = (page - 1) * limit;
     const { reminders, total } = await this.reminderRepository.findByVehicleId(vehicleId, skip, limit);
 
-    const result = {
+    return {
       reminders,
       pagination: {
         total,
@@ -59,10 +54,5 @@ export class GetVehicleRemindersUseCase {
         pages: Math.ceil(total / limit),
       },
     };
-
-    // Save to cache (10 minutes)
-    await this.cacheManager.set(cacheKey, result, 600000);
-
-    return result;
   }
 }

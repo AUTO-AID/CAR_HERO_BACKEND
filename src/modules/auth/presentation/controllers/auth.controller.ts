@@ -187,12 +187,12 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Get current user info',
-    description: 'Get authenticated user information from JWT token'
+    description: 'Get the authenticated user profile from the database',
   })
   async getMe(@CurrentUser() user: any) {
-    return { user };
+    return this.authService.getMe(user.userId ?? user._id ?? user.id);
   }
 
   /**

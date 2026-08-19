@@ -67,8 +67,9 @@ export class StatusHistoryService {
     const filter: any = {};
 
     if (query.entityType) filter.entityType = query.entityType;
-    if (query.entityId && Types.ObjectId.isValid(query.entityId)) filter.entityId = query.entityId;
-    if (query.changedBy && Types.ObjectId.isValid(query.changedBy)) filter.changedBy = query.changedBy;
+    // نفس علّة findForEntity: المعرّفات مخزّنة ObjectId فيجب أن تُستعلم كذلك
+    if (query.entityId && Types.ObjectId.isValid(query.entityId)) filter.entityId = new Types.ObjectId(query.entityId);
+    if (query.changedBy && Types.ObjectId.isValid(query.changedBy)) filter.changedBy = new Types.ObjectId(query.changedBy);
     if (query.toStatus) filter.toStatus = query.toStatus;
 
     const [histories, total] = await Promise.all([
@@ -84,8 +85,11 @@ export class StatusHistoryService {
       return [];
     }
 
+    // `record()` يخزّن entityId كـ ObjectId صراحةً، لكن القراءة كانت تمرّر
+    // المعرّف نصّاً ولا يُصبّ تلقائياً، فكان الاستعلام لا يطابق شيئاً أبداً:
+    // كل سجلّات الحالة موجودة في القاعدة و/orders/:id/status-history يعيد [].
     return this.statusHistoryModel
-      .find({ entityType, entityId })
+      .find({ entityType, entityId: new Types.ObjectId(entityId) })
       .sort({ createdAt: 1 })
       .lean();
   }

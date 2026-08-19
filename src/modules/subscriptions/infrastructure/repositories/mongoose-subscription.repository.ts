@@ -107,7 +107,18 @@ export class MongooseSubscriptionRepository implements ISubscriptionRepository {
   }
 
   async createUserSubscription(data: Partial<UserSubscriptionEntity> & { user?: any; plan?: any }): Promise<UserSubscriptionEntity> {
-    const doc = new this.userSubModel(data);
+    // `user`/`plan` مخطّطهما ObjectId لكنهما يصلان نصّاً ولا يُحوَّلان ضمنياً،
+    // فكانا يُحفظان كنصوص بينما كل استعلامات القراءة تبحث بـ ObjectId
+    // (findByUser / findActive) — فيُنشأ الاشتراك بنجاح ثم لا يظهر إطلاقاً:
+    // «لا يوجد اشتراك نشط» رغم أنه مفعّل في القاعدة.
+    const normalized: Record<string, unknown> = { ...data };
+    for (const field of ['user', 'plan'] as const) {
+      const value = (normalized as any)[field];
+      if (value && !(value instanceof Types.ObjectId) && Types.ObjectId.isValid(String(value))) {
+        (normalized as any)[field] = new Types.ObjectId(String(value));
+      }
+    }
+    const doc = new this.userSubModel(normalized);
     await doc.save();
     return this.mapUserSubToEntity(doc);
   }

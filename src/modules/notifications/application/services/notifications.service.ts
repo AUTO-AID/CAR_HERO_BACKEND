@@ -19,10 +19,28 @@ export interface CreateNotificationDto {
 type NotificationRecipientType = 'user' | 'provider' | 'admin';
 
 interface NotificationRecipient {
+  /** المعرّف الذي يُخزَّن عليه الإشعار — حساب المستخدم متى وُجد */
   _id: Types.ObjectId;
   recipientType: NotificationRecipientType;
   pushEnabled: boolean;
   fcmToken?: string;
+  /**
+   * كل المعرّفات التي تدلّ على هذا المستقبِل (معرّف المستخدم + معرّف وثيقة
+   * المزوّد). المزوّد قد يكون له وثيقتان بمعرّفين مختلفين، فنبثّ إلى غرفتَي
+   * الاثنين ونقرأ بهما معاً حتى لا يضيع إشعار.
+   */
+  linkedIds: string[];
+}
+
+/**
+ * نطاق القراءة لمستخدم مُصادَق — يأتي من الـ JWT الذي يحمل `id` و`providerId`
+ * (انظر jwt.strategy.ts). إشعارات المزوّدين القديمة مخزّنة على معرّف وثيقة
+ * المزوّد لا على معرّف المستخدم، فالقراءة بالاثنين معاً هي ما يجعلها ظاهرة
+ * دون الحاجة إلى ترحيل بيانات.
+ */
+export interface NotificationScope {
+  userId: string;
+  providerId?: string;
 }
 
 @Injectable()
@@ -89,24 +107,36 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     });
 
     // Update unread count for user
-    const unreadCount = await this.getUnreadCount(recipient._id.toString());
-    this.gateway.emitUnreadCount(recipient._id.toString(), unreadCount);
+    await this.emitUnreadCount(this.recipientScope(recipient));
 
     this.logger.log(`Notification created for user ${recipient._id.toString()}`);
     return notification;
   }
 
+  /** كل معرّفات النطاق كـ ObjectId صالحة، دون تكرار */
+  private scopeObjectIds(scope: NotificationScope): Types.ObjectId[] {
+    return [...new Set([scope.userId, scope.providerId].filter(Boolean) as string[])]
+      .filter((id) => Types.ObjectId.isValid(id))
+      .map((id) => new Types.ObjectId(id));
+  }
+
+  /** مُرشِّح `recipientId` الذي يغطي حساب المستخدم ووثيقة المزوّد معاً */
+  private scopeFilter(scope: NotificationScope) {
+    const ids = this.scopeObjectIds(scope);
+    if (!ids.length) throw new BadRequestException('Invalid notification recipient');
+    return ids.length === 1 ? ids[0] : { $in: ids };
+  }
+
   /**
    * Get user's notifications (paginated)
    */
-  async getNotifications(
-    recipientId: string,
-    page: number = 1,
-    limit: number = 20,
-  ) {
-    const skip = (page - 1) * limit;
+  async getNotifications(scope: NotificationScope, page: number = 1, limit: number = 20) {
+    // ترقيم غير صالح كان ينتج skip سالباً ويرمي 500 من المحرّك مباشرة
+    const safePage = Math.max(1, Math.floor(Number(page)) || 1);
+    const safeLimit = Math.min(100, Math.max(1, Math.floor(Number(limit)) || 20));
+    const skip = (safePage - 1) * safeLimit;
     const visibleFilter = {
-      recipientId: new Types.ObjectId(recipientId),
+      recipientId: this.scopeFilter(scope),
       deliveryStatus: { $ne: 'scheduled' },
     };
 
@@ -115,55 +145,72 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
         .find(visibleFilter)
         .sort({ createdAt: -1 })
         .skip(skip)
-        .limit(limit)
+        .limit(safeLimit)
         .lean()
         .exec(),
       this.notificationModel.countDocuments(visibleFilter).exec(),
     ]);
 
     return {
-      notifications,
+      // lean() يتجاوز toJSON فلا يوجد `id` افتراضي ويتسرّب `__v`
+      notifications: notifications.map(({ __v, ...rest }: any) => ({
+        ...rest,
+        id: rest._id?.toString(),
+      })),
       total,
-      page,
-      limit,
+      page: safePage,
+      limit: safeLimit,
+      pagination: {
+        page: safePage,
+        limit: safeLimit,
+        total,
+        pages: Math.max(1, Math.ceil(total / safeLimit)),
+      },
     };
   }
 
-  async getUnreadCount(recipientId: string): Promise<number> {
+  async getUnreadCount(scope: NotificationScope): Promise<number> {
     return this.notificationModel
       .countDocuments({
-        recipientId: new Types.ObjectId(recipientId),
+        recipientId: this.scopeFilter(scope),
         isRead: false,
         deliveryStatus: { $ne: 'scheduled' },
       })
       .exec();
   }
 
-  async markAsRead(id: string, userId: string): Promise<NotificationDocument | null> {
+  async markAsRead(id: string, scope: NotificationScope): Promise<NotificationDocument> {
     const notification = await this.notificationModel.findOneAndUpdate(
-      { _id: new Types.ObjectId(id), recipientId: new Types.ObjectId(userId) },
+      { _id: new Types.ObjectId(id), recipientId: this.scopeFilter(scope) },
       { isRead: true, readAt: new Date() },
       { new: true }
     ).exec();
 
-    if (notification) {
-      const unreadCount = await this.getUnreadCount(userId);
-      this.gateway.emitUnreadCount(userId, unreadCount);
-    }
+    // كان يُرجع 200 مع null لإشعار غير موجود أو يخصّ مستخدماً آخر
+    if (!notification) throw new NotFoundException('Notification not found');
 
+    await this.emitUnreadCount(scope);
     return notification;
   }
 
-  async markAllAsRead(recipientId: string): Promise<void> {
+  async markAllAsRead(scope: NotificationScope): Promise<void> {
     await this.notificationModel.updateMany(
       {
-        recipientId: new Types.ObjectId(recipientId),
+        recipientId: this.scopeFilter(scope),
         isRead: false,
         deliveryStatus: { $ne: 'scheduled' },
       },
       { isRead: true, readAt: new Date() },
     );
-    this.gateway.emitUnreadCount(recipientId, 0);
+    await this.emitUnreadCount(scope);
+  }
+
+  /** يبثّ العدّاد إلى كل غرف هذا المستقبِل */
+  private async emitUnreadCount(scope: NotificationScope) {
+    const count = await this.getUnreadCount(scope);
+    for (const id of this.scopeObjectIds(scope)) {
+      this.gateway.emitUnreadCount(id.toString(), count);
+    }
   }
 
   async createBroadcast(dto: { audience: 'all' | 'users' | 'premium' | 'providers'; title: string; body: string; type: NotificationType; scheduledAt?: string }) {
@@ -257,8 +304,7 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
         campaignId: item.campaignId,
         ...(item.data || {}),
       });
-      const unreadCount = await this.getUnreadCount(resolved.value._id.toString());
-      this.gateway.emitUnreadCount(resolved.value._id.toString(), unreadCount);
+      await this.emitUnreadCount(this.recipientScope(resolved.value));
     }));
     this.logger.log(`Dispatched ${due.length} scheduled notifications`);
   }
@@ -268,7 +314,7 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     const providers = this.connection.collection('providers');
     if (audience === 'providers') return this.getProviderRecipients();
     const userFilter = audience === 'premium' ? { isPremium: true, isActive: { $ne: false } } : { isActive: { $ne: false } };
-    const userRecipients = (await users.find(userFilter, { projection: { _id: 1, 'preferences.notifications.push': 1, fcmToken: 1 } }).toArray()).map((item: any) => ({ _id: item._id, recipientType: 'user' as const, pushEnabled: item.preferences?.notifications?.push !== false, fcmToken: item.fcmToken }));
+    const userRecipients = (await users.find(userFilter, { projection: { _id: 1, 'preferences.notifications.push': 1, fcmToken: 1 } }).toArray()).map((item: any) => ({ _id: item._id, recipientType: 'user' as const, pushEnabled: item.preferences?.notifications?.push !== false, fcmToken: item.fcmToken, linkedIds: [item._id.toString()] }));
     if (audience !== 'all') return userRecipients;
     const providerRecipients = await this.getProviderRecipients();
     return [...userRecipients, ...providerRecipients];
@@ -291,6 +337,7 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
         recipientType: 'provider' as const,
         pushEnabled: item.preferences?.notifications?.push !== false,
         fcmToken: item.fcmToken || providerInfo?.fcmToken,
+        linkedIds: [...new Set([item._id.toString(), providerInfo?._id?.toString()].filter(Boolean) as string[])],
       };
     });
   }
@@ -306,17 +353,19 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
         recipientType: 'admin',
         pushEnabled: true,
         fcmToken: adminUser.fcmToken,
+        linkedIds: [id.toString()],
       };
     }
 
     if (recipientType !== 'provider') {
       const user = await users.findOne({ _id: id, isActive: { $ne: false } });
       if (!user) throw new NotFoundException('User recipient not found');
-      return { 
+      return {
         _id: id,
         recipientType: 'user',
         pushEnabled: user?.preferences?.notifications?.push !== false,
-        fcmToken: user?.fcmToken 
+        fcmToken: user?.fcmToken,
+        linkedIds: [id.toString()],
       };
     }
     const providers = this.connection.collection('providers');
@@ -325,11 +374,23 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
       ? await users.findOne({ phoneNumber: provider.phone, accountType: 'provider' })
       : await users.findOne({ _id: id, accountType: 'provider' });
     if (!user && !provider) throw new NotFoundException('Provider recipient not found');
+
+    // بلا حساب مستخدم مرتبط كان الإشعار يُخزَّن على معرّف وثيقة المزوّد ولا
+    // يقرؤه أحد إطلاقاً (لا يحمله أي JWT). نُبقي التخزين ونسجّل تحذيراً،
+    // والقراءة تغطّي المعرّفين معاً عبر NotificationScope.
+    if (!user) {
+      this.logger.warn(
+        `Provider ${recipientId} has no linked user account (accountType:'provider' with phone ${provider?.phone ?? 'n/a'}); ` +
+        `notification is stored on the provider id and is only reachable via the provider-scoped read.`,
+      );
+    }
+
     return {
       _id: user?._id || id,
       recipientType: 'provider',
       pushEnabled: user?.preferences?.notifications?.push !== false,
-      fcmToken: user?.fcmToken || provider?.fcmToken
+      fcmToken: user?.fcmToken || provider?.fcmToken,
+      linkedIds: [...new Set([user?._id?.toString(), id.toString()].filter(Boolean) as string[])],
     };
   }
 
@@ -368,11 +429,17 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
       );
 
       chunk.forEach((recipient) => {
-        this.gateway.sendToUser(recipient._id.toString(), payload);
+        recipient.linkedIds.forEach((id) => this.gateway.sendToUser(id, payload));
       });
 
       await new Promise(resolve => setTimeout(resolve, 25));
     }
+  }
+
+  /** نطاق القراءة المكافئ لمستقبِل مُحلَّل */
+  private recipientScope(recipient: NotificationRecipient): NotificationScope {
+    const [userId, ...rest] = recipient.linkedIds;
+    return { userId: userId ?? recipient._id.toString(), providerId: rest[0] };
   }
 
   private async deliverToRecipient(
@@ -384,7 +451,9 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
   ) {
     if (!recipient.pushEnabled) return;
 
-    this.gateway.sendToUser(recipient._id.toString(), payload);
+    // البثّ إلى كل غرف المستقبِل: لوحة المزوّد تنضمّ بمعرّف المستخدم من الـ JWT
+    // بينما قد يكون الإشعار مخزّناً على معرّف وثيقة المزوّد.
+    for (const id of recipient.linkedIds) this.gateway.sendToUser(id, payload);
 
     if (!recipient.fcmToken || admin.apps.length === 0) return;
 

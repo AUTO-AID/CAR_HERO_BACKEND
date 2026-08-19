@@ -25,8 +25,13 @@ export class WhatsAppWebService implements OnModuleInit, OnModuleDestroy {
 
   async onModuleDestroy() {
     if (this.client) {
-      await this.client.destroy();
-      this.logger.log('WhatsApp client destroyed');
+      try {
+        await this.client.destroy();
+        this.logger.log('WhatsApp client destroyed');
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        this.logger.warn(`WhatsApp client destroy failed. Backend shutdown will continue. Reason: ${message}`);
+      }
     }
   }
 

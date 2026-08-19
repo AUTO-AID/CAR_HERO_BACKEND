@@ -17,16 +17,21 @@ export class GetVehiclesUseCase {
     private readonly cacheManager: Cache,
   ) {}
 
+  /**
+   * NOT cached on purpose.
+   *
+   * This response used to be cached for 10 minutes under
+   * `vehicles_user_<id>_page_<n>_limit_<n>`, and the mutation use-cases tried to
+   * invalidate it by enumerating cache keys via `store.keys()`. cache-manager v7
+   * backs the cache with Keyv, which exposes `iterator` and **no `keys()`**, so the
+   * sweep silently did nothing (it sits inside a try/catch) and the paginated key
+   * was never deleted. Result: a vehicle the user just added stayed invisible in
+   * "مركباتي" for up to 10 minutes.
+   *
+   * The query is per-user and tiny (max 10 vehicles), so serving it straight from
+   * Mongo is cheaper than any correct invalidation scheme would be.
+   */
   async execute(userId: string, page = 1, limit = 10): Promise<{ vehicles: VehicleEntity[]; pagination: any }> {
-    const cacheKey = `vehicles_user_${userId}_page_${page}_limit_${limit}`;
-
-    // Try to get from cache
-    const cached = await this.cacheManager.get<{ vehicles: VehicleEntity[]; pagination: any }>(cacheKey);
-    if (cached) {
-      return cached;
-    }
-
-    // Fetch from database
     const skip = (page - 1) * limit;
     const { vehicles, total } = await this.vehicleRepository.findByUserId(userId, skip, limit);
 
@@ -39,9 +44,6 @@ export class GetVehiclesUseCase {
         pages: Math.ceil(total / limit),
       },
     };
-
-    // Save to cache (10 minutes)
-    await this.cacheManager.set(cacheKey, result, 600000);
 
     return result;
   }

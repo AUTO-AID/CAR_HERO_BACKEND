@@ -65,22 +65,36 @@ export class CreateVehicleUseCase {
   private async invalidateUserCache(userId: string): Promise<void> {
     await this.cacheManager.del(`vehicles_user_${userId}`);
     await this.cacheManager.del(`vehicles_user_${userId}_default`);
-    
-    // Clear paginated and search caches
-    const store = (this.cacheManager as unknown as { store?: { keys?: () => Promise<string[]> } }).store;
-    if (store && typeof store.keys === 'function') {
-      try {
-        const allKeys = await store.keys();
-        const keysToDelete = allKeys.filter(k => 
-          k.includes(`vehicles_user_${userId}`) || 
-          k.includes(`vehicles_search_user_${userId}`)
-        );
-        for (const key of keysToDelete) {
+
+    // The list endpoint caches under `vehicles_user_<id>_page_<n>_limit_<n>`, so the
+    // exact-key deletes above never hit it — the paginated keys must be swept.
+    // cache-manager v7 exposes `stores` (array); only older versions had `store`,
+    // and the previous code checked `store` alone, so nothing was ever swept and a
+    // newly added vehicle stayed invisible until the 60s TTL expired.
+    try {
+      let keys: string[] = [];
+      const store = (this.cacheManager as any)?.store;
+      const stores = (this.cacheManager as any)?.stores;
+
+      if (store && typeof store.keys === 'function') {
+        keys = await store.keys();
+      } else if (stores && stores.length > 0 && typeof stores[0].keys === 'function') {
+        keys = await stores[0].keys();
+      }
+
+      for (const key of keys || []) {
+        if (
+          key.includes(`vehicles_user_${userId}`) ||
+          key.includes(`vehicles_search_user_${userId}`)
+        ) {
           await this.cacheManager.del(key);
         }
-      } catch (e) {
-        // Ignore errors if store doesn't support keys()
       }
+    } catch (error) {
+      console.warn(
+        `[Cache Warning] Failed to invalidate vehicle cache for user ${userId}:`,
+        (error as Error)?.message,
+      );
     }
   }
 }

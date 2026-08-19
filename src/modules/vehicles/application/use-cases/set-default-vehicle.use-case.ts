@@ -52,10 +52,12 @@ export class SetDefaultVehicleUseCase {
     await this.cacheManager.del(`vehicles_user_${userId}_default`);
     
     // Clear paginated and search caches
-    const store = (this.cacheManager as any).store;
-    if (typeof store?.keys === 'function') {
+    const store = (this.cacheManager as any)?.store;
+    const stores = (this.cacheManager as any)?.stores;
+    if ((store && typeof store.keys === 'function') || (stores?.length && typeof stores[0].keys === 'function')) {
       try {
-        const allKeys = await store.keys();
+        // cache-manager v7 exposes `stores`; older versions exposed `store`
+        const allKeys = store && typeof store.keys === 'function' ? await store.keys() : await stores[0].keys();
         const keysToDelete = allKeys.filter(k => 
           k.includes(`vehicles_user_${userId}`) || 
           k.includes(`vehicles_search_user_${userId}`)

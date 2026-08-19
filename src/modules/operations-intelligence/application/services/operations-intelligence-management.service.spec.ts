@@ -160,7 +160,7 @@ describe('OperationsIntelligenceManagementService follow-up workflow', () => {
   it('assigns a recommendation, updates its due date, and stores a follow-up note', async () => {
     const recommendationId = new Types.ObjectId();
     const adminId = new Types.ObjectId();
-    const dueAt = new Date('2026-07-01T08:00:00.000Z');
+    const dueAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
     const savedRecommendation = { _id: recommendationId, assignedToAdmin: adminId };
     const { service, recommendationModel } = makeService({
       recommendationModel: {
