@@ -25,26 +25,65 @@ export class ConfirmOrderCompletionUseCase {
     if (!order.userId || !currentUser?._id || order.userId.toString() !== currentUser._id.toString()) {
       throw new ForbiddenException('Only the customer who created this order can confirm completion');
     }
+    return this.finalize(id, order, {
+      actorId: currentUser?._id,
+      actorRole: 'user',
+      reason: 'Customer confirmed service completion',
+    });
+  }
+
+  /**
+   * التأكيد التلقائي بعد انقضاء مهلة العميل.
+   *
+   * حجز أرباح الفنّي رهينة فعلٍ لا مصلحة للعميل في أدائه ظلمٌ ومصدر شكاوى:
+   * الخدمة وقعت، والصمت ليس اعتراضاً. يمرّ من `finalize` نفسها كي يقع تحويل
+   * الأرباح وسجلّ الحالات والبثّ اللحظي مرّة واحدة في مكان واحد — ولا يُبنى
+   * مسار مالٍ موازٍ ينسى نصفها.
+   */
+  async executeAsSystem(id: string) {
+    const order = await this.orders.findById(id);
+    if (!order) throw new NotFoundException('Order not found');
+    return this.finalize(id, order, {
+      actorRole: 'system',
+      reason: 'Auto-confirmed after customer confirmation window elapsed',
+      autoConfirmed: true,
+    });
+  }
+
+  private async finalize(
+    id: string,
+    order: any,
+    options: { actorId?: any; actorRole: 'user' | 'system'; reason: string; autoConfirmed?: boolean },
+  ) {
     OrderStateMachine.assertTransition(order.status, OrderStatus.COMPLETED, 'user-confirmation');
+
+    const now = new Date();
     const updated = await this.orders.update(id, {
       status: OrderStatus.COMPLETED,
-      completedAt: new Date(),
-      customerConfirmedAt: new Date(),
+      completedAt: now,
+      // `customerConfirmedAt` يبقى فارغاً عند التأكيد التلقائي عمداً: تمييز
+      // «أكّد العميل» عن «افتُرض التأكيد» ما تحتاجه المحاسبة عند أي اعتراض.
+      ...(options.autoConfirmed
+        ? { 'metadata.autoConfirmedAt': now }
+        : { customerConfirmedAt: now }),
     } as any);
+
     if (updated.providerId && updated.total > 0) {
       await this.transferEarnings.execute(updated.providerId, updated.total, updated.id, 'order');
     }
+
     await this.histories.record({
       entityType: 'order',
       entityId: id,
       orderNumber: order.orderNumber,
       fromStatus: order.status,
       toStatus: OrderStatus.COMPLETED,
-      changedBy: currentUser?._id,
-      changedByRole: 'user',
-      changedByType: 'user',
-      reason: 'Customer confirmed service completion',
+      changedBy: options.actorId,
+      changedByRole: options.actorRole,
+      changedByType: options.actorRole,
+      reason: options.reason,
     });
+
     await this.cache.del(`order_${id}`);
     this.events.emit(
       OrderEvents.STATUS_CHANGED,

@@ -22,6 +22,7 @@ import { Setting, SettingSchema } from './modules/admin/infrastructure/persisten
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { ProvidersModule } from './modules/providers/providers.module';
+import { ProviderAppModule } from './modules/provider-app/provider-app.module';
 import { VehiclesModule } from './modules/vehicles/vehicles.module';
 import { ServicesModule } from './modules/services/services.module';
 import { OrdersModule } from './modules/orders/orders.module';
@@ -65,6 +66,7 @@ import { PaymentsModule } from './modules/payments/payments.module';
     AuthModule,
     UsersModule,
     ProvidersModule,
+    ProviderAppModule,
     VehiclesModule,
     ServicesModule,
     OrdersModule,

@@ -1,0 +1,75 @@
+import { OfferStatus, RequestOfferEntity } from '../entities/request-offer.entity';
+
+export interface CreateRequestOfferData {
+  orderId: string;
+  providerId: string;
+  orderNumber: string;
+  attempt: number;
+  round: number;
+  expiresAt: Date;
+  distanceMeters?: number;
+  etaMinutes?: number;
+}
+
+export interface CloseRequestOfferData {
+  status: OfferStatus;
+  reason?: string;
+}
+
+export interface CloseRequestOfferOptions {
+  /**
+   * يشترط أن تكون المهلة سارية لحظة الكتابة.
+   *
+   * القبول وحده يحتاجه: «مفتوح» في قاعدة البيانات تعني `status = offered` فقط،
+   * وقد تكون المهلة انقضت دون أن يمرّ المسح الدوري بعد. بدون هذا الشرط كان
+   * القبول المتأخّر ينجح على عرض ميّت.
+   */
+  requireUnexpired?: boolean;
+}
+
+export const IRequestOfferRepository = Symbol('IRequestOfferRepository');
+
+export interface IRequestOfferRepository {
+  create(data: CreateRequestOfferData): Promise<RequestOfferEntity>;
+
+  findById(id: string): Promise<RequestOfferEntity | null>;
+
+  /** آخر عرض مفتوح على هذا الفنّي — هو ما تعرضه شاشة «طلب وارد» */
+  findOpenForProvider(providerId: string): Promise<RequestOfferEntity | null>;
+
+  /** العرض المفتوح لهذا الطلب على هذا الفنّي تحديداً */
+  findOpenForOrderAndProvider(orderId: string, providerId: string): Promise<RequestOfferEntity | null>;
+
+  /**
+   * الفنّيون الذين لا يجوز عرض هذا الطلب عليهم الآن:
+   * من رفض صراحةً في أي جولة (قال لا)، ومن جُرّب في هذه الجولة أياً كانت
+   * نتيجته. من انقضت مهلته في جولة سابقة **ليس منهم** — ربما كان يقود.
+   */
+  findExcludedProviderIds(orderId: string, round: number): Promise<string[]>;
+
+  /** عدد العروض التي أُطلقت في هذه الجولة — سقفها `maxDispatchAttempts` */
+  countAttemptsInRound(orderId: string, round: number): Promise<number>;
+
+  /** العروض التي ما تزال مفتوحة على هذا الطلب */
+  findOpenForOrder(orderId: string): Promise<RequestOfferEntity[]>;
+
+  /** أعلى رقم محاولة سُجّل لهذا الطلب */
+  countAttempts(orderId: string): Promise<number>;
+
+  /**
+   * إغلاق ذرّي: يُغلق العرض فقط إن كان ما يزال مفتوحاً. القبول والانتهاء قد
+   * يتسابقان (ضغطة الفنّي مقابل مسح المهلة)، والإغلاق غير الشرطي كان يسمح
+   * للاثنين بالنجاح معاً.
+   */
+  closeIfOpen(
+    id: string,
+    data: CloseRequestOfferData,
+    options?: CloseRequestOfferOptions,
+  ): Promise<RequestOfferEntity | null>;
+
+  /** إغلاق كل عروض هذا الطلب التي ما تزال مفتوحة (عند الإلغاء أو الإسناد) */
+  closeAllOpenForOrder(orderId: string, data: CloseRequestOfferData): Promise<number>;
+
+  /** العروض التي انقضت مهلتها وما تزال مفتوحة — تقرؤها مهمّة المسح الدورية */
+  findExpired(now: Date, limit: number): Promise<RequestOfferEntity[]>;
+}

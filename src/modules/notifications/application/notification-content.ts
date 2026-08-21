@@ -85,6 +85,81 @@ export const notificationContent = {
     };
   },
 
+  /**
+   * عُرض طلب على الفنّي ضمن نافذة ردّ محدودة — إشعار تطبيق الفنّي الميداني.
+   * يذكر المهلة صراحةً لأن الإشعار قد يصل والهاتف مقفل، والفنّي يقرّر من نصّه
+   * وحده إن كان يستحق فتح التطبيق الآن.
+   */
+  newRequestOfferForProvider(
+    serviceName: string | null | undefined,
+    seconds: number,
+    distanceKm?: number | null,
+  ): NotificationContent {
+    const distance = typeof distanceKm === 'number' ? ` على بُعد ${distanceKm} كم` : '';
+    return {
+      title: 'طلب خدمة جديد',
+      body: `${serviceLabel(serviceName)}${distance} — لديك ${seconds} ثانية للرد.`,
+    };
+  },
+
+  /**
+   * انقضى سقف البحث ولم يُقبل الطلب — إشعار العميل.
+   *
+   * النصّ يقول إن الطلب **أُلغي** لا إننا «ما زلنا نبحث»: البحث انتهى فعلاً،
+   * والوعد بمتابعته يترك العميل ينتظر على الطريق ما لن يأتي.
+   */
+  noProviderAvailableForOrder(orderNumber: string): NotificationContent {
+    return {
+      title: 'تعذّر إيجاد فنّي متاح',
+      body: `لم نتمكّن من إيجاد فنّي متاح قريب لطلبك رقم ${orderNumber}، وتم إلغاؤه. يمكنك المحاولة مجدداً أو التواصل مع الدعم.`,
+    };
+  },
+
+  /** ثغرة تغطية: طلب سقط دون فنّي — إشعار الإدارة لا العميل */
+  coverageGapForAdmin(
+    orderNumber: string,
+    serviceName?: string | null,
+    address?: string | null,
+  ): NotificationContent {
+    const where = address?.trim() ? ` في ${address.trim()}` : '';
+    return {
+      title: 'ثغرة تغطية: طلب بلا فنّي',
+      body: `الطلب ${orderNumber} (${serviceLabel(serviceName)})${where} أُلغي لعدم وجود فنّي متاح خلال مدة البحث.`,
+    };
+  },
+
+  /** حجز مجدول أُسند إلى الفنّي — لا مهلة ردّ هنا، الموعد بعيد */
+  bookingAssignedToProvider(orderNumber: string, scheduledAt?: Date | string | null): NotificationContent {
+    return {
+      title: 'حجز جديد مُسند إليك',
+      body: `لديك حجز رقم ${orderNumber} بموعد ${formatDateTime(scheduledAt)}. يمكنك الاعتذار عنه قبل الموعد بوقت كافٍ.`,
+    };
+  },
+
+  /** اقترب موعد الحجز ويُطلب تأكيده */
+  bookingConfirmationDue(orderNumber: string, scheduledAt?: Date | string | null): NotificationContent {
+    return {
+      title: 'أكّد حجزك القادم',
+      body: `اقترب موعد الحجز رقم ${orderNumber} (${formatDateTime(scheduledAt)}). أكّده الآن وإلا أُسند إلى فنّي آخر.`,
+    };
+  },
+
+  /** تذكير العميل بتأكيد إتمام الخدمة قبل التأكيد التلقائي */
+  confirmCompletionReminder(orderNumber: string, hoursLeft: number): NotificationContent {
+    return {
+      title: 'أكّد إتمام الخدمة',
+      body: `أنهى الفنّي الخدمة للطلب رقم ${orderNumber}. أكّد إتمامها خلال ${hoursLeft} ساعة، وإلا سيُؤكَّد تلقائياً.`,
+    };
+  },
+
+  /** أُكّد الإتمام تلقائياً بعد انقضاء مهلة العميل */
+  completionAutoConfirmed(orderNumber: string): NotificationContent {
+    return {
+      title: 'تم إغلاق الطلب تلقائياً',
+      body: `لم يصلنا تأكيدك للطلب رقم ${orderNumber} خلال المهلة، فأُغلق تلقائياً. تواصل مع الدعم إن كان لديك اعتراض.`,
+    };
+  },
+
   /** أُسند الطلب إلى المزوّد */
   orderAssignedToProvider(orderNumber: string): NotificationContent {
     return {

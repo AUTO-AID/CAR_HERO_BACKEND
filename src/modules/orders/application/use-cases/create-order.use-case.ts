@@ -1,5 +1,7 @@
 import { ConflictException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
+import { OrderEvents } from '../../domain/events/order.events';
 import { CreateOrderDto } from '../dto/create-order.dto';
 import { OrderEntity } from '../../domain/entities/order.entity';
 import { OrderStatus } from '../../../../core/enums/status.enum';
@@ -27,6 +29,7 @@ export class CreateOrderUseCase {
     private readonly notificationsService: NotificationsService,
     private readonly statusHistoryService: StatusHistoryService,
     private readonly schedulingAvailabilityService: SchedulingAvailabilityService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async execute(dto: CreateOrderDto): Promise<OrderEntity> {
@@ -115,18 +118,42 @@ export class CreateOrderUseCase {
     // الطلب محفوظ بالفعل عند هذه النقطة — فشل الإشعار يجب ألا يُفشل إنشاء الطلب.
     if (order.providerId) {
       try {
+        // الحجز المجدول يُسند فوراً لكنه ليس «طلباً وصلك الآن»: نصّه يذكر
+        // الموعد وإمكانية الاعتذار، ويصل بلا مهلة ردّ — والتأكيد يُطلب لاحقاً
+        // قبل الموعد (`ProviderOffersCronService`).
+        const content = order.isScheduled
+          ? notificationContent.bookingAssignedToProvider(order.orderNumber, order.scheduledAt)
+          : notificationContent.newOrderForProvider(order.orderNumber, order.serviceName ?? serviceName);
+
         await this.notificationsService.createNotification({
           recipientId: order.providerId,
           recipientType: 'provider',
-          ...notificationContent.newOrderForProvider(order.orderNumber, order.serviceName ?? serviceName),
+          ...content,
           type: NotificationType.ORDER_CREATED,
-          data: { orderId: order.id, orderNumber: order.orderNumber },
+          data: {
+            event: order.isScheduled ? 'provider_app.booking_assigned' : 'order.created',
+            orderId: order.id,
+            orderNumber: order.orderNumber,
+            isScheduled: !!order.isScheduled,
+          },
         });
       } catch (error) {
         this.logger.error(
           `New-order notification failed for provider ${order.providerId} (order ${order.orderNumber}): ${error?.message ?? error}`,
         );
       }
+    }
+
+    // 5. أعلن عن الطلب. تطبيق الفنّي يستمع لهذا الحدث ليحوّل الإسناد إلى عرض
+    // بمهلة (`ProviderDispatchListener`). الحجوزات المجدولة تُستثنى: لا معنى
+    // لنافذة ردّ من عشرين ثانية على موعد بعد ثلاثة أيام.
+    if (!order.isScheduled) {
+      this.eventEmitter.emit(OrderEvents.CREATED, {
+        orderId: order.id,
+        orderNumber: order.orderNumber,
+        userId: order.userId,
+        providerId: order.providerId,
+      });
     }
 
     return order;

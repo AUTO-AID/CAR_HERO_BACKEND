@@ -76,7 +76,15 @@ export class MongooseWalletRepository implements IWalletRepository {
     return doc ? this.mapWalletToEntity(doc) : null;
   }
 
-  async createWallet(wallet: WalletEntity): Promise<WalletEntity> {
+  /**
+   * `session` ليس زينةً في التوقيع: الإنشاء الكسول داخل معاملة يجب أن يقع
+   * **ضمنها**. المحفظة المحفوظة خارج المعاملة لا تراها المعاملة (عزل اللقطة)،
+   * فكان `updateWallet` التالي لا يجدها ويرمي «Wallet not found» — أي أن أول
+   * تحويل أرباح لأي مزوّد بلا محفظة سابقة يفشل بـ500 على Atlas (نسخة طبق
+   * الأصل، فالمعاملات مفعّلة فيها). القاعدة المفردة كانت تخفي العطل لأن
+   * المعاملة تُرفض أصلاً فيسقط التنفيذ إلى المسار البديل بلا جلسة.
+   */
+  async createWallet(wallet: WalletEntity, session?: ClientSession): Promise<WalletEntity> {
     const doc = new this.walletModel({
       ownerId: Types.ObjectId.isValid(wallet.ownerId) ? new Types.ObjectId(wallet.ownerId) : wallet.ownerId,
       ownerType: wallet.ownerType,
@@ -87,7 +95,7 @@ export class MongooseWalletRepository implements IWalletRepository {
       isActive: wallet.isActive,
       metadata: wallet.metadata,
     });
-    const saved = await doc.save();
+    const saved = await doc.save({ session });
     return this.mapWalletToEntity(saved);
   }
 
@@ -281,9 +289,9 @@ export class MongooseWalletRepository implements IWalletRepository {
       try {
         let wallet = await this.findByOwnerId(ownerId, ownerType as any);
         if (!wallet) {
-          wallet = await this.createWallet(new WalletEntity(ownerId, ownerType as any, 0));
+          wallet = await this.createWallet(new WalletEntity(ownerId, ownerType as any, 0), session);
         }
-        
+
         const { wallet: updatedWallet, transaction } = await operation(wallet, session);
         
         await this.updateWallet(updatedWallet, session);
@@ -327,10 +335,11 @@ export class MongooseWalletRepository implements IWalletRepository {
       try {
         for (const update of walletsToUpdate) {
           let wallet = await this.findByOwnerId(update.ownerId, update.ownerType as any);
-          
-          // Lazy create wallet if it doesn't exist
+
+          // Lazy create wallet if it doesn't exist — داخل الجلسة، وإلا لم يرها
+          // `updateWallet` أدناه (انظر التعليق على `createWallet`).
           if (!wallet) {
-            wallet = await this.createWallet(new WalletEntity(update.ownerId, update.ownerType as any, 0));
+            wallet = await this.createWallet(new WalletEntity(update.ownerId, update.ownerType as any, 0), session);
           }
 
           const balanceBefore = wallet.balance;
