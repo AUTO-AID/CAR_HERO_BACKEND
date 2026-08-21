@@ -5,7 +5,11 @@ import { OfferStatus } from '../../domain/entities/request-offer.entity';
 import { IRequestOfferRepository } from '../../domain/repositories/request-offer.repository.interface';
 import { ProviderDispatchService } from '../../application/services/provider-dispatch.service';
 
-const SWEEP_INTERVAL_MS = 5_000;
+// ثلاث ثوانٍ لا خمس: النافذة صارت خمس عشرة ثانية، وفاصلُ خمسٍ كان يضيف
+// ثلث النافذة إلى انتظار العميل كلما سقط الطريق السريع (تطبيق مُقفَل أو
+// شبكة منقطعة عند انتهاء العدّاد). الاستعلام مفهرس على (status, expiresAt)
+// فكلفة تكراره لا تُذكر أمام ما يوفّره من ثوانٍ على الطريق.
+const SWEEP_INTERVAL_MS = 3_000;
 const SWEEP_BATCH = 50;
 
 const RESUME_INTERVAL_MS = 15_000;

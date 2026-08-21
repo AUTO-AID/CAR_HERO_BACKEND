@@ -60,7 +60,7 @@ export class ProviderDispatchService {
   ) {}
 
   get offerWindowSeconds(): number {
-    return this.config.get<number>('providerApp.offerWindowSeconds') ?? 30;
+    return this.config.get<number>('providerApp.offerWindowSeconds') ?? 15;
   }
 
   /** سقف العروض داخل الجولة الواحدة — يمنع حرق عشرين فنّياً في دقيقتين */
@@ -416,7 +416,7 @@ export class ProviderDispatchService {
     // الإشعار المدفوع هو ما يوقظ التطبيق والهاتف مقفل — فشله لا يُبطل العرض،
     // فالبثّ اللحظي وصل أصلاً والمهلة تمضي على أي حال.
     try {
-      // نصّ الحجز يختلف جذرياً عن نصّ الطلب الفوري: «لديك ٣٠ ثانية للرد» فوق
+      // نصّ الحجز يختلف جذرياً عن نصّ الطلب الفوري: «لديك ١٥ ثانية للرد» فوق
       // موعدٍ محجوز يُقرأ كخطأ، والمطلوب هناك تأكيدٌ لا سباق.
       const content = order.isScheduled
         ? notificationContent.bookingConfirmationDue(order.orderNumber, order.scheduledAt)
@@ -546,7 +546,7 @@ export class ProviderDispatchService {
    *
    * المتّصلون وحدهم عن قصد. «غير متّصل» هنا ليست حالة شبكة بل قرار صريح
    * اتّخذه الفنّي: لا ترسلوا لي عملاً — وتجاوزه خطأ مبدئي. وعملياً: العرض على
-   * فنّي أغلق تطبيقه ينتهي بانقضاء المهلة شبه حتماً، أي **ثلاثون ثانية من عمر
+   * فنّي أغلق تطبيقه ينتهي بانقضاء المهلة شبه حتماً، أي **نافذة كاملة من عمر
    * العميل تُحرق** لكل واحد منهم وهو واقف على الطريق. وحين لا يوجد متّصل فتلك
    * معلومة حقيقية تستحق أن تُقال للعميل وللإدارة، لا أن تُغطّى بمحاولات وهمية.
    */

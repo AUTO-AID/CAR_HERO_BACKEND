@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { getModelToken } from '@nestjs/mongoose';
 import { CreateOrderUseCase } from './create-order.use-case';
 import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
@@ -59,6 +60,10 @@ describe('CreateOrderUseCase', () => {
           provide: SchedulingAvailabilityService,
           useValue: { assertAvailable: jest.fn() },
         },
+        {
+          provide: EventEmitter2,
+          useValue: { emit: jest.fn() },
+        },
       ],
     }).compile();
 
@@ -104,6 +109,40 @@ describe('CreateOrderUseCase', () => {
     expect(mockServiceModel.findById).toHaveBeenCalled();
     expect(mockOrderRepository.create).toHaveBeenCalledWith(
       expect.objectContaining({ providerId: 'provider-id' }),
+    );
+  });
+
+  it('ignores a client-supplied providerId and always assigns automatically', async () => {
+    mockServiceModel.findById.mockResolvedValue({
+      _id: '60b8d295f1d293001f3e4c8b',
+      name: 'Car Wash',
+      basePrice: 100,
+    });
+    mockProviderModel.aggregate.mockReturnValue({
+      exec: jest.fn().mockResolvedValue([
+        { _id: { toString: () => 'nearest-provider' }, servicePrices: {} },
+      ]),
+    });
+    mockOrderRepository.create.mockResolvedValue({
+      id: 'order-id',
+      orderNumber: 'CH-124',
+      status: OrderStatus.PENDING,
+      paymentStatus: PaymentStatus.PENDING,
+      createdAt: new Date(),
+    });
+
+    await useCase.execute({
+      userId: 'user-id',
+      serviceId: '60b8d295f1d293001f3e4c8b',
+      location: { coordinates: [10, 20] },
+      // حقل لم يعد في الـ DTO — نمرّره عمداً لنثبت أنه لا أثر له
+      providerId: 'provider-the-user-picked',
+    } as any);
+
+    expect(mockProviderModel.findById).not.toHaveBeenCalled();
+    expect(mockProviderModel.aggregate).toHaveBeenCalled();
+    expect(mockOrderRepository.create).toHaveBeenCalledWith(
+      expect.objectContaining({ providerId: 'nearest-provider' }),
     );
   });
 });

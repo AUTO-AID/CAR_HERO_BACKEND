@@ -38,32 +38,19 @@ export class CreateOrderUseCase {
     if (!service) {
       throw new NotFoundException('Service not found');
     }
-    const provider = dto.providerId
-      ? await this.providerModel.findById(dto.providerId).lean().exec()
-      : await this.findNearestAvailableProvider(
-          dto.serviceId,
-          dto.location.coordinates,
-          dto.scheduleTime,
-          service.estimatedDuration,
-        );
+    // الإسناد آليّ دائماً — لا يختار العميل فنّياً بعينه.
+    // ما يُختار هنا ليس إلا **المرشّح الأول**: يُبنى عليه سعر الطلب ويصله أول
+    // عرض، ثم يتولّى `ProviderDispatchService` الانتقال إلى التالي إن لم يردّ.
+    const provider = await this.findNearestAvailableProvider(
+      dto.serviceId,
+      dto.location.coordinates,
+      dto.scheduleTime,
+      service.estimatedDuration,
+    );
 
-    if (dto.providerId && !provider) throw new NotFoundException('Provider not found');
-    if (!dto.providerId && !provider) {
+    if (!provider) {
       throw new NotFoundException(
         'No available provider found for this service near the requested location',
-      );
-    }
-    if (provider) {
-      const selectedServiceIds = (provider.services || []).map((serviceId) => serviceId.toString());
-      if (!selectedServiceIds.includes(dto.serviceId) || provider.serviceAvailability?.[dto.serviceId] === false) {
-        throw new NotFoundException('Service is not currently offered by this provider');
-      }
-    }
-    if (dto.providerId && dto.scheduleTime) {
-      await this.schedulingAvailabilityService.assertAvailable(
-        dto.providerId,
-        new Date(dto.scheduleTime),
-        service.estimatedDuration,
       );
     }
 
@@ -72,12 +59,12 @@ export class CreateOrderUseCase {
       orderNumber: OrderEntity.generateOrderNumber(),
       userId: dto.userId!,
       serviceId: dto.serviceId,
-      providerId: provider?._id?.toString(),
+      providerId: provider._id.toString(),
       vehicleId: dto.vehicleId,
       status: OrderStatus.PENDING,
       serviceName: service.name,
-      servicePrice: provider?.servicePrices?.[dto.serviceId] ?? (service.discountedPrice || service.basePrice),
-      total: provider?.servicePrices?.[dto.serviceId] ?? (service.discountedPrice || service.basePrice),
+      servicePrice: provider.servicePrices?.[dto.serviceId] ?? (service.discountedPrice || service.basePrice),
+      total: provider.servicePrices?.[dto.serviceId] ?? (service.discountedPrice || service.basePrice),
       userLocation: {
         type: 'Point',
         coordinates: dto.location.coordinates,
@@ -114,39 +101,41 @@ export class CreateOrderUseCase {
       },
     });
 
-    // 4. Send Notification to Provider (if assigned) or System
+    // 4. إشعار الفنّي — **للحجز المجدول وحده**.
+    //
+    // الطلب الفوري لا يُشعَر من هنا: `ProviderDispatchService` يفتح له عرضاً
+    // بمهلة ويُرسل إشعاره بنفسه. إرسال إشعار ثانٍ هنا كان يعني رسالتين على
+    // الطلب الواحد، إحداهما بلا ذكر للمهلة فتُقرأ كأن الوقت مفتوح.
+    //
+    // الحجز المجدول يُسند فوراً لكنه ليس «طلباً وصلك الآن»: نصّه يذكر الموعد
+    // وإمكانية الاعتذار، ويصل بلا مهلة ردّ — والتأكيد يُطلب لاحقاً قبل الموعد
+    // (`ProviderOffersCronService`).
+    //
     // الطلب محفوظ بالفعل عند هذه النقطة — فشل الإشعار يجب ألا يُفشل إنشاء الطلب.
-    if (order.providerId) {
+    if (order.isScheduled && order.providerId) {
       try {
-        // الحجز المجدول يُسند فوراً لكنه ليس «طلباً وصلك الآن»: نصّه يذكر
-        // الموعد وإمكانية الاعتذار، ويصل بلا مهلة ردّ — والتأكيد يُطلب لاحقاً
-        // قبل الموعد (`ProviderOffersCronService`).
-        const content = order.isScheduled
-          ? notificationContent.bookingAssignedToProvider(order.orderNumber, order.scheduledAt)
-          : notificationContent.newOrderForProvider(order.orderNumber, order.serviceName ?? serviceName);
-
         await this.notificationsService.createNotification({
           recipientId: order.providerId,
           recipientType: 'provider',
-          ...content,
+          ...notificationContent.bookingAssignedToProvider(order.orderNumber, order.scheduledAt),
           type: NotificationType.ORDER_CREATED,
           data: {
-            event: order.isScheduled ? 'provider_app.booking_assigned' : 'order.created',
+            event: 'provider_app.booking_assigned',
             orderId: order.id,
             orderNumber: order.orderNumber,
-            isScheduled: !!order.isScheduled,
+            isScheduled: true,
           },
         });
       } catch (error) {
         this.logger.error(
-          `New-order notification failed for provider ${order.providerId} (order ${order.orderNumber}): ${error?.message ?? error}`,
+          `Booking notification failed for provider ${order.providerId} (order ${order.orderNumber}): ${error?.message ?? error}`,
         );
       }
     }
 
     // 5. أعلن عن الطلب. تطبيق الفنّي يستمع لهذا الحدث ليحوّل الإسناد إلى عرض
     // بمهلة (`ProviderDispatchListener`). الحجوزات المجدولة تُستثنى: لا معنى
-    // لنافذة ردّ من عشرين ثانية على موعد بعد ثلاثة أيام.
+    // لنافذة ردّ من خمس عشرة ثانية على موعد بعد ثلاثة أيام.
     if (!order.isScheduled) {
       this.eventEmitter.emit(OrderEvents.CREATED, {
         orderId: order.id,
@@ -197,6 +186,19 @@ export class CreateOrderUseCase {
             },
           },
         },
+        /**
+         * المتّصلون أولاً ثم الأقرب.
+         *
+         * `$geoNear` وحده يُرجع الأقرب ولو كان مُغلقاً تطبيقه، فيُبنى سعر
+         * الطلب على فنّي لن يصله عرض أصلاً (`ProviderDispatchService` لا يعرض
+         * إلا على المتّصلين) — ثم ينفّذه فنّي آخر بسعرٍ ليس سعره. الترتيب هنا
+         * يجعل المرشّح الأول هو نفسه من سيصله العرض في الغالب.
+         *
+         * ولا نُقصي غير المتّصلين بالكامل: إقصاؤهم يُفشل إنشاء الطلب حيث
+         * التغطية رقيقة، بينما البحث الدوري قد يجد متّصلاً بعد دقيقة.
+         */
+        { $addFields: { isOnline: { $eq: ['$status', ProviderStatus.ONLINE] } } },
+        { $sort: { isOnline: -1, distanceMeters: 1 } },
         { $limit: 25 },
       ])
       .exec();

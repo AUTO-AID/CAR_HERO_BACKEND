@@ -7,6 +7,14 @@ class LocationDto {
   coordinates: number[];
 }
 
+/**
+ * لا يوجد `providerId` هنا عن قصد.
+ *
+ * الإسناد آليّ بالكامل: الخادم يبحث عن الأقرب المتاح ثم يعرض الطلب فنّياً بعد
+ * فنّي (`ProviderDispatchService`). السماح للعميل باختيار فنّي بعينه كان يعطّل
+ * هذه السلسلة — الطلب يعلق عند من اختاره العميل ولو كان مغلقاً تطبيقه — ويفتح
+ * باب طلبٍ مُوجَّه إلى فنّي لا يقدّم الخدمة أصلاً.
+ */
 export class CreateOrderDto {
   @ApiPropertyOptional({ example: '60b8d295f1d293001f3e4c8a', description: 'Injected from JWT for customer requests' })
   @IsString()
@@ -17,11 +25,6 @@ export class CreateOrderDto {
   @IsString()
   @IsNotEmpty()
   serviceId: string;
-
-  @ApiPropertyOptional({ example: '60b8d295f1d293001f3e4c8c', description: 'ID of the specific provider requested (optional)' })
-  @IsString()
-  @IsOptional()
-  providerId?: string;
 
   @ApiPropertyOptional({ example: '60b8d295f1d293001f3e4c8d', description: 'ID of the vehicle for the service' })
   @IsString()

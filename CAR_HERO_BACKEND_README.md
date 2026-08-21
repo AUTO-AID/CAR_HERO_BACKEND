@@ -1099,10 +1099,12 @@ Provider DTO highlights:
 Create order validation:
 
 - `serviceId` is required.
-- Optional `providerId`, `vehicleId`, `scheduleTime`, notes.
+- Optional `vehicleId`, `scheduleTime`, notes.
 - `location.coordinates` are `[longitude, latitude]`.
-- If provider is specified, provider must exist and offer the requested service.
-- If scheduled with provider, availability is checked.
+- **There is no `providerId` field.** Assignment is always automatic: the server
+  runs a `$geoNear` search, orders candidates online-first then nearest-first,
+  and picks the top one. Customers cannot request a specific technician.
+- For scheduled bookings the candidate search also verifies slot availability.
 
 ### Reviews APIs
 
