@@ -427,6 +427,11 @@ export class ProviderDispatchService {
         recipientType: 'provider',
         ...content,
         type: NotificationType.ORDER_CREATED,
+        // العرض موجَّه إلى **تطبيق الفنّي حصراً**: البثّ اللحظي أعلاه على
+        // `/provider` هو ما يفتح الشاشة، وهذا الإشعار هو ما يوقظ الهاتف
+        // المُقفَل. أمّا القناة العامّة فتصل إلى لوحة المزوّد أيضاً، ونافذةٌ
+        // ثانية بمهلة على شاشة قد لا يكون أمامها أحد تُحرق دور الطلب.
+        skipRealtime: true,
         data: {
           event: 'provider_app.new_request',
           orderId: order.id,

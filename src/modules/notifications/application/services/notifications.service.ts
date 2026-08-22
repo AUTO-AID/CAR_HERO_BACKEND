@@ -14,6 +14,14 @@ export interface CreateNotificationDto {
   body: string;
   type: NotificationType;
   data?: Record<string, any>;
+  /**
+   * لا تبثّه على قناة `notification` العامّة — خزّنه وادفعه عبر FCM فقط.
+   *
+   * القناة العامّة يُصغي إليها كل عميل يسجّل دخوله بهذا الحساب: تطبيق الفنّي
+   * ولوحة المزوّد معاً. الإشعار الذي يخصّ جهازاً بعينه (مثل عرض طلب بمهلة
+   * موجَّه إلى الهاتف) لا يجوز أن يظهر على الجهاز الآخر، فله قناته الخاصّة.
+   */
+  skipRealtime?: boolean;
 }
 
 type NotificationRecipientType = 'user' | 'provider' | 'admin';
@@ -101,10 +109,14 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
       data: dto.data || {},
     });
 
-    await this.deliverToRecipient(recipient, notification, dto.title, dto.body, {
-      type: dto.type,
-      ...(dto.data || {}),
-    });
+    await this.deliverToRecipient(
+      recipient,
+      notification,
+      dto.title,
+      dto.body,
+      { type: dto.type, ...(dto.data || {}) },
+      { skipRealtime: dto.skipRealtime },
+    );
 
     // Update unread count for user
     await this.emitUnreadCount(this.recipientScope(recipient));
@@ -448,12 +460,16 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     title: string,
     body: string,
     data: Record<string, any> = {},
+    options: { skipRealtime?: boolean } = {},
   ) {
     if (!recipient.pushEnabled) return;
 
     // البثّ إلى كل غرف المستقبِل: لوحة المزوّد تنضمّ بمعرّف المستخدم من الـ JWT
-    // بينما قد يكون الإشعار مخزّناً على معرّف وثيقة المزوّد.
-    for (const id of recipient.linkedIds) this.gateway.sendToUser(id, payload);
+    // بينما قد يكون الإشعار مخزّناً على معرّف وثيقة المزوّد. ومن هنا جاءت
+    // الحاجة إلى `skipRealtime`: ما يخصّ جهازاً بعينه لا يُبثّ إلى الجميع.
+    if (!options.skipRealtime) {
+      for (const id of recipient.linkedIds) this.gateway.sendToUser(id, payload);
+    }
 
     if (!recipient.fcmToken || admin.apps.length === 0) return;
 
