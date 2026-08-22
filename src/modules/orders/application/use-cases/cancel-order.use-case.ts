@@ -47,7 +47,10 @@ export class CancelOrderUseCase {
       throw new ForbiddenException('You do not have permission to cancel this order');
     }
 
-    OrderStateMachine.assertCancellable(order.status);
+    // الدور يُشتقّ من الملكية لا من نصّ الـ JWT: توكن العميل قد يصل بلا
+    // `role`، وقراءته حرفياً كانت تُسقط القيد عن صاحب الطلب نفسه.
+    const actorRole = isAdmin || isSystem || isProvider ? currentUser?.role : 'user';
+    OrderStateMachine.assertCancellable(order.status, actorRole);
 
     const oldStatus = order.status;
     const cancelledOrder = await this.orderRepository.cancelOrder(id, dto.reason, dto.cancelledBy);

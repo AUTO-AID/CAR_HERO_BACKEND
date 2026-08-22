@@ -88,4 +88,56 @@ describe('CancelOrderUseCase', () => {
 
     expect(mockRepo.cancelOrder).toHaveBeenCalledWith('id', 'expired', 'system');
   });
+
+  // القاعدة: العميل يتراجع قبل القبول فقط. بعده يكون الفنّي قد ارتبط بالطلب
+  // وأُغلقت العروض على غيره، وربّما تحرّك فعلاً.
+  it('refuses a customer cancellation once the order is ACCEPTED', async () => {
+    mockRepo.findById.mockResolvedValue({
+      id: 'id',
+      userId: 'user-id',
+      status: OrderStatus.ACCEPTED,
+      orderNumber: 'CH-X',
+    });
+
+    await expect(
+      useCase.execute('id', { reason: 'changed my mind' }, { _id: 'user-id', role: 'user' }),
+    ).rejects.toThrow(BadRequestException);
+    expect(mockRepo.cancelOrder).not.toHaveBeenCalled();
+  });
+
+  // التوكن قد يصل بلا `role`؛ القيد يجب أن يصمد لأنه مشتقّ من الملكية
+  it('refuses the same cancellation when the token carries no role', async () => {
+    mockRepo.findById.mockResolvedValue({
+      id: 'id',
+      userId: 'user-id',
+      status: OrderStatus.ACCEPTED,
+      orderNumber: 'CH-X',
+    });
+
+    await expect(useCase.execute('id', { reason: 'changed my mind' }, { _id: 'user-id' })).rejects.toThrow(
+      BadRequestException,
+    );
+    expect(mockRepo.cancelOrder).not.toHaveBeenCalled();
+  });
+
+  // القيد على العميل وحده: الفنّي يعتذر عن طلب قبله، وهذا مسار مشروع
+  it('still lets the assigned provider cancel an ACCEPTED order', async () => {
+    const mockOrder = {
+      id: 'id',
+      userId: 'user-id',
+      providerId: 'provider-id',
+      status: OrderStatus.ACCEPTED,
+      orderNumber: 'CH-X',
+    };
+    mockRepo.findById.mockResolvedValue(mockOrder);
+    mockRepo.cancelOrder.mockResolvedValue({ ...mockOrder, status: OrderStatus.CANCELLED });
+
+    const result = await useCase.execute(
+      'id',
+      { reason: 'vehicle broke down', cancelledBy: 'provider' },
+      { _id: 'x', providerId: 'provider-id', role: 'provider' },
+    );
+
+    expect(result.status).toBe(OrderStatus.CANCELLED);
+  });
 });

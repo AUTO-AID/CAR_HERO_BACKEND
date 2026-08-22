@@ -65,6 +65,18 @@ const userAllowedTargets = new Set<OrderStatus>([
   OrderStatus.CANCELLED,
 ]);
 
+/**
+ * الحالات التي يملك فيها **العميل** حقّ التراجع.
+ *
+ * واحدة فقط: `PENDING` — أي قبل أن يقبل أي فنّي. ما إن يُقبل الطلب حتى يكون
+ * الفنّي قد ارتبط به: أغلق باب العروض على البقيّة، وربّما تحرّك فعلاً. جعل
+ * الإلغاء متاحاً بعدها كان يحمّله كلفة قرارٍ ليس قراره.
+ *
+ * وهذا قيد على العميل وحده: الفنّي يعتذر، والإدارة تتدخّل، والنظام يتخلّى
+ * عند انقضاء سقف البحث — ولكلٍّ من هؤلاء مسؤوليته عن الأثر.
+ */
+const USER_CANCELLABLE_STATUSES = new Set<OrderStatus>([OrderStatus.PENDING]);
+
 export class OrderStateMachine {
   static canTransition(from: OrderStatus, to: OrderStatus): boolean {
     if (from === to) return true;
@@ -91,8 +103,20 @@ export class OrderStateMachine {
     }
   }
 
-  static assertCancellable(from: OrderStatus): void {
-    this.assertTransition(from, OrderStatus.CANCELLED);
+  static isUserCancellable(from: OrderStatus): boolean {
+    return USER_CANCELLABLE_STATUSES.has(from);
+  }
+
+  static assertCancellable(from: OrderStatus, actorRole?: ActorRole): void {
+    this.assertTransition(from, OrderStatus.CANCELLED, actorRole);
+
+    // فحص إضافي فوق الانتقال العام: الانتقال من `accepted` إلى `cancelled`
+    // مشروع في ذاته — للفنّي والإدارة — والممنوع هو أن يقوم به العميل.
+    if (actorRole === 'user' && !this.isUserCancellable(from)) {
+      throw new BadRequestException(
+        'لا يمكن إلغاء الطلب بعد قبوله من الفني. تواصل مع الدعم إن كنت مضطراً.',
+      );
+    }
   }
 
   static isTerminal(status: OrderStatus): boolean {
