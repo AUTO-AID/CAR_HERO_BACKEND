@@ -48,7 +48,17 @@ export class CreateOrderUseCase {
       service.estimatedDuration,
     );
 
-    if (!provider) {
+    /**
+     * الطلب الفوري بلا مرشّح **لا يُرفض**.
+     *
+     * الرفض هنا كان يُلغي فائدة نظام الجولات كلّه: التوزيع يبحث على ثلاثة
+     * أنصاف أقطار ثم ينتظر دقيقة ويعيد، عشر دقائق كاملة، لأن فنّياً قد يفتح
+     * تطبيقه بعد نصف دقيقة. رفضُ الطلب قبل أن يبدأ البحث يحرم العميل من ذلك.
+     *
+     * والحجز المجدول يبقى على الرفض: موعده بعيد، وإن لم يوجد فنّي يقدّم
+     * الخدمة أصلاً فلا معنى لقبول حجز لا أحد له.
+     */
+    if (!provider && dto.scheduleTime) {
       throw new NotFoundException(
         'No available provider found for this service near the requested location',
       );
@@ -59,12 +69,14 @@ export class CreateOrderUseCase {
       orderNumber: OrderEntity.generateOrderNumber(),
       userId: dto.userId!,
       serviceId: dto.serviceId,
-      providerId: provider._id.toString(),
+      // `?.` ضروري: الطلب الفوري قد يُنشأ بلا مرشّح، والتوزيع يُسنده لاحقاً.
+      providerId: provider?._id?.toString(),
       vehicleId: dto.vehicleId,
       status: OrderStatus.PENDING,
       serviceName: service.name,
-      servicePrice: provider.servicePrices?.[dto.serviceId] ?? (service.discountedPrice || service.basePrice),
-      total: provider.servicePrices?.[dto.serviceId] ?? (service.discountedPrice || service.basePrice),
+      // بلا مرشّح يُبنى السعر على الخدمة نفسها، ويُصحَّح عند الإسناد الفعلي.
+      servicePrice: provider?.servicePrices?.[dto.serviceId] ?? (service.discountedPrice || service.basePrice),
+      total: provider?.servicePrices?.[dto.serviceId] ?? (service.discountedPrice || service.basePrice),
       userLocation: {
         type: 'Point',
         coordinates: dto.location.coordinates,
@@ -177,7 +189,21 @@ export class CreateOrderUseCase {
             query: {
               isApproved: true,
               isActive: { $ne: false },
-              status: { $ne: ProviderStatus.BUSY },
+              /**
+               * المتّصلون وحدهم للطلبات الفورية.
+               *
+               * `!= busy` كان يقبل فنّياً مغلقاً تطبيقه، فيُسنَد الطلب إليه
+               * ويرى العميل «تم العثور على الفني» باسمه — ثم يفكّ التوزيع
+               * إسنادَه بعد لحظة لأنه غير متّصل، فيبقى العميل أمام بطاقة فنّي
+               * لن يأتي، والفنّي لم يُعرض عليه شيء أصلاً.
+               *
+               * إقصاؤهم هنا لم يعد يُفشل إنشاء الطلب: الطلب الفوري بلا مرشّح
+               * يُنشأ ويتولّاه التوزيع الدوري (انظر شرط الرفض في `execute`).
+               *
+               * الحجز المجدول يُستثنى: موعده بعد أيام، ولا معنى لاشتراط أن
+               * يكون الفنّي متّصلاً الآن.
+               */
+              status: scheduleTime ? { $ne: ProviderStatus.BUSY } : ProviderStatus.ONLINE,
               services: serviceObjectId,
               $or: [
                 { [`serviceAvailability.${serviceId}`]: { $exists: false } },
@@ -194,8 +220,9 @@ export class CreateOrderUseCase {
          * إلا على المتّصلين) — ثم ينفّذه فنّي آخر بسعرٍ ليس سعره. الترتيب هنا
          * يجعل المرشّح الأول هو نفسه من سيصله العرض في الغالب.
          *
-         * ولا نُقصي غير المتّصلين بالكامل: إقصاؤهم يُفشل إنشاء الطلب حيث
-         * التغطية رقيقة، بينما البحث الدوري قد يجد متّصلاً بعد دقيقة.
+         * يبقى الترتيب نافعاً للحجز المجدول وحده: هناك لا يُشترط الاتصال
+         * (الموعد بعد أيام) فيصطفّ المتّصلون أولاً. أما الطلب الفوري فمرشّحوه
+         * متّصلون أصلاً بحكم الاستعلام أعلاه.
          */
         { $addFields: { isOnline: { $eq: ['$status', ProviderStatus.ONLINE] } } },
         { $sort: { isOnline: -1, distanceMeters: 1 } },
