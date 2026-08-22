@@ -473,13 +473,29 @@ export class MongooseOrderRepository implements IOrderRepository {
     return this.mapToEntity(doc);
   }
 
+  /**
+   * الطلبات المعلّقة التي فات أوانها.
+   *
+   * الحجز المجدول يُقاس بموعده هو لا بلحظة حجزه. الاستعلام على `createdAt`
+   * وحده كان يلغي حجزاً لموعد بعد ثلاثة أيام بعد ساعتين من إنشائه — الحجز
+   * يبقى `pending` حتى موعده بحكم التصميم، فبدا للمكنسة كطلبٍ لم يردّ عليه
+   * أحد.
+   *
+   * وهذه مِكنسة **أمان** لا آلية التوزيع: الطلب الفوري يُحسم أمره خلال عشر
+   * دقائق في `ProviderDispatchService`، ولا يصل إلى هنا إلا إذا تعطّل ذلك
+   * المسار — فلا يُترك معلّقاً إلى الأبد.
+   */
   async findExpiredPendingOrders(hours: number): Promise<OrderEntity[]> {
-    const expirationDate = new Date();
-    expirationDate.setHours(expirationDate.getHours() - hours);
+    const cutoff = new Date(Date.now() - hours * 3_600_000);
 
     const docs = await this.orderModel.find({
       status: OrderStatus.PENDING,
-      createdAt: { $lt: expirationDate }
+      $or: [
+        { isScheduled: { $ne: true }, createdAt: { $lt: cutoff } },
+        // الحجز بلا `scheduledAt` لا يُلتقط عمداً: إلغاء حجزٍ لا نعرف موعده
+        // أسوأ من تركه للمراجعة اليدوية.
+        { isScheduled: true, scheduledAt: { $lt: cutoff } },
+      ],
     }).exec();
 
     return docs.map(doc => this.mapToEntity(doc));

@@ -11,6 +11,12 @@ import { OrderStatus, NotificationType } from '../../../../core/enums/status.enu
 import { NotificationsService } from '../../../notifications/application/services/notifications.service';
 import { notificationContent } from '../../../notifications/application/notification-content';
 
+/**
+ * كم يبقى الطلب معلّقاً قبل أن تلتقطه شبكة الأمان. ليس مهلة ردّ الفنّي —
+ * تلك خمس عشرة ثانية — بل الحدّ الذي يدلّ على أن التوزيع نفسه تعطّل.
+ */
+const STALE_PENDING_HOURS = 2;
+
 const CONFIRMATION_SWEEP_MS = 10 * 60_000;
 const CONFIRMATION_BATCH = 100;
 
@@ -30,23 +36,30 @@ export class OrdersCronService {
     private readonly config: ConfigService,
   ) {}
 
+  /**
+   * شبكة الأمان الأخيرة تحت الطلبات المعلّقة — **لا آلية التوزيع**.
+   *
+   * الطلب الفوري لا يعيش ساعتين معلّقاً في المسار الطبيعي: يُعرض على فنّي بعد
+   * فنّي بنافذة خمس عشرة ثانية، ويُحسم أمره خلال عشر دقائق على أبعد تقدير في
+   * `ProviderDispatchService` (قبولاً أو إلغاءً برسالة صريحة). لا يصل طلبٌ
+   * إلى هنا إلا إذا تعطّل ذلك المسار — انقطاع في المهامّ الدورية مثلاً — فلا
+   * يُترك معلّقاً إلى الأبد.
+   *
+   * والحجز المجدول يُقاس بموعده لا بلحظة حجزه (انظر `findExpiredPendingOrders`).
+   */
   @Cron(CronExpression.EVERY_10_MINUTES)
   async handleExpiredOrders() {
-    this.logger.debug('Running Cron: Checking for expired pending orders...');
+    const expiredOrders = await this.orderRepository.findExpiredPendingOrders(STALE_PENDING_HOURS);
+    if (expiredOrders.length === 0) return;
 
-    const expiredOrders = await this.orderRepository.findExpiredPendingOrders(2); // 2 hours
-
-    if (expiredOrders.length === 0) {
-      this.logger.debug('No expired orders found.');
-      return;
-    }
-
-    this.logger.warn(`Found ${expiredOrders.length} expired orders. Proceeding to cancel...`);
+    this.logger.warn(`Found ${expiredOrders.length} stale pending order(s). Proceeding to cancel...`);
 
     for (const order of expiredOrders) {
       try {
         await this.cancelOrderUseCase.execute(order.id, {
-          reason: 'Auto-cancelled due to inactivity (2+ hours pending)',
+          reason: order.isScheduled
+            ? 'أُلغي تلقائياً: مضى موعد الحجز دون تأكيد'
+            : 'أُلغي تلقائياً: بقي الطلب دون إسناد مدّة طويلة',
           cancelledBy: 'system',
         }, { _id: 'system', role: 'system' });
         this.logger.log(`Order ${order.orderNumber} auto-cancelled successfully.`);
