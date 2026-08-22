@@ -104,9 +104,6 @@ export class CustomerExperienceService {
   }
 
   async createPaymentMethod(userId: string, dto: CreatePaymentMethodDto) {
-    if (dto.type === 'card' && (!dto.last4 || !dto.brand || !dto.providerToken)) {
-      throw new BadRequestException('Card payment methods require brand, last4, and providerToken');
-    }
     const isDefault = dto.isDefault || (await this.paymentMethods.countDocuments({ userId })) === 0;
     if (isDefault) await this.paymentMethods.updateMany({ userId }, { $set: { isDefault: false } });
     return this.paymentMethods.create({ userId, ...dto, isDefault });

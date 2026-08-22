@@ -1198,7 +1198,7 @@ Review creation rules:
 | DELETE | `/customer/addresses/:id` | JWT | id | result | Deletes owned address and reassigns default if needed. |
 | PATCH | `/customer/addresses/:id/set-default` | JWT | id | address | Makes address default. |
 | GET | `/customer/payment-methods` | JWT | token | payment methods | Lists saved methods. |
-| POST | `/customer/payment-methods` | JWT | `CreatePaymentMethodDto` | method | Creates method; card requires brand, last4, providerToken. |
+| POST | `/customer/payment-methods` | JWT | `CreatePaymentMethodDto` | method | Creates method. Only `cash` and `cham_cash` are accepted; `wallet`/`card` remain in the schema for historical rows but are rejected on create. |
 | PATCH | `/customer/payment-methods/:id` | JWT | update DTO | method | Updates owned method. |
 | DELETE | `/customer/payment-methods/:id` | JWT | id | result | Deletes method; cash cannot be deleted. |
 | PATCH | `/customer/payment-methods/:id/set-default` | JWT | id | method | Makes method default. |

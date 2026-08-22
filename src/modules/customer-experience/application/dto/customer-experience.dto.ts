@@ -71,8 +71,10 @@ export class UpdateAddressDto {
 }
 
 export class CreatePaymentMethodDto {
-  @IsEnum(['cash', 'card', 'wallet'])
-  type: 'cash' | 'card' | 'wallet';
+  // نقداً أو شام كاش فقط. `wallet` و`card` تبقيان في مخطّط القاعدة لقراءة
+  // السجلات القديمة، ولا تُقبلان في إنشاء جديد.
+  @IsIn(['cash', 'cham_cash'])
+  type: 'cash' | 'cham_cash';
 
   @IsString()
   @IsNotEmpty()

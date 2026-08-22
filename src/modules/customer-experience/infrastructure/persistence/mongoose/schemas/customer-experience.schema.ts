@@ -40,7 +40,9 @@ export class UserPaymentMethod {
   @Prop({ type: Types.ObjectId, required: true, index: true })
   userId: Types.ObjectId;
 
-  @Prop({ required: true, enum: ['cash', 'card', 'wallet'] })
+  // `card` و`wallet` باقيتان للقراءة التاريخية؛ الإنشاء الجديد محصور في
+  // `cash` و`cham_cash` عبر الـ DTO.
+  @Prop({ required: true, enum: ['cash', 'cham_cash', 'card', 'wallet'] })
   type: string;
 
   @Prop({ required: true, trim: true })

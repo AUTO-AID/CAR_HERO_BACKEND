@@ -34,8 +34,10 @@ export class VerifyPaymentUseCase {
       throw new BadRequestException('Order is already paid');
     }
 
-    if ([PaymentMethod.CHAM_CASH, PaymentMethod.ONLINE].includes(dto.paymentMethod)) {
-      throw new BadRequestException('Online payments must be processed via the /api/payments/initialize endpoint. Direct verification is disabled.');
+    // شام كاش لا يُثبَّت بكلمة العميل: البوّابة هي من تُبلّغ عبر webhook موقّع.
+    // قبول تأكيد مباشر هنا يعني «دفعتُ» بلا دفع.
+    if (dto.paymentMethod === PaymentMethod.CHAM_CASH) {
+      throw new BadRequestException('Cham Cash payments must be processed via the /api/payments/initialize endpoint. Direct verification is disabled.');
     }
 
     // Future: Add real gateway verification logic here if needed

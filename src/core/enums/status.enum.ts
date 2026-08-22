@@ -27,15 +27,41 @@ export enum PaymentStatus {
 
 /**
  * Payment Method Enum
+ *
+ * القيم كلّها باقية عمداً: طلبات قديمة في القاعدة تحمل `wallet` و`card`
+ * و`online`، وحذفها من النوع يجعل قراءتها تكسر التحقّق. المتقاعد يُقرأ ولا
+ * يُكتب — والحارس على الكتابة هو `ACTIVE_PAYMENT_METHODS` أدناه.
  */
 export enum PaymentMethod {
   CASH = 'cash',
-  WALLET = 'wallet',
-  CARD = 'card',
   POINTS = 'points',
   CHAM_CASH = 'cham_cash',
+
+  /** @deprecated للقراءة التاريخية فقط — استُبدلت بـ `CHAM_CASH` */
+  WALLET = 'wallet',
+  /** @deprecated للقراءة التاريخية فقط — لا بوّابة بطاقات مربوطة */
+  CARD = 'card',
+  /** @deprecated للقراءة التاريخية فقط — `CHAM_CASH` هو الاسم الصريح */
   ONLINE = 'online',
 }
+
+/**
+ * ما يُقبل عند إنشاء دفعة جديدة. ثلاث طرق لا أكثر:
+ *
+ * - **نقداً** — يُسدَّد للفنّي عند إتمام الخدمة.
+ * - **نقاط الولاء** — تُخصم من `payableAmount` قبل الدفع، وقد تُغطّيه كاملاً.
+ * - **شام كاش** — البوّابة الإلكترونية الوحيدة المربوطة.
+ *
+ * أي قيمة خارجها مرفوضة على مستوى التحقّق، لا مخفيّة في الواجهة فقط: إخفاء
+ * الخيار من الشاشة لا يمنع من يستدعي الـ API مباشرةً.
+ */
+export const ACTIVE_PAYMENT_METHODS = [
+  PaymentMethod.CASH,
+  PaymentMethod.POINTS,
+  PaymentMethod.CHAM_CASH,
+] as const;
+
+export type ActivePaymentMethod = (typeof ACTIVE_PAYMENT_METHODS)[number];
 
 /**
  * Provider Status Enum (Runtime)

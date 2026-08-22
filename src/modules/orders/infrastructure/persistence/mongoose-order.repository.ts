@@ -4,7 +4,7 @@ import { Model, Types } from 'mongoose';
 import { IOrderRepository, ProviderTrackingUpdate } from '../../domain/repositories/order.repository.interface';
 import { OrderEntity } from '../../domain/entities/order.entity';
 import { Order, OrderDocument } from './mongoose/schemas/order.schema';
-import { OrderStatus, PaymentStatus } from '../../../../core/enums/status.enum';
+import { OrderStatus, PaymentMethod, PaymentStatus } from '../../../../core/enums/status.enum';
 
 @Injectable()
 export class MongooseOrderRepository implements IOrderRepository {
@@ -446,7 +446,9 @@ export class MongooseOrderRepository implements IOrderRepository {
       { 
         $set: { 
           paymentId,
-          paymentMethod: paymentMethod || 'card',
+          // نقداً هو الافتراضي: البطاقة ليست طريقة فعّالة أصلاً، وكتابتها
+          // كانت تُنتج طلبات «مدفوعة ببطاقة» لا وجود لها.
+          paymentMethod: paymentMethod || PaymentMethod.CASH,
           paymentStatus: PaymentStatus.COMPLETED
         } 
       },
