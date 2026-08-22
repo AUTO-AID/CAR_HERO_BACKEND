@@ -62,6 +62,7 @@ export class UpdateOrderStatusUseCase {
       if (options.reason) updateData.cancellationReason = options.reason;
       updateData.cancelledBy = options.cancelledBy || currentUser?.role || currentUser?.accountType;
     }
+    if (status === OrderStatus.PROVIDER_ARRIVED) updateData.arrivedAt = new Date();
     if (status === OrderStatus.IN_PROGRESS) updateData.startedAt = new Date();
 
     const updatedOrder = await this.orderRepository.update(id, updateData);

@@ -3,6 +3,7 @@
  */
 import {
   Controller,
+  Delete,
   Get,
   Patch,
   Post,
@@ -89,6 +90,19 @@ export class NotificationsController {
   async markAllAsRead(@CurrentUser() user: any) {
     await this.notificationsService.markAllAsRead(this.scopeOf(user));
     return { message: 'All notifications marked as read' };
+  }
+
+  /**
+   * مسح صندوق الإشعارات. `?onlyRead=true` يُبقي غير المقروء.
+   *
+   * يسبق `:id` لنفس سبب `read-all`: المسار ذو الوسيط يبتلع كل ما بعده.
+   */
+  @Delete()
+  @ApiOperation({ summary: 'Clear the current user notifications' })
+  async clearAll(@CurrentUser() user: any, @Query('onlyRead') onlyRead?: string) {
+    return this.notificationsService.clearNotifications(this.scopeOf(user), {
+      onlyRead: onlyRead === 'true' || onlyRead === '1',
+    });
   }
 
   // يجب أن يبقى بعد 'read-all' حتى لا يبتلعه المسار ذو الوسيط

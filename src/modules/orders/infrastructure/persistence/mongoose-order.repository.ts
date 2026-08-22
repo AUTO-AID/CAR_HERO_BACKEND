@@ -90,6 +90,7 @@ export class MongooseOrderRepository implements IOrderRepository {
     (entity as any).totalAmount = anyDoc.totalAmount ?? total;
     (entity as any).discountAmount = anyDoc.discountAmount ?? 0;
     (entity as any).acceptedAt = anyDoc.acceptedAt;
+    (entity as any).arrivedAt = anyDoc.arrivedAt;
     (entity as any).startedAt = anyDoc.startedAt;
     (entity as any).completedAt = anyDoc.completedAt;
     (entity as any).completionRequestedAt = anyDoc.completionRequestedAt;

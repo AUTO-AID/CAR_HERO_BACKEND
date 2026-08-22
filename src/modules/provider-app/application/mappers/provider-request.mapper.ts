@@ -120,6 +120,7 @@ export class ProviderRequestMapper {
       timestamps: {
         createdAt: order.createdAt ?? null,
         acceptedAt: anyOrder.acceptedAt ?? null,
+        arrivedAt: anyOrder.arrivedAt ?? null,
         startedAt: anyOrder.startedAt ?? null,
         completionRequestedAt: anyOrder.completionRequestedAt ?? null,
         completedAt: anyOrder.completedAt ?? null,

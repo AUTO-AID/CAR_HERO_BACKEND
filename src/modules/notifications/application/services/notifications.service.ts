@@ -217,6 +217,36 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     await this.emitUnreadCount(scope);
   }
 
+  /**
+   * مسح إشعارات المستخدم.
+   *
+   * حذف فعلي لا «إخفاء»: الإشعار سجلّ عابر لمستقبِله وحده، وإبقاؤه مخفيّاً
+   * يراكم وثائق لا يقرؤها أحد ويُبقي `getNotifications` تمسح ما لا يُعرض.
+   * الحملات الإدارية (`campaignId`) تُحذف من صندوق هذا المستخدم فقط؛ إحصاءات
+   * الحملة تُجمَّع من بقية المستقبِلين، ومنعه من تنظيف صندوقه حفاظاً على رقم
+   * في تقرير مقايضةٌ في غير محلّها.
+   *
+   * `onlyRead` هو الافتراضي الآمن: «مسح المقروء» لا يبتلع إشعاراً وصل قبل
+   * ثانية ولم تقع عليه العين بعد.
+   */
+  async clearNotifications(
+    scope: NotificationScope,
+    { onlyRead = false }: { onlyRead?: boolean } = {},
+  ): Promise<{ deleted: number }> {
+    const filter: Record<string, any> = {
+      recipientId: this.scopeFilter(scope),
+      // المجدول لم يُرسَل بعد ولا يظهر في القائمة أصلاً — حذفه هنا يُسقط
+      // إشعاراً لم يره المستخدم قطّ.
+      deliveryStatus: { $ne: 'scheduled' },
+    };
+    if (onlyRead) filter.isRead = true;
+
+    const { deletedCount } = await this.notificationModel.deleteMany(filter).exec();
+    await this.emitUnreadCount(scope);
+    this.logger.log(`Cleared ${deletedCount ?? 0} notification(s) for ${scope.userId}`);
+    return { deleted: deletedCount ?? 0 };
+  }
+
   /** يبثّ العدّاد إلى كل غرف هذا المستقبِل */
   private async emitUnreadCount(scope: NotificationScope) {
     const count = await this.getUnreadCount(scope);
