@@ -77,6 +77,22 @@ export class GetOrderTrackingUseCase {
       orderId: order.id,
       orderNumber: order.orderNumber,
       status: order.status,
+      /**
+       * سبب الإلغاء حين يقع.
+       *
+       * «لم نجد فنّياً» و«انسحب الفنّي» يبدوان في الواجهة حالةً واحدة
+       * (`cancelled`) بينما مخرجهما مختلف تماماً: الأول فجوة تغطية تستحق
+       * رسالة صريحة، والثاني يستحقّ بحثاً فورياً عن بديل. الرمز ثابت لا
+       * يتغيّر بتغيّر نصّ الرسالة أو ترجمتها.
+       */
+      cancellation:
+        order.status === OrderStatus.CANCELLED
+          ? {
+              code: (order.metadata as any)?.cancellation?.code ?? null,
+              reason: (order as any).cancellationReason ?? null,
+              by: (order as any).cancelledBy ?? null,
+            }
+          : null,
       trackingAvailable: liveStatuses.has(order.status),
       isLive: liveStatuses.has(order.status) && isFresh,
       providerId: order.providerId || null,

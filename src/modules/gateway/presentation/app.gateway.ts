@@ -23,7 +23,11 @@ import { GetOrderByIdUseCase } from '../../orders/application/use-cases/get-orde
 import { UpdateProviderLocationUseCase as UpdateOrderProviderLocationUseCase } from '../../orders/application/use-cases/update-provider-location.use-case';
 import { UpdateOrderStatusUseCase } from '../../orders/application/use-cases/update-order-status.use-case';
 import { UpdateProviderLocationUseCase as UpdateProviderProfileLocationUseCase } from '../../providers/application/use-cases/update-provider-location.use-case';
-import { OrderEvents, OrderLocationUpdatedEvent } from '../../orders/domain/events/order.events';
+import {
+  OrderEvents,
+  OrderLocationUpdatedEvent,
+  OrderStatusChangedEvent,
+} from '../../orders/domain/events/order.events';
 import { OrderStatus } from '../../../core/enums/status.enum';
 
 /**
@@ -163,14 +167,9 @@ export class AppGateway
       data.status as OrderStatus,
       client.data.user,
     );
-    const room = `order:${data.orderId}`;
-    this.server.to(room).emit(ServerEvents.ORDER_STATUS_UPDATED, {
-      orderId: data.orderId,
-      status: order.status,
-      note: data.note,
-      timestamp: new Date().toISOString(),
-    });
-    return { success: true };
+    // لا بثّ هنا: `UpdateOrderStatusUseCase` يُطلق `STATUS_CHANGED` والمستمع
+    // أدناه يتكفّل به. البثّ من الموضعين كان سيصل العميل مرّتين لكل تغيير.
+    return { success: true, status: order.status, note: data.note };
   }
 
   /**
@@ -235,6 +234,27 @@ export class AppGateway
       },
       timestamp: new Date().toISOString(),
     };
+  }
+
+  /**
+   * أي تغيّر في حالة الطلب — من أي مسار — يصل غرفة الطلب فوراً.
+   *
+   * المصدر هو الحدث لا معالج الرسالة: تطبيق الفنّي يقبل ويتحرّك عبر REST،
+   * والمهامّ الدورية تُلغي بلا مقبس أصلاً. ربط البثّ بمسار السوكِت وحده كان
+   * يترك العميل ينتظر استطلاعاً دورياً ليكتشف أن فنّياً قَبِل طلبه.
+   */
+  @OnEvent(OrderEvents.STATUS_CHANGED)
+  handleOrderStatusChanged(event: OrderStatusChangedEvent) {
+    this.server?.to(`order:${event.orderId}`).emit(ServerEvents.ORDER_STATUS_UPDATED, {
+      orderId: event.orderId,
+      orderNumber: event.orderNumber,
+      status: event.newStatus,
+      previousStatus: event.oldStatus,
+      // المزوّد يُرسَل مع الحالة: لحظة القبول هي أول مرّة يعرف فيها العميل
+      // مَن سيأتيه، وطلب رحلة إضافية لمعرفته يؤخّر بطاقة الفنّي بلا داعٍ.
+      providerId: event.providerId ?? null,
+      timestamp: new Date().toISOString(),
+    });
   }
 
   @OnEvent(OrderEvents.LOCATION_UPDATED)
