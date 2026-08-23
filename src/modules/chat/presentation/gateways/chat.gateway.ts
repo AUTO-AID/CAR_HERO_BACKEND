@@ -11,6 +11,7 @@ import {
 import { UseGuards, Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { WsJwtGuard } from '../../../../core/guards/ws-jwt.guard';
+import { chatIdentityOf } from '../../application/chat-identity';
 import { ChatService } from '../../application/services/chat.service';
 import { SendMessageDto } from '../../application/dtos/chat.dto';
 
@@ -61,7 +62,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { chatId: string },
   ) {
-    const userId = client.data.user.id;
+    const userId = chatIdentityOf(client.data.user);
     await this.assertMembership(data.chatId, userId);
 
     const roomId = this.roomFor(data.chatId);
@@ -84,7 +85,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { chatId: string },
   ) {
-    const userId = client.data.user.id;
+    const userId = chatIdentityOf(client.data.user);
     await this.assertMembership(data.chatId, userId);
 
     const roomId = this.roomFor(data.chatId);
@@ -98,7 +99,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
     @MessageBody() dto: SendMessageDto,
   ) {
-    const userId = client.data.user.id;
+    const userId = chatIdentityOf(client.data.user);
     // Security check is done inside saveMessage
     const message = await this.chatService.saveMessage(userId, dto);
     
@@ -114,7 +115,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { chatId: string; isTyping: boolean },
   ) {
-    const userId = client.data.user.id;
+    const userId = chatIdentityOf(client.data.user);
     await this.assertMembership(data.chatId, userId);
 
     const roomId = this.roomFor(data.chatId);
@@ -131,7 +132,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { chatId: string },
   ) {
-    const userId = client.data.user.id;
+    const userId = chatIdentityOf(client.data.user);
     await this.assertMembership(data.chatId, userId);
 
     await this.chatService.markAsRead(data.chatId, userId);

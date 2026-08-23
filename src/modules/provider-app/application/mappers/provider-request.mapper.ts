@@ -83,6 +83,13 @@ export class ProviderRequestMapper {
     };
   }
 
+  /** المعرّف من وثيقة مأهولة أو من ObjectId خام — كلاهما يرد حسب الاستعلام */
+  private static idOf(value: any): string | null {
+    if (!value) return null;
+    const raw = value._id ?? value.id ?? value;
+    return raw ? String(raw) : null;
+  }
+
   static toDetail(order: OrderEntity, context: RequestMapContext = {}) {
     const anyOrder = order as any;
     const now = context.now ?? new Date();
@@ -93,6 +100,10 @@ export class ProviderRequestMapper {
       ...this.toSummary(order, context),
 
       customer: {
+        // المعرّف لا الاسم وحده: به تُفتح محادثة الطلب من طرف الفنّي
+        // (`participantId` في `POST /chat/conversations`). بدونه لا سبيل
+        // للردّ على رسالة العميل إلا برسالة نصّية خارج التطبيق.
+        id: this.idOf(anyOrder.user) ?? order.userId ?? null,
         name: anyOrder.user?.fullName ?? null,
         phone: anyOrder.user?.phoneNumber ?? null,
       },

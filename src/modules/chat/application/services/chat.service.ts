@@ -54,6 +54,18 @@ export class ChatService {
     return chat;
   }
 
+  /** «مزوّد» إن كان المستقبِل هو فنّي الطلب، وإلا «مستخدم» */
+  private async recipientTypeFor(chat: any, receiverId: string): Promise<'user' | 'provider'> {
+    try {
+      const order = chat?.orderId ? await this.orderRepository.findById(chat.orderId.toString()) : null;
+      if (order?.providerId && order.providerId.toString() === receiverId) return 'provider';
+    } catch {
+      // تعذّر قراءة الطلب: «مستخدم» هو الافتراض الأسلم — المحادثة قد تكون
+      // بلا طلب صالح، ولا يجوز أن يمنع ذلك حفظ الرسالة.
+    }
+    return 'user';
+  }
+
   async saveMessage(senderId: string, dto: SendMessageDto): Promise<MessageDocument> {
     const chat = await this.chatModel.findById(dto.chatId);
     if (!chat) throw new NotFoundException('Chat not found');
@@ -100,13 +112,23 @@ export class ChatService {
     // Notify the receiver through the unified notification pipeline.
     // الرسالة محفوظة بالفعل — فشل الإشعار يجب ألا يُفشل الإرسال.
     const preview = dto.message.length > 50 ? `${dto.message.substring(0, 50)}...` : dto.message;
+    // النوع يُشتقّ من الطلب: المستقبِل إمّا العميل وإمّا الفنّي، ومعرّف الفنّي
+    // في المحادثة هو معرّف وثيقة المزوّد — والبحث عنه في `users` يفشل.
+    const recipientType = await this.recipientTypeFor(chat, receiverIdStr);
     try {
       await this.notificationsService.createNotification({
-        recipientId: receiverId.toString(),
-        recipientType: 'user', // Adjust if you have complex roles
+        recipientId: receiverIdStr,
+        recipientType,
         ...notificationContent.newChatMessage(preview),
         type: NotificationType.NEW_MESSAGE,
-        data: { chatId: chat.id, senderId },
+        // `orderId` و`event` ليسا زينة: كل توجيه في تطبيقَي العميل والفنّي
+        // مبنيّ عليهما. بدونهما يصل الإشعار ويُضغط فلا يفتح شيئاً.
+        data: {
+          event: 'chat.new_message',
+          chatId: chat.id,
+          orderId: chat.orderId ? chat.orderId.toString() : null,
+          senderId,
+        },
       });
     } catch (error) {
       this.logger.error(`New-message notification failed for ${receiverId}: ${error?.message ?? error}`);
