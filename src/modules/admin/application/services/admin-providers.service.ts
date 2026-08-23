@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Provider, ProviderDocument } from '../../../../modules/providers/infrastructure/persistence/mongoose/schemas/provider.schema';
@@ -699,6 +699,44 @@ export class AdminProvidersService {
     };
   }
 
+  /**
+   * يمنع افتراق حقلي الاعتماد.
+   *
+   * `registrationStatus` هو ما تعرضه اللوحة وتَعدّ به، و`isApproved` هو ما
+   * يُرشّح عليه التوزيع. تعديل أحدهما وحده كان ينتج فنّياً «معتمَداً» في كل
+   * شاشة ولا يصله طلب واحد — بلا خطأ ولا إشارة.
+   *
+   * القاعدة: مَن ذُكر في التعديل هو المرجع، والآخر يتبعه. وذِكرهما معاً
+   * بقيمتين متناقضتين يُرفض بدل أن يُحسم بالصمت.
+   */
+  private alignApprovalFlags(update: Record<string, any>): void {
+    const hasStatus = 'registrationStatus' in update;
+    const hasFlag = 'isApproved' in update;
+    if (!hasStatus && !hasFlag) return;
+
+    const statusApproved = update.registrationStatus === RegistrationStatus.APPROVED;
+
+    if (hasStatus && hasFlag && Boolean(update.isApproved) !== statusApproved) {
+      throw new BadRequestException(
+        'registrationStatus and isApproved contradict each other. Send one, or send matching values.',
+      );
+    }
+
+    if (hasStatus) {
+      update.isApproved = statusApproved;
+      // الرفض يوقف الاستقبال فعلاً: تركه نشِطاً يُبقيه مرشّحاً للتوزيع
+      if (update.registrationStatus === RegistrationStatus.REJECTED) {
+        update.isActive = false;
+        update.accountStatus = update.accountStatus ?? 'suspended';
+      }
+      return;
+    }
+
+    update.registrationStatus = update.isApproved
+      ? RegistrationStatus.APPROVED
+      : RegistrationStatus.PENDING;
+  }
+
   async updateProvider(id: string, updateData: any) {
     const allowedFields = [
       'businessName',
@@ -722,9 +760,11 @@ export class AdminProvidersService {
       'techCount',
       'commissionRate',
     ];
-    const safeUpdate = Object.fromEntries(
+    const safeUpdate: Record<string, any> = Object.fromEntries(
       Object.entries(updateData || {}).filter(([key]) => allowedFields.includes(key)),
     );
+
+    this.alignApprovalFlags(safeUpdate);
 
     const provider = await this.providerModel.findByIdAndUpdate(
       id,

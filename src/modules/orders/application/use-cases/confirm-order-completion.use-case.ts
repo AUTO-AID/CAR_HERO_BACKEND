@@ -8,6 +8,7 @@ import { StatusHistoryService } from '../../../status-history/application/servic
 import { OrderEvents, OrderStatusChangedEvent } from '../../domain/events/order.events';
 import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
 import { OrderStateMachine } from '../../domain/services/order-state-machine';
+import { orderEarningsBase } from '../../domain/services/order-earnings-base';
 
 @Injectable()
 export class ConfirmOrderCompletionUseCase {
@@ -68,8 +69,10 @@ export class ConfirmOrderCompletionUseCase {
         : { customerConfirmedAt: now }),
     } as any);
 
-    if (updated.providerId && updated.total > 0) {
-      await this.transferEarnings.execute(updated.providerId, updated.total, updated.id, 'order');
+    // الأساس نفسه الذي يستعمله مسار تحديث الحالة — انظر `orderEarningsBase`
+    const earningsBase = orderEarningsBase(updated);
+    if (updated.providerId && earningsBase > 0) {
+      await this.transferEarnings.execute(updated.providerId, earningsBase, updated.id, 'order');
     }
 
     await this.histories.record({

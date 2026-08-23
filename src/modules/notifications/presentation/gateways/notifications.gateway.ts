@@ -12,7 +12,7 @@ import { WsJwtGuard } from '../../../../core/guards/ws-jwt.guard';
 
 @WebSocketGateway({
   cors: { origin: '*' },
-  namespace: 'notifications',
+  namespace: '/notifications',
 })
 export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()

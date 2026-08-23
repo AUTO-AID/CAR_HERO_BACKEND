@@ -17,7 +17,7 @@ import { SendMessageDto } from '../../application/dtos/chat.dto';
 
 @WebSocketGateway({
   cors: { origin: '*' },
-  namespace: 'chat',
+  namespace: '/chat',
 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()

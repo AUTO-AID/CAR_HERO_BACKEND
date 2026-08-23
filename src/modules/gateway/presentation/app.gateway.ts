@@ -31,22 +31,20 @@ import {
 import { OrderStatus } from '../../../core/enums/status.enum';
 
 /**
- * Events emitted by the server
+ * ما يبثّه الخادم على `/ws` — **وكلّه مبثوث فعلاً**.
+ *
+ * حُذفت خمسة أعضاء معلنة لا تُبثّ (`order:new` · `order:assigned` ·
+ * `provider:online` · `provider:offline` · `provider:location:updated`).
+ * تعدادٌ يَعِد بأحداث لا تأتي أسوأ من غيابه: تطبيق العميل كان يسجّل مستمعاً
+ * لـ `provider:location:updated` بناءً عليه، فيبدو التتبّع مربوطاً من مسارين
+ * بينما المسار الحيّ واحد.
+ *
+ * تحديثات موقع الفنّي كلّها تصل عبر `ORDER_LOCATION_UPDATED` داخل غرفة الطلب:
+ * الغرفة هي حدّ الخصوصية، وبثّ موقع فنّي خارجها تسريب.
  */
 export enum ServerEvents {
-  // Order events
   ORDER_STATUS_UPDATED = 'order:status:updated',
   ORDER_LOCATION_UPDATED = 'order:location:updated',
-  ORDER_NEW = 'order:new',
-  ORDER_ASSIGNED = 'order:assigned',
-
-  // Provider events
-  PROVIDER_ONLINE = 'provider:online',
-  PROVIDER_OFFLINE = 'provider:offline',
-  PROVIDER_LOCATION_UPDATED = 'provider:location:updated',
-
-  // System events
-  ERROR = 'error',
   CONNECTED = 'connected',
 }
 
@@ -276,39 +274,14 @@ export class AppGateway
     });
   }
 
-  // ============ Helper methods for external use ============
-
-  /**
-   * Emit order status update to all clients in order room
+  /*
+   * حُذفت ثلاث دوالّ «للاستعمال الخارجي» لم يكن ينادي أياً منها أحد:
+   *
+   *  · `emitOrderStatusUpdate` — صار `handleOrderStatusChanged` أعلاه يغطّيه
+   *    من الحدث، وهو المصدر الصحيح لأنه يلتقط تغييرات REST والمهامّ الدورية.
+   *  · `emitNewOrder` و`emitProviderStatus` — كانتا `this.server.emit` **بلا
+   *    غرفة**: بثٌّ إلى كل متّصل بالفضاء. أول نداء لهما كان سيسرّب طلب عميل
+   *    (بموقعه وملاحظاته) إلى كل من فتح التطبيق. سلاحٌ محشوّ لا يُترك معلّقاً
+   *    على الجدار انتظاراً لمن يستعمله.
    */
-  emitOrderStatusUpdate(orderId: string, status: string, data?: any) {
-    const room = `order:${orderId}`;
-    this.server.to(room).emit(ServerEvents.ORDER_STATUS_UPDATED, {
-      orderId,
-      status,
-      ...data,
-      timestamp: new Date().toISOString(),
-    });
-  }
-
-  /**
-   * Emit new order to providers
-   */
-  emitNewOrder(order: any) {
-    this.server.emit(ServerEvents.ORDER_NEW, {
-      order,
-      timestamp: new Date().toISOString(),
-    });
-  }
-
-  /**
-   * Emit provider status change
-   */
-  emitProviderStatus(providerId: string, isOnline: boolean) {
-    const event = isOnline ? ServerEvents.PROVIDER_ONLINE : ServerEvents.PROVIDER_OFFLINE;
-    this.server.emit(event, {
-      providerId,
-      timestamp: new Date().toISOString(),
-    });
-  }
 }

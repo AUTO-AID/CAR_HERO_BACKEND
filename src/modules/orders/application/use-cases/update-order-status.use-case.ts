@@ -9,6 +9,7 @@ import { OrderEvents, OrderStatusChangedEvent } from '../../domain/events/order.
 import { TransferEarningsUseCase } from '../../../../modules/wallet/application/use-cases/transfer-earnings.use-case';
 import { StatusHistoryService } from '../../../status-history/application/services/status-history.service';
 import { OrderStateMachine } from '../../domain/services/order-state-machine';
+import { orderEarningsBase } from '../../domain/services/order-earnings-base';
 
 @Injectable()
 export class UpdateOrderStatusUseCase {
@@ -83,11 +84,14 @@ export class UpdateOrderStatusUseCase {
       },
     });
 
-    // 💰 Special Logic: Transfer earnings to provider on completion
-    if (status === OrderStatus.COMPLETED && updatedOrder.providerId && (updatedOrder.totalAmount || updatedOrder.total) > 0) {
+    // 💰 أرباح الفنّي عند الإتمام — الأساس من `orderEarningsBase` لا محسوباً
+    // هنا: المسار الآخر (تأكيد العميل) كان يحسبه بطريقة مختلفة، فيتغيّر أجر
+    // الفنّي بحسب مَن ضغط زرّ الإتمام.
+    const earningsBase = orderEarningsBase(updatedOrder);
+    if (status === OrderStatus.COMPLETED && updatedOrder.providerId && earningsBase > 0) {
       await this.transferEarnings.execute(
         updatedOrder.providerId,
-        updatedOrder.totalAmount || updatedOrder.total,
+        earningsBase,
         updatedOrder.id,
         'order'
       );
