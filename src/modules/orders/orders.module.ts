@@ -76,6 +76,9 @@ import { ConfirmOrderCompletionUseCase } from './application/use-cases/confirm-o
     GetOrderTrackingUseCase,
     UpdateOrderStatusUseCase,
     UpdateProviderLocationUseCase,
+    // يستعمله `ProviderDispatchService` حين ينقضي سقف البحث: الإلغاء بكل آثاره
+    // (سجلّ الحالات، إبطال الكاش، ردّ المدفوع) في مسار واحد لا مسارين.
+    CancelOrderUseCase,
   ],
 })
 export class OrdersModule {}

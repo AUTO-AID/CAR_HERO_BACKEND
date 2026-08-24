@@ -503,4 +503,15 @@ export class MongooseOrderRepository implements IOrderRepository {
 
     return docs.map(doc => this.mapToEntity(doc));
   }
+
+  async findProviderIdsWithActiveOrders(statuses: OrderStatus[]): Promise<string[]> {
+    // قائمة فارغة تعني «لا حالة تشغل أحداً»، لا «كل الطلبات» — وبدون هذا
+    // الحارس كان `$in: []` يُرجع صفراً بالصدفة لا بالقصد.
+    if (!statuses.length) return [];
+
+    const ids = await this.orderModel
+      .distinct('provider', { status: { $in: statuses }, provider: { $ne: null } })
+      .exec();
+    return ids.filter(Boolean).map((id: any) => id.toString());
+  }
 }

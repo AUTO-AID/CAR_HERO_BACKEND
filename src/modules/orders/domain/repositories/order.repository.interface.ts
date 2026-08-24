@@ -1,3 +1,4 @@
+import { OrderStatus } from '../../../../core/enums/status.enum';
 import { OrderEntity } from '../entities/order.entity';
 
 export interface ProviderTrackingUpdate {
@@ -22,6 +23,18 @@ export interface IOrderRepository {
   updatePaymentDetails(id: string, paymentId: string, paymentMethod?: string): Promise<OrderEntity>;
   cancelOrder(id: string, reason: string, cancelledBy?: string): Promise<OrderEntity>;
   findExpiredPendingOrders(hours: number): Promise<OrderEntity[]>;
+
+  /**
+   * الفنّيون المرتبطون بطلب في إحدى الحالات المعطاة — أي المنشغلون الآن.
+   *
+   * الحالات تُمرَّر ولا تُثبَّت هنا: أيّها «يشغل الفنّي» قرارُ نطاقٍ يخصّ
+   * المُنادي، وتثبيتها كان يجعل كل استعمال مختلف يحتاج دالّة ثانية.
+   *
+   * مشتركة بين `create-order` (ليختار مرشّحاً أوّل يستطيع القبول فعلاً) و
+   * `ProviderDispatchService` (ليستبعد المنشغلين من كل جولة). نسختان من
+   * الاستعلام نفسه هما ما تنشأ بينهما الفجوات — وهذه إحداها بالضبط.
+   */
+  findProviderIdsWithActiveOrders(statuses: OrderStatus[]): Promise<string[]>;
 }
 
 export const IOrderRepository = Symbol('IOrderRepository');

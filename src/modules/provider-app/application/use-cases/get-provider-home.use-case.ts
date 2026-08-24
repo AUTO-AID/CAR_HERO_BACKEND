@@ -83,7 +83,7 @@ export class GetProviderHomeUseCase {
       unreadNotifications: unreadCount,
       // التطبيق لا يخترع فاصل إرسال الموقع: الخادم يمليه فيتغيّر من مكان واحد.
       locationIntervalSeconds: this.config.get<number>('providerApp.locationIntervalSeconds') ?? 15,
-      offerWindowSeconds: this.config.get<number>('providerApp.offerWindowSeconds') ?? 15,
+      offerWindowSeconds: this.config.get<number>('providerApp.offerWindowSeconds') ?? 45,
     };
   }
 

@@ -109,14 +109,9 @@ export class ProvidersController {
   @Post('apply')
   @ApiOperation({ summary: 'Apply to become a provider from the website form' })
   @ApiResponse({ status: 201, description: 'Application submitted successfully' })
+  @ApiResponse({ status: 400, description: 'لا يوجد حساب دخول بهذا الرقم، أو الحساب غير موثَّق' })
   async apply(@Body() dto: CreateProviderDto) {
-    // Temporarily using the manageProvidersUseCase.create but overriding status
-    return this.manageProvidersUseCase.create({
-      ...dto,
-      isApproved: false,
-      isActive: false,
-      registrationStatus: 'pending',
-    } as any);
+    return this.manageProvidersUseCase.apply(dto);
   }
 
   private async getCurrentProviderId(user: any): Promise<string> {

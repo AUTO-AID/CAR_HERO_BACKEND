@@ -25,6 +25,8 @@ import { GetTopRatedProvidersUseCase } from './application/use-cases/get-top-rat
 
 import { Order, OrderSchema } from '../orders/infrastructure/persistence/mongoose/schemas/order.schema';
 import { Service, ServiceSchema } from '../services/infrastructure/persistence/mongoose/schemas/service.schema';
+import { User, UserSchema } from '../users/infrastructure/persistence/mongoose/schemas/user.schema';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 const UseCases = [
   GetProvidersUseCase,
@@ -48,7 +50,12 @@ const UseCases = [
       { name: Provider.name, schema: ProviderSchema },
       { name: Order.name, schema: OrderSchema },
       { name: Service.name, schema: ServiceSchema },
+      // `apply` يتحقّق من وجود حساب الدخول، و`approve` يفعّله
+      { name: User.name, schema: UserSchema },
     ]),
+    // الاعتماد يُشعر الفنّي بقبوله — لا تستورد NotificationsModule وحدةَ
+    // المزوّدين، فلا دورة هنا.
+    NotificationsModule,
   ],
   controllers: [ProvidersController],
   providers: [

@@ -5,9 +5,9 @@ import { OfferStatus } from '../../domain/entities/request-offer.entity';
 import { IRequestOfferRepository } from '../../domain/repositories/request-offer.repository.interface';
 import { ProviderDispatchService } from '../../application/services/provider-dispatch.service';
 
-// ثلاث ثوانٍ لا خمس: النافذة صارت خمس عشرة ثانية، وفاصلُ خمسٍ كان يضيف
-// ثلث النافذة إلى انتظار العميل كلما سقط الطريق السريع (تطبيق مُقفَل أو
-// شبكة منقطعة عند انتهاء العدّاد). الاستعلام مفهرس على (status, expiresAt)
+// ثلاث ثوانٍ لا خمس: الطريق السريع هو التطبيق نفسه، وكلّما سقط (هاتف مُقفَل أو
+// شبكة منقطعة عند انتهاء العدّاد) صار هذا الفاصل هو ما يُضاف إلى انتظار العميل
+// قبل انتقال الطلب إلى الفنّي التالي. الاستعلام مفهرس على (status, expiresAt)
 // فكلفة تكراره لا تُذكر أمام ما يوفّره من ثوانٍ على الطريق.
 const SWEEP_INTERVAL_MS = 3_000;
 const SWEEP_BATCH = 50;
@@ -34,6 +34,25 @@ const BOOKING_BATCH = 25;
 @Injectable()
 export class ProviderOffersCronService {
   private readonly logger = new Logger(ProviderOffersCronService.name);
+
+  /**
+   * ⚠️ **هذه أقفال داخل العملية الواحدة — والتوزيع يفترض نسخة واحدة من الخادم.**
+   *
+   * كلٌّ منها يمنع تراكب المهمّة مع **نفسها** في هذه العملية، ولا يعرف شيئاً عن
+   * عملية أخرى. و NestJS يجدول المهامّ في كل نسخة، فتشغيل نسختين يعني تشغيل كل
+   * مهمّة مرّتين في اللحظة نفسها.
+   *
+   * `sweepExpiredOffers` تحتمل ذلك (إغلاق العرض ذرّي)، و`openDueBookingConfirmations`
+   * يحرسها فهرس التفرّد. أمّا **`resumeDueSearches` فلا حارس لها**: نسختان
+   * تقرآن `nextRoundAt` قبل أن تمحوه إحداهما، فتختار كلٌّ فنّياً **مختلفاً**
+   * وتفتح له عرضاً — وفهرس `(طلب، فنّي، جولة)` لا يمنعهما لأن الفنّيين مختلفان.
+   * فيعود بالضبط العطل الذي بُني نظام الجولات لمنعه: عدّادان على طلب واحد،
+   * وصاحب الإسناد المدهوس يُرفض قبوله بـ409.
+   *
+   * قبل أي توسّع أفقي: استبدلها بحجز في قاعدة البيانات (`findOneAndUpdate` ذرّي
+   * على `dispatchLockUntil` بمهلة انتهاء) — قبل إضافة النسخة الثانية لا بعدها.
+   * التفصيل في §25.1 من `CAR_HERO_BACKEND_README.md`.
+   */
   private sweeping = false;
   private resuming = false;
   private bookings = false;
@@ -124,16 +143,31 @@ export class ProviderOffersCronService {
 
       for (const booking of due) {
         try {
-          // النافذة ثلث ما تبقّى قبل الموعد (وخمس دقائق على الأقل): يبقى
-          // بعدها متّسع لإيجاد بديل إن لم يؤكّد الفنّي المُسنَد.
-          const windowSeconds = Math.max(300, Math.floor((booking.minutesUntil * 60) / 3));
-          await this.dispatch.openBookingConfirmation(booking.orderId, windowSeconds);
+          if (booking.hasProvider) {
+            // النافذة ثلث ما تبقّى قبل الموعد (وخمس دقائق على الأقل): يبقى
+            // بعدها متّسع لإيجاد بديل إن لم يؤكّد الفنّي المُسنَد.
+            const windowSeconds = Math.max(300, Math.floor((booking.minutesUntil * 60) / 3));
+            await this.dispatch.openBookingConfirmation(booking.orderId, windowSeconds);
+          } else {
+            /**
+             * حجز يتيم: اعتذر عنه فنّيه. لا شيء يُطلب تأكيده — المطلوب بديل،
+             * فيدخل منطق الجولات نفسه (وسقفه المشتقّ من الموعد يُنهيه صراحةً
+             * إن لم يوجد أحد، قبل الموعد بوقت يُشعر العميل).
+             *
+             * ولا حاجة لحارس تكرار: `redispatch` لا يفتح عرضاً فوق عرض حيّ،
+             * فالمرور عليه كل دقيقة محاولةٌ إضافية لا قصف.
+             */
+            await this.dispatch.resumeSearch(booking.orderId);
+          }
         } catch (error: any) {
-          this.logger.error(`Booking confirmation for ${booking.orderId} failed: ${error?.message ?? error}`);
+          this.logger.error(`Booking dispatch for ${booking.orderId} failed: ${error?.message ?? error}`);
         }
       }
 
-      this.logger.log(`Requested confirmation for ${due.length} booking(s)`);
+      const orphaned = due.filter((booking) => !booking.hasProvider).length;
+      this.logger.log(
+        `Booking pass: ${due.length - orphaned} awaiting confirmation, ${orphaned} seeking replacement`,
+      );
     } catch (error: any) {
       this.logger.error(`Booking confirmation pass failed: ${error?.message ?? error}`);
     } finally {

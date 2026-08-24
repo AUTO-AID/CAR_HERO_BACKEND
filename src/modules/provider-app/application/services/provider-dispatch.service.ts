@@ -1,5 +1,7 @@
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import type { Cache } from 'cache-manager';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Connection, Model, Types } from 'mongoose';
@@ -7,6 +9,7 @@ import { NotificationType, OrderStatus, ProviderStatus } from '../../../../core/
 import { calculateDistance } from '../../../../core/utils/geo.util';
 import { notificationContent } from '../../../notifications/application/notification-content';
 import { NotificationsService } from '../../../notifications/application/services/notifications.service';
+import { CancelOrderUseCase } from '../../../orders/application/use-cases/cancel-order.use-case';
 import { OrderEntity } from '../../../orders/domain/entities/order.entity';
 import { IOrderRepository } from '../../../orders/domain/repositories/order.repository.interface';
 import { Order, OrderDocument } from '../../../orders/infrastructure/persistence/mongoose/schemas/order.schema';
@@ -55,12 +58,15 @@ export class ProviderDispatchService {
     private readonly notifications: NotificationsService,
     private readonly events: EventEmitter2,
     private readonly config: ConfigService,
+    private readonly cancelOrder: CancelOrderUseCase,
+    @Inject(CACHE_MANAGER)
+    private readonly cache: Cache,
     @InjectConnection()
     private readonly connection: Connection,
   ) {}
 
   get offerWindowSeconds(): number {
-    return this.config.get<number>('providerApp.offerWindowSeconds') ?? 15;
+    return this.config.get<number>('providerApp.offerWindowSeconds') ?? 45;
   }
 
   /** سقف العروض داخل الجولة الواحدة — يمنع حرق عشرين فنّياً في دقيقتين */
@@ -80,6 +86,44 @@ export class ProviderDispatchService {
 
   private get searchDeadlineMs(): number {
     return (this.config.get<number>('providerApp.searchDeadlineMinutes') ?? 10) * 60_000;
+  }
+
+  /** أقرب لحظة قبل الموعد يبقى البحث عن بديل للحجز مجدياً عندها */
+  private get bookingFloorMs(): number {
+    return (this.config.get<number>('providerApp.bookingDispatchFloorMinutes') ?? 30) * 60_000;
+  }
+
+  /**
+   * متى يتوقّف البحث — والمسطرة تختلف باختلاف الطلب.
+   *
+   * الفوري يُقاس بما مضى: العميل واقف الآن وعشر دقائق حدّ صبره.
+   * والحجز يُقاس بما بقي: موعده ثابت، فسقفٌ محسوب من لحظة بدء البحث لا معنى
+   * له. وكان يُقاس بمسطرة الفوري، فيُلغى كل حجز لم يؤكَّد حتماً — نافذة التأكيد
+   * ثلث ما تبقّى (نصف ساعة عادةً) وهي تتجاوز العشر دقائق دائماً، فيقع الإلغاء
+   * وأمام الحجز ساعة كاملة كانت تكفي لإيجاد بديل.
+   */
+  private dispatchDeadlineMs(order: OrderEntity, plan: { startedAt: Date }): number {
+    if (order.isScheduled && order.scheduledAt) {
+      const scheduled = new Date(order.scheduledAt).getTime();
+      // موعد فاسد يُقرأ بمسطرة الفوري لا بـNaN: الأخير يجعل كل مقارنة معه
+      // كاذبة، فلا يتوقّف البحث أبداً.
+      if (!Number.isNaN(scheduled)) return scheduled - this.bookingFloorMs;
+    }
+    return plan.startedAt.getTime() + this.searchDeadlineMs;
+  }
+
+  /**
+   * نافذة الردّ على عرض حجز — ثلث ما تبقّى قبل الموعد، وخمس دقائق على الأقل.
+   *
+   * نافذة الطلب الفوري (٤٥ ثانية) لا تصلح هنا: الفنّي لم يكن ينتظر إشعاراً في
+   * تلك اللحظة، والمطلوب منه تأكيدٌ لا سباق. والثلث يُبقي بعده متّسعاً لمحاولة
+   * أخرى إن لم يؤكّد.
+   */
+  private bookingWindowSeconds(order: OrderEntity): number | undefined {
+    if (!order.isScheduled || !order.scheduledAt) return undefined;
+    const msUntil = new Date(order.scheduledAt).getTime() - Date.now();
+    if (!Number.isFinite(msUntil) || msUntil <= 0) return undefined;
+    return Math.max(300, Math.floor(msUntil / 3000));
   }
 
   // ===========================================
@@ -106,13 +150,15 @@ export class ProviderDispatchService {
       // قاعدة «المتّصلون فقط»: العرض الأوّل يذهب لفنّي أغلق تطبيقه، فتُحرق
       // نافذة كاملة قبل أن يبدأ البحث الحقيقي. من لم يكن متّصلاً يُترك
       // للتوزيع العادي الذي يحترم القاعدة.
-      const assignee = await this.providerModel
-        .findById(order.providerId)
-        .select('status')
-        .lean()
-        .exec();
+      const [assignee, heldOffer] = await Promise.all([
+        this.providerModel.findById(order.providerId).select('status').lean().exec(),
+        // ومن يقرّر الآن في عرض آخر ليس أهلاً للمسار السريع: هذا المسار يتخطّى
+        // `findNextCandidate` بكل استبعاداته، فكان بابه الخلفي يُدخل الطلبَ على
+        // فنّي يحمل عرضاً حيّاً — فيستبدله على شاشته ويُعيد عدّاده من أوّله.
+        this.offers.findOpenForProvider(order.providerId),
+      ]);
 
-      if (assignee?.status === ProviderStatus.ONLINE) {
+      if (assignee?.status === ProviderStatus.ONLINE && !heldOffer) {
         await this.openOffer(order, { providerId: order.providerId }, 1, 1);
         return;
       }
@@ -129,7 +175,13 @@ export class ProviderDispatchService {
    */
   async openBookingConfirmation(orderId: string, windowSeconds: number): Promise<boolean> {
     const order = await this.orders.findById(orderId);
-    if (!order || order.status !== OrderStatus.PENDING || !order.providerId) return false;
+    if (!order || order.status !== OrderStatus.PENDING) return false;
+
+    // حجزٌ بلا فنّي: اعتذر عنه صاحبه. لا شيء يُطلب تأكيده — المطلوب بديل.
+    if (!order.providerId) {
+      await this.redispatch(orderId);
+      return false;
+    }
 
     const existing = await this.offers.findOpenForOrderAndProvider(orderId, order.providerId);
     if (existing) return false;
@@ -156,9 +208,28 @@ export class ProviderDispatchService {
     await this.orderModel
       .findByIdAndUpdate(orderId, {
         $unset: { provider: '', 'metadata.booking.confirmationRequestedAt': '' },
-        $set: { 'metadata.booking.declinedBy': providerId, 'metadata.booking.declineReason': reason ?? null },
+        /**
+         * قائمة تتراكم لا قيمة تُستبدل.
+         *
+         * المعتذِر يجب أن يُستبعد من كل بحث لاحق على هذا الحجز، والاستبعاد
+         * المعتاد (`findExcludedProviderIds`) لا يراه: الاعتذار يقع قبل الموعد
+         * بأيام حين لا عرض مفتوح أصلاً، فلا يبقى منه سجلّ عرض بحالة `rejected`.
+         * وبقيمة مفردة كان ثاني معتذِر يمحو أوّلهم فيعود مرشّحاً لحجزٍ رفضه.
+         */
+        $addToSet: { 'metadata.booking.declinedProviders': providerId },
+        $set: { 'metadata.booking.declineReason': reason ?? null },
       })
       .exec();
+
+    /**
+     * `GetOrderByIdUseCase` يخزّن الطلب خمس دقائق، وهذه كتابة مباشرة لا تمرّ به.
+     *
+     * وبدون الإبطال كان العميل يفتح تفاصيل حجزه فيرى **اسم الفنّي الذي اعتذر
+     * للتوّ** — لا لثوانٍ بل حتى تنتهي مدّة الكاش. وهي الحالة الوحيدة الحتمية
+     * من نوعها: شاشة الحجز لا تستطلع دورياً (الاستطلاع للطلب الفوري وحده)،
+     * فلا شيء يصحّح الصورة قبل انقضاء المدّة.
+     */
+    await this.cache.del(`order_${orderId}`);
 
     this.logger.log(`Booking ${orderId} released by provider ${providerId}`);
   }
@@ -234,12 +305,37 @@ export class ProviderDispatchService {
     const order = await this.orders.findById(orderId);
     if (!order || order.status !== OrderStatus.PENDING) return;
 
+    /**
+     * عرضٌ مفتوح على الطلب يعني أن فنّياً يقرّر الآن داخل مهلته — ولا يُفتح
+     * عرض ثانٍ فوقه.
+     *
+     * كل مسار يستدعي هذه الدالّة يُغلق عرضه **قبل** النداء (رفضاً أو انتهاءَ
+     * مهلة)، فالوصول إلى هنا وعرضٌ ما يزال مفتوحاً يعني أن مساراً آخر سبقنا.
+     * والمضيّ عندئذ كان يفتح عرضاً ثانياً ويُعيد إسناد الطلب إلى صاحبه، فيصير
+     * قبول الأول مرفوضاً بـ409 وعدّاده يدور على طلب لم يعد له.
+     *
+     * المنتهية مهلتها لا تحجب: `isOpen` يشترط سريان المهلة، فعرضٌ مات ولم يمرّ
+     * عليه المسح بعد لا يوقف البحث — والمسح يُغلقه خلال ثوانٍ ويعيد النداء.
+     */
+    const offersOnOrder = await this.offers.findOpenForOrder(orderId);
+    if (offersOnOrder.some((offer) => offer.isOpen())) return;
+
     const plan = this.readPlan(order);
 
-    if (Date.now() - plan.startedAt.getTime() > this.searchDeadlineMs) {
+    if (Date.now() > this.dispatchDeadlineMs(order, plan)) {
       await this.abandon(order, 'انقضى سقف البحث دون فنّي متاح');
       return;
     }
+
+    /**
+     * الجولة استُؤنفت فعلاً، فموعدها المعلّق لم يعد له معنى.
+     *
+     * بدون هذا المحو كان `metadata.dispatch.nextRoundAt` يبقى في الماضي إلى
+     * الأبد، فتلتقط المهمّة الدورية الطلبَ نفسه **كل خمس عشرة ثانية** وتفتح
+     * عرضاً جديداً على فنّي جديد فوق عرضٍ ما يزال حيّاً: خمسة فنّيين تُحرق في
+     * دقيقة، وأربعة منهم يرون طلباً لا يستطيعون قبوله.
+     */
+    if (plan.nextRoundAt) await this.clearNextRound(orderId);
 
     const attemptsInRound = await this.offers.countAttemptsInRound(orderId, plan.round);
     if (attemptsInRound >= this.maxAttemptsPerRound) {
@@ -262,7 +358,17 @@ export class ProviderDispatchService {
       .exec();
 
     const refreshed = await this.orders.findById(orderId);
-    await this.openOffer(refreshed ?? order, candidate, attemptsInRound + 1, plan.round);
+    const target = refreshed ?? order;
+    // نافذة الحجز تُمرَّر هنا أيضاً لا في مسار التأكيد وحده: البديل الذي نبحث
+    // عنه الآن يستحقّ ما استحقّه المُسنَد الأول — و٤٥ ثانية على موعدٍ بعد ساعة
+    // تُقرأ خطأً وتُحرق مرشّحاً بلا داعٍ.
+    await this.openOffer(
+      target,
+      candidate,
+      attemptsInRound + 1,
+      plan.round,
+      this.bookingWindowSeconds(target),
+    );
   }
 
   /**
@@ -274,25 +380,34 @@ export class ProviderDispatchService {
   }
 
   /**
-   * الحجوزات المجدولة التي اقترب موعدها ولم يُطلب تأكيدها بعد.
+   * الحجوزات المجدولة التي اقترب موعدها وتنتظر فعلاً — تأكيداً أو بديلاً.
    *
    * `metadata.booking.confirmationRequestedAt` هو ما يمنع تكرار الطلب كل
    * دقيقة: بدونه كانت المهمّة الدورية ستقصف الفنّي بإشعار في كل دورة.
+   *
+   * ولا يُشترط وجود فنّي مُسنَد. اشتراطه (`provider: { $ne: null }`) كان يُقصي
+   * الحجز الذي اعتذر عنه صاحبه **بالضبط**: `releaseBooking` يحذف الحقل،
+   * والحقل المحذوف لا يطابق `$ne: null` في MongoDB. فالحجز الذي وُعد بأن تجد
+   * له الدورةُ التالية بديلاً لم تكن الدورة تراه أصلاً — يبقى `pending` بلا
+   * فنّي، والعميل يراه مؤكّداً، ولا يُلغى إلا بشبكة الأمان بعد ساعتين من
+   * **انقضاء الموعد نفسه**.
+   *
+   * `hasProvider` هو ما يفرّق المسارين عند المنادي: المُسنَد يُطلب تأكيده،
+   * واليتيم يُبحث له عن بديل.
    */
   async findBookingsAwaitingConfirmation(
     leadMinutes: number,
     limit: number,
-  ): Promise<Array<{ orderId: string; minutesUntil: number }>> {
+  ): Promise<Array<{ orderId: string; minutesUntil: number; hasProvider: boolean }>> {
     const now = Date.now();
     const docs = await this.orderModel
       .find({
         status: OrderStatus.PENDING,
         isScheduled: true,
-        provider: { $ne: null },
         scheduledAt: { $gt: new Date(now), $lte: new Date(now + leadMinutes * 60_000) },
         'metadata.booking.confirmationRequestedAt': { $exists: false },
       })
-      .select('_id scheduledAt')
+      .select('_id scheduledAt provider')
       .limit(limit)
       .lean()
       .exec();
@@ -300,6 +415,7 @@ export class ProviderDispatchService {
     return docs.map((doc: any) => ({
       orderId: doc._id.toString(),
       minutesUntil: Math.max(1, Math.round((new Date(doc.scheduledAt).getTime() - now) / 60_000)),
+      hasProvider: !!doc.provider,
     }));
   }
 
@@ -321,13 +437,30 @@ export class ProviderDispatchService {
   // خطّة البحث — تُخزَّن على الطلب نفسه
   // ===========================================
 
-  private readPlan(order: OrderEntity): { startedAt: Date; round: number } {
+  private readPlan(order: OrderEntity): { startedAt: Date; round: number; nextRoundAt: Date | null } {
     const raw = (order.metadata as any)?.dispatch;
     const startedAt = raw?.startedAt ? new Date(raw.startedAt) : new Date();
+    const nextRoundAt = raw?.nextRoundAt ? new Date(raw.nextRoundAt) : null;
     return {
       startedAt: Number.isNaN(startedAt.getTime()) ? new Date() : startedAt,
       round: Number(raw?.round) > 0 ? Number(raw.round) : 1,
+      // تاريخ فاسد يُقرأ عدماً لا NaN: الأخير يجعل كل مقارنة معه كاذبة بصمت
+      nextRoundAt: nextRoundAt && !Number.isNaN(nextRoundAt.getTime()) ? nextRoundAt : null,
     };
+  }
+
+  /**
+   * محو موعد الجولة المعلّق — يُنادى فور استئنافها.
+   *
+   * `$unset` لا `$set: null`: كلاهما يخرج من استعلام `findOrdersDueForNextRound`
+   * (مقارنات المدى في MongoDB محصورة بنوع المعامل، فـ`$lte: <Date>` لا يطابق
+   * `null` أصلاً)، لكن الحذف يقول «لا جولة مجدولة» بدل ترك حقل فارغ يُقرأ
+   * كقيمة. وهو ما يفعله `abandon` و`scheduleNextRound` مع `provider`.
+   */
+  private async clearNextRound(orderId: string): Promise<void> {
+    await this.orderModel
+      .findByIdAndUpdate(orderId, { $unset: { 'metadata.dispatch.nextRoundAt': '' } })
+      .exec();
   }
 
   /**
@@ -345,7 +478,7 @@ export class ProviderDispatchService {
 
     // الجولة التالية تتجاوز السقف: لا معنى لتأجيلها ثم إلغاء الطلب عندها.
     const plan = this.readPlan(order);
-    if (nextRoundAt.getTime() - plan.startedAt.getTime() > this.searchDeadlineMs) {
+    if (nextRoundAt.getTime() > this.dispatchDeadlineMs(order, plan)) {
       await this.abandon(order, 'انقضى سقف البحث دون فنّي متاح');
       return;
     }
@@ -459,22 +592,41 @@ export class ProviderDispatchService {
    * والعميل واقف على الطريق ينتظر فنّياً لن يأتي، بلا إشارة تقول له ابحث عن
    * بديل. الإلغاء الصريح أرحم من انتظار صامت، والإدارة تُبلَّغ لأن الفشل هنا
    * ليس عطلاً تقنياً بل **ثغرة تغطية** في منطقة وخدمة بعينهما.
+   *
+   * الإلغاء يمرّ بـ`CancelOrderUseCase` لا بكتابة مباشرة. الكتابة المباشرة كانت
+   * تُغيّر الحالة وتتخطّى كل ما يلزمها: لا سجلّ حالات (فالإلغاء يختفي من
+   * التدقيق تماماً — وهو أكثر ما يُسأل عنه)، ولا إبطال للكاش (فيبقى الطلب
+   * `pending` في قراءة العميل)، ولا بثّ لحظي (فتنتظر الشاشة دورة استطلاع).
    */
   private async abandon(order: OrderEntity, reason: string): Promise<void> {
+    /**
+     * الحجز ليس طلباً فورياً سقط، ولا يُخاطَب بنصّه.
+     *
+     * «لم نجد فنّياً متاحاً قريباً **خلال مدة البحث**» جملةٌ كُتبت لعميل واقف
+     * على الطريق منذ عشر دقائق؛ وصولها إلى من حجز قبل ثلاثة أيام يُقرأ عبثاً.
+     * والرمز ينفصل كذلك: خلط فشلِ تأكيد حجز بفجوة تغطية فورية يُفسد تقرير
+     * التغطية الذي بُني الرمز لأجله.
+     */
+    const isBooking = !!order.isScheduled;
+
+    /**
+     * ما يخصّ التوزيع وحده يُكتب هنا، والإلغاء نفسه يُترك لصاحبه.
+     *
+     * وترتيبه **قبل** الإلغاء لا بعده: `CancelOrderUseCase` يقرأ الطلب في أوّله
+     * ويبني الحدث من تلك القراءة، ففكّ الإسناد قبله يعني أن الحدث يخرج بلا
+     * مزوّد — فلا يصل إشعار «طلبك أُلغي» إلى فنّي لم يقبل الطلب قط وربما انقضت
+     * مهلته قبل دقائق.
+     */
     await this.orderModel
       .findByIdAndUpdate(order.id, {
         $set: {
-          status: OrderStatus.CANCELLED,
-          cancelledAt: new Date(),
-          cancelledBy: 'system',
-          cancellationReason: 'لم نجد فنّياً متاحاً قريباً خلال مدة البحث',
           /**
            * رمز ثابت لا نصّ عربي: هذا الإلغاء **ليس** إلغاء عميل ولا إلغاء
            * فنّي — هو فجوة تغطية، ودمجه معهما في تقرير واحد يُظهر ارتفاعاً في
            * «نسبة الإلغاء» يُقرأ كخلل في الخدمة بينما هو خلل في التغطية.
            * الترشيح على الرمز يصمد أمام تعديل نصّ الرسالة وترجمتها.
            */
-          'metadata.cancellation.code': 'no_provider_available',
+          'metadata.cancellation.code': isBooking ? 'booking_unconfirmed' : 'no_provider_available',
           'metadata.cancellation.searchMinutes': Math.round(
             (Date.now() - this.readPlan(order).startedAt.getTime()) / 60_000,
           ),
@@ -483,15 +635,34 @@ export class ProviderDispatchService {
       })
       .exec();
 
+    await this.cancelOrder.execute(
+      order.id,
+      {
+        reason: isBooking
+          ? 'لم يؤكّد أي فنّي هذا الحجز قبل موعده'
+          : 'لم نجد فنّياً متاحاً قريباً خلال مدة البحث',
+        cancelledBy: 'system',
+      },
+      { _id: 'system', role: 'system' },
+      // لنا إشعارنا الخاص أدناه — وهو يشرح السبب بدل أن يقول «أصبح: ملغى»
+      { suppressStatusNotice: true },
+    );
+
     this.logger.warn(`Dispatch abandoned for order ${order.orderNumber}: ${reason}`);
 
     try {
       await this.notifications.createNotification({
         recipientId: order.userId,
         recipientType: 'user',
-        ...notificationContent.noProviderAvailableForOrder(order.orderNumber),
+        ...(isBooking
+          ? notificationContent.bookingCouldNotBeStaffed(order.orderNumber, order.scheduledAt)
+          : notificationContent.noProviderAvailableForOrder(order.orderNumber)),
         type: NotificationType.ALERT,
-        data: { event: 'order.no_provider', orderId: order.id, orderNumber: order.orderNumber },
+        data: {
+          event: isBooking ? 'booking.unconfirmed' : 'order.no_provider',
+          orderId: order.id,
+          orderNumber: order.orderNumber,
+        },
       });
     } catch (error: any) {
       this.logger.error(`No-provider notification failed for order ${order.orderNumber}: ${error?.message ?? error}`);
@@ -559,8 +730,26 @@ export class ProviderDispatchService {
     const coordinates = order.userLocation?.coordinates;
     if (!coordinates || coordinates.length !== 2) return null;
 
-    const busy = await this.findBusyProviderIds();
-    const excluded = [...new Set([...excludedIds, ...busy])]
+    /**
+     * أربعة أنواع من الاستبعاد:
+     *
+     * ١ · `excludedIds` — من رفض هذا الطلب، ومن جُرّب في هذه الجولة.
+     * ٢ · `busy` — من بين يديه طلب قيد التنفيذ.
+     * ٣ · `holding` — **من يقرّر الآن في عرض آخر**. الفنّي أثناء نافذته موردٌ
+     *     محجوز: عرض ثانٍ يستبدل الأول على شاشته ويُعيد العدّاد، فيُحرم من
+     *     إكمال قراره، ويبقى الطلب الأول معروضاً عليه في الخادم حتى تنقضي
+     *     مهلته كاملةً — وعميلُه ينتظر نافذةً لم يرها أحد.
+     * ٤ · `declined` — من اعتذر عن هذا الحجز. لا يغنينا عنه النوع الأول:
+     *     الاعتذار يقع قبل الموعد بأيام حين لا عرض مفتوح، فلا يبقى منه سجلٌّ
+     *     بحالة `rejected` ليراه `findExcludedProviderIds`.
+     */
+    const [busy, holding] = await Promise.all([
+      this.findBusyProviderIds(),
+      this.offers.findProviderIdsWithOpenOffers(),
+    ]);
+    const declined = ((order.metadata as any)?.booking?.declinedProviders ?? []) as string[];
+
+    const excluded = [...new Set([...excludedIds, ...busy, ...holding, ...declined])]
       .filter((id) => Types.ObjectId.isValid(id))
       .map((id) => new Types.ObjectId(id));
 
@@ -627,10 +816,9 @@ export class ProviderDispatchService {
    * يسمح له بالقبول — فيصير مؤهّلاً للقبول ولا يصله عرض ليقبله.
    */
   private async findBusyProviderIds(): Promise<string[]> {
-    const ids = await this.orderModel
-      .distinct('provider', { status: { $in: ENGAGING_ORDER_STATUSES }, provider: { $ne: null } })
-      .exec();
-    return ids.filter(Boolean).map((id: any) => id.toString());
+    // الاستعلام نفسه الذي يستعمله `create-order` لاختيار مرشّحه الأول — نسخة
+    // واحدة في المستودع بدل نسختين تفترقان بصمت.
+    return this.orders.findProviderIdsWithActiveOrders(ENGAGING_ORDER_STATUSES);
   }
 
   private distanceMetersBetween(from?: number[], to?: number[]): number | null {

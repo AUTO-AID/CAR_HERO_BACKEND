@@ -77,6 +77,26 @@ const userAllowedTargets = new Set<OrderStatus>([
  */
 const USER_CANCELLABLE_STATUSES = new Set<OrderStatus>([OrderStatus.PENDING]);
 
+/**
+ * الحالات التي **تشغل الفنّي فعلياً** — فلا يُعرض عليه طلب ثانٍ ولا يستطيع
+ * إيقاف اتصاله.
+ *
+ * موطنها هنا لا في `provider-app`: هي حكمٌ على حالات الطلب، ويحتاجها الطرفان —
+ * التوزيع ليستبعد المنشغلين، وإنشاء الطلب ليختار مرشّحاً أولاً يستطيع القبول.
+ * وبقاؤها هناك كان سيُجبر `orders` على الاستيراد من `provider-app` الذي يستورد
+ * منه أصلاً، فتنشأ دائرة لأجل مصفوفة نصوص.
+ *
+ * `AWAITING_CUSTOMER_CONFIRMATION` ليست منها عمداً: الفنّي أنهى عمله وما تبقّى
+ * فعلُ العميل وحده — وقد لا يأتي. حبسه عليه يعطّله بلا سبب.
+ */
+export const ENGAGING_ORDER_STATUSES: OrderStatus[] = [
+  OrderStatus.ACCEPTED,
+  OrderStatus.PROVIDER_ASSIGNED,
+  OrderStatus.PROVIDER_EN_ROUTE,
+  OrderStatus.PROVIDER_ARRIVED,
+  OrderStatus.IN_PROGRESS,
+];
+
 export class OrderStateMachine {
   static canTransition(from: OrderStatus, to: OrderStatus): boolean {
     if (from === to) return true;

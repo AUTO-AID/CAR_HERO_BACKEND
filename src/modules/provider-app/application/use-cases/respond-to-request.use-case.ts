@@ -103,6 +103,33 @@ export class RespondToRequestUseCase {
       throw new ConflictException('انتهت مهلة الرد على هذا الطلب.');
     }
 
+    /**
+     * الفوز بالعرض ذرّي، لكنه لا يقفل **الطلب**.
+     *
+     * بين قراءتنا للطلب أعلاه وفوزنا بالعرض الآن قد يكون العميل ألغاه — وهي
+     * ليست لحظة نادرة: اللحظة التي ييأس فيها العميل بعد انتظار هي نفسها التي
+     * يحسم فيها الفنّي قراره.
+     *
+     * بدون هذا الفحص كان `UpdateOrderStatusUseCase` يرفض الانتقال من حالة
+     * نهائية بـ`BadRequestException` نصّها إنجليزي خام
+     * (`Cannot move order from terminal status "cancelled" to "accepted"`)،
+     * ولا يترجمها تطبيق الفنّي لأنه يميّز 409 وحدها — فتظهر كعطل في التطبيق
+     * على شاشة عدّادٍ يواصل الدوران. ويبقى العرض مسجّلاً «مقبولاً» فوق طلب
+     * ملغى فيُحسب قبولاً في التقارير.
+     */
+    const latest = await this.orders.findById(orderId);
+    if (!latest || latest.status !== OrderStatus.PENDING) {
+      await this.offers.releaseAccepted(offer.id, 'لم يعد الطلب متاحاً قبل تسجيل القبول');
+      throw new ConflictException(
+        latest?.status === OrderStatus.CANCELLED
+          ? 'تم إلغاء هذا الطلب.'
+          : 'لم يعد هذا الطلب متاحاً للقبول.',
+      );
+    }
+
+    // السعر يُثبَّت **قبل** تحديث الحالة عمداً — انظر `applyProviderPrice`
+    await this.applyProviderPrice(orderId, latest, context);
+
     const updated = await this.updateStatus.execute(orderId, OrderStatus.ACCEPTED, asOrderActor(context));
 
     // أي عرض آخر على الطلب نفسه يجب أن يختفي من شاشة صاحبه فوراً.
@@ -113,6 +140,41 @@ export class RespondToRequestUseCase {
     return ProviderRequestMapper.toDetail(fresh ?? updated, {
       providerCoordinates: context.provider.location?.coordinates,
     });
+  }
+
+  /**
+   * تثبيت سعر الفنّي على الطلب — **مرّة واحدة، لحظة القبول**.
+   *
+   * هذه هي اللحظة الوحيدة التي يصير فيها الفنّي ملتزماً. قبلها كل من مرّ على
+   * الطلب مجرّد مرشّح قد لا يردّ، وسعرُه لا يعني شيئاً؛ فيُحمل الطلب سعر
+   * الكتالوج الذي رآه العميل حتى تُحسم المسألة هنا.
+   *
+   * وموضعه **قبل** `updateStatus` لا بعده: ذاك يُبطل الكاش ويُطلق
+   * `STATUS_CHANGED`، فتصل العميلَ قراءةٌ واحدة تحمل السعر النهائي واسم الفنّي
+   * معاً — بدل أن يعرف من سيأتيه ثم يكتشف سعره في نداء تالٍ.
+   *
+   * `totalAmount` و`payableAmount` وحدهما: `servicePrice` و`total` ليسا حقلين
+   * في مخطّط الطلب، و Mongoose يحذفهما بصمت في وضع `strict` — وكتابتهما هنا
+   * كانت ستبدو للقارئ التالي عملاً وهي لا شيء. وطبقتا العرض تقرآن
+   * `payableAmount` أصلاً.
+   */
+  private async applyProviderPrice(orderId: string, order: any, context: ProviderContext) {
+    // الخريطة مُعرَّفة `Record<string, any>` في المخطّط، فالقيمة قد تصل نصّاً
+    const price = Number((context.provider as any)?.servicePrices?.[order.serviceId]);
+
+    // لم يُسعّر الفنّي هذه الخدمة (أو سعّرها بقيمة لا تصلح): سعر الكتالوج
+    // القائم هو الصحيح، ولا نستبدله برقم أسوأ منه.
+    if (!Number.isFinite(price) || price <= 0) return;
+
+    // الخصم المطبَّق يبقى مطبَّقاً — استبدال `payableAmount` بالسعر الخام كان
+    // يمحو خصماً استحقّه العميل بالفعل.
+    const discount = Number(order?.discountAmount) || 0;
+
+    await this.orderModel
+      .findByIdAndUpdate(orderId, {
+        $set: { totalAmount: price, payableAmount: Math.max(0, price - discount) },
+      })
+      .exec();
   }
 
   async reject(context: ProviderContext, orderId: string, reason?: string) {

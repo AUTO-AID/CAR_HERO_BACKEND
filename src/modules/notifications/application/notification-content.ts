@@ -115,6 +115,20 @@ export const notificationContent = {
     };
   },
 
+  /**
+   * حجز مجدول لم يؤكّده أحد قبل موعده — إشعار العميل.
+   *
+   * منفصل عن `noProviderAvailableForOrder`: ذاك يخاطب عميلاً واقفاً على الطريق
+   * منذ عشر دقائق («خلال مدة البحث»)، ووصوله إلى من حجز قبل ثلاثة أيام يُقرأ
+   * عبثاً. والموعد يُذكر لأنه أول ما يبحث عنه القارئ — أيُّ حجوزي سقط.
+   */
+  bookingCouldNotBeStaffed(orderNumber: string, scheduledAt?: Date | string | null): NotificationContent {
+    return {
+      title: 'تعذّر تأكيد حجزك',
+      body: `لم يتمكّن أي فنّي من تأكيد الحجز رقم ${orderNumber} (${formatDateTime(scheduledAt)})، وتم إلغاؤه ولم يُخصم منك شيء. يمكنك اختيار موعد آخر.`,
+    };
+  },
+
   /** ثغرة تغطية: طلب سقط دون فنّي — إشعار الإدارة لا العميل */
   coverageGapForAdmin(
     orderNumber: string,

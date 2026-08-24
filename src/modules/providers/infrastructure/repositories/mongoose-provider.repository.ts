@@ -238,6 +238,9 @@ export class MongooseProviderRepository implements IProviderRepository {
     if (status === RegistrationStatus.APPROVED) {
       update.isApproved = true;
       update.isActive = true;
+      // `accountStatus` كان يُضبط في مسار الإدارة وحده، فيختلف المزوّد المعتمد
+      // عن نظيره باختلاف الزرّ الذي ضُغط عليه. الحقلان يُكتبان معاً هنا الآن.
+      update.accountStatus = 'active';
       update.rejectionReason = null;
     }
     if (status === RegistrationStatus.REJECTED) {

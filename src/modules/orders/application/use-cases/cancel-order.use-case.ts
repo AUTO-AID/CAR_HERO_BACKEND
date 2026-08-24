@@ -26,7 +26,16 @@ export class CancelOrderUseCase {
     private readonly statusHistoryService: StatusHistoryService,
   ) {}
 
-  async execute(id: string, dto: CancelOrderDto, currentUser?: any): Promise<OrderEntity> {
+  /**
+   * `options` منفصل عن `dto` عمداً: الأخير جسمُ طلبٍ يصل من الشبكة، وراية
+   * كتم الإشعار قرارٌ داخلي لا يجوز أن يملكه من ينادي الـ API.
+   */
+  async execute(
+    id: string,
+    dto: CancelOrderDto,
+    currentUser?: any,
+    options: { suppressStatusNotice?: boolean } = {},
+  ): Promise<OrderEntity> {
     const order = await this.orderRepository.findById(id);
     if (!order) {
       throw new NotFoundException('Order not found');
@@ -154,6 +163,7 @@ export class CancelOrderUseCase {
         order.orderNumber,
         order.userId as any,
         order.providerId as any,
+        options.suppressStatusNotice,
       ),
     );
 

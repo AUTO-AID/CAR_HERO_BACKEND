@@ -25,11 +25,20 @@ import {
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 import { ProviderStatus, ServiceCategory, RegistrationStatus } from '../../../../core/enums/status.enum';
+import { normalizeSyrianPhone, SYRIAN_PHONE_PATTERN } from '../../../../core/utils';
 
 const toBoolean = ({ value }: { value: any }) => {
   if (value === undefined || value === null || value === '') return undefined;
   return value === true || value === 'true';
 };
+
+/**
+ * التطبيع يسبق التحقّق (`transform: true` في ValidationPipe العام)، فالنموذج
+ * على الموقع يقبل `0991234567` كما يكتبه صاحبه بينما المخزَّن يبقى صيغة واحدة
+ * تطابق `users.phoneNumber` حرفياً — وعليها وحدها يقوم كل ربط بين الجدولين.
+ */
+const toSyrianPhone = ({ value }: { value: any }) =>
+  typeof value === 'string' ? normalizeSyrianPhone(value) : value;
 
 export class ProviderWorkingHourDto {
   @IsString()
@@ -49,8 +58,12 @@ export class ProviderWorkingHourDto {
 }
 
 export class CreateProviderDto {
-  @ApiProperty()
+  @ApiProperty({ example: '+963991234567', description: 'يُقبل 09XXXXXXXX ويُخزَّن +963XXXXXXXXX' })
   @IsString()
+  @Transform(toSyrianPhone)
+  @Matches(SYRIAN_PHONE_PATTERN, {
+    message: 'رقم الهاتف يجب أن يكون رقماً سورياً صالحاً (مثال: 0991234567)',
+  })
   phone: string;
 
   @ApiProperty()

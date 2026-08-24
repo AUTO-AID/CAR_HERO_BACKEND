@@ -3,6 +3,7 @@ import { RegistrationStatus } from '../../../../core/enums/status.enum';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Service, ServiceDocument } from '../../../services/infrastructure/persistence/mongoose/schemas/service.schema';
+import { User, UserDocument } from '../../../users/infrastructure/persistence/mongoose/schemas/user.schema';
 import { IProviderRepository } from '../../domain/repositories/provider.repository.interface';
 import {
   CreateProviderDto,
@@ -19,7 +20,54 @@ export class ManageProvidersUseCase {
     @Inject(IProviderRepository)
     private readonly providerRepository: IProviderRepository,
     @InjectModel(Service.name) private readonly serviceModel: Model<ServiceDocument>,
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
   ) {}
+
+  /**
+   * تقديم الطلب من نموذج الموقع.
+   *
+   * يشترط وجود حساب دخول بالرقم نفسه (`/auth/register` بـ `accountType:
+   * 'provider'`) **قبل** إنشاء ملف الفنّي. بدون هذا الشرط كان الطلب يُقبل
+   * وتُنشأ وثيقة `providers` معتمدة لا يقابلها حساب في `users`، فيصل صاحبها إلى
+   * التطبيق ويُردّ عند `login` بـ«بيانات غير صحيحة» — لأن الخادم يبحث عنه في
+   * جدول لم يدخله قطّ. الفشل هنا عند الباب أوضح من فشلٍ بعد الموافقة بأسبوع.
+   *
+   * الرقم مطبَّع في الـ DTO قبل الوصول إلى هنا، فالمطابقة مع `users.phoneNumber`
+   * حرفية وآمنة.
+   */
+  async apply(dto: CreateProviderDto) {
+    const account = await this.userModel
+      .findOne({ phoneNumber: dto.phone, accountType: 'provider' })
+      .select('_id isVerified')
+      .lean()
+      .exec();
+
+    if (!account) {
+      throw new BadRequestException(
+        'لا يوجد حساب بهذا الرقم. أنشئ حساب مزوّد خدمة أولاً ثم أعد تقديم الطلب.',
+      );
+    }
+    if (account.isVerified === false) {
+      throw new BadRequestException(
+        'حسابك لم يُوثَّق بعد. أكمل تأكيد رمز التحقّق ثم أعد تقديم الطلب.',
+      );
+    }
+
+    // `create` يُحدّث الوثيقة القائمة حين يتكرّر الرقم، و`apply` يفرض
+    // `isApproved:false`. فمزوّد معتمد يعيد ملء نموذج الموقع — أو يُملأ باسمه —
+    // كان يُخفَّض إلى «قيد المراجعة» عبر مسار عامّ بلا مصادقة، فيتوقّف عن
+    // استقبال الطلبات بلا قرار من أحد.
+    const existing = await this.providerRepository.findByPhone(dto.phone);
+    if (existing?.isApproved) {
+      throw new ConflictException(
+        'يوجد ملف فنّي معتمد بهذا الرقم. للتعديل عليه استعمل حسابك في التطبيق أو راجع الإدارة.',
+      );
+    }
+
+    // `registrationStatus` لا يُمرَّر: `create` يشتقّه من `isApproved` ويتجاهل
+    // ما نمرّره، وتمريره يوهم بأنه مؤثّر.
+    return this.create({ ...dto, isApproved: false, isActive: false } as CreateProviderDto);
+  }
 
   async create(dto: CreateProviderDto) {
     this.validateCoordinates(dto.longitude, dto.latitude);

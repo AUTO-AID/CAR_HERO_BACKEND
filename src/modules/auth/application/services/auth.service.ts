@@ -35,6 +35,7 @@ import {
   TokenUtil,
   OtpUtil,
   SanitizeUtil,
+  normalizeSyrianPhone,
 } from '../../../../core/utils';
 
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from '../../../../core/constants';
@@ -537,18 +538,12 @@ export class AuthService {
     }
   }
 
+  /**
+   * القاعدة نفسها التي يكتب بها `providers.phone` الآن. كانت محبوسة هنا بينما
+   * الجدول الآخر يُكتب بلا تطبيع، فينكسر الربط بين الوثيقتين بصمت.
+   */
   private normalizeSyrianPhoneNumber(phoneNumber: string): string {
-    const digits = String(phoneNumber || '').replace(/[^\d]/g, '');
-
-    if (/^09\d{8}$/.test(digits)) {
-      return `+963${digits.slice(1)}`;
-    }
-
-    if (/^9639\d{8}$/.test(digits)) {
-      return `+${digits}`;
-    }
-
-    return String(phoneNumber || '').trim();
+    return normalizeSyrianPhone(phoneNumber);
   }
 
   // ===========================================

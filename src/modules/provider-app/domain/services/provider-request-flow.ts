@@ -62,14 +62,11 @@ export const ACTIVE_ORDER_STATUSES: OrderStatus[] = [
  * وقد لا يضغط «تأكيد» أبداً. استعمال القائمة الموسّعة هنا كان يحبس الفنّي:
  * لا يقبل طلباً جديداً ولا يستطيع إيقاف الاتصال، ورسالة «أنهِ الطلب أولاً»
  * تطالبه بما فعله قبل قليل. الانتظار يخصّ الطلب، لا يشغل الفنّي.
+ *
+ * تعريفها انتقل إلى `orders` لأن `create-order` يحتاجها أيضاً ليختار مرشّحاً
+ * يستطيع القبول — ويُعاد تصديرها هنا كي تبقى الشاشات تقرأها من مكانها المألوف.
  */
-export const ENGAGING_ORDER_STATUSES: OrderStatus[] = [
-  OrderStatus.ACCEPTED,
-  OrderStatus.PROVIDER_ASSIGNED,
-  OrderStatus.PROVIDER_EN_ROUTE,
-  OrderStatus.PROVIDER_ARRIVED,
-  OrderStatus.IN_PROGRESS,
-];
+export { ENGAGING_ORDER_STATUSES } from '../../../orders/domain/services/order-state-machine';
 
 /** الطلبات المنتهية — تبويب «سابقة» */
 export const PAST_ORDER_STATUSES: OrderStatus[] = [

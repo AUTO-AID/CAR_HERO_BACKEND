@@ -2162,6 +2162,38 @@ Scalability concerns:
 - Uploaded files are stored locally under `uploads`, not shared object storage.
 - Some admin analytics aggregate over entire collections and may need date filters or materialized summaries at scale.
 
+### 25.1 Order dispatch requires a single application instance
+
+**The provider dispatch engine is not safe to run in more than one process.** This is a hard
+constraint today, not a tuning preference. Check it before enabling PM2 cluster mode, starting a
+second container, or putting the app behind an autoscaling group.
+
+Every `@Cron` / `@Interval` job runs in **every** instance — NestJS schedules them per process, and
+nothing here takes a distributed lock. The guards that do exist (`sweeping`, `resuming`, `bookings`
+in `ProviderOffersCronService`; `confirming` in `OrdersCronService`) are plain instance fields. They
+stop a job from overlapping *itself* inside one process, and nothing more.
+
+| Scheduled job | Every | Guard against a second instance | Behaviour with N instances |
+| --- | --- | --- | --- |
+| `ProviderOffersCronService.sweepExpiredOffers` | 3s | `closeIfOpen` — atomic `findOneAndUpdate` on `status: offered` | Safe: exactly one instance closes each offer |
+| `ProviderOffersCronService.resumeDueSearches` | 15s | **none** | **Unsafe — see below** |
+| `ProviderOffersCronService.openDueBookingConfirmations` | 60s | unique index `(order, provider, round)` | Safe: the duplicate insert fails with `11000` and is suppressed |
+| `OrdersCronService.handleExpiredOrders` | 10m | state machine rejects a terminal→terminal move | Safe but noisy: losing instances log a caught error per order |
+| `OrdersCronService.handlePendingCustomerConfirmations` | 10m | `TransferEarningsUseCase` looks for an existing transaction | Mostly safe; that check-then-act window could double-credit under a tight race |
+
+**Why `resumeDueSearches` is the sharp edge.** It calls `ProviderDispatchService.redispatch`, which
+picks a candidate and assigns the order. Two instances waking on the same order both read
+`metadata.dispatch.nextRoundAt` before either clears it, then each selects a *different* nearby
+provider and opens an offer. The unique index does not catch this: it keys on
+`(order, provider, round)`, and the providers differ. The result is the exact defect the round
+bookkeeping exists to prevent — two technicians counting down on one order, and whoever the losing
+`$set provider` overwrote gets a `409` when they tap accept.
+
+**To scale horizontally**, replace those boolean fields with a lease held in MongoDB: an atomic
+`findOneAndUpdate` on a `dispatchLockUntil` field (or a dedicated `locks` collection) that only one
+instance can win per tick, carrying an expiry so a crashed holder does not wedge dispatch. Do this
+before adding the second instance, not after.
+
 ---
 
 ## 26. Complete Business Logic Inventory
@@ -2416,6 +2448,7 @@ Observed directly from source:
 - User stats use case currently returns placeholder zeros for order stats.
 - Provider earnings duplicate detection should be reviewed because it searches for transaction type `deposit` while stored transaction types use enum values such as `credit`.
 - `/ws` gateway has some unguarded chat/typing events, while `/chat` gateway has stronger membership checks.
+- Order dispatch cannot be horizontally scaled: scheduled jobs use in-process boolean locks, and `resumeDueSearches` has no cross-instance guard at all. Running a second instance reintroduces concurrent offers on one order. See §25.1.
 
 ---
 

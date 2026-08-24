@@ -1,4 +1,4 @@
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, ConflictException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RegistrationStatus, ServiceCategory } from '../../../../core/enums/status.enum';
 import { IProviderRepository } from '../../domain/repositories/provider.repository.interface';
@@ -8,6 +8,7 @@ import { UpdateProviderStatusUseCase } from './update-provider-status.use-case';
 import { ProviderStatus } from '../../../../core/enums/status.enum';
 import { getModelToken } from '@nestjs/mongoose';
 import { Service } from '../../../services/infrastructure/persistence/mongoose/schemas/service.schema';
+import { User } from '../../../users/infrastructure/persistence/mongoose/schemas/user.schema';
 import { Types } from 'mongoose';
 
 describe('Provider management use cases', () => {
@@ -24,6 +25,17 @@ describe('Provider management use cases', () => {
     isApproved: true,
   };
   const serviceId = '60b8d295f1d293001f3e4c8b';
+
+  /** حساب الدخول الذي يشترطه `apply` — يُضبط لكل اختبار عبر `accountLookup` */
+  let accountLookup: jest.Mock;
+  const userModel = {
+    findOne: jest.fn(() => ({
+      select: jest.fn().mockReturnThis(),
+      lean: jest.fn().mockReturnThis(),
+      exec: jest.fn(() => accountLookup()),
+    })),
+  };
+
   const serviceModel = {
     find: jest.fn().mockReturnValue({
       lean: jest.fn().mockReturnValue({
@@ -35,6 +47,7 @@ describe('Provider management use cases', () => {
   };
 
   beforeEach(async () => {
+    accountLookup = jest.fn().mockResolvedValue({ _id: 'user-id', isVerified: true });
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ManageProvidersUseCase,
@@ -54,6 +67,7 @@ describe('Provider management use cases', () => {
           },
         },
         { provide: getModelToken(Service.name), useValue: serviceModel },
+        { provide: getModelToken(User.name), useValue: userModel },
       ],
     }).compile();
 
@@ -97,6 +111,59 @@ describe('Provider management use cases', () => {
     expect(repository.update).toHaveBeenCalledWith('provider-id', expect.objectContaining({
       businessName: 'Duplicate',
     }));
+  });
+
+  /**
+   * `apply` هو الباب العام من الموقع. الشروط الثلاثة أدناه هي ما يمنع نشوء
+   * وثيقة `providers` بلا حساب دخول يقابلها — وهي الحالة التي كان صاحبها
+   * يُعتمد ثم لا يستطيع الدخول إلى التطبيق أبداً.
+   */
+  describe('apply (website form)', () => {
+    const application: any = {
+      phone: '+963999999999',
+      businessName: 'Hero Garage',
+      longitude: 36.2,
+      latitude: 33.5,
+    };
+
+    it('creates a pending profile when a verified account exists', async () => {
+      repository.findByPhone.mockResolvedValue(null);
+      repository.create.mockResolvedValue(provider);
+
+      await manageUseCase.apply(application);
+
+      expect(repository.create).toHaveBeenCalledWith(expect.objectContaining({
+        isApproved: false,
+        isActive: false,
+        registrationStatus: RegistrationStatus.PENDING,
+      }));
+    });
+
+    it('refuses an application with no login account behind it', async () => {
+      accountLookup.mockResolvedValue(null);
+
+      await expect(manageUseCase.apply(application)).rejects.toThrow(BadRequestException);
+      expect(repository.create).not.toHaveBeenCalled();
+    });
+
+    it('refuses an application whose account is not verified yet', async () => {
+      accountLookup.mockResolvedValue({ _id: 'user-id', isVerified: false });
+
+      await expect(manageUseCase.apply(application)).rejects.toThrow(BadRequestException);
+      expect(repository.create).not.toHaveBeenCalled();
+    });
+
+    /**
+     * المسار عامّ بلا مصادقة، و`create` يُحدّث عند تكرار الرقم بينما `apply`
+     * يفرض `isApproved:false` — فبدون هذا الحارس يستطيع أي زائر تخفيض فنّي
+     * معتمد إلى «قيد المراجعة» بإعادة ملء النموذج باسمه.
+     */
+    it('refuses to demote an already-approved provider', async () => {
+      repository.findByPhone.mockResolvedValue({ ...provider, isApproved: true });
+
+      await expect(manageUseCase.apply(application)).rejects.toThrow(ConflictException);
+      expect(repository.update).not.toHaveBeenCalled();
+    });
   });
 
   it('rejects invalid coordinates', async () => {

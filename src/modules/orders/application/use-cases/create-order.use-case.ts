@@ -1,4 +1,5 @@
 import { ConflictException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
 import { OrderEvents } from '../../domain/events/order.events';
@@ -13,6 +14,7 @@ import { notificationContent } from '../../../notifications/application/notifica
 import { NotificationType, ProviderStatus } from '../../../../core/enums/status.enum';
 import { StatusHistoryService } from '../../../status-history/application/services/status-history.service';
 import { SchedulingAvailabilityService } from '../services/scheduling-availability.service';
+import { ENGAGING_ORDER_STATUSES } from '../../domain/services/order-state-machine';
 import { Provider, ProviderDocument } from '../../../providers/infrastructure/persistence/mongoose/schemas/provider.schema';
 
 @Injectable()
@@ -30,7 +32,21 @@ export class CreateOrderUseCase {
     private readonly statusHistoryService: StatusHistoryService,
     private readonly schedulingAvailabilityService: SchedulingAvailabilityService,
     private readonly eventEmitter: EventEmitter2,
+    private readonly config: ConfigService,
   ) {}
+
+  /**
+   * أبعد ما يُقبل فيه مرشّح — آخر أنصاف أقطار التوزيع.
+   *
+   * يُقرأ من نفس الإعداد لا من رقم مكتوب بجانبه: هذان الاستعلامان (هنا وفي
+   * `ProviderDispatchService.queryCandidates`) يجب أن يبقيا متّفقين، وافتراقهما
+   * هو ما أنتج العطل أصلاً.
+   */
+  private get maxCandidateDistanceMeters(): number {
+    const radii = this.config.get<number[]>('providerApp.dispatchRadiiKm');
+    const widestKm = radii?.length ? Math.max(...radii) : 30;
+    return widestKm * 1000;
+  }
 
   async execute(dto: CreateOrderDto): Promise<OrderEntity> {
     // 1. Fetch service details
@@ -74,9 +90,22 @@ export class CreateOrderUseCase {
       vehicleId: dto.vehicleId,
       status: OrderStatus.PENDING,
       serviceName: service.name,
-      // بلا مرشّح يُبنى السعر على الخدمة نفسها، ويُصحَّح عند الإسناد الفعلي.
-      servicePrice: provider?.servicePrices?.[dto.serviceId] ?? (service.discountedPrice || service.basePrice),
-      total: provider?.servicePrices?.[dto.serviceId] ?? (service.discountedPrice || service.basePrice),
+      /**
+       * سعر **الكتالوج** لا سعر المرشّح — وهو الرقم الذي رآه العميل فعلاً في
+       * شاشة التأكيد («يبدأ من …»).
+       *
+       * كان يُبنى على `provider.servicePrices` للمرشّح الأول، والمرشّح ليس
+       * ملتزماً بشيء: قد لا يردّ أصلاً، ثم ينفّذ الطلبَ فنّي آخر بسعرٍ ليس
+       * سعره — فيُحاسَب على رقم رجلٍ رفض. والتعليق القديم هنا كان يَعِد بأن
+       * السعر «يُصحَّح عند الإسناد الفعلي»، ولم يكن ذلك التصحيح مكتوباً في أي
+       * موضع.
+       *
+       * وسعرُ من يقبل يُكتب مرّة واحدة لحظة قبوله (`RespondToRequestUseCase`)،
+       * لا مع كل إعادة إسناد: التحديث المتكرّر كان سيُظهر للعميل رقماً يتنقّل
+       * بين المرشّحين وهو أمام شاشة «جارٍ البحث» قبل أن يلتزم أحد.
+       */
+      servicePrice: service.discountedPrice || service.basePrice,
+      total: service.discountedPrice || service.basePrice,
       userLocation: {
         type: 'Point',
         coordinates: dto.location.coordinates,
@@ -176,6 +205,28 @@ export class CreateOrderUseCase {
     }
 
     const serviceObjectId = new Types.ObjectId(serviceId);
+
+    /**
+     * فنّي منشغل بطلب قيد التنفيذ لا يصلح مرشّحاً أوّل — **للطلب الفوري وحده**.
+     *
+     * `ProviderStatus.BUSY` **لا تُكتب في أي موضع من المنظومة** — الفنّي يبقى
+     * `ONLINE` وهو تحت السيارة. فكان أقرب فنّي يُختار ويُفتح له عرض، ثم يردّ
+     * `accept` بـ«لديك طلب نشِط بالفعل» — نافذة كاملة من عمر عميل واقف على
+     * الطريق تُحرق على فنّي لم يكن مؤهّلاً أصلاً.
+     *
+     * المعيار هو `ENGAGING_ORDER_STATUSES` نفسه الذي يحرس القبول، فلا يختلف
+     * من يُرشَّح عمّن يستطيع القبول.
+     *
+     * والحجز المجدول لا يُستبعَد له أحد: الانشغال الآن لا يقول شيئاً عن موعدٍ
+     * بعد ثلاثة أيام، والتعارض الحقيقي تحسمه `SchedulingAvailabilityService`
+     * على الموعد نفسه.
+     */
+    const busyProviderIds = scheduleTime
+      ? []
+      : (await this.orderRepository.findProviderIdsWithActiveOrders(ENGAGING_ORDER_STATUSES))
+          .filter((id) => Types.ObjectId.isValid(id))
+          .map((id) => new Types.ObjectId(id));
+
     const candidates = await this.providerModel
       .aggregate([
         {
@@ -186,9 +237,20 @@ export class CreateOrderUseCase {
             },
             distanceField: 'distanceMeters',
             spherical: true,
+            /**
+             * السقف نفسه الذي يلتزم به التوزيع — يُقرأ من `dispatchRadiiKm` لا
+             * يُكتب رقماً بجانبه.
+             *
+             * بلا سقف كان `$geoNear` يبحث في الأرض كلها: عميل في دمشق وفنّي في
+             * حلب على بُعد ثلاثمئة كيلومتر يصير «الأقرب» لأنه الوحيد المتّصل،
+             * فيُفتح له عرض ويُبنى عليه سعر الطلب. والتوزيع الذي يليه لا يتجاوز
+             * ثلاثين كيلومتراً — فسياستان متناقضتان على الطلب الواحد.
+             */
+            maxDistance: this.maxCandidateDistanceMeters,
             query: {
               isApproved: true,
               isActive: { $ne: false },
+              ...(busyProviderIds.length ? { _id: { $nin: busyProviderIds } } : {}),
               /**
                * المتّصلون وحدهم للطلبات الفورية.
                *
@@ -200,10 +262,11 @@ export class CreateOrderUseCase {
                * إقصاؤهم هنا لم يعد يُفشل إنشاء الطلب: الطلب الفوري بلا مرشّح
                * يُنشأ ويتولّاه التوزيع الدوري (انظر شرط الرفض في `execute`).
                *
-               * الحجز المجدول يُستثنى: موعده بعد أيام، ولا معنى لاشتراط أن
-               * يكون الفنّي متّصلاً الآن.
+               * الحجز المجدول يُستثنى بلا قيد حالة إطلاقاً: موعده بعد أيام، ولا
+               * معنى لاشتراط أن يكون الفنّي متّصلاً الآن. وكان قيده `$ne: BUSY`
+               * — وهي حالة لا تُكتب أبداً، فيبدو حارساً وهو لا يحرس شيئاً.
                */
-              status: scheduleTime ? { $ne: ProviderStatus.BUSY } : ProviderStatus.ONLINE,
+              ...(scheduleTime ? {} : { status: ProviderStatus.ONLINE }),
               services: serviceObjectId,
               $or: [
                 { [`serviceAvailability.${serviceId}`]: { $exists: false } },

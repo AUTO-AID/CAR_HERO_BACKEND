@@ -29,6 +29,10 @@ export class OrderNotificationsListener {
   @OnEvent(OrderEvents.STATUS_CHANGED)
   async handleOrderStatusChanged(event: OrderStatusChangedEvent) {
     const { orderId, orderNumber, newStatus, userId, providerId } = event;
+
+    // للمُطلِق إشعاره الخاص بهذه الحادثة — انظر `suppressStatusNotice`
+    if (event.suppressStatusNotice) return;
+
     const data = { orderId, orderNumber, status: newStatus };
 
     const forUser = notificationContent.orderStatusChangedForUser(orderNumber, newStatus);

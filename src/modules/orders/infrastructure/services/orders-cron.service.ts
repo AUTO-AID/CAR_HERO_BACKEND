@@ -12,8 +12,9 @@ import { NotificationsService } from '../../../notifications/application/service
 import { notificationContent } from '../../../notifications/application/notification-content';
 
 /**
- * كم يبقى الطلب معلّقاً قبل أن تلتقطه شبكة الأمان. ليس مهلة ردّ الفنّي —
- * تلك خمس عشرة ثانية — بل الحدّ الذي يدلّ على أن التوزيع نفسه تعطّل.
+ * كم يبقى الطلب معلّقاً قبل أن تلتقطه شبكة الأمان. ليس مهلة ردّ الفنّي — تلك
+ * تُضبط من `providerApp.offerWindowSeconds` — بل الحدّ الذي يدلّ على أن
+ * التوزيع نفسه تعطّل.
  */
 const STALE_PENDING_HOURS = 2;
 
@@ -23,6 +24,13 @@ const CONFIRMATION_BATCH = 100;
 @Injectable()
 export class OrdersCronService {
   private readonly logger = new Logger(OrdersCronService.name);
+
+  /**
+   * قفل داخل العملية الواحدة — يمنع تراكب الدورة مع نفسها لا مع نسخة أخرى من
+   * الخادم. المهامّ هنا تحتمل التكرار (المكنسة يردّها آلة الحالة، والتأكيد
+   * التلقائي يحرسه فحص المعاملة في `TransferEarningsUseCase`)، لكن التوزيع في
+   * `provider-app` لا يحتمله. انظر §25.1 من `CAR_HERO_BACKEND_README.md`.
+   */
   private confirming = false;
 
   constructor(
@@ -40,7 +48,7 @@ export class OrdersCronService {
    * شبكة الأمان الأخيرة تحت الطلبات المعلّقة — **لا آلية التوزيع**.
    *
    * الطلب الفوري لا يعيش ساعتين معلّقاً في المسار الطبيعي: يُعرض على فنّي بعد
-   * فنّي بنافذة خمس عشرة ثانية، ويُحسم أمره خلال عشر دقائق على أبعد تقدير في
+   * فنّي بنافذة محدودة، ويُحسم أمره خلال عشر دقائق على أبعد تقدير في
    * `ProviderDispatchService` (قبولاً أو إلغاءً برسالة صريحة). لا يصل طلبٌ
    * إلى هنا إلا إذا تعطّل ذلك المسار — انقطاع في المهامّ الدورية مثلاً — فلا
    * يُترك معلّقاً إلى الأبد.

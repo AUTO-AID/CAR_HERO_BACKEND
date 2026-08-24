@@ -27,5 +27,16 @@ export class OrderStatusChangedEvent {
     public readonly orderNumber: string,
     public readonly userId: string,
     public readonly providerId?: string,
+    /**
+     * للمُطلِق إشعاره الخاص بهذا التغيير، فلا يُضاف إليه الإشعار العامّ.
+     *
+     * «تحديث على طلبك: أصبح ملغى» فوق «لم نجد فنّياً متاحاً قريباً وتم إلغاء
+     * طلبك» رسالتان عن حادثة واحدة، الثانية تشرح والأولى تكرّر — وتكرارٌ كهذا
+     * يُدرَّب المستخدم على تجاهل الإشعارات كلها.
+     *
+     * تكتمها **وحدها**: البثّ اللحظي وسجلّ الحالات وإغلاق العروض تبقى كما هي،
+     * فهي ليست إشعارات بل آثار لا غنى عنها لأي مستمع آخر.
+     */
+    public readonly suppressStatusNotice?: boolean,
   ) {}
 }

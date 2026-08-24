@@ -119,6 +119,13 @@ export class MongooseRequestOfferRepository implements IRequestOfferRepository {
     return docs.map((doc) => this.mapToEntity(doc));
   }
 
+  async findProviderIdsWithOpenOffers(): Promise<string[]> {
+    const ids = await this.offerModel
+      .distinct('provider', { status: OfferStatus.OFFERED, expiresAt: { $gt: new Date() } })
+      .exec();
+    return ids.filter(Boolean).map((id: any) => id.toString());
+  }
+
   async countAttempts(orderId: string): Promise<number> {
     const order = this.toObjectId(orderId);
     if (!order) return 0;
@@ -159,6 +166,21 @@ export class MongooseRequestOfferRepository implements IRequestOfferRepository {
       )
       .exec();
     return result.modifiedCount ?? 0;
+  }
+
+  async releaseAccepted(id: string, reason: string): Promise<RequestOfferEntity | null> {
+    const objectId = this.toObjectId(id);
+    if (!objectId) return null;
+
+    const doc = await this.offerModel
+      .findOneAndUpdate(
+        { _id: objectId, status: OfferStatus.ACCEPTED },
+        { $set: { status: OfferStatus.CANCELLED, reason, respondedAt: new Date() } },
+        { new: true },
+      )
+      .lean()
+      .exec();
+    return doc ? this.mapToEntity(doc) : null;
   }
 
   async findExpired(now: Date, limit: number): Promise<RequestOfferEntity[]> {

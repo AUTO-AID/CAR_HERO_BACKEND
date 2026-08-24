@@ -7,6 +7,7 @@ import { Order, OrderDocument } from '../../../orders/infrastructure/persistence
 import { NotificationsService } from '../../../notifications/application/services/notifications.service';
 import { notificationContent } from '../../../notifications/application/notification-content';
 import { RegistrationStatus, NotificationType, OrderStatus } from '../../../../core/enums/status.enum';
+import { ApproveProviderUseCase } from '../../../providers/application/use-cases/approve-provider.use-case';
 
 export type ProviderListFilters = {
   status?: RegistrationStatus | 'all';
@@ -37,6 +38,7 @@ export class AdminProvidersService {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(Order.name) private orderModel: Model<OrderDocument>,
     private notificationsService: NotificationsService,
+    private readonly approveProviderUseCase: ApproveProviderUseCase,
   ) {}
 
   private escapeRegex(value: string) {
@@ -504,48 +506,18 @@ export class AdminProvidersService {
     };
   }
 
+  /**
+   * تفويض إلى `ApproveProviderUseCase` — التنفيذ الوحيد للاعتماد.
+   *
+   * كان هنا تنفيذ كامل بينما تنفيذ وحدة `providers` ناقص لا يفعّل حساب الدخول،
+   * فكان وصول الفنّي إلى التطبيق يتوقّف على أي مسار سلكته الإدارة. توحيدهما
+   * يمنع أن يتباعدا مجدداً عند أول تعديل على أحدهما.
+   *
+   * ملاحظة: التنفيذ السابق كان يكتب `isVerified: true` على وثيقة المزوّد، وهو
+   * حقل غير موجود في `ProviderSchema` فتُسقطه Mongoose بصمت — فلم يُنقل.
+   */
   async approveProvider(id: string) {
-    const provider = await this.providerModel.findByIdAndUpdate(
-      id,
-      { 
-        $set: { 
-          registrationStatus: RegistrationStatus.APPROVED,
-          accountStatus: 'active',
-          isApproved: true,
-          isActive: true,
-          isVerified: true
-        } 
-      },
-      { new: true },
-    ).exec();
-
-    if (!provider) {
-      throw new NotFoundException('Provider not found');
-    }
-
-    const user = await this.userModel.findOneAndUpdate(
-      { phoneNumber: provider.phone },
-      { $set: { isActive: true } },
-      { new: true }
-    );
-
-    if (user) {
-      await this.notificationsService.createNotification({
-        recipientId: user._id.toString(),
-        recipientType: 'provider',
-        ...notificationContent.providerApproved(),
-        type: NotificationType.INFO,
-        data: {
-          event: 'provider.registration.approved',
-          providerId: provider._id.toString(),
-        },
-      });
-    }
-
-    return {
-      message: 'Provider approved and activated successfully',
-      provider,
-    };
+    return this.approveProviderUseCase.execute(id);
   }
 
   async rejectProvider(id: string, reason: string) {
