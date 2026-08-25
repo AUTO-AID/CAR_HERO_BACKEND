@@ -5,7 +5,7 @@ export class Wallet {
     public balance: number = 0,
     public pendingBalance: number = 0,
     public loyaltyPoints: number = 0,
-    public currency: string = 'SAR',
+    public currency: string = 'SYP',
     public isActive: boolean = true,
     public readonly id?: string,
     public metadata: Record<string, any> = {},

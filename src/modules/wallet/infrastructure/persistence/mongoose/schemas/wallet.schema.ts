@@ -38,7 +38,10 @@ export class Wallet {
   @Prop({ default: 0 })
   pendingBalance: number;
 
-  @Prop({ default: 'SAR' })
+  // SYP لا SAR: إعدادات المنصّة تعلن `defaultCurrency: 'SYP'`، وحسابات
+  // الدفع والأرباح كلّها ترجع إليها. كان المخطّط وحده يضع SAR، فتُنشأ محفظة
+  // كل مزوّد بعملة سعودية بينما المبالغ فيها ليرات سورية.
+  @Prop({ default: 'SYP' })
   currency: string;
 
   @Prop({ default: true })
