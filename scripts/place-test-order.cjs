@@ -16,7 +16,7 @@ const { MongoClient } = require('mongodb');
 const URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/car_hero';
 const API = process.env.API_URL || 'http://localhost:3001/api/v1';
 const CUSTOMER_PHONE = '+963991000002';
-const PROVIDER_PHONE = '+963991000001';
+const PROVIDER_PHONE = '+963947091764';
 const PASSWORD = process.env.SEED_PASSWORD || 'Passw0rd';
 
 /** ~800 متر شمالاً — قريب بما يكفي ليقع ضمن أضيق نطاق (10 كم) */

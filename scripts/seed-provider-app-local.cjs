@@ -17,7 +17,7 @@ const PASSWORD = process.env.SEED_PASSWORD || 'Passw0rd';
 // دمشق — مركز المدينة. الفنّي والعميل متجاوران كي يجدهما البحث الجغرافي.
 const PROVIDER_COORDS = [36.2765, 33.5138];
 
-const PROVIDER_PHONE = '+963991000001';
+const PROVIDER_PHONE = '+963947091764';
 const CUSTOMER_PHONE = '+963991000002';
 
 const allDay = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map(
@@ -108,7 +108,7 @@ async function main() {
   console.log('   العميل   :', CUSTOMER_PHONE, '/', PASSWORD);
   console.log('   الخدمات  :', serviceIds.length);
   console.log('');
-  console.log('   في التطبيق أدخل الرقم بصيغة 991000001 (بلا +963).');
+  console.log('   في التطبيق أدخل الرقم بصيغة 947091764 (بلا +963).');
 
   await client.close();
 }
