@@ -376,6 +376,44 @@ export class UpdateProviderProfileDto {
   @IsString()
   @MaxLength(100)
   city?: string;
+
+  /**
+   * حقول نموذج التسجيل في الموقع.
+   *
+   * كانت تُحفظ عند التقديم ثم لا يملك المزوّد أي وسيلة لتعديلها: هذا الـ DTO
+   * كان يقبل ستّة حقول فقط، و`forbidNonWhitelisted` يردّ أيّ حقل خارجها. فمن
+   * أخطأ في محافظته أو مناطق تغطيته عند التسجيل كان عليه مراجعة الإدارة.
+   */
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  governorate?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  @MaxLength(100, { each: true })
+  coverageAreas?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  @MaxLength(60, { each: true })
+  facilities?: string[];
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  @Max(80)
+  experienceYears?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  @Max(500)
+  techCount?: number;
 }
 
 /**

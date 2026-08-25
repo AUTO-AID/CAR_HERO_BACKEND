@@ -118,6 +118,49 @@ describe('Provider management use cases', () => {
    * وثيقة `providers` بلا حساب دخول يقابلها — وهي الحالة التي كان صاحبها
    * يُعتمد ثم لا يستطيع الدخول إلى التطبيق أبداً.
    */
+  describe('website specialties -> catalog services', () => {
+    /**
+     * نموذج الموقع يرسل تخصّصات نصّية («detailing»، «towing») بينما لوحة
+     * المزوّد تقرأ معرّفات الكتالوج. بلا الترجمة كان المزوّد يملأ خدماته
+     * وأسعارها عند التسجيل ثم يجد «خدماتي وأسعاري» فارغة تماماً.
+     */
+    it('resolves specialties into catalog ids priced from the declaration', async () => {
+      await manageUseCase.apply({
+        phone: '+963999999999',
+        businessName: 'Hero Garage',
+        ownerName: 'Owner',
+        longitude: 36.2,
+        latitude: 33.5,
+        services_list: [
+          { service_id: 'detailing', name: 'غسيل وتلميع', price: 7500 },
+        ],
+      } as any);
+
+      const created = (repository.create as jest.Mock).mock.calls[0][0];
+      expect(created.services).toEqual([serviceId]);
+      expect(created.servicePrices).toEqual({ [serviceId]: 7500 });
+      expect(created.serviceAvailability).toEqual({ [serviceId]: true });
+      expect(created.serviceCategories).toEqual([ServiceCategory.CAR_WASH]);
+      // نفس شكل ما تكتبه `updateServices` من اللوحة
+      expect(created.services_list[0]).toMatchObject({ service_id: serviceId, price: 7500 });
+    });
+
+    it('leaves a catalog-shaped selection untouched', async () => {
+      await manageUseCase.apply({
+        phone: '+963999999999',
+        businessName: 'Hero Garage',
+        ownerName: 'Owner',
+        longitude: 36.2,
+        latitude: 33.5,
+        requestedServices: [serviceId],
+        servicePrices: { [serviceId]: 1234 },
+      } as any);
+
+      const created = (repository.create as jest.Mock).mock.calls[0][0];
+      expect(created.servicePrices).toEqual({ [serviceId]: 1234 });
+    });
+  });
+
   describe('apply (website form)', () => {
     const application: any = {
       phone: '+963999999999',

@@ -14,6 +14,46 @@ import {
   UpdateProviderWorkingHoursDto,
 } from '../dtos/provider.dto';
 
+/**
+ * تخصّصات نموذج الموقع ← فئات كتالوج المنصّة.
+ *
+ * النموذج يعرض اثني عشر تخصّصاً بلغة صاحب الورشة («فرامل وديسك»، «تكييف
+ * وتبريد»)، بينما الكتالوج ثمانية خدمات قابلة للطلب من التطبيق. الاثنان
+ * تصنيفان مختلفان لا اسمان لشيء واحد، ولذلك تتجمّع عدّة تخصّصات في فئة واحدة.
+ *
+ * بدون هذه الخريطة كان المزوّد يملأ خدماته وأسعارها في الموقع، ثم يفتح
+ * «خدماتي وأسعاري» في اللوحة فيجدها فارغة: التسجيل يكتب `requestedServices`
+ * بمعرّفات نصّية، واللوحة تقرأ `services` بمعرّفات الكتالوج.
+ */
+const WEBSITE_SPECIALTY_CATEGORY: Record<string, string> = {
+  mechanical: 'maintenance',
+  electrical: 'maintenance',
+  towing: 'towing',
+  fuel: 'fuel',
+  body: 'maintenance',
+  tires: 'tire',
+  oil: 'maintenance',
+  ac: 'maintenance',
+  detailing: 'car_wash',
+  brakes: 'maintenance',
+  battery: 'battery',
+  suspension: 'maintenance',
+};
+
+/**
+ * التخصّص الذي يُؤخذ سعره حين يسجّل المزوّد عدّة تخصّصات في الفئة نفسها —
+ * أقربها معنى إلى خدمة الكتالوج. الأخذ العشوائي كان سيسعّر «تغيير الزيت»
+ * بسعر «تجليس وبخّ».
+ */
+const CATEGORY_PRICE_SPECIALTY: Record<string, string> = {
+  maintenance: 'oil',
+  towing: 'towing',
+  tire: 'tires',
+  fuel: 'fuel',
+  battery: 'battery',
+  car_wash: 'detailing',
+};
+
 @Injectable()
 export class ManageProvidersUseCase {
   constructor(
@@ -69,6 +109,92 @@ export class ManageProvidersUseCase {
     return this.create({ ...dto, isApproved: false, isActive: false } as CreateProviderDto);
   }
 
+  /**
+   * يترجم ما ملأه المزوّد في نموذج الموقع إلى مفردات اللوحة.
+   *
+   * يُنتج **نفس شكل** ما تكتبه `updateServices`، حتى لا تختلف وثيقة مزوّدٍ
+   * سجّل من الموقع عن وثيقة مزوّدٍ عدّل خدماته من اللوحة — والاختلاف هنا كان
+   * يعني صفحة خدمات فارغة لأحدهما.
+   *
+   * يعيد `null` حين لا يوجد ما يُترجَم، فيبقى ما أرسله النموذج كما هو.
+   */
+  private async resolveCatalogSelection(dto: CreateProviderDto) {
+    const list = (dto as any).services_list as Array<Record<string, any>> | undefined;
+    const specialties: string[] =
+      (dto as any).requestedServices?.length
+        ? (dto as any).requestedServices
+        : (list || []).map((service) => service?.service_id).filter(Boolean);
+
+    // معرّف كتالوج صالح ⇒ الطلب قادم من اللوحة لا من الموقع، فلا ترجمة.
+    if (!specialties.length || specialties.every((id) => Types.ObjectId.isValid(id))) return null;
+
+    const priceBySpecialty: Record<string, number> = {
+      ...((dto as any).servicePrices || {}),
+      ...Object.fromEntries(
+        (list || [])
+          .filter((service) => service?.service_id && Number.isFinite(Number(service.price)))
+          .map((service) => [service.service_id, Number(service.price)]),
+      ),
+    };
+
+    const categories = Array.from(
+      new Set(specialties.map((id) => WEBSITE_SPECIALTY_CATEGORY[id]).filter(Boolean)),
+    );
+    if (!categories.length) return null;
+
+    const catalog = await this.serviceModel
+      .find({ category: { $in: categories }, isActive: true })
+      .lean()
+      .exec();
+
+    // الكتالوج يحمل نسخاً مكرّرة من البذرة نفسها (نفس الفئة والاسم بمعرّفين).
+    // اختيارها كلّها كان سيعطي المزوّد الخدمة ذاتها مرّتين في صفحته.
+    const unique = new Map<string, any>();
+    for (const service of catalog) {
+      const key = `${service.category}:${service.nameAr || service.name}`;
+      if (!unique.has(key)) unique.set(key, service);
+    }
+    if (!unique.size) return null;
+
+    const services: string[] = [];
+    const servicePrices: Record<string, number> = {};
+    const serviceAvailability: Record<string, boolean> = {};
+    const servicesList: Record<string, any>[] = [];
+
+    for (const service of unique.values()) {
+      const id = service._id.toString();
+      const preferred = CATEGORY_PRICE_SPECIALTY[service.category];
+      const fallback = specialties.find(
+        (specialty) => WEBSITE_SPECIALTY_CATEGORY[specialty] === service.category,
+      );
+      const declared =
+        priceBySpecialty[preferred as string] ?? priceBySpecialty[fallback as string];
+      const price = Number.isFinite(Number(declared))
+        ? Number(declared)
+        : service.discountedPrice || service.basePrice;
+
+      services.push(id);
+      servicePrices[id] = price;
+      serviceAvailability[id] = true;
+      servicesList.push({
+        service_id: id,
+        name: service.nameAr || service.name,
+        category: service.category,
+        price,
+        isActive: true,
+      });
+    }
+
+    return {
+      services,
+      requestedServices: services,
+      servicePrices,
+      serviceAvailability,
+      serviceCategories: Array.from(new Set(servicesList.map((service) => service.category))),
+      services_list: servicesList,
+    };
+  }
+
   async create(dto: CreateProviderDto) {
     this.validateCoordinates(dto.longitude, dto.latitude);
     const existing = await this.providerRepository.findByPhone(dto.phone);
@@ -89,6 +215,11 @@ export class ManageProvidersUseCase {
       isApproved: dto.isApproved ?? false,
       registrationStatus: dto.isApproved ? RegistrationStatus.APPROVED : RegistrationStatus.PENDING,
     };
+
+    // الترجمة بعد البناء لا قبله: تكتب فوق `services`/`servicePrices` بمفردات
+    // الكتالوج، وهي المفردات الوحيدة التي تقرأها لوحة المزوّد.
+    const resolved = await this.resolveCatalogSelection(dto);
+    if (resolved) Object.assign(mappedData, resolved);
 
     if (existing) {
       return this.providerRepository.update(existing.id, mappedData);
