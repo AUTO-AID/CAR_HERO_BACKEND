@@ -233,9 +233,14 @@ async function seedServices(app: any) {
   const retired = await serviceModel
     .updateMany(
       {
-        isSystemService: true,
-        isActive: true,
         _id: { $nin: canonicalIds },
+        isActive: true,
+        // المخطّط يجعل `isSystemService` افتراضه true، فالحقل الغائب يعني خدمة
+        // نظام. `isSystemService: true` كان يفوّتها: ثلاث وثائق أُدخلت خارج
+        // Mongoose بلا الحقل بقيت نشطة تكرّر السحب والبطارية والإطار.
+        isSystemService: { $ne: false },
+        // حارس: خدمة يملكها مزوّد لا تُمسّ مهما كان حال العَلَم أعلاه.
+        provider: null,
       },
       { $set: { isActive: false } },
     )
