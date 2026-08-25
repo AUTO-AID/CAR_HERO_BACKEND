@@ -71,6 +71,13 @@ export class ProviderRequestMapper {
       isActive: ProviderRequestFlow.isActive(order.status) || isUpcomingBooking,
       isUpcomingBooking,
       serviceName: order.serviceName ?? anyOrder.service?.name ?? null,
+      /**
+       * الفئة تُرسَل إلى جانب الاسم لأن تطبيق الفنّي كان يستنتج أيقونة الخدمة
+       * من نصّ الاسم بقواعد تخمين، بينما تطبيق العميل يقرؤها من الفئة. فظهر
+       * الطلب الواحد برمزين مختلفين على الشاشتين — والفئة قائمة مغلقة لا لبس
+       * فيها، فهي المرجع الصحيح للطرفين.
+       */
+      serviceCategory: anyOrder.service?.category ?? anyOrder.metadata?.category ?? null,
       customerName: anyOrder.user?.fullName ?? null,
       address: anyOrder.address ?? null,
       distanceKm,

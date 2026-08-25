@@ -17,40 +17,55 @@ import {
 /**
  * تخصّصات نموذج الموقع ← فئات كتالوج المنصّة.
  *
- * النموذج يعرض اثني عشر تخصّصاً بلغة صاحب الورشة («فرامل وديسك»، «تكييف
- * وتبريد»)، بينما الكتالوج ثمانية خدمات قابلة للطلب من التطبيق. الاثنان
- * تصنيفان مختلفان لا اسمان لشيء واحد، ولذلك تتجمّع عدّة تخصّصات في فئة واحدة.
+ * الخريطة صارت شبه هويّة: نموذج التسجيل في الموقع يعرض **الخدمات التسع
+ * نفسها** التي يراها العميل في التطبيق، فلم يعد هناك تصنيفان يُترجَم أحدهما
+ * إلى الآخر. كان النموذج يعرض اثني عشر تخصّصاً بلغة صاحب الورشة («فرامل
+ * وديسك»، «تكييف وتبريد») لا يقابلها شيء في الكتالوج، فيملأ المزوّد خدماته
+ * وأسعارها ثم يفتح «خدماتي وأسعاري» في اللوحة فيجدها فارغة.
  *
- * بدون هذه الخريطة كان المزوّد يملأ خدماته وأسعارها في الموقع، ثم يفتح
- * «خدماتي وأسعاري» في اللوحة فيجدها فارغة: التسجيل يكتب `requestedServices`
- * بمعرّفات نصّية، واللوحة تقرأ `services` بمعرّفات الكتالوج.
+ * الجدول باقٍ لسببين: طلبات تسجيل قديمة في القاعدة تحمل المعرّفات الاثني عشر
+ * في `requestedServices`، والموافقة عليها اليوم يجب أن تُنتج خدمات صحيحة.
+ * فالأسطر المتقاعدة أدناه هي **قراءة تاريخية فقط**؛ النموذج لا يرسلها بعد الآن.
  */
 export const WEBSITE_SPECIALTY_CATEGORY: Record<string, string> = {
-  mechanical: 'maintenance',
-  electrical: 'maintenance',
   towing: 'towing',
-  fuel: 'fuel',
-  body: 'maintenance',
-  tires: 'tire',
-  oil: 'maintenance',
-  ac: 'maintenance',
-  detailing: 'car_wash',
-  brakes: 'maintenance',
   battery: 'battery',
-  suspension: 'maintenance',
+  tire: 'tire',
+  fuel: 'fuel',
+  lockout: 'lockout',
+  oil: 'oil',
+  breakdown: 'breakdown',
+  engine: 'engine',
+  car_wash: 'car_wash',
+
+  // --- معرّفات النموذج القديم (لا تُرسَل بعد الآن، تُقرأ من طلبات سابقة) ---
+  mechanical: 'breakdown',
+  electrical: 'battery',
+  body: 'breakdown',
+  tires: 'tire',
+  ac: 'engine',
+  detailing: 'car_wash',
+  brakes: 'breakdown',
+  suspension: 'breakdown',
 };
 
 /**
  * التخصّص الذي يُؤخذ سعره حين يسجّل المزوّد عدّة تخصّصات في الفئة نفسها —
  * أقربها معنى إلى خدمة الكتالوج. الأخذ العشوائي كان سيسعّر «تغيير الزيت»
  * بسعر «تجليس وبخّ».
+ *
+ * مع النموذج الجديد لا يقع التزاحم أصلاً (تخصّص واحد لكل فئة)، لكن طلبات
+ * التسجيل القديمة ما زالت تجمع عدّة تخصّصات تحت `breakdown` و`engine`.
  */
 const CATEGORY_PRICE_SPECIALTY: Record<string, string> = {
-  maintenance: 'oil',
   towing: 'towing',
-  tire: 'tires',
-  fuel: 'fuel',
   battery: 'battery',
+  tire: 'tire',
+  fuel: 'fuel',
+  lockout: 'lockout',
+  oil: 'oil',
+  breakdown: 'mechanical',
+  engine: 'ac',
   car_wash: 'detailing',
 };
 

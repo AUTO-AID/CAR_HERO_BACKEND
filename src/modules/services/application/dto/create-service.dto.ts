@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsArray,
   IsBoolean,
-  IsEnum,
+  IsIn,
   IsInt,
   IsNumber,
   IsObject,
@@ -10,7 +10,7 @@ import {
   IsString,
   Min,
 } from 'class-validator';
-import { ServiceCategory } from '../../../../core/enums/status.enum';
+import { ACTIVE_SERVICE_CATEGORIES, ServiceCategory } from '../../../../core/enums/status.enum';
 
 export class CreateServiceDto {
   @ApiProperty()
@@ -31,8 +31,13 @@ export class CreateServiceDto {
   @IsOptional()
   descriptionAr?: string;
 
-  @ApiProperty({ enum: ServiceCategory })
-  @IsEnum(ServiceCategory)
+  /**
+   * الفئات النشطة فقط، لا `ServiceCategory` كاملاً: النوع يحتفظ بفئات متقاعدة
+   * لقراءة وثائق قديمة، وقبولها هنا يعيد إنشاء خدمة خارج الكتالوج التسع —
+   * فتظهر في اللوحة ولا تجد لها أيقونة ولا اسماً عربياً في التطبيق.
+   */
+  @ApiProperty({ enum: ACTIVE_SERVICE_CATEGORIES })
+  @IsIn(ACTIVE_SERVICE_CATEGORIES as unknown as string[])
   category: ServiceCategory;
 
   @ApiProperty({ minimum: 0 })

@@ -10,7 +10,8 @@ import { AppModule } from '../../app.module';
 import { Admin } from '../../modules/admin/infrastructure/persistence/mongoose/schemas/admin.schema';
 import { SubscriptionPlan } from '../../modules/subscriptions/infrastructure/persistence/mongoose/schemas/subscription-plan.schema';
 import { Service } from '../../modules/services/infrastructure/persistence/mongoose/schemas/service.schema';
-import { ServiceCategory } from '../../core/enums/status.enum';
+import { ACTIVE_SERVICE_CATEGORIES } from '../../core/enums/status.enum';
+import { SERVICE_CATALOG } from '../../config/service-catalog';
 import { Role } from '../../core/enums/roles.enum';
 import { ADMIN_PERMISSIONS } from '../../core/constants';
 
@@ -174,108 +175,66 @@ async function seedSubscriptionPlans(app: any) {
   }
 }
 
+/**
+ * خدمات النظام تُبذر من `SERVICE_CATALOG` بـ **upsert على الفئة**، لا بـ
+ * `create` عند قاعدة فارغة.
+ *
+ * الشرط القديم (`countDocuments() === 0`) كان يعني أن أي قاعدة بُذرت مرّة
+ * واحدة تبقى على كتالوجها القديم إلى الأبد: إضافة خدمة إلى القائمة لا تصل
+ * إليها، وتعديل اسم عربي لا يظهر. والنتيجة أن التطبيق واللوحة يعرضان قائمتين
+ * مختلفتين عن نفس المصدر.
+ *
+ * الفئة مفتاح فريد بين خدمات النظام (`isSystemService: true`)، فالـ upsert
+ * آمن التكرار. خدمات المزوّدين الخاصّة لا تُمسّ.
+ */
 async function seedServices(app: any) {
   const serviceModel: Model<Service> = app.get(getModelToken(Service.name));
 
-  const existingServices = await serviceModel.countDocuments().exec();
-
-  if (existingServices === 0) {
-    await serviceModel.create([
-      {
-        name: 'Towing Service',
-        nameAr: 'خدمة السحب',
-        description: 'Professional vehicle towing service',
-        descriptionAr: 'خدمة سحب المركبات الاحترافية',
-        category: ServiceCategory.TOWING,
-        basePrice: 150,
-        estimatedDuration: 60,
-        isActive: true,
-        isEmergency: true,
-        isSystemService: true,
-        sortOrder: 1,
-      },
-      {
-        name: 'Battery Jump Start',
-        nameAr: 'تشغيل البطارية',
-        description: 'Battery boost and jump start service',
-        descriptionAr: 'خدمة شحن وتشغيل البطارية',
-        category: ServiceCategory.BATTERY,
-        basePrice: 75,
-        estimatedDuration: 30,
-        isActive: true,
-        isEmergency: true,
-        isSystemService: true,
-        sortOrder: 2,
-      },
-      {
-        name: 'Flat Tire Change',
-        nameAr: 'تغيير الإطار المثقوب',
-        description: 'Roadside tire change service',
-        descriptionAr: 'خدمة تغيير الإطارات على الطريق',
-        category: ServiceCategory.TIRE,
-        basePrice: 80,
-        estimatedDuration: 30,
-        isActive: true,
-        isEmergency: true,
-        isSystemService: true,
-        sortOrder: 3,
-      },
-      {
-        name: 'Fuel Delivery',
-        nameAr: 'توصيل الوقود',
-        description: 'Emergency fuel delivery service',
-        descriptionAr: 'خدمة توصيل الوقود الطارئة',
-        category: ServiceCategory.FUEL,
-        basePrice: 50,
-        estimatedDuration: 45,
-        isActive: true,
-        isEmergency: true,
-        isSystemService: true,
-        sortOrder: 4,
-      },
-      {
-        name: 'Lockout Service',
-        nameAr: 'فتح الأقفال',
-        description: 'Car lockout assistance',
-        descriptionAr: 'مساعدة فتح السيارة المغلقة',
-        category: ServiceCategory.LOCKOUT,
-        basePrice: 100,
-        estimatedDuration: 30,
-        isActive: true,
-        isEmergency: true,
-        isSystemService: true,
-        sortOrder: 5,
-      },
-      {
-        name: 'Oil Change',
-        nameAr: 'تغيير الزيت',
-        description: 'Professional oil change service',
-        descriptionAr: 'خدمة تغيير الزيت الاحترافية',
-        category: ServiceCategory.MAINTENANCE,
-        basePrice: 120,
-        estimatedDuration: 45,
-        isActive: true,
-        isSystemService: true,
-        sortOrder: 6,
-      },
-      {
-        name: 'Car Wash',
-        nameAr: 'غسيل السيارة',
-        description: 'Full car wash & detailing',
-        descriptionAr: 'غسيل وتلميع السيارة الكامل',
-        category: ServiceCategory.CAR_WASH,
-        basePrice: 50,
-        estimatedDuration: 60,
-        isActive: true,
-        isSystemService: true,
-        sortOrder: 7,
-      },
-    ]);
-
-    console.log('✅ Services created');
-  } else {
-    console.log('ℹ️ Services already exist');
+  for (const entry of SERVICE_CATALOG) {
+    await serviceModel
+      .findOneAndUpdate(
+        { category: entry.category, isSystemService: true },
+        {
+          $set: {
+            name: entry.name,
+            nameAr: entry.nameAr,
+            description: entry.description,
+            descriptionAr: entry.descriptionAr,
+            category: entry.category,
+            icon: entry.iconKey,
+            estimatedDuration: entry.estimatedDuration,
+            isEmergency: entry.isEmergency,
+            isActive: true,
+            isSystemService: true,
+            sortOrder: entry.sortOrder,
+          },
+          // السعر يضبطه الأدمن من اللوحة بعد البذر — لا نعيده إلى القيمة
+          // الافتراضية في كل تشغيل، وإلا محا كل تسعير حقيقي.
+          $setOnInsert: { basePrice: entry.basePrice, discountedPrice: 0 },
+        },
+        { upsert: true, new: true },
+      )
+      .exec();
   }
+
+  /**
+   * أي خدمة نظام خارج الكتالوج تُعطَّل ولا تُحذف: طلبات قديمة تشير إليها،
+   * وحذف الوثيقة يترك تلك الطلبات بمرجع معطوب في «طلباتي» وفي التقارير.
+   */
+  const retired = await serviceModel
+    .updateMany(
+      {
+        isSystemService: true,
+        isActive: true,
+        category: { $nin: ACTIVE_SERVICE_CATEGORIES as unknown as string[] },
+      },
+      { $set: { isActive: false } },
+    )
+    .exec();
+
+  console.log(
+    `✅ Services synced — ${SERVICE_CATALOG.length} active, ${retired.modifiedCount ?? 0} retired`,
+  );
 }
 
 // Run the seeder

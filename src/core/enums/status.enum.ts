@@ -127,16 +127,74 @@ export enum NotificationType {
 }
 
 /**
- * Service Category Enum
+ * Service Category Enum — كتالوج المنصّة
+ *
+ * الفئة هي **هوية الخدمة** لا وسماً عليها: التطبيق والموقع ولوحتا الأدمن
+ * والمزوّد كلّها تشتق الاسم العربي والأيقونة واللون من هذه القيمة. لذلك
+ * القائمة النشطة مغلقة عمداً عند تسع خدمات — انظر `ACTIVE_SERVICE_CATEGORIES`
+ * أدناه، وهو المصدر الوحيد الذي تُبنى عليه واجهات المشروع كلّها.
+ *
+ * القيم المتقاعدة باقية عمداً: وثائق قديمة في `services` و`providers`
+ * تحملها، وحذفها من النوع يجعل قراءتها تكسر التحقّق. تُقرأ ولا تُكتب —
+ * والحارس على الكتابة هو `ACTIVE_SERVICE_CATEGORIES`، تماماً كما يفعل
+ * `ACTIVE_PAYMENT_METHODS` مع `PaymentMethod`.
  */
 export enum ServiceCategory {
-  ROADSIDE_ASSISTANCE = 'roadside_assistance',
   TOWING = 'towing',
   BATTERY = 'battery',
   TIRE = 'tire',
   FUEL = 'fuel',
   LOCKOUT = 'lockout',
-  MAINTENANCE = 'maintenance',
+  OIL = 'oil',
+  BREAKDOWN = 'breakdown',
+  ENGINE = 'engine',
   CAR_WASH = 'car_wash',
+
+  /** @deprecated للقراءة التاريخية فقط — وزّعت على `BREAKDOWN` و`ENGINE` */
+  ROADSIDE_ASSISTANCE = 'roadside_assistance',
+  /** @deprecated للقراءة التاريخية فقط — استُبدلت بـ `OIL` */
+  MAINTENANCE = 'maintenance',
+  /** @deprecated للقراءة التاريخية فقط — لا فئة مفتوحة في الكتالوج بعد الآن */
   OTHER = 'other',
+}
+
+/**
+ * الخدمات التسع المعتمدة، بترتيب عرضها في كل واجهة.
+ *
+ * أي قيمة خارجها مرفوضة عند الإنشاء والتعديل على مستوى التحقّق، لا مخفيّة في
+ * الواجهة فقط: إخفاء الفئة من الشاشة لا يمنع من يستدعي الـ API مباشرةً.
+ */
+export const ACTIVE_SERVICE_CATEGORIES = [
+  ServiceCategory.TOWING,
+  ServiceCategory.BATTERY,
+  ServiceCategory.TIRE,
+  ServiceCategory.FUEL,
+  ServiceCategory.LOCKOUT,
+  ServiceCategory.OIL,
+  ServiceCategory.BREAKDOWN,
+  ServiceCategory.ENGINE,
+  ServiceCategory.CAR_WASH,
+] as const;
+
+export type ActiveServiceCategory = (typeof ACTIVE_SERVICE_CATEGORIES)[number];
+
+/**
+ * أين تذهب الفئات المتقاعدة عند العرض.
+ *
+ * لا يعدّل القاعدة — يُستعمل عند القراءة كي لا تظهر وثيقة قديمة بفئة خام
+ * («maintenance») في لوحة تعرض تسع خدمات فقط.
+ */
+export const LEGACY_SERVICE_CATEGORY_ALIAS: Record<string, ServiceCategory> = {
+  [ServiceCategory.MAINTENANCE]: ServiceCategory.OIL,
+  [ServiceCategory.ROADSIDE_ASSISTANCE]: ServiceCategory.BREAKDOWN,
+  [ServiceCategory.OTHER]: ServiceCategory.BREAKDOWN,
+};
+
+/** الفئة المعروضة لأي قيمة مخزّنة — تُرجع الفئة نفسها إن كانت نشطة أصلاً. */
+export function resolveServiceCategory(value?: string | null): ServiceCategory | undefined {
+  if (!value) return undefined;
+  if ((ACTIVE_SERVICE_CATEGORIES as readonly string[]).includes(value)) {
+    return value as ServiceCategory;
+  }
+  return LEGACY_SERVICE_CATEGORY_ALIAS[value];
 }
