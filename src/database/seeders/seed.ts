@@ -10,7 +10,6 @@ import { AppModule } from '../../app.module';
 import { Admin } from '../../modules/admin/infrastructure/persistence/mongoose/schemas/admin.schema';
 import { SubscriptionPlan } from '../../modules/subscriptions/infrastructure/persistence/mongoose/schemas/subscription-plan.schema';
 import { Service } from '../../modules/services/infrastructure/persistence/mongoose/schemas/service.schema';
-import { ACTIVE_SERVICE_CATEGORIES } from '../../core/enums/status.enum';
 import { SERVICE_CATALOG } from '../../config/service-catalog';
 import { Role } from '../../core/enums/roles.enum';
 import { ADMIN_PERMISSIONS } from '../../core/constants';
@@ -190,8 +189,10 @@ async function seedSubscriptionPlans(app: any) {
 async function seedServices(app: any) {
   const serviceModel: Model<Service> = app.get(getModelToken(Service.name));
 
+  const canonicalIds: any[] = [];
+
   for (const entry of SERVICE_CATALOG) {
-    await serviceModel
+    const doc = await serviceModel
       .findOneAndUpdate(
         { category: entry.category, isSystemService: true },
         {
@@ -215,18 +216,26 @@ async function seedServices(app: any) {
         { upsert: true, new: true },
       )
       .exec();
+
+    if (doc?._id) canonicalIds.push(doc._id);
   }
 
   /**
-   * أي خدمة نظام خارج الكتالوج تُعطَّل ولا تُحذف: طلبات قديمة تشير إليها،
-   * وحذف الوثيقة يترك تلك الطلبات بمرجع معطوب في «طلباتي» وفي التقارير.
+   * أي خدمة نظام ليست إحدى وثائق الكتالوج تُعطَّل ولا تُحذف: طلبات قديمة تشير
+   * إليها، وحذف الوثيقة يترك تلك الطلبات بمرجع معطوب في «طلباتي» وفي التقارير.
+   *
+   * الاستثناء بالمعرّف لا بالفئة: الشرط القديم كان `category $nin
+   * ACTIVE_SERVICE_CATEGORIES`، وهو يمسك الفئات المتقاعدة وحدها. لكن قاعدة
+   * بُذرت مرّتين تحمل وثيقتين لكل فئة، و`findOneAndUpdate` أعلاه يحدّث واحدة
+   * ويترك توأمها نشطاً داخل فئة معتمدة — فينجو من الشرط ويظهر في التطبيق
+   * خدمةً مكرّرة. حصل فعلاً: تسع خدمات في الكتالوج قابلها خمس عشرة في القاعدة.
    */
   const retired = await serviceModel
     .updateMany(
       {
         isSystemService: true,
         isActive: true,
-        category: { $nin: ACTIVE_SERVICE_CATEGORIES as unknown as string[] },
+        _id: { $nin: canonicalIds },
       },
       { $set: { isActive: false } },
     )

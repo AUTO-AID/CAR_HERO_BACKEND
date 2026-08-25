@@ -7,8 +7,8 @@
  * يعود «ناجحاً». اختبار وحدة للأنبوب لا يعيد إنتاجه — جُرّب وفشل في ذلك —
  * فالطريق الوحيد الموثوق هو تشغيل الخادم فعلاً وقراءة ما استقرّ في القاعدة.
  *
- * يعمل على قاعدة محلّية (MongoMemoryServer) ولا يمسّ Atlas:
- *   $env:ALLOW_LOCAL_DB="true"; npm run dev:local     # طرفية أولى
+ * يعمل على القاعدة المحلّية (MongoMemoryServer على mongodb-data-8):
+ *   npm run dev:local                                 # طرفية أولى
  *   npm run e2e:provider-registration                 # طرفية ثانية
  */
 const { MongoClient, ObjectId } = require('mongodb');

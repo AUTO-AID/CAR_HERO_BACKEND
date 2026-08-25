@@ -1,21 +1,8 @@
 ﻿
-# ── حارس قاعدة البيانات ────────────────────────────────────────────────────
-# هذا السكربت يكتب $env:MONGODB_URI فوق قيمة .env، ومتغيّر البيئة يتفوّق
-# عليها — فيعمل النظام كله (التطبيق والموقع واللوحتان) على قاعدة محلية بلا
-# أي تحذير. بعد نقل البيانات إلى Atlas صار ذلك سلوكاً غير مرغوب افتراضياً.
-if ($env:ALLOW_LOCAL_DB -ne "true") {
-  Write-Host ""
-  Write-Host "  رُفض التشغيل: هذا الأمر يُشغّل الخلفية على قاعدة بيانات محلية." -ForegroundColor Red
-  Write-Host ""
-  Write-Host "  النظام يعمل الآن على Atlas. للتشغيل:" -ForegroundColor Cyan
-  Write-Host "      npm run start:dev"
-  Write-Host ""
-  Write-Host "  وإن كنت تريد المحلية عمداً (اختبارات أو عمل دون إنترنت):" -ForegroundColor DarkYellow
-  Write-Host '      $env:ALLOW_LOCAL_DB="true"; npm run dev:local'
-  Write-Host ""
-  exit 1
-}
-Write-Host "  ⚠  ALLOW_LOCAL_DB=true — التشغيل على قاعدة محلية، لا Atlas." -ForegroundColor Yellow
+# ── قاعدة البيانات ─────────────────────────────────────────────────────────
+# هذا السكربت يكتب $env:MONGODB_URI فوق قيمة .env. كان هنا حارس يرفض التشغيل
+# ما لم تُضبط ALLOW_LOCAL_DB=true، من فترة كان فيها Atlas هو المصدر. عاد
+# المشروع كلّه إلى القاعدة المحلية فصار الحارس يمنع الحالة الاعتيادية.
 
 $ErrorActionPreference = "Stop"
 

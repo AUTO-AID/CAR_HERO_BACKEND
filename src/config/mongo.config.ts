@@ -13,63 +13,41 @@ function isLocalUri(uri: string): boolean {
 }
 
 /**
- * يمنع الخلفية من الإقلاع على قاعدة بيانات محلية.
+ * يتحقّق من وجود رابط قاعدة البيانات فقط.
  *
- * كل العملاء — التطبيق والموقع ولوحة الإدارة ولوحة المزوّد — يتصلون
- * بالخلفية لا بقاعدة البيانات، فهذه الدالة هي النقطة الوحيدة التي تقرّر
- * أي قاعدة يعمل عليها النظام كله.
- *
- * وثلاثة سكربتات تشغيل كانت تكتب `$env:MONGODB_URI` فوق قيمة `.env`
+ * كان هنا حارس يرفض الإقلاع على قاعدة محلية، من فترة كان فيها Atlas هو
+ * المصدر: ثلاثة سكربتات تشغيل تكتب `$env:MONGODB_URI` فوق قيمة `.env`
  * ومتغيّر البيئة يتفوّق عليها، فيعمل النظام على المحلية بلا أي تحذير —
- * تبدو البيانات قديمة فحسب. الحارس هنا يجعل ذلك خطأ إقلاع صريحاً بدل
- * عطل صامت.
+ * تبدو البيانات قديمة فحسب. والحارس كان يحوّل ذلك العطل الصامت إلى خطأ
+ * إقلاع صريح.
  *
- * للعمل على قاعدة محلية عمداً (اختبارات، عمل دون إنترنت):
- *     ALLOW_LOCAL_DB=true
+ * عاد المشروع كلّه إلى القاعدة المحلية (`mongodb-data-8`)، فصار الحارس
+ * يرفض الحالة الاعتيادية ويمنع الخلفية من الإقلاع أصلاً — وأُزيل هو
+ * ونظيره في `scripts/start-local-stack.ps1`. `ALLOW_LOCAL_DB` لم يعد
+ * يُقرأ في أي مكان.
  */
 export function assertGlobalDatabase(uri: string | undefined): string {
   if (!uri) {
-    throw new Error(
-      'MONGODB_URI غير مضبوط. اضبطه في ملف .env على رابط Atlas.',
-    );
-  }
-
-  const allowLocal = String(process.env.ALLOW_LOCAL_DB).toLowerCase() === 'true';
-
-  if (isLocalUri(uri) && !allowLocal) {
-    throw new Error(
-      [
-        '',
-        '  ✖ رُفض الإقلاع: الخلفية تحاول الاتصال بقاعدة بيانات محلية.',
-        '',
-        `    الرابط الحالي : ${uri}`,
-        '    المطلوب       : رابط Atlas من MONGODB_URI في .env',
-        '',
-        '  السبب الأرجح أنك شغّلت الخلفية بأحد أوامر التشغيل المحلي:',
-        '      npm run dev:local  /  start:dev:local  /  dev:local:demo',
-        '  وهي تكتب متغيّر البيئة فوق قيمة .env.',
-        '',
-        '  للعمل على Atlas:',
-        '      npm run start:dev',
-        '',
-        '  وإن كنت تريد المحلية عمداً:',
-        '      ALLOW_LOCAL_DB=true npm run dev:local',
-        '',
-      ].join('\n'),
-    );
+    throw new Error('MONGODB_URI غير مضبوط. اضبطه في ملف .env.');
   }
 
   return uri;
+}
+
+/** يخفي كلمة المرور قبل الطباعة — الرابط يحملها نصّاً صريحاً. */
+function maskUri(uri: string): string {
+  return uri.replace(/:\/\/([^:/@]+):[^@]*@/, '://$1:***@');
 }
 
 export const mongoConfig: MongooseModuleAsyncOptions = {
   useFactory: async (configService: ConfigService) => {
     const uri = assertGlobalDatabase(configService.get<string>('database.uri'));
 
-    if (String(process.env.ALLOW_LOCAL_DB).toLowerCase() === 'true' && isLocalUri(uri)) {
-      // تحذير ظاهر: العمل على المحلية استثناء مقصود، لا الوضع الطبيعي
-      console.warn('\n  ⚠  ALLOW_LOCAL_DB=true — الخلفية تعمل على قاعدة بيانات محلية، لا Atlas.\n');
-    }
+    // سطر واحد يقول أي قاعدة يعمل عليها النظام كلّه: العملاء الأربعة يتصلون
+    // بالخلفية لا بالقاعدة، فهذه هي النقطة الوحيدة التي يظهر فيها الجواب.
+    console.log(
+      `  ▸ MongoDB: ${isLocalUri(uri) ? 'محلية' : 'بعيدة'} — ${maskUri(uri)}`,
+    );
 
     return {
       uri,
