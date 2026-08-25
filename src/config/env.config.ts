@@ -93,6 +93,25 @@ export default () => ({
     confirmReminderAfterHours: parseInt(process.env.ORDER_CONFIRM_REMINDER_AFTER_HOURS || '2', 10),
   },
 
+  // Scheduled bookings
+  booking: {
+    /**
+     * نافذة العمل المفترضة لمزوّد **لم يُسأل** عن ساعاته بعد.
+     *
+     * `workingHours` افتراضها `[]` في المخطّط، ومسار التسجيل عبر الموقع وحده
+     * هو من يملؤها — فكل مزوّد جاء من غيره كان مغلقاً سبعة أيام في الأسبوع
+     * إلى الأبد، ولا يُقبل لديه حجزٌ واحد.
+     *
+     * والقيمة هنا يجب أن تبقى مطابقة لـ`DEFAULT_WINDOW` في
+     * `car-hero-app/src/services/scheduling.js`: التطبيق يبني فتحاته عليها،
+     * وافتراقهما يعني فتحةً يعرضها التطبيق ويرفضها الخادم.
+     */
+    defaultWindow: {
+      open: process.env.BOOKING_DEFAULT_OPEN || '09:00',
+      close: process.env.BOOKING_DEFAULT_CLOSE || '21:00',
+    },
+  },
+
   // Firebase settings
   firebase: {
     projectId: process.env.FIREBASE_PROJECT_ID,

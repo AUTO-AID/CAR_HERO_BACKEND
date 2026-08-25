@@ -51,13 +51,26 @@ const transitions: Record<OrderStatus, OrderStatus[]> = {
   [OrderStatus.REJECTED]: [],
 };
 
+/**
+ * `COMPLETED` ليست منها عمداً — وهي **الحدّ الذي يقوم عليه التسليم بشهادة
+ * طرفين**.
+ *
+ * غاية الفنّي من الطلب `AWAITING_CUSTOMER_CONFIRMATION`: يقول «أنهيتُ» ثم يشهد
+ * العميل. وكانت `COMPLETED` مدرجة هنا، فيكفي الفنّيَ نداءٌ مباشر على
+ * `PATCH /orders/:id/status {status:"completed"}` ليتخطّى الشهادة كلّها
+ * **ويحرّر أرباحه بنفسه** — وهو بالضبط ما تقول `ProviderRequestFlow` إن مسار
+ * الأفعال بُني لمنعه، بينما كان الباب مفتوحاً بجانبه.
+ *
+ * ولا يضيق هذا على المسار الطبيعي: `ProviderRequestFlow.targetStatus` لا تُرجع
+ * `COMPLETED` لأي فعل، فالفنّي لم يكن يمرّ من هنا أصلاً في الاستعمال السليم.
+ * والإدارة تحتفظ بالإتمام القسري لطلبٍ عَلِق (`admin` غير مقيَّد بهذه القائمة).
+ */
 const providerAllowedTargets = new Set<OrderStatus>([
   OrderStatus.ACCEPTED,
   OrderStatus.PROVIDER_EN_ROUTE,
   OrderStatus.PROVIDER_ARRIVED,
   OrderStatus.IN_PROGRESS,
   OrderStatus.AWAITING_CUSTOMER_CONFIRMATION,
-  OrderStatus.COMPLETED,
   OrderStatus.CANCELLED,
 ]);
 
@@ -103,12 +116,33 @@ export class OrderStateMachine {
     return transitions[from]?.includes(to) ?? false;
   }
 
+  /**
+   * **النهائي نهائيّ — ولو كان الهدف هو الحالة نفسها.**
+   *
+   * كان `if (from === to) return;` يتقدّم فحصَ `terminalStatuses`، فيمرّ
+   * `cancelled → cancelled` و`completed → completed` بلا اعتراض: العودة المبكّرة
+   * تسبق الحارس فلا يُسأل أصلاً.
+   *
+   * ولم يكن ذلك مروراً بلا أثر. `CancelOrderUseCase` يعيد تنفيذ نفسه كاملاً على
+   * كل نداء: يردّ نقاط الولاء مرّة أخرى (فرعُها لا يملك علامةً تقول «رُدَّت»)،
+   * ويكتب سطراً كاذباً في `status-history`، ويُطلق `STATUS_CHANGED` فيُشعِر
+   * العميلَ والفنّي من جديد. والعميل كان يُردّ بحكم `isUserCancellable`، أمّا
+   * الفنّي المُسنَد والإدارة فيمرّان — فصار توليد النقاط بلا سقف بنداء مكرّر.
+   *
+   * وترتيبُ الفحصين هو الإصلاح كلّه: `accepted → accepted` ليست نهائية فتبقى
+   * مارّة، وعليها تقوم إعادة الإسناد في `AssignProviderUseCase` — فلا يضيق
+   * الحارس على ما بُني عليه.
+   */
   static assertTransition(from: OrderStatus, to: OrderStatus, actorRole?: ActorRole): void {
-    if (from === to) return;
-
     if (terminalStatuses.has(from)) {
-      throw new BadRequestException(`Cannot move order from terminal status "${from}" to "${to}"`);
+      throw new BadRequestException(
+        from === to
+          ? `Order is already in terminal status "${from}" — it cannot be re-applied`
+          : `Cannot move order from terminal status "${from}" to "${to}"`,
+      );
     }
+
+    if (from === to) return;
 
     if (!this.canTransition(from, to)) {
       throw new BadRequestException(`Invalid order status transition from "${from}" to "${to}"`);

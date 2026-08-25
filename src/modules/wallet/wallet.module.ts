@@ -20,6 +20,7 @@ import { GetAdminTransactionLogsUseCase } from './application/use-cases/get-admi
 import { GetFinancialSummaryUseCase } from './application/use-cases/get-financial-summary.use-case';
 import { GetProviderFinancialSummaryUseCase } from './application/use-cases/get-provider-financial-summary.use-case';
 import { RedeemLoyaltyPointsUseCase } from './application/use-cases/redeem-loyalty-points.use-case';
+import { AwardLoyaltyPointsUseCase } from './application/use-cases/award-loyalty-points.use-case';
 import { Setting, SettingSchema } from '../admin/infrastructure/persistence/mongoose/schemas/setting.schema';
 import { Order, OrderSchema } from '../orders/infrastructure/persistence/mongoose/schemas/order.schema';
 
@@ -53,11 +54,13 @@ import { Order, OrderSchema } from '../orders/infrastructure/persistence/mongoos
     GetFinancialSummaryUseCase,
     GetProviderFinancialSummaryUseCase,
     RedeemLoyaltyPointsUseCase,
+    AwardLoyaltyPointsUseCase,
   ],
   exports: [
     'IWalletRepository',
     GetBalanceUseCase,
     TransferEarningsUseCase,
+    AwardLoyaltyPointsUseCase,
   ],
 })
 export class WalletModule {}

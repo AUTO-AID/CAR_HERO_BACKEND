@@ -35,6 +35,26 @@ export interface IOrderRepository {
    * الاستعلام نفسه هما ما تنشأ بينهما الفجوات — وهذه إحداها بالضبط.
    */
   findProviderIdsWithActiveOrders(statuses: OrderStatus[]): Promise<string[]>;
+
+  /**
+   * حجزُ ردّ نقاط الولاء على هذا الطلب — **علامةٌ بشرطٍ داخل الاستعلام**.
+   *
+   * يُرجع عدد النقاط لمن ظفر بالعلامة، و`0` لمن وجدها مرفوعة سلفاً. فرعُ الردّ
+   * في `CancelOrderUseCase` كان شرطه وجود `metadata.pointsRedeemed` وحده، وهو
+   * حقلٌ لا يُمسح عند الإلغاء — فكل نداء إلغاء يقرؤه فيردّ النقاط من جديد.
+   *
+   * وهو النمط نفسه الذي يحرس المنح في `AwardLoyaltyPointsUseCase`
+   * (`metadata.loyaltyPointsAwarded`) و`fulfillOrderPayment` — ومسار الردّ كان
+   * الطرف الوحيد من الاقتصاد بلا نظيره. وفحصٌ قبل الكتابة لا يكفي: نداءان
+   * متزامنان يقرآن كلاهما «لم تُردّ» فيردّان.
+   */
+  claimPointsRefund(id: string): Promise<number>;
+
+  /**
+   * إعادة العلامة عند فشل الإيداع — كي لا يبقى الطلب مُعلَّماً بردٍّ لم يقع
+   * فتضيع نقاط العميل صامتة. نظيرها في `AwardLoyaltyPointsUseCase`.
+   */
+  releasePointsRefundClaim(id: string): Promise<void>;
 }
 
 export const IOrderRepository = Symbol('IOrderRepository');

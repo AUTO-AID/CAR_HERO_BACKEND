@@ -4,6 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import type { Cache } from 'cache-manager';
 import { NotificationType, OrderStatus, PaymentStatus, ServiceCategory } from '../../../../core/enums/status.enum';
+import { atBusinessTime } from '../../../../core/utils/business-time.util';
 import {
   ApplyOfferDto,
   CreateAddressDto,
@@ -296,8 +297,10 @@ export class CustomerExperienceService {
   private calculateNextWashBooking(visitsPerMonth: number, slot: string, from = new Date()) {
     const next = new Date(from);
     next.setDate(next.getDate() + Math.max(1, Math.ceil(30 / visitsPerMonth)));
-    next.setHours(slot === 'morning' ? 9 : slot === 'noon' ? 13 : 17, 0, 0, 0);
-    return next;
+    // «صباحاً/ظهراً/مساءً» ساعةُ حائطٍ عند العميل في دمشق. `setHours` كان
+    // يضبطها بتوقيت الخادم، فيصير موعد «التاسعة صباحاً» على خادم UTC ظهراً
+    // فعلياً — ثم يُقاس على ساعات عمل الفنّي فيُرفض أو يقع في وقت لا يريده أحد.
+    return atBusinessTime(next, slot === 'morning' ? 9 : slot === 'noon' ? 13 : 17);
   }
 
   private async createBookingForWashPlan(plan: WashPlanDocument) {

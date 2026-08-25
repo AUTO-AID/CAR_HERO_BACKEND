@@ -13,7 +13,15 @@ export interface IWalletRepository {
   // Advanced Atomic operation
   executeTransaction(ownerId: string, ownerType: string, operation: (wallet: Wallet, session: any) => Promise<{wallet: Wallet, transaction: Transaction}>): Promise<void>;
   
+  /**
+   * `allowNegative` يسمح للسحب أن يُنزل الرصيد تحت الصفر بدل أن يرمي.
+   *
+   * يلزم حيث يكون السالب **معلومةً لا خطأ**: عمولةُ طلبٍ نُقد قبضه الفنّي بيده
+   * دَيْنٌ عليه، ومحفظته قد تكون فارغة لحظة الاستحقاق. وحارس «الرصيد غير كافٍ»
+   * كان يمنع تسجيل الحالة التي يهمّ تسجيلها أكثر من غيرها. انظر
+   * `TransferEarningsUseCase` — وهو النمط نفسه الذي اتّخذه `recordPromotionalCost`.
+   */
   executeMultiWalletTransaction(
-    walletsToUpdate: { ownerId: string, ownerType: string, amount: number, type: 'deposit' | 'withdraw', description: string, referenceType?: string, referenceId?: string }[]
+    walletsToUpdate: { ownerId: string, ownerType: string, amount: number, type: 'deposit' | 'withdraw', description: string, referenceType?: string, referenceId?: string, allowNegative?: boolean }[]
   ): Promise<void>;
 }

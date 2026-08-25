@@ -9,7 +9,13 @@ import { OrderEvents, OrderStatusChangedEvent } from '../../domain/events/order.
 import { TransferEarningsUseCase } from '../../../../modules/wallet/application/use-cases/transfer-earnings.use-case';
 import { StatusHistoryService } from '../../../status-history/application/services/status-history.service';
 import { OrderStateMachine } from '../../domain/services/order-state-machine';
-import { orderEarningsBase } from '../../domain/services/order-earnings-base';
+import { AwardLoyaltyPointsUseCase } from '../../../wallet/application/use-cases/award-loyalty-points.use-case';
+import {
+  orderEarningsBase,
+  orderLoyaltyBase,
+  orderPromotionalCost,
+} from '../../domain/services/order-earnings-base';
+import { isPlatformHeldPayment } from '../../domain/services/order-payment-custody';
 
 @Injectable()
 export class UpdateOrderStatusUseCase {
@@ -20,6 +26,7 @@ export class UpdateOrderStatusUseCase {
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
     private readonly transferEarnings: TransferEarningsUseCase,
+    private readonly awardLoyaltyPoints: AwardLoyaltyPointsUseCase,
     private readonly statusHistoryService: StatusHistoryService,
   ) {}
 
@@ -93,7 +100,23 @@ export class UpdateOrderStatusUseCase {
         updatedOrder.providerId,
         earningsBase,
         updatedOrder.id,
-        'order'
+        'order',
+        orderPromotionalCost(updatedOrder),
+        // مَن قبض المال يقرّر اتجاه القيد: النقد بيد الفنّي فالعمولة دَيْنٌ
+        // عليه، لا صافٍ يُودَع له. انظر `settleCashCollectedOrder`.
+        { platformHoldsPayment: isPlatformHeldPayment(updatedOrder.paymentMethod) },
+      );
+    }
+
+    // نقاط العميل — على ما دفعه لا على الإجمالي (انظر `orderLoyaltyBase`).
+    // تُمنح من مسارَي الإتمام كليهما كي لا يتغيّر ما يكسبه العميل بحسب مَن
+    // ضغط زرّ الإتمام — وهو الخطأ نفسه الذي وقع في أساس أجر الفنّي.
+    if (status === OrderStatus.COMPLETED && updatedOrder.userId) {
+      await this.awardLoyaltyPoints.execute(
+        updatedOrder.userId,
+        orderLoyaltyBase(updatedOrder),
+        updatedOrder.id,
+        updatedOrder.orderNumber,
       );
     }
 

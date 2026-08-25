@@ -10,10 +10,12 @@ import {
   WalletDocument,
 } from '../../infrastructure/persistence/mongoose/schemas/wallet.schema';
 import { Order, OrderDocument } from '../../../orders/infrastructure/persistence/mongoose/schemas/order.schema';
+import { LOYALTY_POINT_VALUE } from '../../domain/services/loyalty-policy';
 
 @Injectable()
 export class RedeemLoyaltyPointsUseCase {
-  private readonly pointValue = 0.05;
+  /** قيمة النقطة — مشتركة مع مسار المنح كي لا يفترق طرفا الاقتصاد */
+  private readonly pointValue = LOYALTY_POINT_VALUE;
 
   constructor(
     @InjectModel(Wallet.name) private readonly wallets: Model<WalletDocument>,

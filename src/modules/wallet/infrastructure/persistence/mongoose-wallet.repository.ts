@@ -326,8 +326,33 @@ export class MongooseWalletRepository implements IWalletRepository {
     }
   }
 
+  /**
+   * تطبيق حركة الرصيد الواحدة — موضعٌ واحد لمسارَي `executeMultiWalletTransaction`
+   * (الجلسة، والبديل حين لا تدعم القاعدة المعاملات). كانا نسختين متطابقتين،
+   * وأيّ قاعدة تُضاف إلى إحداهما وتُنسى في الأخرى تصير عطلاً لا يظهر إلا على
+   * قاعدة بلا replica set.
+   */
+  private applyBalanceChange(
+    wallet: WalletEntity,
+    update: { amount: number; type: 'deposit' | 'withdraw'; allowNegative?: boolean },
+  ): void {
+    if (update.type === 'deposit') {
+      wallet.deposit(update.amount);
+      return;
+    }
+
+    // السالب معلومة لا خطأ حين يُطلَب صراحةً — انظر تعليق العقد في
+    // `IWalletRepository.executeMultiWalletTransaction`.
+    if (update.allowNegative) {
+      wallet.balance -= update.amount;
+      return;
+    }
+
+    wallet.withdraw(update.amount);
+  }
+
   async executeMultiWalletTransaction(
-    walletsToUpdate: { ownerId: string, ownerType: string, amount: number, type: 'deposit' | 'withdraw', description: string, referenceType?: string, referenceId?: string }[]
+    walletsToUpdate: { ownerId: string, ownerType: string, amount: number, type: 'deposit' | 'withdraw', description: string, referenceType?: string, referenceId?: string, allowNegative?: boolean }[]
   ): Promise<void> {
     try {
       const session = await this.connection.startSession();
@@ -343,11 +368,7 @@ export class MongooseWalletRepository implements IWalletRepository {
           }
 
           const balanceBefore = wallet.balance;
-          if (update.type === 'deposit') {
-            wallet.deposit(update.amount);
-          } else {
-            wallet.withdraw(update.amount);
-          }
+          this.applyBalanceChange(wallet, update);
           const balanceAfter = wallet.balance;
 
           const transaction = new TransactionEntity(
@@ -395,11 +416,7 @@ export class MongooseWalletRepository implements IWalletRepository {
           }
 
           const balanceBefore = wallet.balance;
-          if (update.type === 'deposit') {
-            wallet.deposit(update.amount);
-          } else {
-            wallet.withdraw(update.amount);
-          }
+          this.applyBalanceChange(wallet, update);
           const balanceAfter = wallet.balance;
 
           const transaction = new TransactionEntity(

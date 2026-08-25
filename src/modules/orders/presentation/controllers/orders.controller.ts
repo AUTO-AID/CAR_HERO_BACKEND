@@ -21,6 +21,9 @@ import { UpdateOrderTrackingLocationDto } from '../../application/dto/update-loc
 import { VerifyPaymentDto } from '../../application/dto/verify-payment.dto';
 import { CancelOrderDto } from '../../application/dto/cancel-order.dto';
 import { JwtAuthGuard } from '../../../../core/guards/jwt-auth.guard';
+import { RolesGuard } from '../../../../core/guards/roles.guard';
+import { Roles } from '../../../../core/decorators/roles.decorator';
+import { Role } from '../../../../core/enums/roles.enum';
 import { OrderStatus } from '../../../../core/enums/status.enum';
 import { OrderStateMachine } from '../../domain/services/order-state-machine';
 import { GetOrderTrackingUseCase } from '../../application/use-cases/get-order-tracking.use-case';
@@ -168,19 +171,40 @@ export class OrdersController {
     return order;
   }
 
+  /**
+   * ثلاثة مسارات إدارية — **للإدارة وحدها**.
+   *
+   * ما يميّزها عن `GET /orders` أن حالات الاستخدام خلفها لا تستقبل
+   * `currentUser` إطلاقاً: لا ملكية تُفحص ولا ترشيح يُطبَّق، وهي تعود بالطلبات
+   * كما هي في القاعدة. والترشيح بالملكية كُتب في هذا الـcontroller لمسارَي
+   * القائمة فقط فلم يصل إلى هنا، فكان `JwtAuthGuard` وحده يحرسها — وهو يُثبت
+   * **مَن** المستخدم لا **ما يحقّ له**.
+   *
+   * والنتيجة أن أي عميل مسجَّل كان يقرأ طلبات النظام كلّها بنداء واحد:
+   * `search` يعمل `$lookup` على users و providers فتعود أسماء العملاء
+   * وأرقام هواتفهم وعناوينهم، و`report` يُفرغ كل طلب في أي مدى تاريخي.
+   *
+   * `RolesGuard` هو الحارس نفسه الذي تستعمله بقيّة الوحدات (`provider-app`
+   * مثلاً)، ودور `admin` لا يُنتحل: `JwtStrategy` يفرضه بعد التحقّق من وجود
+   * الحساب في مجموعة `admins`، لا من نصّ التوكن.
+   */
   @Get('orders/search')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Search orders by various fields' })
+  @ApiOperation({ summary: 'Search orders by various fields (admin only)' })
   @ApiQuery({ name: 'query', required: true, type: String })
+  @ApiResponse({ status: 403, description: 'Admin role required' })
   async searchOrders(@Query('query') query: string) {
     return this.searchOrdersUseCase.execute(query);
   }
 
   @Get('orders/report')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Export orders report' })
+  @ApiOperation({ summary: 'Export orders report (admin only)' })
+  @ApiResponse({ status: 403, description: 'Admin role required' })
   async exportReport(
     @Query('from') from: string,
     @Query('to') to: string,
@@ -190,9 +214,11 @@ export class OrdersController {
   }
 
   @Get('orders/stats')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Get order statistics' })
+  @ApiOperation({ summary: 'Get order statistics (admin only)' })
+  @ApiResponse({ status: 403, description: 'Admin role required' })
   async getStats(@Query('period') period: string = 'week') {
     return this.getOrderStatsUseCase.execute(period);
   }

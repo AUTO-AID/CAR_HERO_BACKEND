@@ -1,6 +1,7 @@
 /**
  * Utilities Barrel Export
  */
+export * from './business-time.util';
 export * from './geo.util';
 export * from './otp.util';
 export * from './pagination.util';

@@ -297,6 +297,17 @@ export class CreateOrderUseCase {
       return candidates[0] || null;
     }
 
+    /**
+     * سبب السقوط يُحفظ لا يُبتلع.
+     *
+     * `ConflictException` هنا تعني: مرشّح **قريب** و**يقدّم الخدمة** — لكن
+     * الوقت المطلوب لا يناسبه (خارج دوامه، أو موعده محجوز). وابتلاعها كان
+     * ينتهي بـ`NotFound` نصّها عن **المسافة**، فيقرأ العميل «لا يوجد فني قرب
+     * موقعك» على فجوةٍ في التوقيت وحده: يعيد المحاولة من مكان آخر بلا جدوى،
+     * ولا يخطر له تغيير الساعة — وهي الخطوة الوحيدة التي كانت ستنجح.
+     */
+    let timeConflicts = 0;
+
     for (const candidate of candidates) {
       try {
         await this.schedulingAvailabilityService.assertAvailable(
@@ -306,10 +317,18 @@ export class CreateOrderUseCase {
         );
         return candidate;
       } catch (error) {
-        if (!(error instanceof ConflictException || error instanceof NotFoundException)) {
+        if (error instanceof ConflictException) {
+          timeConflicts += 1;
+        } else if (!(error instanceof NotFoundException)) {
           throw error;
         }
       }
+    }
+
+    // ٤٠٩ لا ٤٠٤: التطبيق يميّزها (`isSlotConflictError`) فيقترح أقرب فتحة
+    // تالية بدل أن يترك المستخدم أمام طريق مسدود.
+    if (timeConflicts > 0) {
+      throw new ConflictException('No provider is available at the requested time. Please choose another slot');
     }
 
     return null;

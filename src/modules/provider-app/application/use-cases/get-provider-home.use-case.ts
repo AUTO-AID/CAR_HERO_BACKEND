@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { OrderStatus, ProviderStatus } from '../../../../core/enums/status.enum';
+import { startOfBusinessDay } from '../../../../core/utils/business-time.util';
 import { NotificationsService } from '../../../notifications/application/services/notifications.service';
 import { IOrderRepository } from '../../../orders/domain/repositories/order.repository.interface';
 import { Order, OrderDocument } from '../../../orders/infrastructure/persistence/mongoose/schemas/order.schema';
@@ -95,8 +96,9 @@ export class GetProviderHomeUseCase {
 
   /** طلبات اليوم المنجزة أو الجارية — لا الملغاة، فهي ليست عملاً وقع */
   private async countToday(providerId: Types.ObjectId): Promise<number> {
-    const start = new Date();
-    start.setHours(0, 0, 0, 0);
+    // «اليوم» عند الفنّي يبدأ منتصف ليل دمشق لا منتصف ليل الخادم. على خادم UTC
+    // كان العدّاد يصفّر الثالثة فجراً، فيُحسب عملُ ليلة أمس على اليوم الجديد.
+    const start = startOfBusinessDay();
     return this.orderModel
       .countDocuments({
         provider: providerId,

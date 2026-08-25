@@ -1,3 +1,4 @@
+import { ConflictException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -16,6 +17,7 @@ describe('CreateOrderUseCase', () => {
   let repository: jest.Mocked<IOrderRepository>;
   let mockServiceModel: any;
   let mockProviderModel: any;
+  let schedulingService: { assertAvailable: jest.Mock };
 
   const mockOrderRepository = {
     create: jest.fn(),
@@ -30,6 +32,7 @@ describe('CreateOrderUseCase', () => {
       findById: jest.fn(),
       aggregate: jest.fn(),
     };
+    schedulingService = { assertAvailable: jest.fn() };
     const mockNotificationsService = {
       sendOrderNotification: jest.fn(),
       createNotification: jest.fn(),
@@ -60,7 +63,7 @@ describe('CreateOrderUseCase', () => {
         },
         {
           provide: SchedulingAvailabilityService,
-          useValue: { assertAvailable: jest.fn() },
+          useValue: schedulingService,
         },
         {
           provide: EventEmitter2,
@@ -216,6 +219,58 @@ describe('CreateOrderUseCase', () => {
       // الانشغال الآن لا يقول شيئاً عن موعد بعد ثلاثة أيام
       expect(geoNearOf().query._id).toBeUndefined();
       expect(mockOrderRepository.findProviderIdsWithActiveOrders).not.toHaveBeenCalled();
+    });
+
+    /**
+     * سبب الفشل يجب أن يصل كما هو.
+     *
+     * كانت `ConflictException` القادمة من `assertAvailable` تُبتلع في الحلقة،
+     * فينتهي كل حجزٍ سقط لسببِ **توقيت** برسالة عن **المسافة** («لا يوجد فني
+     * قرب موقعك»). والفارق ليس لفظياً: التطبيق يميّز ٤٠٩ فيقترح أقرب فتحة
+     * تالية، بينما ٤٠٤ تدفع المستخدم إلى تغيير مكانه — وهي الخطوة الوحيدة
+     * التي لم تكن لتنجح.
+     */
+    it('يميّز فجوة التوقيت عن فجوة التغطية', async () => {
+      mockServiceModel.findById.mockResolvedValue({
+        _id: '60b8d295f1d293001f3e4c8b',
+        name: 'Car Wash',
+        basePrice: 100,
+        estimatedDuration: 60,
+      });
+      mockProviderModel.aggregate.mockReturnValue({
+        exec: jest.fn().mockResolvedValue([{ _id: { toString: () => 'near-but-busy' } }]),
+      });
+      schedulingService.assertAvailable.mockRejectedValue(
+        new ConflictException('Provider is closed at the requested time'),
+      );
+
+      await expect(
+        useCase.execute({
+          userId: 'user-id',
+          serviceId: '60b8d295f1d293001f3e4c8b',
+          location: { coordinates: [10, 20] },
+          scheduleTime: new Date(Date.now() + 3 * 86_400_000).toISOString(),
+        } as any),
+      ).rejects.toThrow('No provider is available at the requested time');
+    });
+
+    it('يُبقي رسالة المسافة حين لا مرشّح أصلاً', async () => {
+      mockServiceModel.findById.mockResolvedValue({
+        _id: '60b8d295f1d293001f3e4c8b',
+        name: 'Car Wash',
+        basePrice: 100,
+        estimatedDuration: 60,
+      });
+      mockProviderModel.aggregate.mockReturnValue({ exec: jest.fn().mockResolvedValue([]) });
+
+      await expect(
+        useCase.execute({
+          userId: 'user-id',
+          serviceId: '60b8d295f1d293001f3e4c8b',
+          location: { coordinates: [10, 20] },
+          scheduleTime: new Date(Date.now() + 3 * 86_400_000).toISOString(),
+        } as any),
+      ).rejects.toThrow('No available provider found');
     });
 
     it('يشترط الاتصال في الطلب الفوري دون المجدول', async () => {

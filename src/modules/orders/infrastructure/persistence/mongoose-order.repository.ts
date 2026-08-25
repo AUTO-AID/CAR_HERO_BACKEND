@@ -514,4 +514,37 @@ export class MongooseOrderRepository implements IOrderRepository {
       .exec();
     return ids.filter(Boolean).map((id: any) => id.toString());
   }
+
+  async claimPointsRefund(id: string): Promise<number> {
+    if (!Types.ObjectId.isValid(id)) return 0;
+
+    // `findOneAndUpdate` بالشرط داخله: من يظفر بالعلامة يردّ، ومن يخسرها ينصرف.
+    // الوثيقة العائدة هي ما **قبل** التحديث، فمنها نقرأ العدد المحجوز.
+    const claimed = await this.orderModel
+      .findOneAndUpdate(
+        {
+          _id: new Types.ObjectId(id),
+          'metadata.pointsRedeemed': { $gt: 0 },
+          'metadata.pointsRefundedAt': { $exists: false },
+        },
+        { $set: { 'metadata.pointsRefundedAt': new Date() } },
+      )
+      .select('metadata')
+      .lean()
+      .exec();
+
+    const points = Number((claimed as any)?.metadata?.pointsRedeemed ?? 0);
+    return Number.isFinite(points) && points > 0 ? points : 0;
+  }
+
+  async releasePointsRefundClaim(id: string): Promise<void> {
+    if (!Types.ObjectId.isValid(id)) return;
+
+    await this.orderModel
+      .updateOne(
+        { _id: new Types.ObjectId(id) },
+        { $unset: { 'metadata.pointsRefundedAt': 1 } },
+      )
+      .exec();
+  }
 }

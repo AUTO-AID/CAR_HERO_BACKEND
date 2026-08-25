@@ -31,3 +31,56 @@ export function orderEarningsBase(order: OrderEntity): number {
   const gross = Number(anyOrder.totalAmount ?? order.total ?? 0);
   return Number.isFinite(gross) && gross > 0 ? gross : 0;
 }
+
+/**
+ * **كلفة الترويج التي تتحمّلها المنصّة على هذا الطلب** — الوجه المالي للسياسة
+ * أعلاه.
+ *
+ * حين تقول تلك السياسة «الفنّي يُحتسب على الإجمالي، والخصم تتحمّله المنصّة»
+ * فهي تُنشئ التزاماً نقدياً حقيقياً، وكان ذلك الالتزام **بلا قيد يُظهره**:
+ *
+ * | | طلب ١٠٬٠٠٠ بخصم ٤٬٠٠٠ |
+ * |---|---|
+ * | قبضت المنصّة | ٦٬٠٠٠ |
+ * | دفعت للفنّي | ٩٬٠٠٠ |
+ * | «عمولتها» المسجَّلة | ١٬٠٠٠ ➕ |
+ *
+ * فالدفاتر تُظهر ربحاً والواقع خسارة ثلاثة آلاف — والسبب أن العمولة تُحسب على
+ * إجمالٍ لم يُقبض. الرقم هنا هو الإيراد الذي تنازلت عنه المنصّة، ويُقيَّد
+ * مصروفاً صريحاً عند تحويل الأرباح (`TransferEarningsUseCase`) فيظهر في
+ * التقارير بدل أن يتسرّب صامتاً.
+ *
+ * يُشتقّ من الفرق لا من `discountAmount` وحده: الفرق هو ما تدفعه المنصّة فعلاً،
+ * ويصمد إن انفصل حقل الخصم عن المبلغين لأي سبب.
+ */
+export function orderPromotionalCost(order: OrderEntity): number {
+  const anyOrder = order as any;
+
+  const gross = orderEarningsBase(order);
+  const collected = Number(anyOrder.payableAmount ?? order.total ?? gross);
+  if (!Number.isFinite(collected)) return 0;
+
+  const forgone = gross - collected;
+  return forgone > 0 ? forgone : 0;
+}
+
+/**
+ * **الأساس الذي تُمنح عليه نقاط الولاء — ما دفعه العميل، لا إجمالي الطلب.**
+ *
+ * المنح على الإجمالي يفتح حلقة تُغذّي نفسها: العميل يستبدل نقاطاً فيهبط
+ * المستحقّ، ثم يُمنح نقاطاً على مبلغٍ **لم يدفع جزءاً منه** — أي نقاطاً على
+ * نقاط. لا تنفجر الحلقة عند استرداد ١٪ لكنها تردّ جزءاً من كل استبدال بلا
+ * سبب، وتصير أثقل كلّما رُفع المعدّل.
+ *
+ * والمنطق التجاري يسير في الاتجاه نفسه: المكافأة على إنفاقٍ وقع.
+ *
+ * (نظيرها في الأرباح `orderEarningsBase` تقرأ الإجمالي عمداً — الفنّي أدّى
+ * الخدمة كاملة، والخصم تتحمّله المنصّة. الأساسان مختلفان لأن السؤالين
+ * مختلفان: هناك «كم يستحقّ من أدّى العمل» وهنا «كم أنفق العميل».)
+ */
+export function orderLoyaltyBase(order: OrderEntity): number {
+  const anyOrder = order as any;
+
+  const paid = Number(anyOrder.payableAmount ?? order.total ?? 0);
+  return Number.isFinite(paid) && paid > 0 ? paid : 0;
+}

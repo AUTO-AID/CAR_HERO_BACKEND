@@ -8,9 +8,10 @@ import {
   OnGatewayDisconnect,
   WsException,
 } from '@nestjs/websockets';
-import { UseGuards, Logger } from '@nestjs/common';
+import { UseGuards, UseFilters, Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { WsJwtGuard } from '../../../../core/guards/ws-jwt.guard';
+import { WsExceptionFilter } from '../../../../core/filters/ws-exception.filter';
 import { chatIdentityOf } from '../../application/chat-identity';
 import { ChatService } from '../../application/services/chat.service';
 import { SendMessageDto } from '../../application/dtos/chat.dto';
@@ -19,6 +20,8 @@ import { SendMessageDto } from '../../application/dtos/chat.dto';
   cors: { origin: '*' },
   namespace: '/chat',
 })
+// بدونه لا يصل الرفض للعميل إطلاقاً — انظر تعليق المرشِّح نفسه
+@UseFilters(WsExceptionFilter)
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;

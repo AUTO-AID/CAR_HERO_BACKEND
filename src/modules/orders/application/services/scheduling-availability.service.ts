@@ -1,18 +1,38 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { OrderStatus } from '../../../../core/enums/status.enum';
 import { Order, OrderDocument } from '../../infrastructure/persistence/mongoose/schemas/order.schema';
 import { Provider, ProviderDocument } from '../../../providers/infrastructure/persistence/mongoose/schemas/provider.schema';
-
-const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+import {
+  businessDayName,
+  businessMinutesOfDay,
+  parseWallClock,
+} from '../../../../core/utils/business-time.util';
 
 @Injectable()
 export class SchedulingAvailabilityService {
   constructor(
     @InjectModel(Provider.name) private readonly providerModel: Model<ProviderDocument>,
     @InjectModel(Order.name) private readonly orderModel: Model<OrderDocument>,
+    private readonly config: ConfigService,
   ) {}
+
+  /**
+   * نافذة مزوّد لم ينشر ساعاته — تُقرأ من الإعداد لا تُكتب رقماً هنا.
+   *
+   * تطبيق العميل يبني فتحات الحجز على النافذة نفسها (`DEFAULT_WINDOW` في
+   * `scheduling.js`)، فافتراق الرقمين يُنتج فتحةً معروضة يرفضها الخادم — وهو
+   * أسوأ من عدم عرضها.
+   */
+  private get defaultWindow(): { open: string; close: string; isClosed: boolean } {
+    return {
+      open: this.config.get<string>('booking.defaultWindow.open') ?? '09:00',
+      close: this.config.get<string>('booking.defaultWindow.close') ?? '21:00',
+      isClosed: false,
+    };
+  }
 
   async assertOffersService(providerId: string, serviceId: string) {
     if (!Types.ObjectId.isValid(providerId)) throw new NotFoundException('Provider not found');
@@ -38,13 +58,46 @@ export class SchedulingAvailabilityService {
     }
 
     const duration = Math.max(1, Number(durationMinutes) || 60);
-    const day = dayNames[scheduledAt.getDay()];
-    const hours = provider.workingHours?.find((item) => item.day === day);
+
+    /**
+     * اليوم والساعة يُقرآن **بتوقيت العمل** لا بتوقيت الخادم.
+     *
+     * `workingHours` ساعةُ حائطٍ في دمشق كتبها صاحب الورشة، بينما `getDay()`
+     * و`getHours()` يُجيبان بتوقيت نظام التشغيل. على خادم UTC ينزاح كل شيء
+     * ثلاث ساعات: حجزٌ للتاسعة صباحاً يُقرأ السادسة فيُرفض «خارج الدوام»،
+     * وحجزُ العاشرة مساءً ينزلق إلى اليوم التالي فيُقاس على ساعات يومٍ آخر
+     * وقد يكون مغلقاً. انظر `business-time.util.ts`.
+     */
+    /**
+     * غياب السجلّ ليس إغلاقاً — إلّا إن كان المزوّد قد عبّر عن أسبوعه فعلاً.
+     *
+     * القائمة **الفارغة** تعني «لم يُسأل»: افتراضها `[]` في المخطّط، ومسار
+     * التسجيل عبر الموقع وحده يملؤها. فمعاملتها كإغلاق كانت تجعل كل مزوّد جاء
+     * من غير ذلك المسار مغلقاً سبعة أيام في الأسبوع إلى الأبد — يسقط كل
+     * مرشّح في `create-order`، فلا يُقبل لديه حجزٌ واحد أبداً. تُقرأ الآن
+     * بالنافذة الافتراضية.
+     *
+     * أمّا قائمة فيها أيام ويغيب عنها هذا اليوم فتعني «عبّر ولم يذكره» — ومن
+     * كتب ستة أيام وأسقط الجمعة يقصد إغلاقها. ذلك يُحترم كما هو.
+     */
+    const published = provider.workingHours ?? [];
+    const day = businessDayName(scheduledAt);
+    const hours = published.length
+      ? published.find((item) => item.day === day)
+      : this.defaultWindow;
     if (!hours || hours.isClosed) throw new ConflictException('Provider is closed at the requested time');
 
-    const startMinutes = scheduledAt.getHours() * 60 + scheduledAt.getMinutes();
+    const openMinutes = parseWallClock(hours.open);
+    const closeMinutes = parseWallClock(hours.close);
+    // ساعاتٌ لا تُقرأ تُعامَل كإغلاق. `toMinutes` القديمة كانت تُرجع `NaN`،
+    // وكل مقارنة مع `NaN` كاذبة — فيمرّ الحجز بلا فحص ويبدو الحارس عاملاً.
+    if (openMinutes === null || closeMinutes === null) {
+      throw new ConflictException('Provider working hours are not configured correctly');
+    }
+
+    const startMinutes = businessMinutesOfDay(scheduledAt);
     const endMinutes = startMinutes + duration;
-    if (startMinutes < this.toMinutes(hours.open) || endMinutes > this.toMinutes(hours.close)) {
+    if (startMinutes < openMinutes || endMinutes > closeMinutes) {
       throw new ConflictException('Requested booking does not fit within provider working hours');
     }
 
@@ -67,10 +120,5 @@ export class SchedulingAvailabilityService {
       return existingStart < requestedEnd && existingStart + existingDuration * 60 * 1000 > scheduledAt.getTime();
     });
     if (hasConflict) throw new ConflictException('Provider already has a scheduled booking during this time slot');
-  }
-
-  private toMinutes(value: string) {
-    const [hours, minutes] = value.split(':').map(Number);
-    return hours * 60 + minutes;
   }
 }
