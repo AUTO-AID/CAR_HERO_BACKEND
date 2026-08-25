@@ -33,7 +33,9 @@
     "postman:validate": "node scripts/postman/validate.cjs",
     "postman:publish": "npm run postman:validate && node scripts/postman/publish.cjs",
     "db:push-to-atlas": "powershell -ExecutionPolicy Bypass -File scripts/sync-local-to-atlas.ps1",
-    "db:verify-sync": "node scripts/verify-db-sync.cjs"
+    "db:verify-sync": "node scripts/verify-db-sync.cjs",
+    "providers:reprocess-services": "ts-node -r tsconfig-paths/register scripts/reprocess-provider-services.ts",
+    "e2e:provider-registration": "node scripts/e2e-provider-registration.cjs"
   },
   "dependencies": {
     "@nestjs/cache-manager": "^3.1.0",

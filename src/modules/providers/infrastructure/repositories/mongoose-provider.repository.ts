@@ -76,6 +76,7 @@ export class MongooseProviderRepository implements IProviderRepository {
       (doc as any).tags || [],
       Boolean((doc as any).isPhoneVerified),
       (doc as any).serviceAvailability || {},
+      (doc as any).governorate,
     );
   }
 

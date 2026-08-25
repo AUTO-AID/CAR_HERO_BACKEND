@@ -25,7 +25,7 @@ import {
  * «خدماتي وأسعاري» في اللوحة فيجدها فارغة: التسجيل يكتب `requestedServices`
  * بمعرّفات نصّية، واللوحة تقرأ `services` بمعرّفات الكتالوج.
  */
-const WEBSITE_SPECIALTY_CATEGORY: Record<string, string> = {
+export const WEBSITE_SPECIALTY_CATEGORY: Record<string, string> = {
   mechanical: 'maintenance',
   electrical: 'maintenance',
   towing: 'towing',
@@ -118,7 +118,7 @@ export class ManageProvidersUseCase {
    *
    * يعيد `null` حين لا يوجد ما يُترجَم، فيبقى ما أرسله النموذج كما هو.
    */
-  private async resolveCatalogSelection(dto: CreateProviderDto) {
+  async resolveCatalogSelection(dto: CreateProviderDto) {
     const list = (dto as any).services_list as Array<Record<string, any>> | undefined;
     const specialties: string[] =
       (dto as any).requestedServices?.length
@@ -226,6 +226,30 @@ export class ManageProvidersUseCase {
     }
 
     return this.providerRepository.create(mappedData);
+  }
+
+  /**
+   * إعادة ترجمة تخصّصات مزوّد سُجّل قبل إضافة `resolveCatalogSelection`.
+   *
+   * وثائق هؤلاء تحمل تخصّصات الموقع النصّية في `requestedServices` بينما
+   * `services` — الحقل الوحيد الذي تقرأه اللوحة — فارغ، فصفحة «خدماتي
+   * وأسعاري» عندهم فارغة وإن ملأوا كل شيء عند التسجيل. لا شيء يُصلحهم
+   * تلقائياً لأن الترجمة تقع عند الإنشاء وقد مضى.
+   *
+   * يعيد `null` إن لم يكن في الوثيقة ما يُترجَم — فلا تُلمس.
+   */
+  async reprocessRegistrationServices(id: string) {
+    const provider: any = await this.providerRepository.findById(id);
+    if (!provider) throw new NotFoundException('Provider not found');
+
+    const resolved = await this.resolveCatalogSelection({
+      requestedServices: provider.requestedServices,
+      services_list: provider.services_list,
+      servicePrices: provider.servicePrices,
+    } as CreateProviderDto);
+
+    if (!resolved) return null;
+    return this.providerRepository.update(id, resolved);
   }
 
   async reject(id: string, dto: RejectProviderDto) {

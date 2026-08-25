@@ -54,6 +54,12 @@ export class ProviderEntity {
     public readonly tags: string[] = [],
     public readonly isPhoneVerified: boolean = false,
     public readonly serviceAvailability: Record<string, boolean> = {},
+    /**
+     * المحافظة تُملأ في نموذج التسجيل وتُحفظ في الوثيقة، لكنها كانت مفقودة
+     * من الكيان — فلا يعيدها `/providers/me` ولا تراها اللوحة مهما حُفظت.
+     * تُضاف في آخر الوسائط حتى لا ينزاح ترتيب ما قبلها.
+     */
+    public readonly governorate?: string,
   ) {}
 
   /**

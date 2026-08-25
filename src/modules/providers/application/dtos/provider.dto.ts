@@ -172,9 +172,20 @@ export class CreateProviderDto {
   @IsArray()
   requestedServices?: string[];
 
+  /**
+   * `@Type(() => Object)` ليس زخرفاً.
+   *
+   * مع `transform: true` يقرأ class-transformer نوع الخاصّية المنعكس، وهو
+   * `Array` لِـ `Record<string, any>[]` — فيطبّقه على **كل عنصر** أيضاً
+   * ويحوّل `{service_id:'oil', price:45000}` إلى `[]`. النتيجة: الخدمات
+   * والأسعار التي ملأها المزوّد في الموقع تصل إلى الخادم مصفوفات فارغة،
+   * فتُحفظ وثيقته بلا خدمة واحدة ولا يظهر شيء في لوحته.
+   * `workingHours` نجت وحدها لأن لها `@Type(() => ProviderWorkingHourDto)`.
+   */
   @ApiPropertyOptional({ type: [Object] })
   @IsOptional()
   @IsArray()
+  @Type(() => Object)
   services_list?: Record<string, any>[];
 
   @ApiPropertyOptional()
@@ -240,6 +251,7 @@ export class CreateProviderDto {
   @ApiPropertyOptional({ type: [Object] })
   @IsOptional()
   @IsArray()
+  @Type(() => Object)
   shopPhotos?: Record<string, any>[];
 
   @ApiPropertyOptional({ type: [ProviderWorkingHourDto] })
