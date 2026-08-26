@@ -20,6 +20,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let message = 'Internal server error';
 
+    // رسالة داخلية تُعرض للعميل (`exception.message`) تسرّب تفاصيل تقنية —
+    // أوضحها أخطاء Mongoose/BSON مثل «Cast to ObjectId failed…». الاستثناءات
+    // المقصودة (`HttpException`) تحمل رسالة مُعدّة للعرض فتمرّ؛ أمّا الخطأ غير
+    // المتوقّع فيُسجَّل كاملاً ويعود للعميل برسالة عامّة لا نصّ قاعدة البيانات.
     if (exception instanceof HttpException) {
       status = exception.getStatus();
       const exceptionResponse = exception.getResponse();
@@ -27,12 +31,12 @@ export class AllExceptionsFilter implements ExceptionFilter {
         typeof exceptionResponse === 'string'
           ? exceptionResponse
           : (exceptionResponse as any).message || message;
-    } else if (exception instanceof Error) {
-      message = exception.message;
     }
 
     this.logger.error(
-      `Unhandled Exception: ${message}`,
+      `Unhandled Exception: ${
+        exception instanceof Error ? exception.message : message
+      }`,
       exception instanceof Error ? exception.stack : 'No stack trace',
     );
 

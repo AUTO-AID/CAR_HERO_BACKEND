@@ -17,17 +17,20 @@ import { ChatService } from '../../application/services/chat.service';
 import { JwtAuthGuard } from '../../../../core/guards/jwt-auth.guard';
 import { CurrentUser } from '../../../../core/decorators/current-user.decorator';
 import { CreateChatDto } from '../../application/dtos/chat.dto';
-import { chatIdentityOf } from '../../application/chat-identity';
+import { ChatIdentityService } from '../../application/chat-identity';
 
 @Controller('chat')
 @UseGuards(JwtAuthGuard)
 export class ChatController {
-  constructor(private readonly chatService: ChatService) {}
+  constructor(
+    private readonly chatService: ChatService,
+    private readonly chatIdentity: ChatIdentityService,
+  ) {}
 
   @Post('conversations')
   async startConversation(@CurrentUser() user: any, @Body() dto: CreateChatDto) {
     const chat = await this.chatService.getOrCreateChat(
-      chatIdentityOf(user),
+      await this.chatIdentity.resolve(user),
       dto.participantId,
       dto.orderId,
     );
@@ -36,7 +39,7 @@ export class ChatController {
 
   @Get('conversations')
   async getMyConversations(@CurrentUser() user: any) {
-    const chats = await this.chatService.getUserChats(chatIdentityOf(user));
+    const chats = await this.chatService.getUserChats(await this.chatIdentity.resolve(user));
     return { success: true, data: chats };
   }
 
@@ -49,7 +52,7 @@ export class ChatController {
   ) {
     const result = await this.chatService.getMessages(
       chatId,
-      chatIdentityOf(user),
+      await this.chatIdentity.resolve(user),
       page || 1,
       limit || 20,
     );
