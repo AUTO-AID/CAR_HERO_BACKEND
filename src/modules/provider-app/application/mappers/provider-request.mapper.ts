@@ -110,7 +110,13 @@ export class ProviderRequestMapper {
         // المعرّف لا الاسم وحده: به تُفتح محادثة الطلب من طرف الفنّي
         // (`participantId` في `POST /chat/conversations`). بدونه لا سبيل
         // للردّ على رسالة العميل إلا برسالة نصّية خارج التطبيق.
-        id: this.idOf(anyOrder.user) ?? order.userId ?? null,
+        //
+        // **`order.userId` أولاً**: كائن `anyOrder.user` يبنيه المستودع
+        // بـ`{ fullName, phoneNumber }` **بلا معرّف** (mapToEntity)، فـ`idOf`
+        // عليه يُرجع "[object Object]" — قيمة صادقة تمنع السقوط إلى البديل —
+        // فيصل `customer.id` فاسداً ويرفضه الشات بـ«لا تتوفّر بيانات كافية».
+        // `order.userId` سلسلة ObjectId موثوقة دائماً.
+        id: order.userId ?? this.idOf(anyOrder.user) ?? null,
         name: anyOrder.user?.fullName ?? null,
         phone: anyOrder.user?.phoneNumber ?? null,
       },
