@@ -43,6 +43,7 @@ import { GetVehicleDistributionUseCase } from './application/use-cases/get-vehic
 import { GetVehicleYearStatsUseCase } from './application/use-cases/get-vehicle-year-stats.use-case';
 import { VehiclesController } from './presentation/controllers/vehicles.controller';
 import { AdminVehiclesController } from './presentation/controllers/admin-vehicles.controller';
+import { SubscriptionsModule } from '../subscriptions/subscriptions.module';
 
 @Module({
   imports: [
@@ -51,6 +52,8 @@ import { AdminVehiclesController } from './presentation/controllers/admin-vehicl
       { name: MaintenanceRecord.name, schema: MaintenanceRecordSchema },
       { name: VehicleReminder.name, schema: VehicleReminderSchema },
     ]),
+    // الاعتماد يحسم حدّ المركبة الواحدة للباقة المجانية (CreateVehicleUseCase)
+    SubscriptionsModule,
   ],
   controllers: [VehiclesController, AdminVehiclesController],
   providers: [

@@ -2,12 +2,18 @@
  * Create Vehicle Use Case
  * Creates a new vehicle for the authenticated user
  */
-import { Inject, Injectable, BadRequestException } from '@nestjs/common';
+import { Inject, Injectable, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
 import { IVehicleRepository } from '../../domain/repositories/vehicle.repository.interface';
 import { VehicleEntity } from '../../domain/entities/vehicle.entity';
 import { CreateVehicleDto } from '../dto/create-vehicle.dto';
+import { CheckSubscriptionStatusUseCase } from '../../../subscriptions/application/use-cases/check-subscription-status.use-case';
+
+/** الحدّ المطلق — يُطبَّق على المشتركين أيضاً، لا سقف تحته وحده */
+const ABSOLUTE_MAX_VEHICLES = 10;
+/** «سيارة واحدة» في الباقة المجانية — نصّ الموقع حرفياً */
+const FREE_TIER_MAX_VEHICLES = 1;
 
 @Injectable()
 export class CreateVehicleUseCase {
@@ -16,6 +22,7 @@ export class CreateVehicleUseCase {
     private readonly vehicleRepository: IVehicleRepository,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
+    private readonly checkSubscriptionStatus: CheckSubscriptionStatusUseCase,
   ) {}
 
   async execute(dto: CreateVehicleDto, userId: string): Promise<VehicleEntity> {
@@ -30,10 +37,24 @@ export class CreateVehicleUseCase {
       throw new BadRequestException('VIN must be exactly 17 characters');
     }
 
-    // Check if user has reached vehicle limit (optional business rule)
     const vehicleCount = await this.vehicleRepository.countByUserId(userId);
-    if (vehicleCount >= 10) {
-      throw new BadRequestException('Maximum number of vehicles reached (10). Please remove a vehicle first.');
+    if (vehicleCount >= ABSOLUTE_MAX_VEHICLES) {
+      throw new BadRequestException(`Maximum number of vehicles reached (${ABSOLUTE_MAX_VEHICLES}). Please remove a vehicle first.`);
+    }
+
+    /**
+     * «سيارة واحدة» في الباقة المجانية مقابل «سيارات غير محدودة» في المميزة
+     * (حتى السقف المطلق أعلاه) — نصّ الموقع حرفياً. العميل يعرض نفس الرسالة
+     * كجدار اشتراك قبل هذه النقطة أصلاً؛ هذا الحارس هو الفاحص الحقيقي —
+     * تجاوز الواجهة باستدعاء الـAPI مباشرة لا يفتح ثغرة.
+     */
+    if (vehicleCount >= FREE_TIER_MAX_VEHICLES) {
+      const status = await this.checkSubscriptionStatus.execute(userId);
+      if (!status.isActive) {
+        throw new ForbiddenException(
+          'Free plan is limited to 1 vehicle. Subscribe to Premium for unlimited vehicles.',
+        );
+      }
     }
 
     // If this is the first vehicle, make it default automatically

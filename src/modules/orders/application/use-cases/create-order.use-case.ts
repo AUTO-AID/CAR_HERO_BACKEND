@@ -1,4 +1,4 @@
-import { ConflictException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
@@ -16,6 +16,8 @@ import { StatusHistoryService } from '../../../status-history/application/servic
 import { SchedulingAvailabilityService } from '../services/scheduling-availability.service';
 import { ENGAGING_ORDER_STATUSES } from '../../domain/services/order-state-machine';
 import { Provider, ProviderDocument } from '../../../providers/infrastructure/persistence/mongoose/schemas/provider.schema';
+import { CheckSubscriptionStatusUseCase } from '../../../subscriptions/application/use-cases/check-subscription-status.use-case';
+import { PREMIUM_ONLY_SERVICE_CATEGORIES } from '../../../../config/subscription-plan-catalog';
 
 @Injectable()
 export class CreateOrderUseCase {
@@ -33,6 +35,7 @@ export class CreateOrderUseCase {
     private readonly schedulingAvailabilityService: SchedulingAvailabilityService,
     private readonly eventEmitter: EventEmitter2,
     private readonly config: ConfigService,
+    private readonly checkSubscriptionStatus: CheckSubscriptionStatusUseCase,
   ) {}
 
   /**
@@ -53,6 +56,22 @@ export class CreateOrderUseCase {
     const service = await this.serviceModel.findById(dto.serviceId);
     if (!service) {
       throw new NotFoundException('Service not found');
+    }
+
+    /**
+     * «خدمات كاملة (صيانة، غسيل، إلخ)» حصراً في الباقة المميزة — نصّ الموقع
+     * حرفياً. الفحص هنا هو الحارس الحقيقي؛ العميل يعرض جدار اشتراك قبل هذه
+     * النقطة أصلاً (لتجربة أفضل)، لكن تجاوزه باستدعاء الـAPI مباشرة يجب ألا
+     * ينجح — والفئات هنا (`PREMIUM_ONLY_SERVICE_CATEGORIES`) مصدرها الوحيد
+     * `subscription-plan-catalog.ts`.
+     */
+    if (PREMIUM_ONLY_SERVICE_CATEGORIES.includes(service.category as any) && dto.userId) {
+      const status = await this.checkSubscriptionStatus.execute(dto.userId);
+      if (!status.isActive) {
+        throw new ForbiddenException(
+          'This service requires an active Premium subscription.',
+        );
+      }
     }
 
     if (dto.requestedProviderId && dto.scheduleTime) {

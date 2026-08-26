@@ -30,6 +30,7 @@ import { Provider, ProviderSchema } from '../providers/infrastructure/persistenc
 import { SchedulingAvailabilityService } from './application/services/scheduling-availability.service';
 import { GetOrderTrackingUseCase } from './application/use-cases/get-order-tracking.use-case';
 import { ConfirmOrderCompletionUseCase } from './application/use-cases/confirm-order-completion.use-case';
+import { SubscriptionsModule } from '../subscriptions/subscriptions.module';
 
 @Module({
   imports: [
@@ -42,6 +43,8 @@ import { ConfirmOrderCompletionUseCase } from './application/use-cases/confirm-o
     StatusHistoryModule,
     forwardRef(() => NotificationsModule),
     forwardRef(() => ReviewsModule),
+    // الاعتماد يحسم بوّابة «الخدمات الكاملة» (صيانة/غسيل) في CreateOrderUseCase
+    SubscriptionsModule,
   ],
   controllers: [OrdersController],
   providers: [

@@ -11,6 +11,7 @@ import { Admin } from '../../modules/admin/infrastructure/persistence/mongoose/s
 import { SubscriptionPlan } from '../../modules/subscriptions/infrastructure/persistence/mongoose/schemas/subscription-plan.schema';
 import { Service } from '../../modules/services/infrastructure/persistence/mongoose/schemas/service.schema';
 import { SERVICE_CATALOG } from '../../config/service-catalog';
+import { SUBSCRIPTION_PLAN_CATALOG } from '../../config/subscription-plan-catalog';
 import { Role } from '../../core/enums/roles.enum';
 import { ADMIN_PERMISSIONS } from '../../core/constants';
 
@@ -96,82 +97,62 @@ async function seedAdmin(app: any) {
     }
   }
 }
+/**
+ * خطط الاشتراك تُبذر من `SUBSCRIPTION_PLAN_CATALOG` بنفس نمط `seedServices`
+ * تماماً — upsert على مفتاح ثابت (`metadata.planKey`) لا على السعر ولا
+ * الاسم، وتعطيل ما خرج عن الكتالوج بدل حذفه لأن اشتراكات قديمة
+ * (`user_subscriptions`) تشير إلى معرّفات الوثائق القديمة.
+ *
+ * كانت هذه الدالة تتخطّى البذر كلياً إن وُجدت أي وثيقة (`existingPlans ===
+ * 0`) — فالثلاث وثائق «البرونزية/الفضية/الذهبية» (٠/٩٩/٧٩٩ ل.س) التي بذرها
+ * `SubscriptionSeederService` تلقائياً عند أول إقلاع (محذوفة الآن، كانت
+ * `OnModuleInit` منفصلة تماماً عن هذا الملف) كانت تمنع هذه الدالة من الكتابة
+ * إلى الأبد. الاسمان معاً (وثالثٌ هنا قبل هذا الإصلاح) لا علاقة لهما بنصّ
+ * الموقع («الباقة المجانية» / «الباقة المميزة»، ٠ و١٥,٠٠٠ ل.س) — وهو ما يجب
+ * أن يظهر في كل مكان الآن.
+ */
 async function seedSubscriptionPlans(app: any) {
   const planModel: Model<SubscriptionPlan> = app.get(getModelToken(SubscriptionPlan.name));
 
-  const existingPlans = await planModel.countDocuments().exec();
+  const canonicalIds: any[] = [];
 
-  if (existingPlans === 0) {
-    await planModel.create([
-      {
-        name: 'Basic',
-        nameAr: 'أساسي',
-        description: 'Basic roadside assistance',
-        descriptionAr: 'مساعدة الطريق الأساسية',
-        price: 99,
-        durationDays: 30,
-        serviceDiscount: 5,
-        freeEmergencyServices: 2,
-        freeTowingKm: 10,
-        isActive: true,
-        sortOrder: 1,
-        benefits: [
-          { name: '5% discount on services', nameAr: 'خصم 5% على الخدمات' },
-          { name: '2 free emergency services/month', nameAr: '2 خدمات طوارئ مجانية/شهر' },
-          { name: '10km free towing', nameAr: '10 كم سحب مجاني' },
-        ],
-      },
-      {
-        name: 'Premium',
-        nameAr: 'بريميوم',
-        description: 'Premium roadside assistance with priority support',
-        descriptionAr: 'مساعدة الطريق المميزة مع دعم أولوي',
-        price: 199,
-        durationDays: 30,
-        serviceDiscount: 15,
-        freeEmergencyServices: 5,
-        freeTowingKm: 50,
-        prioritySupport: true,
-        loyaltyPointsMultiplier: 2,
-        isActive: true,
-        isFeatured: true,
-        sortOrder: 2,
-        benefits: [
-          { name: '15% discount on services', nameAr: 'خصم 15% على الخدمات' },
-          { name: '5 free emergency services/month', nameAr: '5 خدمات طوارئ مجانية/شهر' },
-          { name: '50km free towing', nameAr: '50 كم سحب مجاني' },
-          { name: 'Priority support', nameAr: 'دعم أولوي' },
-          { name: '2x loyalty points', nameAr: 'نقاط ولاء مضاعفة' },
-        ],
-      },
-      {
-        name: 'VIP',
-        nameAr: 'VIP',
-        description: 'VIP package with unlimited benefits',
-        descriptionAr: 'باقة VIP مع مزايا غير محدودة',
-        price: 499,
-        durationDays: 30,
-        serviceDiscount: 25,
-        freeEmergencyServices: 999,
-        freeTowingKm: 200,
-        prioritySupport: true,
-        loyaltyPointsMultiplier: 3,
-        isActive: true,
-        sortOrder: 3,
-        benefits: [
-          { name: '25% discount on services', nameAr: 'خصم 25% على الخدمات' },
-          { name: 'Unlimited emergency services', nameAr: 'خدمات طوارئ غير محدودة' },
-          { name: '200km free towing', nameAr: '200 كم سحب مجاني' },
-          { name: 'VIP priority support', nameAr: 'دعم VIP أولوي' },
-          { name: '3x loyalty points', nameAr: '3x نقاط ولاء' },
-        ],
-      },
-    ] as any);
+  for (const entry of SUBSCRIPTION_PLAN_CATALOG) {
+    const doc = await planModel
+      .findOneAndUpdate(
+        { 'metadata.planKey': entry.planKey },
+        {
+          $set: {
+            name: entry.name,
+            nameAr: entry.nameAr,
+            price: entry.price,
+            durationDays: entry.durationDays,
+            tier: entry.tier,
+            features: entry.features,
+            featuresAr: entry.featuresAr,
+            isActive: true,
+            sortOrder: entry.sortOrder,
+            'metadata.planKey': entry.planKey,
+          },
+        },
+        { upsert: true, new: true },
+      )
+      .exec();
 
-    console.log('✅ Subscription plans created');
-  } else {
-    console.log('ℹ️ Subscription plans already exist');
+    if (doc?._id) canonicalIds.push(doc._id);
   }
+
+  // الخطط القديمة («البرونزية/الفضية/الذهبية» وأي سواها) تُعطَّل لا تُحذف —
+  // اشتراكات قديمة تشير إلى معرّفاتها ولا يجوز أن تصير مرجعاً معطوباً.
+  const retired = await planModel
+    .updateMany(
+      { _id: { $nin: canonicalIds }, isActive: true },
+      { $set: { isActive: false } },
+    )
+    .exec();
+
+  console.log(
+    `✅ Subscription plans synced — ${SUBSCRIPTION_PLAN_CATALOG.length} active, ${retired.modifiedCount ?? 0} retired`,
+  );
 }
 
 /**
