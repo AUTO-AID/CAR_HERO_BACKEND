@@ -511,6 +511,15 @@ export class NearbyProviderDto {
   @IsEnum(ServiceCategory)
   category?: ServiceCategory;
 
+  /**
+   * عند وجوده: يُقصَر البحث على من يقدّم هذه الخدمة تحديداً (لا فئتها فقط)،
+   * ويحمل كل مزوّد راجع سعره الخاص بها — لشاشة اختيار مزوّد قبل الطلب.
+   */
+  @ApiPropertyOptional({ description: 'Restrict to providers offering this exact service, and attach their price for it' })
+  @IsOptional()
+  @IsMongoId()
+  serviceId?: string;
+
   @ApiPropertyOptional({ default: 20 })
   @IsOptional()
   @Type(() => Number)

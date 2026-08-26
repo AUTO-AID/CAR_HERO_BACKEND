@@ -69,6 +69,14 @@ export class ProviderDispatchService {
     return this.config.get<number>('providerApp.offerWindowSeconds') ?? 45;
   }
 
+  /**
+   * نافذة أطول للطلب الموجَّه: لا بديل ينتظر خلفه، فمعقول أن يُمنح الفنّي
+   * المختار وقتاً أطول من عرض الطلب العادي (٤٥ ثانية) قبل أن يُعتبر رفضاً.
+   */
+  private get directRequestWindowSeconds(): number {
+    return this.config.get<number>('providerApp.directRequestWindowSeconds') ?? 90;
+  }
+
   /** سقف العروض داخل الجولة الواحدة — يمنع حرق عشرين فنّياً في دقيقتين */
   private get maxAttemptsPerRound(): number {
     return this.config.get<number>('providerApp.maxDispatchAttempts') ?? 5;
@@ -159,7 +167,14 @@ export class ProviderDispatchService {
       ]);
 
       if (assignee?.status === ProviderStatus.ONLINE && !heldOffer) {
-        await this.openOffer(order, { providerId: order.providerId }, 1, 1);
+        const isDirectRequest = !!(order.metadata as any)?.directRequest;
+        await this.openOffer(
+          order,
+          { providerId: order.providerId },
+          1,
+          1,
+          isDirectRequest ? this.directRequestWindowSeconds : undefined,
+        );
         return;
       }
 
@@ -319,6 +334,17 @@ export class ProviderDispatchService {
      */
     const offersOnOrder = await this.offers.findOpenForOrder(orderId);
     if (offersOnOrder.some((offer) => offer.isOpen())) return;
+
+    /**
+     * طلب موجَّه صراحةً لمزوّد اختاره العميل (`metadata.directRequest`،
+     * `CreateOrderUseCase`) — لا تصعيد لغيره عند الرفض أو انقضاء المهلة.
+     * كل مسارات إعادة التوزيع الستّة تمرّ من هنا (`closeAndRedispatch`)، فحارس
+     * واحد يمنعها جميعاً من البحث عن بديل لم يطلبه العميل أصلاً.
+     */
+    if ((order.metadata as any)?.directRequest) {
+      await this.abandonDirectRequest(order);
+      return;
+    }
 
     const plan = this.readPlan(order);
 
@@ -669,6 +695,49 @@ export class ProviderDispatchService {
     }
 
     await this.alertAdminsOfCoverageGap(order);
+  }
+
+  /**
+   * الفنّي الذي اختاره العميل صراحةً رفض الطلب أو لم يردّ خلال مهلته.
+   *
+   * **لا تُستدعى `abandon()` لهذه الحالة**: رمزها (`no_provider_available` /
+   * `booking_unconfirmed`) يُبنى عليه تقرير "فجوة تغطية" إداري (انظر تعليق
+   * `abandon` أعلاه) — وهذه ليست فجوة تغطية، بل قرار فنّي واحد بعينه على طلب
+   * صالح. رمز منفصل يحافظ على دقة ذلك التقرير، ولا نداء لـ
+   * `alertAdminsOfCoverageGap`: لا شيء نظامي يستحقّ تنبيه الإدارة هنا.
+   */
+  private async abandonDirectRequest(order: OrderEntity): Promise<void> {
+    await this.orderModel
+      .findByIdAndUpdate(order.id, {
+        $set: { 'metadata.cancellation.code': 'direct_request_declined' },
+        $unset: { provider: '' },
+      })
+      .exec();
+
+    await this.cancelOrder.execute(
+      order.id,
+      { reason: 'لم يقبل الفنّي المختار الطلب', cancelledBy: 'system' },
+      { _id: 'system', role: 'system' },
+      { suppressStatusNotice: true },
+    );
+
+    this.logger.warn(`Direct request declined for order ${order.orderNumber}`);
+
+    try {
+      await this.notifications.createNotification({
+        recipientId: order.userId,
+        recipientType: 'user',
+        ...notificationContent.directRequestDeclined(order.orderNumber),
+        type: NotificationType.ALERT,
+        data: {
+          event: 'order.direct_request_declined',
+          orderId: order.id,
+          orderNumber: order.orderNumber,
+        },
+      });
+    } catch (error: any) {
+      this.logger.error(`Direct-request-declined notification failed for order ${order.orderNumber}: ${error?.message ?? error}`);
+    }
   }
 
   /**

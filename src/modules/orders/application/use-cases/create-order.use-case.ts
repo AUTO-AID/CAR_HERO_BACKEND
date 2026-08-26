@@ -54,15 +54,35 @@ export class CreateOrderUseCase {
     if (!service) {
       throw new NotFoundException('Service not found');
     }
-    // الإسناد آليّ دائماً — لا يختار العميل فنّياً بعينه.
-    // ما يُختار هنا ليس إلا **المرشّح الأول**: يُبنى عليه سعر الطلب ويصله أول
-    // عرض، ثم يتولّى `ProviderDispatchService` الانتقال إلى التالي إن لم يردّ.
-    const provider = await this.findNearestAvailableProvider(
-      dto.serviceId,
-      dto.location.coordinates,
-      dto.scheduleTime,
-      service.estimatedDuration,
-    );
+
+    if (dto.requestedProviderId && dto.scheduleTime) {
+      // لا معنى لـ«اخترتُ هذا الفنّي الآن» على حجز بعد أيام — التوزيع
+      // بالجولات هو المناسب هناك (انظر `findNextCandidate`)، لا طلب موجَّه.
+      throw new NotFoundException('Choosing a specific provider is only available for instant requests');
+    }
+
+    let provider: any = null;
+    let isDirectRequest = false;
+
+    if (dto.requestedProviderId) {
+      // العميل اختار هذا المزوّد تحديداً من قائمة (أقرب مزوّدين يقدّمون هذه
+      // الخدمة فعلياً، بسعر كلٍّ منهم) — لا اسمٌ حرّ. يُتحقَّق من أهليّته هنا
+      // بنفس شروط `findNearestAvailableProvider` أدناه تماماً، ثم يُرسَل
+      // الطلب له وحده بلا تصعيد لغيره (`metadata.directRequest`،
+      // `ProviderDispatchService.redispatch`).
+      provider = await this.findRequestedProvider(dto.requestedProviderId, dto.serviceId);
+      isDirectRequest = true;
+    } else {
+      // الإسناد آليّ دائماً — لا يختار العميل فنّياً بعينه.
+      // ما يُختار هنا ليس إلا **المرشّح الأول**: يُبنى عليه سعر الطلب ويصله أول
+      // عرض، ثم يتولّى `ProviderDispatchService` الانتقال إلى التالي إن لم يردّ.
+      provider = await this.findNearestAvailableProvider(
+        dto.serviceId,
+        dto.location.coordinates,
+        dto.scheduleTime,
+        service.estimatedDuration,
+      );
+    }
 
     /**
      * الطلب الفوري بلا مرشّح **لا يُرفض**.
@@ -73,10 +93,16 @@ export class CreateOrderUseCase {
      *
      * والحجز المجدول يبقى على الرفض: موعده بعيد، وإن لم يوجد فنّي يقدّم
      * الخدمة أصلاً فلا معنى لقبول حجز لا أحد له.
+     *
+     * والطلب الموجَّه يُرفض أيضاً إن غاب المرشّح: هنا "المرشّح" هو اختيار
+     * العميل نفسه، لا مرشّح تلقائي — فشل التحقّق منه يعني أن لا طلب صالحاً
+     * يمكن إنشاؤه أصلاً (خلافاً للفوري العادي، حيث التوزيع يجد بديلاً لاحقاً).
      */
-    if (!provider && dto.scheduleTime) {
+    if (!provider && (dto.scheduleTime || isDirectRequest)) {
       throw new NotFoundException(
-        'No available provider found for this service near the requested location',
+        isDirectRequest
+          ? 'This provider is no longer available for this service. Please choose another.'
+          : 'No available provider found for this service near the requested location',
       );
     }
 
@@ -103,9 +129,14 @@ export class CreateOrderUseCase {
        * وسعرُ من يقبل يُكتب مرّة واحدة لحظة قبوله (`RespondToRequestUseCase`)،
        * لا مع كل إعادة إسناد: التحديث المتكرّر كان سيُظهر للعميل رقماً يتنقّل
        * بين المرشّحين وهو أمام شاشة «جارٍ البحث» قبل أن يلتزم أحد.
+       *
+       * **الطلب الموجَّه استثناء متعمَّد**: هنا لا "مرشّح" بل اختيارٌ صريح —
+       * العميل رأى سعر هذا المزوّد تحديداً في قائمة الاختيار واختار على
+       * أساسه، فسعره هو ما يُقفَل هنا لا سعر الكتالوج (نفس صيغة السقوط
+       * الافتراضي في `FindNearbyProvidersUseCase`).
        */
-      servicePrice: service.discountedPrice || service.basePrice,
-      total: service.discountedPrice || service.basePrice,
+      servicePrice: this.resolveOrderPrice(isDirectRequest, provider, dto.serviceId, service),
+      total: this.resolveOrderPrice(isDirectRequest, provider, dto.serviceId, service),
       userLocation: {
         type: 'Point',
         coordinates: dto.location.coordinates,
@@ -121,6 +152,10 @@ export class CreateOrderUseCase {
     (orderData as any).metadata = {
       serviceName,
       ...(dto.scheduleTime ? { scheduledDurationMinutes: service.estimatedDuration } : {}),
+      // علامة دائمة تُقرأ في `ProviderDispatchService.redispatch` لمنع أي
+      // تصعيد لمزوّد آخر عند الرفض/الانتهاء — منفصلة عمداً عن
+      // `metadata.dispatch.*` المؤقّتة (تلك تُمحى/تُعاد جزئياً بين الجولات).
+      ...(isDirectRequest ? { directRequest: true } : {}),
     };
 
     // 3. Save Order
@@ -332,5 +367,56 @@ export class CreateOrderUseCase {
     }
 
     return null;
+  }
+
+  /**
+   * السعر المقفَل على الطلب: سعر المزوّد المختار صراحةً في الطلب الموجَّه
+   * (هو ما رآه العميل واختار على أساسه)، وسعر الكتالوج في كل ما عداه —
+   * نفس صيغة السقوط الافتراضي في `FindNearbyProvidersUseCase.execute`
+   * و`servicePrice()` بالعميل.
+   */
+  private resolveOrderPrice(
+    isDirectRequest: boolean,
+    provider: any,
+    serviceId: string,
+    service: ServiceDocument,
+  ): number {
+    const catalogPrice = service.discountedPrice || service.basePrice;
+    if (!isDirectRequest) return catalogPrice;
+    const ownPrice = Number((provider?.servicePrices || {})[serviceId]) || 0;
+    return ownPrice > 0 ? ownPrice : catalogPrice;
+  }
+
+  /**
+   * تحقّق أهليّة المزوّد الذي اختاره العميل صراحةً — نفس شروط
+   * `findNearestAvailableProvider` بالضبط (متّصل، يقدّم هذه الخدمة تحديداً
+   * ولم يوقفها، غير مشغول)، لكن على مزوّد بعينه لا بحثاً جغرافياً. فشل أي
+   * شرط يعني أن الاختيار لم يعد صالحاً — لا بديل تلقائياً هنا خلافاً للطلب
+   * العادي، لأن "المرشّح" هو اختيار العميل نفسه.
+   */
+  private async findRequestedProvider(providerId: string, serviceId: string) {
+    if (!Types.ObjectId.isValid(providerId) || !Types.ObjectId.isValid(serviceId)) {
+      return null;
+    }
+
+    const busyProviderIds = await this.orderRepository.findProviderIdsWithActiveOrders(
+      ENGAGING_ORDER_STATUSES,
+    );
+    if (busyProviderIds.includes(providerId)) return null;
+
+    return this.providerModel
+      .findOne({
+        _id: new Types.ObjectId(providerId),
+        isActive: { $ne: false },
+        isApproved: true,
+        status: ProviderStatus.ONLINE,
+        services: new Types.ObjectId(serviceId),
+        $or: [
+          { [`serviceAvailability.${serviceId}`]: { $exists: false } },
+          { [`serviceAvailability.${serviceId}`]: { $ne: false } },
+        ],
+      })
+      .lean()
+      .exec();
   }
 }
