@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsOptional, IsObject, IsDateString, IsArray } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsObject, IsDateString, IsArray, IsMongoId } from 'class-validator';
 
 class LocationDto {
   @ApiProperty({ example: [31.2357, 30.0444], description: '[longitude, latitude]' })
@@ -8,12 +8,14 @@ class LocationDto {
 }
 
 /**
- * لا يوجد `providerId` هنا عن قصد.
- *
- * الإسناد آليّ بالكامل: الخادم يبحث عن الأقرب المتاح ثم يعرض الطلب فنّياً بعد
- * فنّي (`ProviderDispatchService`). السماح للعميل باختيار فنّي بعينه كان يعطّل
- * هذه السلسلة — الطلب يعلق عند من اختاره العميل ولو كان مغلقاً تطبيقه — ويفتح
- * باب طلبٍ مُوجَّه إلى فنّي لا يقدّم الخدمة أصلاً.
+ * لا `providerId` عام هنا — الإسناد الآليّ لا يزال كما هو. الاستثناء الوحيد
+ * هو `requestedProviderId` أدناه: العميل اختار هذا المزوّد تحديداً من قائمة
+ * (أقرب مزوّدين يقدّمون الخدمة فعلياً، مع سعر كلٍّ منهم) وليس اسماً حرّاً —
+ * `CreateOrderUseCase` يتحقّق أنه متّصل ويقدّم الخدمة وغير مشغول قبل قبوله،
+ * والطلب يُرسَل له وحده بلا تصعيد لغيره عند الرفض (`ProviderDispatchService`،
+ * `metadata.directRequest`). هذا يختلف جوهرياً عمّا رفضه هذا التعليق سابقاً:
+ * ذاك كان يسمح باسم فنّي حرّ بلا تحقّق يُعطّل سلسلة التوزيع الآلي للطلب
+ * العادي؛ هذا مسار منفصل صراحةً لا يمسّ ذلك الطلب العادي بشيء.
  */
 export class CreateOrderDto {
   @ApiPropertyOptional({ example: '60b8d295f1d293001f3e4c8a', description: 'Injected from JWT for customer requests' })
@@ -44,4 +46,9 @@ export class CreateOrderDto {
   @IsString()
   @IsOptional()
   notes?: string;
+
+  @ApiPropertyOptional({ description: 'Provider the customer explicitly chose from the nearby-with-price list. Request goes to them alone.' })
+  @IsMongoId()
+  @IsOptional()
+  requestedProviderId?: string;
 }

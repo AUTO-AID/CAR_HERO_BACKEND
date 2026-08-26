@@ -4,14 +4,19 @@ import { Model, Types } from 'mongoose';
 import { IProviderRepository } from '../../domain/repositories/provider.repository.interface';
 import { ProviderEntity } from '../../domain/entities/provider.entity';
 import { Provider, ProviderDocument } from '../persistence/mongoose/schemas/provider.schema';
+import { Order, OrderDocument } from '../../../orders/infrastructure/persistence/mongoose/schemas/order.schema';
 import { NearbyProviderDto, ProviderQueryDto } from '../../application/dtos/provider.dto';
 import { getPaginationParams } from '../../../../core/utils/pagination.util';
 import { ProviderStatus, RegistrationStatus } from '../../../../core/enums/status.enum';
+import { ENGAGING_ORDER_STATUSES } from '../../../orders/domain/services/order-state-machine';
 
 @Injectable()
 export class MongooseProviderRepository implements IProviderRepository {
   constructor(
     @InjectModel(Provider.name) private readonly providerModel: Model<ProviderDocument>,
+    // مسجَّل أصلاً في ProvidersModule (لا استيراد لوحدة الطلبات، لا دورة) —
+    // يُستعمل لاستبعاد المزوّدين المشغولين من قائمة اختيار مزوّد لخدمة معيّنة.
+    @InjectModel(Order.name) private readonly orderModel: Model<OrderDocument>,
   ) {}
 
   private ensureObjectId(id: string): void {
@@ -112,8 +117,42 @@ export class MongooseProviderRepository implements IProviderRepository {
   }
 
   async findNearby(dto: NearbyProviderDto): Promise<(ProviderEntity & { distance: number })[]> {
-    const { longitude, latitude, maxDistanceKm = 10, category, limit = 20 } = dto;
+    const { longitude, latitude, maxDistanceKm = 10, category, serviceId, limit = 20 } = dto;
     const maxDistanceMeters = maxDistanceKm * 1000;
+
+    const query: Record<string, any> = {
+      isActive: true,
+      isApproved: true,
+      status: ProviderStatus.ONLINE,
+    };
+
+    if (category) {
+      query.serviceCategories = category;
+    }
+
+    /**
+     * قائمة اختيار مزوّد لخدمة معيّنة: يُقصَر البحث على من يقدّمها فعلياً
+     * ولم يوقفها (`serviceAvailability`)، ونفس استبعاد المشغولين المستعمل في
+     * `findNearestAvailableProvider` (create-order.use-case.ts) — مزوّد
+     * مشغول لا يصلح خياراً قابلاً للاختيار مهما كان الأقرب.
+     */
+    if (serviceId && Types.ObjectId.isValid(serviceId)) {
+      query.services = new Types.ObjectId(serviceId);
+      query.$or = [
+        { [`serviceAvailability.${serviceId}`]: { $exists: false } },
+        { [`serviceAvailability.${serviceId}`]: { $ne: false } },
+      ];
+
+      const busyProviderIds = (
+        await this.orderModel.distinct('provider', {
+          status: { $in: ENGAGING_ORDER_STATUSES },
+          provider: { $ne: null },
+        })
+      ).filter(Boolean);
+      if (busyProviderIds.length) {
+        query._id = { $nin: busyProviderIds };
+      }
+    }
 
     const pipeline: any[] = [
       {
@@ -122,19 +161,11 @@ export class MongooseProviderRepository implements IProviderRepository {
           distanceField: 'distance',
           maxDistance: maxDistanceMeters,
           spherical: true,
-          query: {
-            isActive: true,
-            isApproved: true,
-            status: ProviderStatus.ONLINE,
-          },
+          query,
         },
       },
       { $limit: limit },
     ];
-
-    if (category) {
-      pipeline[0].$geoNear.query.serviceCategories = category;
-    }
 
     const docs = await this.providerModel.aggregate(pipeline).exec();
 

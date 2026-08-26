@@ -22,7 +22,6 @@ import { GetSubscriptionHistoryUseCase } from './application/use-cases/get-subsc
 import { ManageSubscriptionPlansUseCase } from './application/use-cases/manage-subscription-plans.use-case';
 import { ListSubscriptionsUseCase } from './application/use-cases/list-subscriptions.use-case';
 import { GetSubscriptionStatsUseCase } from './application/use-cases/get-subscription-stats.use-case';
-import { SubscriptionSeederService } from './infrastructure/persistence/mongoose/seeders/subscription-plan.seeder';
 
 import { WalletModule } from '../wallet/wallet.module';
 
@@ -54,7 +53,6 @@ const UseCases = [
       provide: ISubscriptionRepository,
       useClass: MongooseSubscriptionRepository,
     },
-    SubscriptionSeederService,
     ...UseCases,
   ],
   exports: [
