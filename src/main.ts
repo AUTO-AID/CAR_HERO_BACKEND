@@ -8,6 +8,7 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 import { setupSwagger } from './config/swagger.config';
+import { QuietConsoleLogger } from './core/logger/quiet-console-logger';
 import { join } from 'path';
 import helmet from 'helmet';
 import { existsSync, mkdirSync } from 'fs';
@@ -17,7 +18,9 @@ async function bootstrap() {
 
   // Create NestJS application
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    logger: ['error', 'warn', 'log', 'debug', 'verbose'],
+    logger: new QuietConsoleLogger({
+      logLevels: ['error', 'warn', 'log', 'debug', 'verbose'],
+    }),
   });
 
   // Setup EJS for Views (WhatsApp QR)
