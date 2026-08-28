@@ -112,28 +112,54 @@ export class OtpService {
     }
   }
 
+  private isDevEnvironment(): boolean {
+    return (process.env.NODE_ENV || 'development') !== 'production';
+  }
+
   /**
    * TEMPORARY (see config/dev-flags.ts): in development, when WhatsApp Web is
    * not linked, the OTP is written to the server log instead of being sent, so
    * flows that still generate an OTP remain testable. Production is unaffected.
    */
   private isDevOtpFallbackAllowed(): boolean {
-    return (
-      !this.whatsAppService.isClientReady() &&
-      (process.env.NODE_ENV || 'development') !== 'production'
-    );
+    return !this.whatsAppService.isClientReady() && this.isDevEnvironment();
   }
 
   private async dispatchOtp(phoneNumber: string, otpCode: string): Promise<void> {
     if (this.whatsAppService.isClientReady()) {
       const message = this.buildOTPMessage(otpCode);
-      await this.whatsAppService.sendMessage(phoneNumber, message);
-      return;
+      try {
+        await this.whatsAppService.sendMessage(phoneNumber, message);
+        return;
+      } catch (error) {
+        /**
+         * A *ready* client can still fail to send. `isReady` only flips back on
+         * a `disconnected` event, and the ways WhatsApp Web actually breaks —
+         * the Chromium page dying, the linked session being dropped, a protocol
+         * call timing out — often never emit one. The flag then says "connected"
+         * while every send throws.
+         *
+         * In production that has to surface: a user who never gets a code must
+         * not be told the code was sent. In development it meant the opposite
+         * problem — no account could be created at all, because registration was
+         * gated behind a browser session unrelated to the feature being built.
+         * So dev degrades to the same console fallback used when WhatsApp was
+         * never linked, and says plainly why it did.
+         */
+        if (!this.isDevEnvironment()) throw error;
+        const reason = error instanceof Error ? error.message : String(error);
+        this.logger.warn(`⚠️  [DEV] WhatsApp send failed (${reason}) — falling back to the log`);
+        this.logOtpToConsole(phoneNumber, otpCode);
+        return;
+      }
     }
     // بديل التطوير: طباعة الرمز في السجل بدل الإرسال عبر WhatsApp
-    this.logger.warn(
-      `⚠️  [DEV] WhatsApp not ready — OTP for ${phoneNumber} is: ${otpCode}`,
-    );
+    this.logger.warn(`⚠️  [DEV] WhatsApp not ready — falling back to the log`);
+    this.logOtpToConsole(phoneNumber, otpCode);
+  }
+
+  private logOtpToConsole(phoneNumber: string, otpCode: string): void {
+    this.logger.warn(`⚠️  [DEV] OTP for ${phoneNumber} is: ${otpCode}`);
   }
 
   /**

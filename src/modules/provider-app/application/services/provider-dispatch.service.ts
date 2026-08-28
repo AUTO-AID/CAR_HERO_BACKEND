@@ -70,11 +70,14 @@ export class ProviderDispatchService {
   }
 
   /**
-   * نافذة أطول للطلب الموجَّه: لا بديل ينتظر خلفه، فمعقول أن يُمنح الفنّي
-   * المختار وقتاً أطول من عرض الطلب العادي (٤٥ ثانية) قبل أن يُعتبر رفضاً.
+   * نافذة الطلب الموجَّه — ثلاثون ثانية، أقصر من عرض الجولات لا أطول.
+   *
+   * كانت تسعين على حجّة أن «لا بديل ينتظر خلفه». والحجّة انقلبت حين صار
+   * الاختيار بيد العميل: البديل موجود فعلاً — هو الاسمان الآخران في قائمته —
+   * وكل ثانية زائدة تؤخّر انتقاله إليهما وهو واقف على الطريق.
    */
   private get directRequestWindowSeconds(): number {
-    return this.config.get<number>('providerApp.directRequestWindowSeconds') ?? 90;
+    return this.config.get<number>('providerApp.directRequestWindowSeconds') ?? 30;
   }
 
   /** سقف العروض داخل الجولة الواحدة — يمنع حرق عشرين فنّياً في دقيقتين */
@@ -82,10 +85,13 @@ export class ProviderDispatchService {
     return this.config.get<number>('providerApp.maxDispatchAttempts') ?? 5;
   }
 
-  /** أنصاف الأقطار بالترتيب: الأقرب أولاً، ولا نتّسع إلا عند الفراغ */
+  /**
+   * سقف البحث الجغرافي. نطاق واحد (٢٠ كم) لا تدرّج — انظر `dispatchRadiiKm`
+   * في `env.config.ts`. تبقى قائمةً لأن الإعداد قد يحمل أكثر من قيمة.
+   */
   private get radiiMeters(): number[] {
     const radii = this.config.get<number[]>('providerApp.dispatchRadiiKm');
-    return (radii?.length ? radii : [10, 20, 30]).map((km) => km * 1000);
+    return (radii?.length ? radii : [20]).map((km) => km * 1000);
   }
 
   private get roundIntervalMs(): number {

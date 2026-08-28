@@ -39,15 +39,15 @@ export class CreateOrderUseCase {
   ) {}
 
   /**
-   * أبعد ما يُقبل فيه مرشّح — آخر أنصاف أقطار التوزيع.
+   * أبعد ما يُقبل فيه مرشّح — سقف التوزيع نفسه (٢٠ كم).
    *
-   * يُقرأ من نفس الإعداد لا من رقم مكتوب بجانبه: هذان الاستعلامان (هنا وفي
-   * `ProviderDispatchService.queryCandidates`) يجب أن يبقيا متّفقين، وافتراقهما
-   * هو ما أنتج العطل أصلاً.
+   * يُقرأ من نفس الإعداد لا من رقم مكتوب بجانبه: هذه الاستعلامات الثلاثة (هنا،
+   * و`findRequestedProvider`، و`ProviderDispatchService.queryCandidates`) يجب
+   * أن تبقى متّفقة، وافتراقها هو ما أنتج العطل أصلاً.
    */
   private get maxCandidateDistanceMeters(): number {
     const radii = this.config.get<number[]>('providerApp.dispatchRadiiKm');
-    const widestKm = radii?.length ? Math.max(...radii) : 30;
+    const widestKm = radii?.length ? Math.max(...radii) : 20;
     return widestKm * 1000;
   }
 
@@ -89,7 +89,11 @@ export class CreateOrderUseCase {
       // بنفس شروط `findNearestAvailableProvider` أدناه تماماً، ثم يُرسَل
       // الطلب له وحده بلا تصعيد لغيره (`metadata.directRequest`،
       // `ProviderDispatchService.redispatch`).
-      provider = await this.findRequestedProvider(dto.requestedProviderId, dto.serviceId);
+      provider = await this.findRequestedProvider(
+        dto.requestedProviderId,
+        dto.serviceId,
+        dto.location?.coordinates,
+      );
       isDirectRequest = true;
     } else {
       // الإسناد آليّ دائماً — لا يختار العميل فنّياً بعينه.
@@ -413,7 +417,11 @@ export class CreateOrderUseCase {
    * شرط يعني أن الاختيار لم يعد صالحاً — لا بديل تلقائياً هنا خلافاً للطلب
    * العادي، لأن "المرشّح" هو اختيار العميل نفسه.
    */
-  private async findRequestedProvider(providerId: string, serviceId: string) {
+  private async findRequestedProvider(
+    providerId: string,
+    serviceId: string,
+    coordinates?: number[],
+  ) {
     if (!Types.ObjectId.isValid(providerId) || !Types.ObjectId.isValid(serviceId)) {
       return null;
     }
@@ -423,19 +431,36 @@ export class CreateOrderUseCase {
     );
     if (busyProviderIds.includes(providerId)) return null;
 
-    return this.providerModel
-      .findOne({
-        _id: new Types.ObjectId(providerId),
-        isActive: { $ne: false },
-        isApproved: true,
-        status: ProviderStatus.ONLINE,
-        services: new Types.ObjectId(serviceId),
-        $or: [
-          { [`serviceAvailability.${serviceId}`]: { $exists: false } },
-          { [`serviceAvailability.${serviceId}`]: { $ne: false } },
-        ],
-      })
-      .lean()
-      .exec();
+    const query: Record<string, any> = {
+      _id: new Types.ObjectId(providerId),
+      isActive: { $ne: false },
+      isApproved: true,
+      status: ProviderStatus.ONLINE,
+      services: new Types.ObjectId(serviceId),
+      $or: [
+        { [`serviceAvailability.${serviceId}`]: { $exists: false } },
+        { [`serviceAvailability.${serviceId}`]: { $ne: false } },
+      ],
+    };
+
+    /**
+     * سقف العشرين كيلومتراً يُفرض هنا أيضاً لا في القائمة وحدها.
+     *
+     * القائمة التي اختار منها العميل (`/providers/nearby`) محصورة بالسقف، لكن
+     * `requestedProviderId` معرّفٌ حرّ يصل من الشبكة: نداء مباشر بمعرّف فنّي في
+     * حلب كان يمرّ بلا فحص مسافة إطلاقاً — بينما لا يقبله الإسناد الآلي ولا
+     * التوزيع. والحارس هنا هو ما يجعل «لا يزيد عن ٢٠ كم» قاعدةَ خادم لا اتفاقاً
+     * مع الواجهة.
+     */
+    const [longitude, latitude] = coordinates ?? [];
+    if (typeof longitude === 'number' && typeof latitude === 'number') {
+      query.location = {
+        $geoWithin: {
+          $centerSphere: [[longitude, latitude], this.maxCandidateDistanceMeters / 6_378_100],
+        },
+      };
+    }
+
+    return this.providerModel.findOne(query).lean().exec();
   }
 }

@@ -76,7 +76,7 @@ describe('CreateOrderUseCase', () => {
         },
         {
           provide: ConfigService,
-          useValue: { get: (key: string) => (key === 'providerApp.dispatchRadiiKm' ? [10, 20, 30] : undefined) },
+          useValue: { get: (key: string) => (key === 'providerApp.dispatchRadiiKm' ? [20] : undefined) },
         },
         {
           provide: CheckSubscriptionStatusUseCase,
@@ -198,11 +198,12 @@ describe('CreateOrderUseCase', () => {
       } as any);
     };
 
-    it('يحدّ البحث بأوسع نصف قطر في التوزيع', async () => {
+    it('يحدّ البحث بسقف التوزيع نفسه — عشرين كيلومتراً', async () => {
       await runOrder();
 
-      // بلا سقف كان فنّي في حلب «أقرب» متاح لعميل في دمشق
-      expect(geoNearOf().maxDistance).toBe(30_000);
+      // بلا سقف كان فنّي في حلب «أقرب» متاح لعميل في دمشق. والرقم يُقرأ من
+      // `dispatchRadiiKm` لا يُكتب هنا: افتراق الاستعلامين هو أصل العطل.
+      expect(geoNearOf().maxDistance).toBe(20_000);
     });
 
     it('يستبعد المنشغلين بطلب قيد التنفيذ', async () => {
@@ -292,6 +293,55 @@ describe('CreateOrderUseCase', () => {
       );
       // ولا قيد `$ne: busy` — كان حارساً على حالة لا تُكتب
       expect(geoNearOf().query.status).toBeUndefined();
+    });
+  });
+
+  /**
+   * الطلب الموجَّه: العميل اختار فنّياً بعينه من «أقرب ثلاثة». المعرّف يصل من
+   * الشبكة، فالسقف الجغرافي يجب أن يُفرض على الخادم لا على القائمة وحدها.
+   */
+  describe('المزوّد الذي اختاره العميل', () => {
+    const CHOSEN_ID = '65f000000000000000000041';
+
+    const runDirect = () => {
+      mockServiceModel.findById.mockResolvedValue({
+        _id: '60b8d295f1d293001f3e4c8b',
+        name: 'Car Wash',
+        basePrice: 100,
+        estimatedDuration: 60,
+      });
+      return useCase.execute({
+        userId: 'user-id',
+        serviceId: '60b8d295f1d293001f3e4c8b',
+        location: { coordinates: [36.3, 33.5] },
+        requestedProviderId: CHOSEN_ID,
+      } as any);
+    };
+
+    it('يحصر الاختيار في عشرين كيلومتراً حول موقع العميل', async () => {
+      mockProviderModel.findOne = jest.fn().mockReturnValue({
+        lean: jest.fn().mockReturnThis(),
+        exec: jest.fn().mockResolvedValue({ _id: CHOSEN_ID, servicePrices: {} }),
+      });
+
+      await runDirect();
+
+      const [query] = mockProviderModel.findOne.mock.calls[0];
+      const [center, radians] = query.location.$geoWithin.$centerSphere;
+      expect(center).toEqual([36.3, 33.5]);
+      // نصف قطر الكرة بالراديان: ٢٠ كم ÷ نصف قطر الأرض
+      expect(radians * 6_378_100).toBeCloseTo(20_000, 0);
+      expect(query.status).toBe('online');
+    });
+
+    it('يرفض الطلب حين يكون المختار خارج النطاق', async () => {
+      // الاستعلام لا يطابق شيئاً: نفس ما يحدث لفنّي في حلب وعميل في دمشق
+      mockProviderModel.findOne = jest.fn().mockReturnValue({
+        lean: jest.fn().mockReturnThis(),
+        exec: jest.fn().mockResolvedValue(null),
+      });
+
+      await expect(runDirect()).rejects.toThrow('no longer available');
     });
   });
 });

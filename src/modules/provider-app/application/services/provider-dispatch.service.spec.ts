@@ -21,7 +21,8 @@ const BUSY_HOLDER_ID = '65f000000000000000000003';
 const CONFIG: Record<string, any> = {
   'providerApp.offerWindowSeconds': 45,
   'providerApp.maxDispatchAttempts': 5,
-  'providerApp.dispatchRadiiKm': [10, 20, 30],
+  'providerApp.dispatchRadiiKm': [20],
+  'providerApp.directRequestWindowSeconds': 30,
   'providerApp.roundIntervalSeconds': 60,
   'providerApp.searchDeadlineMinutes': 10,
   'providerApp.bookingDispatchFloorMinutes': 30,
@@ -430,6 +431,55 @@ describe('ProviderDispatchService — استئناف الجولة', () => {
       // مفتوح، فلا يبقى منه سجلّ عرض بحالة `rejected`
       const [pipeline] = providerModel.aggregate.mock.calls[0];
       expect(pipeline[0].$geoNear.query._id.$nin.map(String)).toContain(DECLINER_ID);
+    });
+  });
+
+  describe('نطاق البحث — عشرون كيلومتراً بلا تدرّج', () => {
+    it('يبحث على نصف قطر واحد لا ثلاثة', async () => {
+      await service.resumeSearch(ORDER_ID);
+
+      // التدرّج (١٠ ← ٢٠ ← ٣٠) كان يُنتج ثلاثة استعلامات عند الفراغ. الآن
+      // استعلام واحد: من ليس داخل العشرين ليس مرشّحاً أصلاً.
+      const [pipeline] = providerModel.aggregate.mock.calls[0];
+      expect(pipeline[0].$geoNear.maxDistance).toBe(20_000);
+    });
+
+    it('لا يوسّع النطاق حين لا يوجد مرشّح', async () => {
+      providerModel.aggregate.mockReturnValue({ exec: jest.fn().mockResolvedValue([]) });
+
+      await service.resumeSearch(ORDER_ID);
+
+      // محاولة واحدة ثم جولة تالية — لا زحف إلى ثلاثين كيلومتراً
+      expect(providerModel.aggregate).toHaveBeenCalledTimes(1);
+      expect(offers.create).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('نافذة الطلب الموجَّه', () => {
+    it('ثلاثون ثانية للفنّي الذي اختاره العميل', async () => {
+      orders.findById.mockResolvedValue({
+        ...pendingOrder(),
+        providerId: CANDIDATE_ID,
+        metadata: { ...pendingOrder().metadata, directRequest: true },
+      });
+      providerModel.findById.mockReturnValue({
+        select: jest.fn().mockReturnThis(),
+        lean: jest.fn().mockReturnThis(),
+        exec: jest.fn().mockResolvedValue({
+          _id: CANDIDATE_ID,
+          status: 'online',
+          location: { type: 'Point', coordinates: [36.31, 33.51] },
+        }),
+      });
+
+      await service.dispatchNewOrder(ORDER_ID);
+
+      const [created] = offers.create.mock.calls[0];
+      const windowMs = new Date(created.expiresAt).getTime() - new Date(created.offeredAt ?? Date.now()).getTime();
+      // تسعون ثانية كانت تؤخّر عودة العميل إلى قائمته بلا مقابل: البديل بيده
+      // أصلاً — الاسمان الآخران — لا خلف الفنّي في طابور الخادم.
+      expect(Math.round(windowMs / 1000)).toBeLessThanOrEqual(31);
+      expect(Math.round(windowMs / 1000)).toBeGreaterThanOrEqual(29);
     });
   });
 
