@@ -19,8 +19,8 @@ import { ParseObjectIdPipe } from '../../../../core/pipes/parse-objectid.pipe';
 import {
   CompleteRequestDto,
   ProviderLocationDto,
+  ProviderRegisterDeviceDto,
   ProviderRequestsQueryDto,
-  RegisterDeviceDto,
   RejectRequestDto,
   SetPresenceDto,
 } from '../../application/dtos';
@@ -103,7 +103,7 @@ export class ProviderAppController {
   @Post('device-token')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'تسجيل رمز الجهاز للإشعارات المدفوعة' })
-  async deviceToken(@CurrentUser() user: any, @Body() dto: RegisterDeviceDto) {
+  async deviceToken(@CurrentUser() user: any, @Body() dto: ProviderRegisterDeviceDto) {
     return this.registerDevice.execute(await this.providerContext.resolve(user), dto);
   }
 
