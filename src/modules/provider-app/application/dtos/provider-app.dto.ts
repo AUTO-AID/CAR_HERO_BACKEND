@@ -96,7 +96,7 @@ export class ProviderLocationDto {
   orderId?: string;
 }
 
-export class RegisterDeviceDto {
+export class ProviderRegisterDeviceDto {
   @ApiProperty({ description: 'رمز جهاز FCM/Expo لاستقبال الإشعارات' })
   @IsString()
   @MaxLength(500)

@@ -6,7 +6,7 @@ import {
   ProviderDocument,
 } from '../../../providers/infrastructure/persistence/mongoose/schemas/provider.schema';
 import { User, UserDocument } from '../../../users/infrastructure/persistence/mongoose/schemas/user.schema';
-import { RegisterDeviceDto } from '../dtos';
+import { ProviderRegisterDeviceDto } from '../dtos';
 import { ProviderContext } from '../services/provider-context.service';
 
 /**
@@ -25,7 +25,7 @@ export class RegisterDeviceTokenUseCase {
     private readonly userModel: Model<UserDocument>,
   ) {}
 
-  async execute(context: ProviderContext, dto: RegisterDeviceDto) {
+  async execute(context: ProviderContext, dto: ProviderRegisterDeviceDto) {
     const token = dto.token.trim();
 
     await Promise.all([

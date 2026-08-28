@@ -27,20 +27,30 @@ export class ChatController {
     private readonly chatIdentity: ChatIdentityService,
   ) {}
 
+  /**
+   * **بلا تغليف يدوي.** `TransformInterceptor` مسجَّل عالمياً في `core.module`
+   * ويلفّ كل ردّ بـ`{success,data,timestamp}`؛ فإضافة `{success,data}` هنا
+   * كانت تُنتج `{success,data:{success,data:<chat>}}`.
+   *
+   * والتطبيقان كانا يتعايشان معه بحيلة `created?.data || created` — أي أن
+   * العقد المعلن غير العقد المنفَّذ، وأول من يقرأ `id` مباشرةً يجده `undefined`
+   * بلا خطأ يدلّ عليه. نفس التصحيح الذي جرى في `notifications.controller`.
+   *
+   * الحيلة في الطرفين تبقى صحيحة بعد الإصلاح: `chat.data` تصير `undefined`
+   * فيسقط التعبير إلى `chat` نفسه.
+   */
   @Post('conversations')
   async startConversation(@CurrentUser() user: any, @Body() dto: CreateChatDto) {
-    const chat = await this.chatService.getOrCreateChat(
+    return this.chatService.getOrCreateChat(
       await this.chatIdentity.resolve(user),
       dto.participantId,
       dto.orderId,
     );
-    return { success: true, data: chat };
   }
 
   @Get('conversations')
   async getMyConversations(@CurrentUser() user: any) {
-    const chats = await this.chatService.getUserChats(await this.chatIdentity.resolve(user));
-    return { success: true, data: chats };
+    return this.chatService.getUserChats(await this.chatIdentity.resolve(user));
   }
 
   @Get(':chatId/messages')
@@ -50,13 +60,12 @@ export class ChatController {
     @Query('page') page: number,
     @Query('limit') limit: number,
   ) {
-    const result = await this.chatService.getMessages(
+    return this.chatService.getMessages(
       chatId,
       await this.chatIdentity.resolve(user),
       page || 1,
       limit || 20,
     );
-    return { success: true, ...result };
   }
 
   @Post('upload')
@@ -82,6 +91,6 @@ export class ChatController {
     
     const baseUrl = process.env.APP_URL || process.env.API_URL || 'http://localhost:3001';
     const fileUrl = `${baseUrl}/uploads/chat/${file.filename}`;
-    return { success: true, fileUrl };
+    return { fileUrl };
   }
 }

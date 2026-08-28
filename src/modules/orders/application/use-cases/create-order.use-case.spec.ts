@@ -21,6 +21,7 @@ describe('CreateOrderUseCase', () => {
   let mockProviderModel: any;
   let mockVehicleModel: any;
   let schedulingService: { assertAvailable: jest.Mock };
+  let subscriptionStatus: { execute: jest.Mock };
 
   const mockOrderRepository = {
     create: jest.fn(),
@@ -45,6 +46,9 @@ describe('CreateOrderUseCase', () => {
       }),
     };
     schedulingService = { assertAvailable: jest.fn() };
+    // حارس «الخدمات الكاملة للباقة المميّزة» — الخدمات المستعملة هنا ليست منها،
+    // فالاشتراك النشِط هو الوضع المحايد الذي لا يغيّر أياً من هذه الحالات.
+    subscriptionStatus = { execute: jest.fn().mockResolvedValue({ isActive: true }) };
     const mockNotificationsService = {
       sendOrderNotification: jest.fn(),
       createNotification: jest.fn(),
@@ -91,7 +95,7 @@ describe('CreateOrderUseCase', () => {
         },
         {
           provide: CheckSubscriptionStatusUseCase,
-          useValue: { execute: jest.fn().mockResolvedValue({ isActive: true }) },
+          useValue: subscriptionStatus,
         },
       ],
     }).compile();

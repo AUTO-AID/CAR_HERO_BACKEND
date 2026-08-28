@@ -55,6 +55,7 @@ export class WhatsAppWebService implements OnModuleInit, OnModuleDestroy {
       }),
       puppeteer: {
         headless: true,
+        protocolTimeout: 300000,
         args: [
           '--no-sandbox',
           '--disable-setuid-sandbox',
