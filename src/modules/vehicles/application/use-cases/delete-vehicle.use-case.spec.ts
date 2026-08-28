@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ForbiddenException, NotFoundException, BadRequestException } from '@nestjs/common';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { DeleteVehicleUseCase } from './delete-vehicle.use-case';
 import { IVehicleRepository } from '../../domain/repositories/vehicle.repository.interface';
@@ -75,14 +75,17 @@ describe('DeleteVehicleUseCase', () => {
       );
     });
 
-    it('should throw BadRequestException when deleting only default vehicle', async () => {
+    it('allows deleting the only default vehicle', async () => {
       vehicleRepository.belongsToUser.mockResolvedValue(true);
       vehicleRepository.findById.mockResolvedValue({ ...mockVehicle, isDefault: true });
       vehicleRepository.countByUserId.mockResolvedValue(1);
+      vehicleRepository.delete.mockResolvedValue(true);
 
-      await expect(useCase.execute('v1', 'user1')).rejects.toThrow(
-        'Cannot delete your only default vehicle. Please add another vehicle first.',
-      );
+      await useCase.execute('v1', 'user1');
+
+      expect(vehicleRepository.delete).toHaveBeenCalledWith('v1');
+      // Nothing to promote: it was the only vehicle, so the account ends empty.
+      expect(vehicleRepository.setAsDefault).not.toHaveBeenCalled();
     });
 
     it('should delete vehicle successfully', async () => {

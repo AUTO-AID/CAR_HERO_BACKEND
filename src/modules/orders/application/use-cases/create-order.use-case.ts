@@ -16,6 +16,7 @@ import { StatusHistoryService } from '../../../status-history/application/servic
 import { SchedulingAvailabilityService } from '../services/scheduling-availability.service';
 import { ENGAGING_ORDER_STATUSES } from '../../domain/services/order-state-machine';
 import { Provider, ProviderDocument } from '../../../providers/infrastructure/persistence/mongoose/schemas/provider.schema';
+import { Vehicle, VehicleDocument } from '../../../vehicles/infrastructure/persistence/mongoose/schemas/vehicle.schema';
 import { CheckSubscriptionStatusUseCase } from '../../../subscriptions/application/use-cases/check-subscription-status.use-case';
 import { PREMIUM_ONLY_SERVICE_CATEGORIES } from '../../../../config/subscription-plan-catalog';
 
@@ -30,6 +31,8 @@ export class CreateOrderUseCase {
     private readonly serviceModel: Model<ServiceDocument>,
     @InjectModel(Provider.name)
     private readonly providerModel: Model<ProviderDocument>,
+    @InjectModel(Vehicle.name)
+    private readonly vehicleModel: Model<VehicleDocument>,
     private readonly notificationsService: NotificationsService,
     private readonly statusHistoryService: StatusHistoryService,
     private readonly schedulingAvailabilityService: SchedulingAvailabilityService,
@@ -56,6 +59,18 @@ export class CreateOrderUseCase {
     const service = await this.serviceModel.findById(dto.serviceId);
     if (!service) {
       throw new NotFoundException('Service not found');
+    }
+
+    // A vehicle is mandatory: a customer cannot place an order before adding one.
+    // The DTO already rejects a missing/malformed id at the validation layer; here
+    // we confirm the vehicle actually exists and belongs to the requester, so a
+    // bogus or someone else's id cannot satisfy the requirement via a direct API
+    // call that bypasses the app UI.
+    const vehicle = await this.vehicleModel.findById(dto.vehicleId).lean();
+    if (!vehicle || (dto.userId && vehicle.owner?.toString() !== dto.userId)) {
+      throw new NotFoundException(
+        'Vehicle not found. Please add a vehicle to your account before ordering.',
+      );
     }
 
     /**

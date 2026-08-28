@@ -28,10 +28,12 @@ export class CreateOrderDto {
   @IsNotEmpty()
   serviceId: string;
 
-  @ApiPropertyOptional({ example: '60b8d295f1d293001f3e4c8d', description: 'ID of the vehicle for the service' })
-  @IsString()
-  @IsOptional()
-  vehicleId?: string;
+  // A customer must register a vehicle before ordering: the vehicle is required
+  // and validated for existence/ownership in CreateOrderUseCase.
+  @ApiProperty({ example: '60b8d295f1d293001f3e4c8d', description: 'ID of the vehicle for the service' })
+  @IsMongoId()
+  @IsNotEmpty()
+  vehicleId: string;
 
   @ApiPropertyOptional({ example: '2026-05-01T10:00:00Z', description: 'Scheduled time for the service' })
   @IsDateString()

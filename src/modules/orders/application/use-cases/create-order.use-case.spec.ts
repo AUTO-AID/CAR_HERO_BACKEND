@@ -9,14 +9,17 @@ import { OrderStatus, PaymentStatus } from '../../../../core/enums/status.enum';
 import { Service } from '../../../../modules/services/infrastructure/persistence/mongoose/schemas/service.schema';
 import { NotificationsService } from '../../../notifications/application/services/notifications.service';
 import { Provider } from '../../../providers/infrastructure/persistence/mongoose/schemas/provider.schema';
+import { Vehicle } from '../../../vehicles/infrastructure/persistence/mongoose/schemas/vehicle.schema';
 import { StatusHistoryService } from '../../../status-history/application/services/status-history.service';
 import { SchedulingAvailabilityService } from '../services/scheduling-availability.service';
+import { CheckSubscriptionStatusUseCase } from '../../../subscriptions/application/use-cases/check-subscription-status.use-case';
 
 describe('CreateOrderUseCase', () => {
   let useCase: CreateOrderUseCase;
   let repository: jest.Mocked<IOrderRepository>;
   let mockServiceModel: any;
   let mockProviderModel: any;
+  let mockVehicleModel: any;
   let schedulingService: { assertAvailable: jest.Mock };
 
   const mockOrderRepository = {
@@ -31,6 +34,15 @@ describe('CreateOrderUseCase', () => {
     mockProviderModel = {
       findById: jest.fn(),
       aggregate: jest.fn(),
+    };
+    // Every test orders as 'user-id'; the guard requires the vehicle to exist
+    // and belong to that user, so return one owned by 'user-id' by default.
+    mockVehicleModel = {
+      findById: jest.fn().mockReturnValue({
+        lean: jest
+          .fn()
+          .mockResolvedValue({ _id: 'vehicle-id', owner: { toString: () => 'user-id' } }),
+      }),
     };
     schedulingService = { assertAvailable: jest.fn() };
     const mockNotificationsService = {
@@ -54,6 +66,10 @@ describe('CreateOrderUseCase', () => {
           useValue: mockProviderModel,
         },
         {
+          provide: getModelToken(Vehicle.name),
+          useValue: mockVehicleModel,
+        },
+        {
           provide: NotificationsService,
           useValue: mockNotificationsService,
         },
@@ -72,6 +88,10 @@ describe('CreateOrderUseCase', () => {
         {
           provide: ConfigService,
           useValue: { get: (key: string) => (key === 'providerApp.dispatchRadiiKm' ? [10, 20, 30] : undefined) },
+        },
+        {
+          provide: CheckSubscriptionStatusUseCase,
+          useValue: { execute: jest.fn().mockResolvedValue({ isActive: true }) },
         },
       ],
     }).compile();

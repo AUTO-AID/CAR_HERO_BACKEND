@@ -59,6 +59,12 @@ const PREMIUM_FEATURES_AR = [
   'أولوية قصوى',
 ];
 
+// السنوي بنفس ميزات الشهري تماماً — قيمته المضافة هي **التوفير** لا ميزات
+// أخرى: ١٢×١٥,٠٠٠=١٨٠,٠٠٠ مقابل ١٥٠,٠٠٠ سنوياً ⇒ توفير ٣٠,٠٠٠ (شهران مجاناً).
+// نُبرزه سطراً صريحاً كي لا تبدو البطاقتان متطابقتين على العميل والأدمن.
+const PREMIUM_YEARLY_FEATURES = [...PREMIUM_FEATURES, 'Save 30,000 SYP a year (2 months free)'];
+const PREMIUM_YEARLY_FEATURES_AR = [...PREMIUM_FEATURES_AR, 'توفير ٣٠٬٠٠٠ ل.س سنوياً (شهران مجاناً)'];
+
 export const SUBSCRIPTION_PLAN_CATALOG: SubscriptionPlanCatalogEntry[] = [
   {
     planKey: 'free',
@@ -89,8 +95,8 @@ export const SUBSCRIPTION_PLAN_CATALOG: SubscriptionPlanCatalogEntry[] = [
     price: 150000,
     durationDays: 365,
     tier: 'gold',
-    features: PREMIUM_FEATURES,
-    featuresAr: PREMIUM_FEATURES_AR,
+    features: PREMIUM_YEARLY_FEATURES,
+    featuresAr: PREMIUM_YEARLY_FEATURES_AR,
     sortOrder: 3,
   },
 ];

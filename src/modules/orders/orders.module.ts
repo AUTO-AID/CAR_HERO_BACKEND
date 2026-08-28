@@ -27,6 +27,7 @@ import { NotificationsModule } from '../notifications/notifications.module';
 import { ReviewsModule } from '../reviews/reviews.module';
 import { StatusHistoryModule } from '../status-history/status-history.module';
 import { Provider, ProviderSchema } from '../providers/infrastructure/persistence/mongoose/schemas/provider.schema';
+import { Vehicle, VehicleSchema } from '../vehicles/infrastructure/persistence/mongoose/schemas/vehicle.schema';
 import { SchedulingAvailabilityService } from './application/services/scheduling-availability.service';
 import { GetOrderTrackingUseCase } from './application/use-cases/get-order-tracking.use-case';
 import { ConfirmOrderCompletionUseCase } from './application/use-cases/confirm-order-completion.use-case';
@@ -38,6 +39,7 @@ import { SubscriptionsModule } from '../subscriptions/subscriptions.module';
       { name: Order.name, schema: OrderSchema },
       { name: Service.name, schema: ServiceSchema },
       { name: Provider.name, schema: ProviderSchema },
+      { name: Vehicle.name, schema: VehicleSchema },
     ]),
     WalletModule,
     StatusHistoryModule,
