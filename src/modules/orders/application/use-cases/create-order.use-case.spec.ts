@@ -11,6 +11,7 @@ import { NotificationsService } from '../../../notifications/application/service
 import { Provider } from '../../../providers/infrastructure/persistence/mongoose/schemas/provider.schema';
 import { StatusHistoryService } from '../../../status-history/application/services/status-history.service';
 import { SchedulingAvailabilityService } from '../services/scheduling-availability.service';
+import { CheckSubscriptionStatusUseCase } from '../../../subscriptions/application/use-cases/check-subscription-status.use-case';
 
 describe('CreateOrderUseCase', () => {
   let useCase: CreateOrderUseCase;
@@ -18,6 +19,7 @@ describe('CreateOrderUseCase', () => {
   let mockServiceModel: any;
   let mockProviderModel: any;
   let schedulingService: { assertAvailable: jest.Mock };
+  let subscriptionStatus: { execute: jest.Mock };
 
   const mockOrderRepository = {
     create: jest.fn(),
@@ -33,6 +35,9 @@ describe('CreateOrderUseCase', () => {
       aggregate: jest.fn(),
     };
     schedulingService = { assertAvailable: jest.fn() };
+    // حارس «الخدمات الكاملة للباقة المميّزة» — الخدمات المستعملة هنا ليست منها،
+    // فالاشتراك النشِط هو الوضع المحايد الذي لا يغيّر أياً من هذه الحالات.
+    subscriptionStatus = { execute: jest.fn().mockResolvedValue({ isActive: true }) };
     const mockNotificationsService = {
       sendOrderNotification: jest.fn(),
       createNotification: jest.fn(),
@@ -72,6 +77,10 @@ describe('CreateOrderUseCase', () => {
         {
           provide: ConfigService,
           useValue: { get: (key: string) => (key === 'providerApp.dispatchRadiiKm' ? [10, 20, 30] : undefined) },
+        },
+        {
+          provide: CheckSubscriptionStatusUseCase,
+          useValue: subscriptionStatus,
         },
       ],
     }).compile();

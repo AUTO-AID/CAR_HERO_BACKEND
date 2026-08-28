@@ -49,16 +49,32 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.logger.log(`Chat client connected: ${client.id}`);
   }
 
+  /**
+   * الحضور يُعلَن داخل غرف المحادثة وحدها.
+   *
+   * `this.server.emit` يبثّ إلى **كل متّصل بالفضاء** — أي أن دخول أي مستخدم
+   * وخروجه كان يُذاع على كل من فتح محادثة في التطبيق، بمعرّفه. وهو نفس نوع
+   * التسريب الذي حُذف من `AppGateway` (`emitNewOrder` / `emitProviderStatus`).
+   *
+   * الغرف التي يشغلها المقبس هي بالضبط من يعنيه الأمر: طرف المحادثة الآخر.
+   */
   handleDisconnect(client: Socket) {
     for (const [userId, sockets] of this.onlineUsers.entries()) {
       if (sockets.has(client.id)) {
         sockets.delete(client.id);
         if (sockets.size === 0) {
           this.onlineUsers.delete(userId);
-          this.server.emit('user_offline', { userId });
+          this.broadcastPresence(client, 'user_offline', userId);
         }
         break;
       }
+    }
+  }
+
+  /** يبثّ إلى غرف المحادثة التي يشغلها هذا المقبس لا إلى الفضاء كلّه */
+  private broadcastPresence(client: Socket, event: string, userId: string) {
+    for (const room of client.rooms) {
+      if (room.startsWith('chat:')) this.server.to(room).emit(event, { userId });
     }
   }
 
@@ -80,8 +96,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
     const sockets = this.onlineUsers.get(userId);
     sockets?.add(client.id);
-    this.server.emit('user_online', { userId });
-    
+    // الغرفة وحدها لا الفضاء كلّه — انظر `handleDisconnect`
+    this.server.to(roomId).emit('user_online', { userId });
+
     return { success: true, roomId };
   }
 
