@@ -78,6 +78,12 @@ export class ProviderAppController {
       phone: provider.phone,
       email: provider.email ?? null,
       city: provider.city ?? null,
+      // موقع الورشة المسجَّل — نفس ما تُرجعه `home`. غيابه هنا كان يعني أن
+      // `refreshProfile` في التطبيق (يستبدل الملف كاملاً) يمحو الموقع الذي
+      // جاء مع `home`، فتفقده الشاشات التي تعتمده بديلاً عن GPS الجهاز.
+      location: provider.location?.coordinates?.length === 2
+        ? { longitude: provider.location.coordinates[0], latitude: provider.location.coordinates[1] }
+        : null,
       status: provider.status,
       isApproved: provider.isApproved,
       isActive: provider.isActive,

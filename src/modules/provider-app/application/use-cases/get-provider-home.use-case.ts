@@ -76,6 +76,17 @@ export class GetProviderHomeUseCase {
         status: provider.status,
         isApproved: provider.isApproved,
         lastOnlineAt: provider.lastOnlineAt ?? null,
+        /**
+         * موقع الورشة المسجَّل — لا موقع الجهاز.
+         *
+         * التطبيق يرسم سيارة الفنّي من GPS الجهاز، وحين يغيب (إذن مرفوض،
+         * متصفّح، محاكٍ) كان لا يملك أي نقطة يبدأ منها فيرتدّ إلى نقطة
+         * مفتعلة. هذا هو المكان الذي سجّله الفنّي بنفسه من لوحته أو من
+         * الموقع، وهو أصدق بديل من إحداثيات ملفّقة.
+         */
+        location: provider.location?.coordinates?.length === 2
+          ? { longitude: provider.location.coordinates[0], latitude: provider.location.coordinates[1] }
+          : null,
       },
       online: provider.status === ProviderStatus.ONLINE,
       activeRequest,

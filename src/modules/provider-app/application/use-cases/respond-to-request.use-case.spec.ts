@@ -10,6 +10,7 @@ import { OfferStatus, RequestOfferEntity } from '../../domain/entities/request-o
 import { IRequestOfferRepository } from '../../domain/repositories/request-offer.repository.interface';
 import { ProviderDispatchService } from '../services/provider-dispatch.service';
 import { RespondToRequestUseCase } from './respond-to-request.use-case';
+import { OrderPricingService } from '../../../../core/pricing/order-pricing.service';
 
 const ORDER_ID = '65f000000000000000000001';
 const PROVIDER_ID = '65f000000000000000000002';
@@ -60,7 +61,20 @@ describe('RespondToRequestUseCase — تثبيت السعر عند القبول'
   const priceWrites = () =>
     orderModel.findByIdAndUpdate.mock.calls
       .map(([, update]: [string, any]) => update?.$set)
-      .filter((set: any) => set && ('totalAmount' in set || 'payableAmount' in set));
+      .filter((set: any) => set && ('totalAmount' in set || 'payableAmount' in set))
+      .map(({ totalAmount, payableAmount }: any) => ({ totalAmount, payableAmount }));
+
+  /** مكوّنات السعر كما تُحفظ في `metadata.pricing` — تُخزَّن ولا تُعرَض للعميل */
+  const pricingWrites = () =>
+    orderModel.findByIdAndUpdate.mock.calls
+      .map(([, update]: [string, any]) => update?.$set?.['metadata.pricing'])
+      .filter(Boolean);
+
+  /**
+   * أجرة الطريق المتوقّعة بين موقع الفنّي وموقع العميل في هذه الاختبارات:
+   * ١٫٤٥ كم × ١٥٠ ل.س = ٢١٧ → تُقرَّب لأقرب ٥٠ = ٢٠٠.
+   */
+  const ROAD_FEE = 200;
 
   beforeEach(async () => {
     orders = { findById: jest.fn().mockResolvedValue(pendingOrder()) };
@@ -82,6 +96,7 @@ describe('RespondToRequestUseCase — تثبيت السعر عند القبول'
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         RespondToRequestUseCase,
+        OrderPricingService,
         { provide: IOrderRepository, useValue: orders },
         { provide: IRequestOfferRepository, useValue: offers },
         { provide: getModelToken(Order.name), useValue: orderModel },
@@ -101,10 +116,20 @@ describe('RespondToRequestUseCase — تثبيت السعر عند القبول'
     useCase = module.get(RespondToRequestUseCase);
   });
 
-  it('يكتب سعر الفنّي الذي قَبِل لا سعر المرشّح الأول', async () => {
+  it('يكتب سعر الفنّي الذي قَبِل لا سعر المرشّح الأول، مضافاً إليه أجرة الطريق', async () => {
     await useCase.accept(contextWith({ [SERVICE_ID]: 80_000 }), ORDER_ID);
 
-    expect(priceWrites()).toEqual([{ totalAmount: 80_000, payableAmount: 80_000 }]);
+    expect(priceWrites()).toEqual([
+      { totalAmount: 80_000 + ROAD_FEE, payableAmount: 80_000 + ROAD_FEE },
+    ]);
+  });
+
+  it('يحفظ مكوّنات السعر للمراجعة — والعميل لا يرى إلا المجموع', async () => {
+    await useCase.accept(contextWith({ [SERVICE_ID]: 80_000 }), ORDER_ID);
+
+    expect(pricingWrites()).toEqual([
+      { servicePrice: 80_000, distanceKm: 1.45, roadFee: ROAD_FEE, total: 80_000 + ROAD_FEE },
+    ]);
   });
 
   it('يثبّت السعر قبل تحديث الحالة فيصل العميل السعرُ مع اسم الفنّي معاً', async () => {
@@ -115,26 +140,57 @@ describe('RespondToRequestUseCase — تثبيت السعر عند القبول'
     expect(priceCall).toBeLessThan(statusCall);
   });
 
-  it('يُبقي سعر الكتالوج حين لا يكون الفنّي قد سعّر الخدمة', async () => {
+  it('يُبقي سعر الكتالوج حين لا يكون الفنّي قد سعّر الخدمة — وتبقى أجرة الطريق', async () => {
     await useCase.accept(contextWith({}), ORDER_ID);
 
-    // خريطة الأسعار فارغة عند كل الفنّيين اليوم — والسلوك هنا يجب ألا يتغيّر
-    expect(priceWrites()).toEqual([]);
+    // سعر الخدمة لا يتغيّر (٥٥ ألفاً كما أُنشئ الطلب)، والطريق يُحسب على كل حال
+    expect(priceWrites()).toEqual([
+      { totalAmount: 55_000 + ROAD_FEE, payableAmount: 55_000 + ROAD_FEE },
+    ]);
   });
 
-  it('يتجاهل السعر غير الصالح بدل أن يكتبه', async () => {
+  it('يتجاهل السعر غير الصالح ويسقط إلى سعر الطلب القائم', async () => {
     await useCase.accept(contextWith({ [SERVICE_ID]: 'ثمانون ألفاً' }), ORDER_ID);
-    expect(priceWrites()).toEqual([]);
+    expect(priceWrites()).toEqual([
+      { totalAmount: 55_000 + ROAD_FEE, payableAmount: 55_000 + ROAD_FEE },
+    ]);
 
     orderModel.findByIdAndUpdate.mockClear();
     await useCase.accept(contextWith({ [SERVICE_ID]: 0 }), ORDER_ID);
-    expect(priceWrites()).toEqual([]);
+    expect(priceWrites()).toEqual([
+      { totalAmount: 55_000 + ROAD_FEE, payableAmount: 55_000 + ROAD_FEE },
+    ]);
+  });
+
+  /**
+   * الطلب الموجَّه يصل إلى هنا وأجرة الطريق **مضافة إليه منذ الإنشاء**.
+   * قراءة `totalAmount` على أنه «سعر الخدمة» كانت ستضيفها ثانيةً — فيدفع
+   * العميل الطريق مرّتين على أنه لم يتغيّر شيء.
+   */
+  it('لا يحاسب على الطريق مرّتين حين كان محسوباً على الطلب أصلاً', async () => {
+    orders.findById.mockResolvedValue(
+      pendingOrder({
+        totalAmount: 55_000 + ROAD_FEE,
+        payableAmount: 55_000 + ROAD_FEE,
+        metadata: {
+          pricing: { servicePrice: 55_000, distanceKm: 1.45, roadFee: ROAD_FEE, total: 55_000 + ROAD_FEE },
+        },
+      }),
+    );
+
+    await useCase.accept(contextWith({}), ORDER_ID);
+
+    expect(priceWrites()).toEqual([
+      { totalAmount: 55_000 + ROAD_FEE, payableAmount: 55_000 + ROAD_FEE },
+    ]);
   });
 
   it('يقبل السعر نصّاً رقمياً — الخريطة مُعرَّفة any في المخطّط', async () => {
     await useCase.accept(contextWith({ [SERVICE_ID]: '80000' }), ORDER_ID);
 
-    expect(priceWrites()).toEqual([{ totalAmount: 80_000, payableAmount: 80_000 }]);
+    expect(priceWrites()).toEqual([
+      { totalAmount: 80_000 + ROAD_FEE, payableAmount: 80_000 + ROAD_FEE },
+    ]);
   });
 
   it('لا يمحو خصماً مطبَّقاً على الطلب', async () => {
@@ -142,7 +198,9 @@ describe('RespondToRequestUseCase — تثبيت السعر عند القبول'
 
     await useCase.accept(contextWith({ [SERVICE_ID]: 80_000 }), ORDER_ID);
 
-    expect(priceWrites()).toEqual([{ totalAmount: 80_000, payableAmount: 75_000 }]);
+    expect(priceWrites()).toEqual([
+      { totalAmount: 80_000 + ROAD_FEE, payableAmount: 75_000 + ROAD_FEE },
+    ]);
   });
 
   it('لا يكتب سعراً على طلب أُلغي أثناء القبول', async () => {

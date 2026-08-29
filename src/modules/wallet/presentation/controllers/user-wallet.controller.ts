@@ -10,9 +10,25 @@ import { CurrentUser } from '../../../../core/decorators/current-user.decorator'
 import { DepositDto, RedeemPointsDto } from '../../application/dto/wallet.dto';
 import { RedeemLoyaltyPointsUseCase } from '../../application/use-cases/redeem-loyalty-points.use-case';
 
+/**
+ * محفظة صاحب الحساب — وهي محفظة **المستخدم** لا محفظة الفنّي.
+ *
+ * الدور هنا كان مقصوراً على `USER`، وهذا كان يحجب المحفظة والنقاط عن كل من
+ * سجّل حسابه من تطبيق الفنّي: `createAuthResponse` يشتقّ دور التوكن من
+ * `accountType` لا من حقل `role` في قاعدة البيانات، فيحمل حساب الفنّي دور
+ * `provider` وإن كان `role: 'user'` — فيردّ الحارس ٤٠٣ «You do not have
+ * permission to access this resource» على شاشتَي «المحفظة» و«نقاط الوفاء»
+ * وحدهما، بينما بقية تطبيق العميل تعمل لأنها لا تشترط دوراً أصلاً (هذا كان
+ * الموضع **الوحيد** في الخادم كلّه الذي يستعمل `@Roles(Role.USER)`).
+ *
+ * ولا تُفقد بذلك أي حماية: كل معالج أدناه يعمل على `@CurrentUser('id')`
+ * ونوع مالك `'user'` — أي أن الهوية وحدها تحدّد المحفظة، ولا يرى أحد محفظة
+ * غيره مهما كان دوره. ومحفظة الفنّي منفصلة تماماً (`/provider/wallet` بنوع
+ * مالك `'provider'`) فلا تختلطان. والمدير يبقى خارجها: دوره `admin`.
+ */
 @Controller('wallet')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(Role.USER)
+@Roles(Role.USER, Role.PROVIDER)
 export class UserWalletController {
   constructor(
     private readonly getBalance: GetBalanceUseCase,

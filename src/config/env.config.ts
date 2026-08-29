@@ -136,6 +136,24 @@ export default () => ({
     },
   },
 
+  /**
+   * تسعير الطلب — الجزء الذي لا يملكه المزوّد.
+   *
+   * سعر الخدمة نفسه يكتبه كل مزوّد بيده (فورم التسجيل على الموقع أو لوحة
+   * المزوّد) ويُحفظ في `provider.servicePrices`. أمّا أجرة الطريق فصيغة واحدة
+   * على الجميع تُحسب من المسافة، ومكانها هنا لا داخل خدمة التسعير: رقمٌ
+   * يُغيَّر بتعديل شيفرة لا يظهر لمن يقرأ الإعدادات ولا يُضبط من البيئة.
+   *
+   * `roadFeeRoundingStep` يُبقي الناتج «سعراً» (٣٠٠) لا كسراً (٢٩٤٫٧).
+   * `maxRoadFee` بصفر يعني بلا سقف — ويُرفع فوق الصفر إن لزم كبح الأجرة على
+   * المسافات القصوى (٢٠ كم هي سقف البحث أصلاً).
+   */
+  pricing: {
+    roadFeePerKm: parseInt(process.env.ROAD_FEE_PER_KM || '150', 10),
+    roadFeeRoundingStep: parseInt(process.env.ROAD_FEE_ROUNDING_STEP || '50', 10),
+    maxRoadFee: parseInt(process.env.MAX_ROAD_FEE || '0', 10),
+  },
+
   // Firebase settings
   firebase: {
     projectId: process.env.FIREBASE_PROJECT_ID,

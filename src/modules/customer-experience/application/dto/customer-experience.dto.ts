@@ -113,12 +113,6 @@ export class UpdatePaymentMethodDto {
   providerToken?: string;
 }
 
-export class ApplyOfferDto {
-  @IsOptional()
-  @IsMongoId()
-  orderId?: string;
-}
-
 export class CreateWashPlanDto {
   @IsMongoId()
   vehicleId: string;
@@ -182,75 +176,3 @@ export class RegisterDeviceDto {
   deviceName?: string;
 }
 
-export class CreateOfferDto {
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(40)
-  code: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(120)
-  title: string;
-
-  @IsOptional()
-  @IsString()
-  @MaxLength(240)
-  description?: string;
-
-  @IsEnum(['percentage', 'fixed', 'points_multiplier'])
-  type: 'percentage' | 'fixed' | 'points_multiplier';
-
-  @IsNumber()
-  @Min(0)
-  value: number;
-
-  @IsOptional()
-  @IsDateString()
-  startsAt?: string;
-
-  @IsOptional()
-  @IsDateString()
-  expiresAt?: string;
-
-  @IsOptional()
-  @IsBoolean()
-  isActive?: boolean;
-
-  @IsOptional()
-  @IsObject()
-  metadata?: Record<string, any>;
-}
-
-export class UpdateOfferDto {
-  @IsOptional()
-  @IsString()
-  @MaxLength(120)
-  title?: string;
-
-  @IsOptional()
-  @IsString()
-  @MaxLength(240)
-  description?: string;
-
-  @IsOptional()
-  @IsNumber()
-  @Min(0)
-  value?: number;
-
-  @IsOptional()
-  @IsDateString()
-  startsAt?: string;
-
-  @IsOptional()
-  @IsDateString()
-  expiresAt?: string;
-
-  @IsOptional()
-  @IsBoolean()
-  isActive?: boolean;
-
-  @IsOptional()
-  @IsObject()
-  metadata?: Record<string, any>;
-}

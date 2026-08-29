@@ -19,6 +19,7 @@ import { ENGAGING_ORDER_STATUSES } from '../../domain/services/provider-request-
 import { ProviderRequestMapper } from '../mappers/provider-request.mapper';
 import { asOrderActor, ProviderContext } from '../services/provider-context.service';
 import { ProviderDispatchService } from '../services/provider-dispatch.service';
+import { OrderPricingService } from '../../../../core/pricing/order-pricing.service';
 
 /**
  * قبول الطلب الوارد أو رفضه — أخطر نقطتين في التطبيق.
@@ -38,6 +39,7 @@ export class RespondToRequestUseCase {
     private readonly updateStatus: UpdateOrderStatusUseCase,
     private readonly dispatch: ProviderDispatchService,
     private readonly config: ConfigService,
+    private readonly pricing: OrderPricingService,
   ) {}
 
   async accept(context: ProviderContext, orderId: string) {
@@ -160,11 +162,30 @@ export class RespondToRequestUseCase {
    */
   private async applyProviderPrice(orderId: string, order: any, context: ProviderContext) {
     // الخريطة مُعرَّفة `Record<string, any>` في المخطّط، فالقيمة قد تصل نصّاً
-    const price = Number((context.provider as any)?.servicePrices?.[order.serviceId]);
+    const declared = Number((context.provider as any)?.servicePrices?.[order.serviceId]);
 
-    // لم يُسعّر الفنّي هذه الخدمة (أو سعّرها بقيمة لا تصلح): سعر الكتالوج
-    // القائم هو الصحيح، ولا نستبدله برقم أسوأ منه.
-    if (!Number.isFinite(price) || price <= 0) return;
+    /**
+     * سعر الخدمة: ما أعلنه الفنّي، وإلا ما كان مقفلاً على الطلب أصلاً.
+     *
+     * السقوط الافتراضي يقرأ `metadata.pricing.servicePrice` لا `totalAmount`:
+     * الأخير يحمل أجرة الطريق مضافةً إليه منذ الإنشاء، فاتّخاذه «سعر خدمة»
+     * ثم إضافة الأجرة فوقه ثانيةً كان سيحاسب العميل على الطريق مرّتين.
+     */
+    const previous = (order?.metadata as any)?.pricing;
+    const fallback = Number(previous?.servicePrice) || Number(order?.totalAmount) || 0;
+    const servicePrice = Number.isFinite(declared) && declared > 0 ? declared : fallback;
+
+    /**
+     * أجرة الطريق تُحسب هنا لا تُنسخ: من يقبل قد لا يكون من رُشِّح أولاً
+     * (الإسناد الآلي ينتقل بين المرشّحين)، ومسافته هي المسافة الصحيحة. أمّا
+     * الطلب الموجَّه فالنتيجة نفسها التي رآها العميل في القائمة، لأن الفنّي
+     * لم يتحرّك بعد: التتبّع لا يبدأ إلا بعد القبول.
+     */
+    const breakdown = this.pricing.resolveBetween(
+      servicePrice,
+      context.provider?.location?.coordinates,
+      order?.userLocation?.coordinates,
+    );
 
     // الخصم المطبَّق يبقى مطبَّقاً — استبدال `payableAmount` بالسعر الخام كان
     // يمحو خصماً استحقّه العميل بالفعل.
@@ -172,7 +193,11 @@ export class RespondToRequestUseCase {
 
     await this.orderModel
       .findByIdAndUpdate(orderId, {
-        $set: { totalAmount: price, payableAmount: Math.max(0, price - discount) },
+        $set: {
+          totalAmount: breakdown.total,
+          payableAmount: Math.max(0, breakdown.total - discount),
+          'metadata.pricing': breakdown,
+        },
       })
       .exec();
   }

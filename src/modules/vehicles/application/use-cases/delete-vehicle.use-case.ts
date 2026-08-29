@@ -2,7 +2,7 @@
  * Delete Vehicle Use Case
  * Deletes a vehicle with ownership verification
  */
-import { Inject, Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
 import { IVehicleRepository } from '../../domain/repositories/vehicle.repository.interface';
@@ -29,13 +29,10 @@ export class DeleteVehicleUseCase {
       throw new ForbiddenException('You do not have permission to delete this vehicle');
     }
 
-    // Business Rule: Prevent deleting the default vehicle if it's the only one
+    // Deleting the only vehicle is allowed: the user may want to remove it and
+    // add a different one. If the default is being deleted while others remain,
+    // promote another to default so the account is never left without one.
     const vehicleCount = await this.vehicleRepository.countByUserId(userId);
-    if (vehicleCount === 1 && vehicle.isDefault) {
-      throw new BadRequestException('Cannot delete your only default vehicle. Please add another vehicle first.');
-    }
-
-    // If deleting the default vehicle, set another one as default
     if (vehicle.isDefault && vehicleCount > 1) {
       await this.setDefaultAnotherVehicle(userId, vehicleId);
     }

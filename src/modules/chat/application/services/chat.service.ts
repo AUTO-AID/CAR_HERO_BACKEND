@@ -164,9 +164,14 @@ export class ChatService {
     return chat.participants.map(p => p.toString()).includes(userId);
   }
 
-  async getUserChats(userId: string): Promise<ChatDocument[]> {
+  /** يقبل هويّة واحدة أو عدّة: الحساب الواحد قد يكون عميلاً هنا وفنّياً هناك */
+  async getUserChats(userIds: string | string[]): Promise<ChatDocument[]> {
+    const ids = (Array.isArray(userIds) ? userIds : [userIds])
+      .filter((id) => id && Types.ObjectId.isValid(id))
+      .map((id) => new Types.ObjectId(id));
+    if (!ids.length) return [];
     return this.chatModel.find({
-      participants: new Types.ObjectId(userId),
+      participants: { $in: ids },
       isActive: true,
     })
     .sort({ lastMessageAt: -1 })

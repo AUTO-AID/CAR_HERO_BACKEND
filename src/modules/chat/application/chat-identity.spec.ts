@@ -52,12 +52,22 @@ describe('chatIdentityOf', () => {
  */
 describe('ChatIdentityService', () => {
   const PROVIDER_DOC = new Types.ObjectId().toString();
-  const makeService = (found: any) =>
-    new ChatIdentityService({ findOne: jest.fn().mockReturnValue({ exec: () => Promise.resolve(found) }) } as any);
+  const chatModelStub = (participants: string[] | null = null) => ({
+    findById: jest.fn().mockReturnValue({
+      select: () => ({ lean: () => ({ exec: () => Promise.resolve(participants ? { participants } : null) }) }),
+    }),
+  });
+  const orderRepoStub = (order: any = null) => ({ findById: jest.fn().mockResolvedValue(order) });
+  const makeService = (found: any, chat: any = chatModelStub(), orders: any = orderRepoStub()) =>
+    new ChatIdentityService(
+      { findOne: jest.fn().mockReturnValue({ exec: () => Promise.resolve(found) }) } as any,
+      chat as any,
+      orders as any,
+    );
 
   it('يحترم ادّعاء التوكن حين يوجد، بلا نداء قاعدة', async () => {
     const model: any = { findOne: jest.fn() };
-    const service = new ChatIdentityService(model);
+    const service = new ChatIdentityService(model, chatModelStub() as any, orderRepoStub() as any);
 
     await expect(service.resolve({ id: 'user-account', providerId: PROVIDER_DOC })).resolves.toBe(PROVIDER_DOC);
     expect(model.findOne).not.toHaveBeenCalled();
@@ -87,9 +97,60 @@ describe('ChatIdentityService', () => {
 
   it('لا يمسّ العميل: حسابه هويّته بلا نداء قاعدة', async () => {
     const model: any = { findOne: jest.fn() };
-    const service = new ChatIdentityService(model);
+    const service = new ChatIdentityService(model, chatModelStub() as any, orderRepoStub() as any);
 
     await expect(service.resolve({ id: 'customer-1', accountType: 'customer' })).resolves.toBe('customer-1');
     expect(model.findOne).not.toHaveBeenCalled();
+  });
+});
+
+/**
+ * الانحدار الذي أُصلح: صاحب حساب فنّي يطلب خدمةً من **تطبيق العميل**.
+ *
+ * هو عميل ذلك الطلب (`order.userId` = حسابه)، لكن `resolve` كانت تُعيد وثيقة
+ * مزوّده دائماً — فلا تطابق أي طرف من الطلب، ويردّ الخادم «Participants are
+ * not linked to this order» على محادثةٍ هو أحد طرفيها. الهويّة تُحسم بالطلب.
+ */
+describe('ChatIdentityService — الهويّة تتبع الطلب لا نوع الحساب', () => {
+  const PROVIDER_DOC = new Types.ObjectId().toString();
+  const ACCOUNT = new Types.ObjectId().toString();
+  const OTHER_PROVIDER = new Types.ObjectId().toString();
+  const CHAT_ID = new Types.ObjectId().toString();
+  const technician = { id: ACCOUNT, _id: ACCOUNT, accountType: 'provider', providerId: PROVIDER_DOC };
+
+  const build = (order: any, participants: string[] | null = null) =>
+    new ChatIdentityService(
+      { findOne: jest.fn().mockReturnValue({ exec: () => Promise.resolve(null) }) } as any,
+      {
+        findById: jest.fn().mockReturnValue({
+          select: () => ({ lean: () => ({ exec: () => Promise.resolve(participants ? { participants } : null) }) }),
+        }),
+      } as any,
+      { findById: jest.fn().mockResolvedValue(order) } as any,
+    );
+
+  it('عميلاً في طلبه: يدخل بحسابه لا بوثيقة مزوّده', async () => {
+    const service = build({ userId: ACCOUNT, providerId: OTHER_PROVIDER });
+    await expect(service.resolveForOrder(technician, 'order-1')).resolves.toBe(ACCOUNT);
+  });
+
+  it('فنّياً في طلب آخر: يدخل بوثيقة مزوّده', async () => {
+    const service = build({ userId: new Types.ObjectId().toString(), providerId: PROVIDER_DOC });
+    await expect(service.resolveForOrder(technician, 'order-2')).resolves.toBe(PROVIDER_DOC);
+  });
+
+  it('غريبٌ عن الطلب: يعود السلوك القديم فيرفضه المستدعي كما كان', async () => {
+    const service = build({ userId: new Types.ObjectId().toString(), providerId: OTHER_PROVIDER });
+    await expect(service.resolveForOrder(technician, 'order-3')).resolves.toBe(PROVIDER_DOC);
+  });
+
+  it('المحادثة القائمة تحسم الهويّة كما يحسمها الطلب', async () => {
+    const service = build(null, [ACCOUNT, OTHER_PROVIDER]);
+    await expect(service.resolveForChat(technician, CHAT_ID)).resolves.toBe(ACCOUNT);
+  });
+
+  it('الهويّتان تُعرَضان معاً لقائمة المحادثات', async () => {
+    const service = build(null);
+    await expect(service.candidates(technician)).resolves.toEqual([PROVIDER_DOC, ACCOUNT]);
   });
 });

@@ -74,13 +74,29 @@ export class AuthService {
 
     const existingUser = await this.userModel.findOne({ phoneNumber });
     if (existingUser) {
-      throw new ConflictException(ERROR_MESSAGES.USER.ALREADY_EXISTS);
+      throw new ConflictException(
+        this.alreadyRegisteredMessage(existingUser.accountType),
+      );
     }
 
     const hashedPassword = await PasswordUtil.hash(password);
 
     // Enforce accountType safety to prevent privilege escalation
     const finalAccountType = accountType === 'provider' ? 'provider' : 'customer';
+
+    // Guard the pending-registration slot against cross-type takeover: the upsert
+    // below is keyed only on phoneNumber, so a customer registering the same
+    // number would silently overwrite a provider's in-flight registration (and
+    // vice versa), letting whoever verifies the OTP last win the number. Reject
+    // instead. A same-type re-submit still falls through and refreshes the slot.
+    const existingPending = await this.pendingRegistrationModel.findOne({
+      phoneNumber,
+    });
+    if (existingPending && existingPending.accountType !== finalAccountType) {
+      throw new ConflictException(
+        this.pendingRegistrationMessage(existingPending.accountType),
+      );
+    }
 
     const pendingRegistration =
       await this.pendingRegistrationModel.findOneAndUpdate(
@@ -121,7 +137,9 @@ export class AuthService {
     const existingUser = await this.userModel.findOne({ phoneNumber });
     if (existingUser) {
       await this.pendingRegistrationModel.deleteOne({ phoneNumber });
-      throw new ConflictException(ERROR_MESSAGES.USER.ALREADY_EXISTS);
+      throw new ConflictException(
+        this.alreadyRegisteredMessage(existingUser.accountType),
+      );
     }
 
     // The findOne check above is not atomic: two concurrent registrations for
@@ -544,6 +562,33 @@ export class AuthService {
    */
   private normalizeSyrianPhoneNumber(phoneNumber: string): string {
     return normalizeSyrianPhone(phoneNumber);
+  }
+
+  /** Human label for an accountType, used in conflict messages. */
+  private accountTypeLabel(accountType: string): string {
+    return accountType === 'provider' ? 'a service provider' : 'a customer';
+  }
+
+  /**
+   * Conflict message for a number that already owns a completed account. Names
+   * the existing account's role so the user understands why registration was
+   * refused instead of seeing a bare "already registered".
+   */
+  private alreadyRegisteredMessage(accountType: string): string {
+    return `This phone number is already registered as ${this.accountTypeLabel(
+      accountType,
+    )}. Please log in or use a different number.`;
+  }
+
+  /**
+   * Conflict message for a number with an in-flight registration of a different
+   * type awaiting OTP. Distinct from the completed-account case: the user can
+   * finish that registration or wait for it to expire.
+   */
+  private pendingRegistrationMessage(accountType: string): string {
+    return `This phone number is currently being registered as ${this.accountTypeLabel(
+      accountType,
+    )}. Please complete that registration or use a different number.`;
   }
 
   // ===========================================

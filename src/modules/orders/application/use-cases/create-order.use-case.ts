@@ -16,8 +16,10 @@ import { StatusHistoryService } from '../../../status-history/application/servic
 import { SchedulingAvailabilityService } from '../services/scheduling-availability.service';
 import { ENGAGING_ORDER_STATUSES } from '../../domain/services/order-state-machine';
 import { Provider, ProviderDocument } from '../../../providers/infrastructure/persistence/mongoose/schemas/provider.schema';
+import { Vehicle, VehicleDocument } from '../../../vehicles/infrastructure/persistence/mongoose/schemas/vehicle.schema';
 import { CheckSubscriptionStatusUseCase } from '../../../subscriptions/application/use-cases/check-subscription-status.use-case';
 import { PREMIUM_ONLY_SERVICE_CATEGORIES } from '../../../../config/subscription-plan-catalog';
+import { OrderPricingService } from '../../../../core/pricing/order-pricing.service';
 
 @Injectable()
 export class CreateOrderUseCase {
@@ -30,12 +32,15 @@ export class CreateOrderUseCase {
     private readonly serviceModel: Model<ServiceDocument>,
     @InjectModel(Provider.name)
     private readonly providerModel: Model<ProviderDocument>,
+    @InjectModel(Vehicle.name)
+    private readonly vehicleModel: Model<VehicleDocument>,
     private readonly notificationsService: NotificationsService,
     private readonly statusHistoryService: StatusHistoryService,
     private readonly schedulingAvailabilityService: SchedulingAvailabilityService,
     private readonly eventEmitter: EventEmitter2,
     private readonly config: ConfigService,
     private readonly checkSubscriptionStatus: CheckSubscriptionStatusUseCase,
+    private readonly pricing: OrderPricingService,
   ) {}
 
   /**
@@ -58,6 +63,18 @@ export class CreateOrderUseCase {
       throw new NotFoundException('Service not found');
     }
 
+    // A vehicle is mandatory: a customer cannot place an order before adding one.
+    // The DTO already rejects a missing/malformed id at the validation layer; here
+    // we confirm the vehicle actually exists and belongs to the requester, so a
+    // bogus or someone else's id cannot satisfy the requirement via a direct API
+    // call that bypasses the app UI.
+    const vehicle = await this.vehicleModel.findById(dto.vehicleId).lean();
+    if (!vehicle || (dto.userId && vehicle.owner?.toString() !== dto.userId)) {
+      throw new NotFoundException(
+        'Vehicle not found. Please add a vehicle to your account before ordering.',
+      );
+    }
+
     /**
      * «خدمات كاملة (صيانة، غسيل، إلخ)» حصراً في الباقة المميزة — نصّ الموقع
      * حرفياً. الفحص هنا هو الحارس الحقيقي؛ العميل يعرض جدار اشتراك قبل هذه
@@ -70,6 +87,26 @@ export class CreateOrderUseCase {
       if (!status.isActive) {
         throw new ForbiddenException(
           'This service requires an active Premium subscription.',
+        );
+      }
+    }
+
+    /**
+     * «الحجز المسبق متاح لأعضاء الاشتراك» — نصّ جدار الاشتراك
+     * (`PremiumPaywallScreen`, `CONTEXTS.booking`) حرفياً. محور مستقلّ عن
+     * `PREMIUM_ONLY_SERVICE_CATEGORIES`: أي خدمة تُحجز بموعد مستقبلي (لا
+     * فوراً) تتطلّب اشتراكاً، بصرف النظر عن فئتها — الطلب الفوري وحده هو
+     * «خدمات المساعدة الأساسية» المجانية بنصّ الباقة.
+     *
+     * الفحص هنا هو الحارس الحقيقي؛ العميل يعرض جدار الاشتراك قبل هذه النقطة
+     * (`ConfirmOrderScreen`/`BookingScreen`)، لكن تجاوزه بنداء مباشر يجب ألا
+     * ينجح.
+     */
+    if (dto.scheduleTime && dto.userId) {
+      const status = await this.checkSubscriptionStatus.execute(dto.userId);
+      if (!status.isActive) {
+        throw new ForbiddenException(
+          'Advance booking requires an active Premium subscription.',
         );
       }
     }
@@ -129,6 +166,14 @@ export class CreateOrderUseCase {
       );
     }
 
+    const orderPricing = this.resolveOrderPricing(
+      isDirectRequest,
+      provider,
+      dto.serviceId,
+      service,
+      dto.location?.coordinates,
+    );
+
     // 2. Prepare Order Data
     const orderData: Partial<OrderEntity> = {
       orderNumber: OrderEntity.generateOrderNumber(),
@@ -158,8 +203,8 @@ export class CreateOrderUseCase {
        * أساسه، فسعره هو ما يُقفَل هنا لا سعر الكتالوج (نفس صيغة السقوط
        * الافتراضي في `FindNearbyProvidersUseCase`).
        */
-      servicePrice: this.resolveOrderPrice(isDirectRequest, provider, dto.serviceId, service),
-      total: this.resolveOrderPrice(isDirectRequest, provider, dto.serviceId, service),
+      servicePrice: orderPricing.total,
+      total: orderPricing.total,
       userLocation: {
         type: 'Point',
         coordinates: dto.location.coordinates,
@@ -174,6 +219,12 @@ export class CreateOrderUseCase {
     const serviceName = service.nameAr ?? service.name;
     (orderData as any).metadata = {
       serviceName,
+      /**
+       * مكوّنات السعر تُحفظ ولا تُعرَض للعميل: هو يرى `payableAmount` وحده.
+       * حفظها هنا هو ما يجعل «لماذا هذا الرقم؟» سؤالاً له جواب بعد شهر —
+       * كم كان سعر الخدمة، وكم كانت المسافة، وكم أجرة الطريق عليها.
+       */
+      pricing: orderPricing,
       ...(dto.scheduleTime ? { scheduledDurationMinutes: service.estimatedDuration } : {}),
       // علامة دائمة تُقرأ في `ProviderDispatchService.redispatch` لمنع أي
       // تصعيد لمزوّد آخر عند الرفض/الانتهاء — منفصلة عمداً عن
@@ -393,21 +444,36 @@ export class CreateOrderUseCase {
   }
 
   /**
-   * السعر المقفَل على الطلب: سعر المزوّد المختار صراحةً في الطلب الموجَّه
-   * (هو ما رآه العميل واختار على أساسه)، وسعر الكتالوج في كل ما عداه —
-   * نفس صيغة السقوط الافتراضي في `FindNearbyProvidersUseCase.execute`
-   * و`servicePrice()` بالعميل.
+   * السعر المقفَل على الطلب ومكوّناته.
+   *
+   * **الطلب الموجَّه** (اختار العميل مزوّداً بعينه من القائمة): سعر ذلك
+   * المزوّد لهذه الخدمة + أجرة الطريق إليه — أي **نفس الرقم الذي رآه في
+   * بطاقته** في `FindNearbyProvidersUseCase`. أي افتراق بين الشاشتين يجعل
+   * القائمة إعلاناً لا سعراً.
+   *
+   * **الإسناد الآلي** (الحجز المجدول): سعر الكتالوج وحده بلا أجرة طريق.
+   * لا مزوّد ملتزماً بعد — والمسافة التي تُبنى عليها الأجرة هي مسافة من
+   * سيقبل، لا من رُشِّح أولاً. كلاهما (السعر والأجرة) يُقفَل لحظة القبول في
+   * `RespondToRequestUseCase.applyProviderPrice`.
    */
-  private resolveOrderPrice(
+  private resolveOrderPricing(
     isDirectRequest: boolean,
     provider: any,
     serviceId: string,
     service: ServiceDocument,
-  ): number {
+    userCoordinates?: number[],
+  ) {
     const catalogPrice = service.discountedPrice || service.basePrice;
-    if (!isDirectRequest) return catalogPrice;
+    if (!isDirectRequest) return this.pricing.resolve(catalogPrice, null);
+
     const ownPrice = Number((provider?.servicePrices || {})[serviceId]) || 0;
-    return ownPrice > 0 ? ownPrice : catalogPrice;
+    const servicePrice = ownPrice > 0 ? ownPrice : catalogPrice;
+
+    return this.pricing.resolveBetween(
+      servicePrice,
+      provider?.location?.coordinates,
+      userCoordinates,
+    );
   }
 
   /**

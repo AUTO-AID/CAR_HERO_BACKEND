@@ -9,15 +9,18 @@ import { OrderStatus, PaymentStatus } from '../../../../core/enums/status.enum';
 import { Service } from '../../../../modules/services/infrastructure/persistence/mongoose/schemas/service.schema';
 import { NotificationsService } from '../../../notifications/application/services/notifications.service';
 import { Provider } from '../../../providers/infrastructure/persistence/mongoose/schemas/provider.schema';
+import { Vehicle } from '../../../vehicles/infrastructure/persistence/mongoose/schemas/vehicle.schema';
 import { StatusHistoryService } from '../../../status-history/application/services/status-history.service';
 import { SchedulingAvailabilityService } from '../services/scheduling-availability.service';
 import { CheckSubscriptionStatusUseCase } from '../../../subscriptions/application/use-cases/check-subscription-status.use-case';
+import { OrderPricingService } from '../../../../core/pricing/order-pricing.service';
 
 describe('CreateOrderUseCase', () => {
   let useCase: CreateOrderUseCase;
   let repository: jest.Mocked<IOrderRepository>;
   let mockServiceModel: any;
   let mockProviderModel: any;
+  let mockVehicleModel: any;
   let schedulingService: { assertAvailable: jest.Mock };
   let subscriptionStatus: { execute: jest.Mock };
 
@@ -34,6 +37,15 @@ describe('CreateOrderUseCase', () => {
       findById: jest.fn(),
       aggregate: jest.fn(),
     };
+    // Every test orders as 'user-id'; the guard requires the vehicle to exist
+    // and belong to that user, so return one owned by 'user-id' by default.
+    mockVehicleModel = {
+      findById: jest.fn().mockReturnValue({
+        lean: jest
+          .fn()
+          .mockResolvedValue({ _id: 'vehicle-id', owner: { toString: () => 'user-id' } }),
+      }),
+    };
     schedulingService = { assertAvailable: jest.fn() };
     // حارس «الخدمات الكاملة للباقة المميّزة» — الخدمات المستعملة هنا ليست منها،
     // فالاشتراك النشِط هو الوضع المحايد الذي لا يغيّر أياً من هذه الحالات.
@@ -46,6 +58,7 @@ describe('CreateOrderUseCase', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CreateOrderUseCase,
+        OrderPricingService,
         {
           provide: IOrderRepository,
           useValue: mockOrderRepository,
@@ -57,6 +70,10 @@ describe('CreateOrderUseCase', () => {
         {
           provide: getModelToken(Provider.name),
           useValue: mockProviderModel,
+        },
+        {
+          provide: getModelToken(Vehicle.name),
+          useValue: mockVehicleModel,
         },
         {
           provide: NotificationsService,

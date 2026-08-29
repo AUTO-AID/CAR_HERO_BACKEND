@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Review, ReviewDocument } from './mongoose/schemas/review.schema';
@@ -15,8 +15,23 @@ export class MongooseReviewRepository implements IReviewRepository {
   async create(review: ReviewEntity): Promise<ReviewEntity> {
     const persistence = ReviewMapper.toPersistence(review);
     const created = new this.reviewModel(persistence);
-    const doc = await created.save();
-    return ReviewMapper.toEntity(doc);
+    try {
+      const doc = await created.save();
+      return ReviewMapper.toEntity(doc);
+    } catch (error: any) {
+      /**
+       * فحص `CreateReviewUseCase` قبل الكتابة (`findByOrder`) لا يحسم
+       * التزامن: طلبان متزامنان لنفس الطلب (نقرتان سريعتان، أو إعادة محاولة
+       * بعد انقطاع رأى العميل فيه فشلاً بينما نجح الخادم) يجتازانه معاً قبل
+       * أن يصل أيّهما إلى `save()`. الفهرس الفريد على `order` هو الحارس
+       * الحقيقي، ومن يخسر السباق يجب أن يقرأ سبباً عربياً واضحاً لا استثناء
+       * Mongo خاماً بترميز E11000.
+       */
+      if (error?.code === 11000) {
+        throw new BadRequestException('تم تقييم هذا الطلب من قبل');
+      }
+      throw error;
+    }
   }
 
   async findById(id: string): Promise<ReviewEntity | null> {

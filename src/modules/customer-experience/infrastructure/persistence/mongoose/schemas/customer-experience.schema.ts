@@ -64,57 +64,6 @@ export type UserPaymentMethodDocument = UserPaymentMethod & Document;
 export const UserPaymentMethodSchema = SchemaFactory.createForClass(UserPaymentMethod);
 UserPaymentMethodSchema.index({ userId: 1, isDefault: 1 });
 
-@Schema({ timestamps: true, collection: 'offers', toJSON: jsonOptions })
-export class Offer {
-  @Prop({ required: true, unique: true, uppercase: true, trim: true })
-  code: string;
-
-  @Prop({ required: true, trim: true })
-  title: string;
-
-  @Prop()
-  description?: string;
-
-  @Prop({ required: true, enum: ['percentage', 'fixed', 'points_multiplier'] })
-  type: string;
-
-  @Prop({ required: true, min: 0 })
-  value: number;
-
-  @Prop({ default: () => new Date() })
-  startsAt: Date;
-
-  @Prop()
-  expiresAt?: Date;
-
-  @Prop({ default: true, index: true })
-  isActive: boolean;
-
-  @Prop({ type: Object, default: {} })
-  metadata: Record<string, any>;
-}
-export type OfferDocument = Offer & Document;
-export const OfferSchema = SchemaFactory.createForClass(Offer);
-OfferSchema.index({ isActive: 1, startsAt: 1, expiresAt: 1 });
-
-@Schema({ timestamps: true, collection: 'offer_redemptions', toJSON: jsonOptions })
-export class OfferRedemption {
-  @Prop({ type: Types.ObjectId, required: true, index: true })
-  userId: Types.ObjectId;
-
-  @Prop({ type: Types.ObjectId, ref: Offer.name, required: true, index: true })
-  offerId: Types.ObjectId;
-
-  @Prop({ type: Types.ObjectId })
-  orderId?: Types.ObjectId;
-
-  @Prop({ default: 'reserved', enum: ['reserved', 'applied', 'cancelled'] })
-  status: string;
-}
-export type OfferRedemptionDocument = OfferRedemption & Document;
-export const OfferRedemptionSchema = SchemaFactory.createForClass(OfferRedemption);
-OfferRedemptionSchema.index({ userId: 1, offerId: 1 }, { unique: true });
-
 @Schema({ timestamps: true, collection: 'wash_plans', toJSON: jsonOptions })
 export class WashPlan {
   @Prop({ type: Types.ObjectId, required: true, index: true })

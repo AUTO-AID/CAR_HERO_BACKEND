@@ -3,7 +3,6 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../../../core/guards/jwt-auth.guard';
 import { CurrentUser } from '../../../../core/decorators/current-user.decorator';
 import {
-  ApplyOfferDto,
   CreateAddressDto,
   CreatePaymentMethodDto,
   CreateWashPlanDto,
@@ -33,8 +32,6 @@ export class CustomerExperienceController {
   @Patch('payment-methods/:id/set-default') setDefaultPaymentMethod(@CurrentUser('id') userId: string, @Param('id') id: string) { return this.service.setDefaultPaymentMethod(userId, id); }
   @Delete('payment-methods/:id') @HttpCode(HttpStatus.NO_CONTENT) deletePaymentMethod(@CurrentUser('id') userId: string, @Param('id') id: string) { return this.service.deletePaymentMethod(userId, id); }
 
-  @Get('offers') listOffers() { return this.service.listOffers(); }
-  @Post('offers/:id/apply') applyOffer(@CurrentUser('id') userId: string, @Param('id') id: string, @Body() dto: ApplyOfferDto) { return this.service.applyOffer(userId, id, dto); }
 
   @Get('wash-plans') listWashPlans(@CurrentUser('id') userId: string) { return this.service.listWashPlans(userId); }
   @Post('wash-plans') createWashPlan(@CurrentUser('id') userId: string, @Body() dto: CreateWashPlanDto) { return this.service.createWashPlan(userId, dto); }

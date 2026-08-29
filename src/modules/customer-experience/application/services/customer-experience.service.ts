@@ -6,22 +6,15 @@ import type { Cache } from 'cache-manager';
 import { NotificationType, OrderStatus, PaymentStatus, ServiceCategory } from '../../../../core/enums/status.enum';
 import { atBusinessTime } from '../../../../core/utils/business-time.util';
 import {
-  ApplyOfferDto,
   CreateAddressDto,
   CreatePaymentMethodDto,
   CreateWashPlanDto,
-  CreateOfferDto,
   RegisterDeviceDto,
   UpdateAddressDto,
   UpdatePaymentMethodDto,
   UpdateWashPlanDto,
-  UpdateOfferDto,
 } from '../dto/customer-experience.dto';
 import {
-  Offer,
-  OfferDocument,
-  OfferRedemption,
-  OfferRedemptionDocument,
   UserAddress,
   UserAddressDocument,
   UserDevice,
@@ -44,8 +37,6 @@ export class CustomerExperienceService {
   constructor(
     @InjectModel(UserAddress.name) private readonly addresses: Model<UserAddressDocument>,
     @InjectModel(UserPaymentMethod.name) private readonly paymentMethods: Model<UserPaymentMethodDocument>,
-    @InjectModel(Offer.name) private readonly offers: Model<OfferDocument>,
-    @InjectModel(OfferRedemption.name) private readonly redemptions: Model<OfferRedemptionDocument>,
     @InjectModel(WashPlan.name) private readonly washPlans: Model<WashPlanDocument>,
     @InjectModel(UserDevice.name) private readonly devices: Model<UserDeviceDocument>,
     @InjectModel(User.name) private readonly users: Model<UserDocument>,
@@ -138,86 +129,6 @@ export class CustomerExperienceService {
     }
   }
 
-  async listOffers() {
-    const now = new Date();
-    return this.offers.find({
-      isActive: true,
-      startsAt: { $lte: now },
-      $or: [{ expiresAt: null }, { expiresAt: { $exists: false } }, { expiresAt: { $gte: now } }],
-    }).sort({ createdAt: -1 }).exec();
-  }
-
-  async applyOffer(userId: string, offerId: string, dto: ApplyOfferDto) {
-    const offer = await this.offers.findById(offerId).exec();
-    const now = new Date();
-    if (!offer || !offer.isActive || offer.startsAt > now || (offer.expiresAt && offer.expiresAt < now)) {
-      throw new BadRequestException('Offer is not available');
-    }
-    try {
-      const redemption = await this.redemptions.create({ userId, offerId, orderId: dto.orderId, status: dto.orderId ? 'applied' : 'reserved' });
-      if (!dto.orderId) return redemption;
-      const order = await this.orders.findOne({
-        _id: new Types.ObjectId(dto.orderId),
-        user: new Types.ObjectId(userId),
-        paymentStatus: PaymentStatus.PENDING,
-        status: { $nin: [OrderStatus.COMPLETED, OrderStatus.CANCELLED, OrderStatus.REJECTED] },
-        'metadata.appliedOfferId': { $exists: false },
-      }).exec();
-      if (!order) {
-        await redemption.deleteOne();
-        throw new BadRequestException('Order is unavailable for this offer');
-      }
-      const discountAmount = this.calculateOfferDiscount(offer.type, offer.value, order.payableAmount);
-      const updatedOrder = await this.orders.findOneAndUpdate(
-        { _id: order._id, payableAmount: order.payableAmount, 'metadata.appliedOfferId': { $exists: false } },
-        {
-          $inc: { discountAmount, payableAmount: -discountAmount },
-          $set: {
-            'metadata.appliedOfferId': offer._id,
-            'metadata.appliedOfferCode': offer.code,
-            'metadata.offerType': offer.type,
-            'metadata.offerValue': offer.value,
-          },
-        },
-        { new: true },
-      ).exec();
-      if (!updatedOrder) {
-        await redemption.deleteOne();
-        throw new BadRequestException('Order was updated while applying the offer. Please retry');
-      }
-      await this.cache.del(`order_${dto.orderId}`);
-      return { redemption, order: updatedOrder, discountAmount, payableAmount: updatedOrder.payableAmount };
-    } catch (error: any) {
-      if (error?.code === 11000) throw new BadRequestException('Offer has already been used');
-      throw error;
-    }
-  }
-
-  async createOffer(dto: CreateOfferDto) {
-    return this.offers.create({
-      ...dto,
-      code: dto.code.toUpperCase(),
-      startsAt: dto.startsAt ? new Date(dto.startsAt) : new Date(),
-      expiresAt: dto.expiresAt ? new Date(dto.expiresAt) : undefined,
-    });
-  }
-
-  async listAllOffers() {
-    return this.offers.find().sort({ createdAt: -1 }).exec();
-  }
-
-  async updateOffer(id: string, dto: UpdateOfferDto) {
-    const offer = await this.offers.findByIdAndUpdate(id, { $set: dto }, { new: true }).exec();
-    if (!offer) throw new NotFoundException('Offer not found');
-    return offer;
-  }
-
-  async deleteOffer(id: string) {
-    const offer = await this.offers.findByIdAndUpdate(id, { $set: { isActive: false } }, { new: true }).exec();
-    if (!offer) throw new NotFoundException('Offer not found');
-    return offer;
-  }
-
   async listWashPlans(userId: string) {
     return this.washPlans.find({ userId }).sort({ createdAt: -1 }).exec();
   }
@@ -286,12 +197,6 @@ export class CustomerExperienceService {
   private async assertOwnedAddress(userId: string, addressId: string) {
     const address = await this.addresses.exists({ _id: addressId, userId });
     if (!address) throw new NotFoundException('Address not found');
-  }
-
-  private calculateOfferDiscount(type: string, value: number, payableAmount: number) {
-    if (type === 'points_multiplier') return 0;
-    const discount = type === 'percentage' ? payableAmount * Math.min(value, 100) / 100 : value;
-    return Math.round(Math.min(discount, payableAmount) * 100) / 100;
   }
 
   private calculateNextWashBooking(visitsPerMonth: number, slot: string, from = new Date()) {

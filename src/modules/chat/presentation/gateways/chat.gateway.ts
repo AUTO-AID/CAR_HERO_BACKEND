@@ -84,7 +84,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { chatId: string },
   ) {
-    const userId = await this.chatIdentity.resolve(client.data.user);
+    const userId = await this.chatIdentity.resolveForChat(client.data.user, data.chatId);
     await this.assertMembership(data.chatId, userId);
 
     const roomId = this.roomFor(data.chatId);
@@ -108,7 +108,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { chatId: string },
   ) {
-    const userId = await this.chatIdentity.resolve(client.data.user);
+    const userId = await this.chatIdentity.resolveForChat(client.data.user, data.chatId);
     await this.assertMembership(data.chatId, userId);
 
     const roomId = this.roomFor(data.chatId);
@@ -122,7 +122,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
     @MessageBody() dto: SendMessageDto,
   ) {
-    const userId = await this.chatIdentity.resolve(client.data.user);
+    const userId = await this.chatIdentity.resolveForChat(client.data.user, dto.chatId);
     // Security check is done inside saveMessage
     const message = await this.chatService.saveMessage(userId, dto);
     
@@ -138,7 +138,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { chatId: string; isTyping: boolean },
   ) {
-    const userId = await this.chatIdentity.resolve(client.data.user);
+    const userId = await this.chatIdentity.resolveForChat(client.data.user, data.chatId);
     await this.assertMembership(data.chatId, userId);
 
     const roomId = this.roomFor(data.chatId);
@@ -155,7 +155,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { chatId: string },
   ) {
-    const userId = await this.chatIdentity.resolve(client.data.user);
+    const userId = await this.chatIdentity.resolveForChat(client.data.user, data.chatId);
     await this.assertMembership(data.chatId, userId);
 
     await this.chatService.markAsRead(data.chatId, userId);

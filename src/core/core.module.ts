@@ -5,6 +5,7 @@ import { TransformInterceptor } from './interceptors/transform.interceptor';
 import { LoggingInterceptor } from './interceptors/logging.interceptor';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { MaintenanceGuard } from './guards/maintenance.guard';
+import { OrderPricingService } from './pricing/order-pricing.service';
 
 import { Setting, SettingSchema } from '../modules/admin/infrastructure/persistence/mongoose/schemas/setting.schema';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -15,6 +16,10 @@ import { MongooseModule } from '@nestjs/mongoose';
     MongooseModule.forFeature([{ name: Setting.name, schema: SettingSchema }]),
   ],
   providers: [
+    // التسعير عام لا خاص بوحدة: يقرؤه اختيار المزوّد (`providers`)
+    // وإنشاء الطلب (`orders`) وقبوله (`provider-app`) — وثلاث نسخ منه تعني
+    // ثلاث صيغ لأجرة الطريق تفترق بصمت.
+    OrderPricingService,
     {
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,
@@ -47,5 +52,6 @@ import { MongooseModule } from '@nestjs/mongoose';
       useClass: MaintenanceGuard,
     },
   ],
+  exports: [OrderPricingService],
 })
 export class CoreModule {}

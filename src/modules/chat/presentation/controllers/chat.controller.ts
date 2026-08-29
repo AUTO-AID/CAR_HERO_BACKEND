@@ -42,7 +42,9 @@ export class ChatController {
   @Post('conversations')
   async startConversation(@CurrentUser() user: any, @Body() dto: CreateChatDto) {
     return this.chatService.getOrCreateChat(
-      await this.chatIdentity.resolve(user),
+      // الطلب هو ما يحسم الهويّة: صاحب حساب فنّي يطلب من تطبيق العميل يدخل
+      // المحادثة بحسابه لا بوثيقة مزوّده — انظر `ChatIdentityService.candidates`
+      await this.chatIdentity.resolveForOrder(user, dto.orderId),
       dto.participantId,
       dto.orderId,
     );
@@ -50,7 +52,8 @@ export class ChatController {
 
   @Get('conversations')
   async getMyConversations(@CurrentUser() user: any) {
-    return this.chatService.getUserChats(await this.chatIdentity.resolve(user));
+    // كل هويّات الحساب: من له حساب فنّي وطلبات كعميل يجب أن يرى النوعين معاً
+    return this.chatService.getUserChats(await this.chatIdentity.candidates(user));
   }
 
   @Get(':chatId/messages')
@@ -62,7 +65,7 @@ export class ChatController {
   ) {
     return this.chatService.getMessages(
       chatId,
-      await this.chatIdentity.resolve(user),
+      await this.chatIdentity.resolveForChat(user, chatId),
       page || 1,
       limit || 20,
     );

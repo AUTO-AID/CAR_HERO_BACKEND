@@ -114,6 +114,41 @@ export class ProvidersController {
     return this.manageProvidersUseCase.apply(dto);
   }
 
+  // نموذج التسجيل في الموقع عام (بلا توكن)، فيحتاج رفعاً عاماً يوازيه: يخزّن
+  // الملفّ في نفس مجلّد وثائق المزوّدين ويعيد رابطاً **مطلقاً** (لا نسبيّاً)
+  // كي تعرضه لوحة الأدمن التي تعمل على أصل مختلف عن الخادم. كان الموقع يرسل
+  // اسم الملفّ فقط دون رفعه، فلا يرى الأدمن صورةً إطلاقاً.
+  @Public()
+  @Post('apply/documents/upload')
+  @UseInterceptors(FileInterceptor('file', {
+    storage: diskStorage({
+      destination: providerDocumentsPath,
+      filename: (_request, file, callback) => {
+        const extension = {
+          'application/pdf': '.pdf',
+          'image/jpeg': '.jpg',
+          'image/png': '.png',
+          'image/webp': '.webp',
+        }[file.mimetype] || extname(file.originalname).toLowerCase();
+        callback(null, `${Date.now()}-${Math.round(Math.random() * 1e9)}${extension}`);
+      },
+    }),
+    limits: { fileSize: 5 * 1024 * 1024 },
+    fileFilter: (_request, file, callback) => {
+      const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
+      if (!allowedTypes.includes(file.mimetype)) {
+        return callback(new BadRequestException('Only PDF, JPG, PNG and WebP files are allowed'), false);
+      }
+      callback(null, true);
+    },
+  }))
+  @ApiOperation({ summary: 'Upload a registration document/photo from the public website form' })
+  uploadApplicationDocument(@UploadedFile() file?: Express.Multer.File) {
+    if (!file) throw new BadRequestException('Document file is required');
+    const baseUrl = process.env.APP_URL || process.env.API_URL || 'http://localhost:3001';
+    return { fileUrl: `${baseUrl}/uploads/provider-documents/${file.filename}` };
+  }
+
   private async getCurrentProviderId(user: any): Promise<string> {
     const phone = user?.phoneNumber || user?.phone;
     if (!phone) {
